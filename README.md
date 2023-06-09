@@ -1,0 +1,1 @@
+# market_point_movil
