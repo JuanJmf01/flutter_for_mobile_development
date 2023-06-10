@@ -18,11 +18,21 @@ class NegocioDb {
         ")");
   }
 
-   static Future<int> insert(NegocioTb negocio) async {
+  static Future<int> insert(NegocioTb negocio) async {
     Database database = await DB.openDB();
 
     return database.insert(tableName, negocio.toMap());
   }
 
+  //inserta un negocio y retorna el idNegocio del negocio que se acaba de crear
+  static Future<int> insertAndGetId(NegocioTb negocio) async {
+    Database database = await DB.openDB();
 
+    int idNegocio = await database.transaction((txn) async {
+      int insertedRowId = await txn.insert(tableName, negocio.toMap());
+      return insertedRowId;
+    });
+
+    return idNegocio;
+  }
 }

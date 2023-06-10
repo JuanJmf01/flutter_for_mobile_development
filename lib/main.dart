@@ -243,7 +243,7 @@ class Menu extends StatefulWidget {
 
 class _MenuState extends State<Menu> {
 
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
 
   final List<Widget> _widgetOptions = <Widget>[
     const Home(),

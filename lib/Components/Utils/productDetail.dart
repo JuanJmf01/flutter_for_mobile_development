@@ -1,10 +1,13 @@
 import 'dart:io';
 
+import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Utils/ConfirmationDialog.dart';
+import 'package:etfi_point/Components/Utils/buttonLogin.dart';
 import 'package:etfi_point/Pages/editarProducto.dart';
 import 'package:flutter/material.dart';
+
 
 
 
@@ -19,6 +22,9 @@ class ProductDetail extends StatefulWidget {
 }
 
 class _ProductDetailState extends State<ProductDetail> {
+
+  //GoogleSignIn googleSignIn = Auth.googleSignIn;
+
 
   ProductoTb? producto;
   ProductoTb productoAux = ProductoTb(
@@ -52,11 +58,10 @@ void updatedProduct() async {
       producto = productoAux;
       //result = false;
     });
-  } catch (error) {
-    print('Error al obtener el producto: $error');
+    } catch (error) {
+      print('Error al obtener el producto: $error');
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +204,23 @@ void updatedProduct() async {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              if (Auth.isUserSignedIn()) {
+                                print('Se ha iniciado sesion');
+                                } else {
+                                  showModalBottomSheet(
+                                    context: context, 
+                                    isScrollControlled: true, 
+                                    builder: (BuildContext context) => ButtonLogin(titulo: 'Iniciar sesion para continuar',),
+                                    shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(10.0),
+                                        topRight: Radius.circular(10.0),
+                                      ),
+                                    ),
+                                  );
+                                }
+                            },
                             style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue[100],
                                 padding: const EdgeInsets.symmetric(

@@ -1,20 +1,18 @@
 class UsuarioTb {
   final int? idUsuario;
-  String nombres;
-  String apellidos;
+  String? nombres;
+  String? apellidos;
   String email;
-  String numeroCelular;
+  String? numeroCelular;
   int? domiciliario; //bool (0 or 1)
-  String password;
 
   UsuarioTb({
     this.idUsuario,
-    required this.nombres,
-    required this.apellidos,
+    this.nombres,
+    this.apellidos,
     required this.email,
-    required this.numeroCelular,
+    this.numeroCelular,
     this.domiciliario,
-    required this.password
   });
 
   Map<String, dynamic> toMap() {
@@ -25,7 +23,6 @@ class UsuarioTb {
       'email': email,
       'numeroCelular': numeroCelular,
       'domiciliario': domiciliario,
-      'password': password,
     };
   } 
 

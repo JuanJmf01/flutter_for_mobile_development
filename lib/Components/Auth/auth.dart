@@ -1,61 +1,51 @@
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Auth {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  static Future<UserCredential> signInWithGoogle() async {
+    try{
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-  User? get currentUser => _firebaseAuth.currentUser;
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-  Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      // Once signed in, return the UserCredential
+      return await FirebaseAuth.instance.signInWithCredential(credential);
 
-  Future<void> signInWithEmailAndPassword({
-    required String email,
-    required String password,
-  })async{
-    await _firebaseAuth.signInWithEmailAndPassword(
-      email: email,
-      password: password
-    );
-  }
-
-  Future<void> CreateUserWithEmailAndPassword({
-    required String email,
-    required String password,
-  })async{
-    await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password
-    );
-  }
-
-  Future<void> signOut()async {
-    await _firebaseAuth.signOut();
+    } catch(error) {
+      print('Error al iniciar sesión con Google: $error');
+      throw Exception('Error al iniciar sesión con Google'); // Lanza una excepción en caso de error
+    }
   }
 
 
+  static User? getCurrentUser() {
+    User? user = FirebaseAuth.instance.currentUser;
+    return user;
+  }
 
+  //Iniciar sesion
+  static bool isUserSignedIn() {
+    User? user = getCurrentUser();
+    return user != null;
+  }
 
+  //Cerrar sesion dos
+  static signOutDos() async {
+    await FirebaseAuth.instance.signOut();
+    GoogleSignIn _googleSignIn = GoogleSignIn();
 
-
-
-// Future<UserCredential> signInWithGoogle() async {
-//   // Trigger the authentication flow
-//   final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-//   // Obtain the auth details from the request
-//   final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-//   // Create a new credential
-//   final credential = GoogleAuthProvider.credential(
-//     accessToken: googleAuth?.accessToken,
-//     idToken: googleAuth?.idToken,
-//   );
-
-//   // Once signed in, return the UserCredential
-//   return await FirebaseAuth.instance.signInWithCredential(credential);
-// }
-
-
-
+    try {
+      await _googleSignIn.disconnect();
+      print('Sesión cerrada correctamente');
+    } catch (error) {
+      print('Error al cerrar sesión: $error');
+    }
+  }
 }

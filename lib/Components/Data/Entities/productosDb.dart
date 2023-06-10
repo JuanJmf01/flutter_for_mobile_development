@@ -21,8 +21,9 @@ class ProductoDb {
         ")");
   }
 
-
-   static Future<void> save(ProductoTb producto, List<CategoriaTb> categorias) async {
+  //Save actualiza o crea un nuevo producto. Si producto != null entt se trata de actualizacion de producto
+  //Si producto == null entonces se trata de una creacion de producto
+  static Future<void> save(ProductoTb producto, List<CategoriaTb> categorias) async {
     if (producto.idProducto != null) {
       // Actualizar el producto existente
       await update(producto, categorias);
@@ -32,7 +33,8 @@ class ProductoDb {
     }
   }
 
-  static Future<int> insert(
+  //Inserta un producto y los idCategoria en la tabla productosCategoria con su respectivo idproducto
+  static Future<void> insert(
       ProductoTb producto, categoriasSeleccionadas) async {
     Database database = await DB.openDB();
 
@@ -49,9 +51,10 @@ class ProductoDb {
       }
     });
 
-    return idProducto;
+    //return idProducto; (cambiar <void> por int)
   }
 
+  //Actualiza un producto y actualiza las los idCategoria y idProducto en la tabla productosCategorias en caso de ser cambiadas por el usuario
   static Future<void> update(ProductoTb producto, List<CategoriaTb> categoriasSeleccionadas) async {
   Database database = await DB.openDB();
 
@@ -72,7 +75,7 @@ class ProductoDb {
   });
 }
 
-
+  //Retorna un solo producto. lo bisca por id
   static Future<ProductoTb> individualProduct(int id) async {
     Database database = await DB.openDB();
     final List<Map<String, dynamic>> productoMap = await database.query(
@@ -85,7 +88,6 @@ class ProductoDb {
     if (productoMap.isNotEmpty) {
       return ProductoTb(
         idProducto: productoMap[0]['idProducto'],
-        //idCategoria: productoMap[0]['idProducto'],
         idNegocio: productoMap[0]['idNegocio'],
         nombreProducto: productoMap[0]['nombreProducto'],
         precio: productoMap[0]['precio'],
@@ -99,6 +101,8 @@ class ProductoDb {
     }
   }
 
+
+  //Retorna todos los productos
   static Future<List<ProductoTb>> productos() async {
     Database database = await DB.openDB();
     final List<Map<String, dynamic>> nombresMap =

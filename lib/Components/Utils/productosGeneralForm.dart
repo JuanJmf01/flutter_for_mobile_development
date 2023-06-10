@@ -1,11 +1,16 @@
 import 'dart:io';
 
+import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
+import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,8 +23,6 @@ class ProductosGeneralForm extends StatefulWidget {
     required this.titulo,
     required this.nameSavebutton,
     required this.exitoMessage,
-
-
   });
 
   final ProductoTb? data;
@@ -38,13 +41,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
-  final TextEditingController _cantidadDisponibleController = TextEditingController();
-
+  final TextEditingController _cantidadDisponibleController =
+      TextEditingController();
 
   CategoriaTb? categoriaSeleccionada;
   List<CategoriaTb> categoriasDisponibles = [];
   List<CategoriaTb> categoriasSeleccionadas = [];
   String? _imagePath;
+  int? idNegocio;
 
   int? enOferta;
   bool isChecked = false;
@@ -58,7 +62,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     _nombreController.text = widget.data?.nombreProducto ?? '';
     _precioController.text = (widget.data?.precio ?? 0).toStringAsFixed(0);
     _descripcionController.text = widget.data?.descripcion ?? '';
-    _cantidadDisponibleController.text = widget.data?.cantidadDisponible.toString() ?? '';
+    _cantidadDisponibleController.text =
+        widget.data?.cantidadDisponible.toString() ?? '';
 
     _imagePath = widget.data?.imagePath;
     enOferta = widget.data?.oferta;
@@ -66,8 +71,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     obtenerCategoriasSeleccionadas();
 
     obtenerCategorias();
-
-
 
     _producto = widget.data;
   }
@@ -80,6 +83,24 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
   }
 
+  Future<int?> getIdUsuario() async {
+    int? idUsuario;
+    if (FirebaseAuth.instance.currentUser != null) {
+      String? email = FirebaseAuth.instance.currentUser?.email;
+      if (email != null) {
+        try {
+          idUsuario = await UsuarioDb.getIdUsuarioPorCorreo(email);
+        } catch (e) {
+          // Manejo de errores
+          print('Error al obtener el idUsuario: $e');
+          return null; // Retornar null en caso de error
+        }
+      }
+    }
+    return idUsuario;
+  }
+
+
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
@@ -91,11 +112,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void obtenerCategoriasSeleccionadas() async {
     final idCategoriasDeProducto;
     if (widget.data?.idProducto != null) {
-      idCategoriasDeProducto = await ProductosCategoriasDb.obtenerIdCategoriasPorIdProducto(widget.data!.idProducto!);
+      idCategoriasDeProducto =
+          await ProductosCategoriasDb.obtenerIdCategoriasPorIdProducto(
+              widget.data!.idProducto!);
       //print(idCategoriasDeProducto);
 
       for (int idCategoria in idCategoriasDeProducto) {
-        final categoriaMap = await CategoriaDb.obtenerCategoriasPorId(idCategoria);
+        final categoriaMap =
+            await CategoriaDb.obtenerCategoriasPorId(idCategoria);
         if (categoriaMap.isNotEmpty) {
           final nombreCategoria = categoriaMap[idCategoria];
           if (nombreCategoria != null) {
@@ -118,19 +142,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
     setState(() {});
   }
-  
 
   void obtenerCategorias() async {
     categoriasDisponibles = await CategoriaDb.categorias();
     setState(() {});
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-
-
     return GestureDetector(
       onTap: () {
         _focusScopeNode.unfocus();
@@ -145,7 +164,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 children: [
-                  CheckboxListTile( title: const Text('¿Producto en oferta?'), value: isChecked, onChanged: (value) {
+                  CheckboxListTile(
+                      title: const Text('¿Producto en oferta?'),
+                      value: isChecked,
+                      onChanged: (value) {
                         setState(() {
                           isChecked = value!;
                           enOferta = isChecked ? 1 : 0;
@@ -168,11 +190,13 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                       FilteringTextInputFormatter.digitsOnly,
                       TextInputFormatter.withFunction((oldValue, newValue) {
                         if (newValue.text.isEmpty) return newValue;
-                        final double parsedValue = double.tryParse(newValue.text) ?? 0;
+                        final double parsedValue =
+                            double.tryParse(newValue.text) ?? 0;
                         final String newText = parsedValue.toStringAsFixed(0);
                         return newValue.copyWith(
                           text: newText,
-                          selection:TextSelection.collapsed(offset: newText.length),
+                          selection:
+                              TextSelection.collapsed(offset: newText.length),
                         );
                       }),
                     ],
@@ -207,7 +231,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             value: categoria,
                             child: Text(categoria.nombre),
                           ),
-                        ).toList(),
+                        )
+                        .toList(),
                     onChanged: (CategoriaTb? newValue) {
                       setState(() {
                         if (!categoriasSeleccionadas.contains(newValue)) {
@@ -218,8 +243,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                       });
                     },
                   ),
-                  SizedBox(height: 20,),
-
+                  SizedBox(
+                    height: 20,
+                  ),
                   Wrap(
                     direction: Axis.horizontal,
                     //alignment: WrapAlignment.start,
@@ -261,7 +287,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                       );
                     }).toList(),
                   ),
-                  SizedBox(height: 10,),
+                  SizedBox(
+                    height: 10,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -279,79 +307,72 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                       margin: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 35.0),
                       child: Image.file(File(_imagePath!)),
                     ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      if(_imagePath != null && _imagePath!.isNotEmpty) {
+                  if (Auth.isUserSignedIn())
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (_imagePath != null && _imagePath!.isNotEmpty) {
+                          final nombreProducto = _nombreController.text;
+                          double precio = double.tryParse(_precioController.text) ?? 0.0;
+                          final descripcion = _descripcionController.text;
+                          int cantidadDisponible = int.tryParse(_cantidadDisponibleController.text) ?? 0;
 
-                        final nombreProducto = _nombreController.text;
-                        double precio = double.tryParse(_precioController.text) ?? 0.0;
-                        final descripcion = _descripcionController.text;
-                        int cantidadDisponible = int.tryParse(_cantidadDisponibleController.text) ?? 0;
+                          _producto = ProductoTb(
+                              idProducto: widget.data?.idProducto,
+                              idNegocio: 1,
+                              nombreProducto: nombreProducto,
+                              precio: precio,
+                              descripcion: descripcion,
+                              cantidadDisponible: cantidadDisponible,
+                              oferta: enOferta,
+                              imagePath: _imagePath ?? "");
 
-                        _producto = ProductoTb(
-                          nombreProducto: nombreProducto,
-                          idProducto: widget.data?.idProducto,
-                          idNegocio: 1,
-                          precio: precio,
-                          descripcion: descripcion,
-                          cantidadDisponible: cantidadDisponible,
-                          oferta: enOferta,
-                          imagePath: _imagePath ?? ""
-                        );
-
-                       try {
-                        await ProductoDb.save(_producto!, categoriasSeleccionadas);
-                        if (context.mounted) {
-                          print(_producto);
-                          print(categoriasSeleccionadas);
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ConfirmationDialog(
-                                
-                                titulo: widget.exitoTitle,
-                                message: widget.exitoMessage,
-                                onAccept: () {
-                                  Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
-                                  // Navigator.pop(
-                                  //   context,
-                                  //   MaterialPageRoute(builder: (context) => ProductDetail(id: widget.data?.idProducto ?? 1, banderita: true,))
-                                  // ); // Regresar a la página anterior
-                                 // Navigator.pop(context, true);
-                                 if(_producto?.idProducto != null){
-                                    Navigator.pop(context, 'update');
-                                 }else{
-                                    Navigator.pop(context, _producto);
-                                 }
-
+                          try {
+                            await ProductoDb.save(_producto!, categoriasSeleccionadas);
+                            print('crecendiales : ');
+                            if (context.mounted) {
+                              print(_producto);
+                              print(categoriasSeleccionadas);
+                              showDialog(
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return ConfirmationDialog(
+                                    titulo: widget.exitoTitle,
+                                    message: widget.exitoMessage,
+                                    onAccept: () {
+                                      Navigator.of(context)
+                                          .pop(); // Cerrar el cuadro de diálogo
+                                      if (_producto?.idProducto != null) {
+                                        Navigator.pop(context, 'update');
+                                      } else {
+                                        Navigator.pop(context, _producto);
+                                      }
+                                    },
+                                    onAcceptMessage: 'Cerrar y volver',
+                                  );
                                 },
-                                onAcceptMessage: 'Cerrar y volver',
                               );
-                            },
-                          );
+                            }
+                          } catch (error) {
+                            print('Error al actualizar el producto: $error');
+                          }
                         }
-                      }catch (error) {
-                       print('Error al actualizar el producto: $error');
-                      }
-
-                      }
-                    },
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(
-                              20), // Ajustar el valor para cambiar la redondez del botón
+                      },
+                      style: ButtonStyle(
+                        shape:
+                            MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                20), // Ajustar el valor para cambiar la redondez del botón
+                          ),
                         ),
                       ),
-
-                    ),
-                    child:  Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(widget.nameSavebutton,
-                          style: const TextStyle(
-                              fontSize: 15)), //tamaño del texto del botón
-                    ),
-                  )
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(widget.nameSavebutton,
+                            style: const TextStyle(
+                                fontSize: 15)), //tamaño del texto del botón
+                      ),
+                    )
                 ],
               ),
             ),

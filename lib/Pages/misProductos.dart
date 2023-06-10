@@ -1,3 +1,5 @@
+import 'package:etfi_point/Components/Auth/Pages/registerBusiness.dart';
+import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
@@ -26,7 +28,6 @@ class _MisProductosState extends State<MisProductos> {
 
   }
 
-  
   void addProduct(producto) async {
     print('Llega aca');
     print(producto);
@@ -50,11 +51,13 @@ class _MisProductosState extends State<MisProductos> {
         backgroundColor: Colors.grey[200],
         title: const Text('NickName', style: TextStyle(color: Colors.black), ),
         actions: [
-          IconButton(
+          if(Auth.isUserSignedIn())
+            IconButton(
             onPressed: () async {
               accionA_Ejecutar = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) =>  const CrearProducto())
+                //MaterialPageRoute(builder: (context) =>   RegisterBusiness())
               );
               //MaterialPageRoute(builder: (context) => const Pruebas()));
               if(accionA_Ejecutar != null){
@@ -64,11 +67,13 @@ class _MisProductosState extends State<MisProductos> {
             },
             icon: const Icon(Icons.add_circle_outline, color: Colors.black, size: 33, ),
           ),
+
           Padding(
             padding: const EdgeInsets.only(right: 10.0),
             child: IconButton(
               onPressed: () {
                 showModalBottomSheet(
+                  isScrollControlled: true,
                   context: context, 
                   builder: (BuildContext context) => ButtonMenu(),
                   shape: const RoundedRectangleBorder(
@@ -76,7 +81,7 @@ class _MisProductosState extends State<MisProductos> {
                       topLeft: Radius.circular(10.0),
                       topRight: Radius.circular(10.0),
                     ),
-                   ),
+                  ),
                 );
               },
               icon: const Icon(Icons.menu,color: Colors.black,size: 35,),
