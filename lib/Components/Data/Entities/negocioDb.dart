@@ -24,15 +24,39 @@ class NegocioDb {
     return database.insert(tableName, negocio.toMap());
   }
 
-  //inserta un negocio y retorna el idNegocio del negocio que se acaba de crear
-  static Future<int> insertAndGetId(NegocioTb negocio) async {
-    Database database = await DB.openDB();
+  //Buscar si existe un negocio por idUsuario
+  static Future<int?> findIdNegocioByIdUsuario(int idUsuario) async {
+    try {
+      Database database = await DB.openDB();
 
-    int idNegocio = await database.transaction((txn) async {
-      int insertedRowId = await txn.insert(tableName, negocio.toMap());
-      return insertedRowId;
-    });
+      List<Map<String, dynamic>> results = await database.query(
+        tableName,
+        columns: ['idNegocio'],
+        where: 'idUsuario = ?',
+        whereArgs: [idUsuario],
+        limit: 1,
+      );
 
-    return idNegocio;
+      if (results.isNotEmpty) {
+        return results.first['idNegocio'] as int;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Error al buscar el idNegocio: $e');
+      return null;
+    }
   }
+
+  // //inserta un negocio y retorna el idNegocio del negocio que se acaba de crear
+  // static Future<int> insertAndGetId(NegocioTb negocio) async {
+  //   Database database = await DB.openDB();
+
+  //   int idNegocio = await database.transaction((txn) async {
+  //     int insertedRowId = await txn.insert(tableName, negocio.toMap());
+  //     return insertedRowId;
+  //   });
+
+  //   return idNegocio;
+  // }
 }

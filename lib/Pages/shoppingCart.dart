@@ -1,4 +1,5 @@
 import 'package:etfi_point/Components/Utils/productDetail.dart';
+import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 
 class ShoppingCart extends StatefulWidget {
@@ -17,7 +18,14 @@ class _ShoppingCartState extends State<ShoppingCart> {
     appBar: AppBar(
         backgroundColor: Colors.grey[200],        
       ),
-      body: Text('ff')
+      body: ElevatedButton(
+        onPressed: () {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => Menu(index: 1,)),
+          );
+      },
+      child: Text('Prueba'))
    );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
+import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,7 +10,7 @@ class ButtonLogin extends StatelessWidget {
 
   final String? titulo;
 
-  void newUser(UserCredential credenciales){
+  void newUser(UserCredential credenciales)async {
     final user = credenciales.user!;
     var name;
     var emailAdress;
@@ -26,8 +27,20 @@ class ButtonLogin extends StatelessWidget {
       email: emailAdress
     );
 
-    UsuarioDb.insert(usuario);
+    await UsuarioDb.insert(usuario);
     print(usuario);
+
+  }
+
+  void pruebaCrearUsuario() async{
+     UsuarioTb usuario = UsuarioTb(
+      nombres: 'prueba juan',
+      email: 'pruebajuan@gmail.com'
+    );  
+
+    final idUsuarioPrueba = await UsuarioDb.insert(usuario);
+    print('Funciona hasta aca');
+    print(idUsuarioPrueba);
 
   }
 
@@ -60,7 +73,7 @@ class ButtonLogin extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 40.0),
             child: Title(color: Colors.black,
-            child: Text(titulo ?? 'Iniciar sesion', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 25),)),
+            child: Text(titulo ?? 'Iniciar sesion', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),)),
           ),
           const Padding(
             padding: EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
@@ -82,7 +95,9 @@ class ButtonLogin extends StatelessWidget {
               width: double.infinity,
               height: 50.0,
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  pruebaCrearUsuario();
+                },
                 style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
@@ -131,6 +146,7 @@ class ButtonLogin extends StatelessWidget {
               icon: const Icon(Icons.abc),
               onPressed: () async {
                 try{
+                  
                   UserCredential userCredential = await Auth.signInWithGoogle();
                   if (userCredential != null) {
                     final email = userCredential.user?.email;
@@ -138,10 +154,18 @@ class ButtonLogin extends StatelessWidget {
                     if(!userExists){
                       newUser(userCredential);
                     }
+                    if(context.mounted){
+                      Navigator.pop(context);   
+                      Navigator.pushReplacement(
+                        context,MaterialPageRoute(builder: (context) => Menu(index: 1,)),
+                      );
+                    }
+                    
                   }
                 }catch(error, stacktrace){
                   print('Error al iniciar sesion con google $stacktrace');
-                }         
+                } 
+                    
               },
             ),
           ),

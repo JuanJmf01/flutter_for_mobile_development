@@ -19,7 +19,7 @@ class RegisterBusiness extends StatelessWidget {
         iconTheme: const IconThemeData(color: Colors.black),
         toolbarHeight: 70, // Establecer una altura mayor
       ),
-      backgroundColor: Colors.grey[200], // Fondo gris claro
+      backgroundColor: Colors.white, // Fondo gris claro
       body: SingleChildScrollView(
         // Widget SingleChildScrollView para evitar el desplazamiento
         child: Padding(

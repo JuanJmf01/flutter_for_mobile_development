@@ -1,6 +1,8 @@
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
+import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../DB.dart';
@@ -23,7 +25,8 @@ class ProductoDb {
 
   //Save actualiza o crea un nuevo producto. Si producto != null entt se trata de actualizacion de producto
   //Si producto == null entonces se trata de una creacion de producto
-  static Future<void> save(ProductoTb producto, List<CategoriaTb> categorias) async {
+  static Future<void> save(
+      ProductoTb producto, List<CategoriaTb> categorias) async {
     if (producto.idProducto != null) {
       // Actualizar el producto existente
       await update(producto, categorias);
@@ -34,7 +37,7 @@ class ProductoDb {
   }
 
   //Inserta un producto y los idCategoria en la tabla productosCategoria con su respectivo idproducto
-  static Future<void> insert(
+  static Future<int> insert(
       ProductoTb producto, categoriasSeleccionadas) async {
     Database database = await DB.openDB();
 
@@ -51,29 +54,30 @@ class ProductoDb {
       }
     });
 
-    //return idProducto; (cambiar <void> por int)
+    return idProducto; 
   }
 
   //Actualiza un producto y actualiza las los idCategoria y idProducto en la tabla productosCategorias en caso de ser cambiadas por el usuario
-  static Future<void> update(ProductoTb producto, List<CategoriaTb> categoriasSeleccionadas) async {
-  Database database = await DB.openDB();
+  static Future<void> update(
+      ProductoTb producto, List<CategoriaTb> categoriasSeleccionadas) async {
+    Database database = await DB.openDB();
 
-  await database.transaction((txn) async {
-    await txn.update(tableName, producto.toMap(),
-        where: 'idProducto = ?', whereArgs: [producto.idProducto]);
+    await database.transaction((txn) async {
+      await txn.update(tableName, producto.toMap(),
+          where: 'idProducto = ?', whereArgs: [producto.idProducto]);
 
-    await txn.delete('productosCategorias',
-        where: 'idProducto = ?', whereArgs: [producto.idProducto]);
+      await txn.delete('productosCategorias',
+          where: 'idProducto = ?', whereArgs: [producto.idProducto]);
 
-    for (CategoriaTb categoria in categoriasSeleccionadas) {
-      Map<String, dynamic> productoCategoriaMap = {
-        'idProducto': producto.idProducto,
-        'idCategoria': categoria.idCategoria,
-      };
-      await txn.insert('productosCategorias', productoCategoriaMap);
-    }
-  });
-}
+      for (CategoriaTb categoria in categoriasSeleccionadas) {
+        Map<String, dynamic> productoCategoriaMap = {
+          'idProducto': producto.idProducto,
+          'idCategoria': categoria.idCategoria,
+        };
+        await txn.insert('productosCategorias', productoCategoriaMap);
+      }
+    });
+  }
 
   //Retorna un solo producto. lo bisca por id
   static Future<ProductoTb> individualProduct(int id) async {
@@ -100,7 +104,6 @@ class ProductoDb {
       throw Exception('No se encontró un producto con el id especificado');
     }
   }
-
 
   //Retorna todos los productos
   static Future<List<ProductoTb>> productos() async {
@@ -144,7 +147,8 @@ class ProductoDb {
     });
   }
 
-  static Future<List<ProductoTb>> getProductosByCategoria(int idCategoria) async {
+  static Future<List<ProductoTb>> getProductosByCategoria(
+      int idCategoria) async {
     Database database = await DB.openDB();
 
     final List<Map<String, dynamic>> productosMap = await database.rawQuery('''
@@ -176,4 +180,41 @@ class ProductoDb {
   }
 
 
+  // Traer todos los productos por negocio (productos que tenga cada vendedor)
+  static Future<List<ProductoTb>> getProductosByIdNegocio() async {
+    try {
+      int? idUsuario = await UsuarioDb.getIdUsuario();
+      int? idNegocio = await NegocioDb.findIdNegocioByIdUsuario(idUsuario!);
+      if (idNegocio != null) {
+        Database database = await DB.openDB();
+
+        List<Map<String, dynamic>> results = await database.query(
+          tableName,
+          where: 'idNegocio = ?',
+          whereArgs: [idNegocio],
+        );
+
+        List<ProductoTb> productosList = results.map((map) {
+          return ProductoTb(
+            idProducto: map['idProducto'],
+            idNegocio: map['idNegocio'],
+            nombreProducto: map['nombreProducto'],
+            precio: map['precio'],
+            descripcion: map['descripcion'],
+            cantidadDisponible: map['cantidadDisponible'],
+            oferta: map['oferta'],
+            imagePath: map['imagePath'],
+          );
+        }).toList();
+
+        return productosList;
+      } else {
+        print('No se encontró el idNegocio correspondiente al idUsuario');
+        return [];
+      }
+    } catch (e) {
+      print('Error al obtener los productos por idNegocio: $e');
+      return [];
+    }
+  }
 }

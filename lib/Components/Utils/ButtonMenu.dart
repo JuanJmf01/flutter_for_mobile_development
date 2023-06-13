@@ -1,6 +1,7 @@
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Components/Utils/buttonLogin.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 
 class ButtonMenu extends StatelessWidget {
@@ -48,7 +49,14 @@ class ButtonMenu extends StatelessWidget {
                           onCancelMessage: 'Cancelar',
                           onAccept: () async {
                             await Auth.signOutDos();
-                            Navigator.of(context).pop();
+                            if(context.mounted){
+                              Navigator.of(context).pop();
+                              Navigator.pop(context);
+                              Navigator.pushReplacement(
+                                context,MaterialPageRoute(builder: (context) => Menu(index: 0,)),
+                              );
+                            }
+                           
                           },
                           onCancel: () {
                             Navigator.of(context).pop();
@@ -57,6 +65,7 @@ class ButtonMenu extends StatelessWidget {
                       }
                     );
                   }else{
+                    Navigator.pop(context);
                     showModalBottomSheet(
                       context: context, 
                       isScrollControlled: true, 
@@ -80,9 +89,7 @@ class ButtonMenu extends StatelessWidget {
                     ),
                     SizedBox(width: 7.0),
                     Text(
-                      Auth.isUserSignedIn()
-                          ? 'Cerrar sesion'
-                          : 'Iniciar Sesion',
+                      Auth.isUserSignedIn() ? 'Cerrar sesion' : 'Iniciar Sesion',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold, // Texto más grueso
@@ -100,7 +107,18 @@ class ButtonMenu extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 onPressed: () {
-                  // Lógica para el botón 2
+                  Navigator.pop(context);
+                  showModalBottomSheet(
+                    context: context, 
+                    isScrollControlled: true, 
+                    builder: (BuildContext context) => const ButtonLogin(titulo: 'Iniciar sesion para continuar',),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
+                    ),
+                  );
                 },
                 child: const Row(
                   children: [

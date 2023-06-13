@@ -20,10 +20,10 @@ class _MisProductosState extends State<MisProductos> {
 
   List<ProductoTb> productos = [];
 
-  ProductoTb? accionA_Ejecutar;
+  ProductoTb? accionAEjecutar;
 
-    @override
-    void initState() {
+  @override
+  void initState() {
     super.initState();
 
   }
@@ -54,15 +54,16 @@ class _MisProductosState extends State<MisProductos> {
           if(Auth.isUserSignedIn())
             IconButton(
             onPressed: () async {
-              accionA_Ejecutar = await Navigator.push(
+              accionAEjecutar = await Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) =>  const CrearProducto())
                 //MaterialPageRoute(builder: (context) =>   RegisterBusiness())
               );
               //MaterialPageRoute(builder: (context) => const Pruebas()));
-              if(accionA_Ejecutar != null){
+              if(accionAEjecutar != null){
                 print('se ejecuto la accion');
-                addProduct(accionA_Ejecutar);
+                print(accionAEjecutar);
+                addProduct(accionAEjecutar);
               }
             },
             icon: const Icon(Icons.add_circle_outline, color: Colors.black, size: 33, ),
@@ -98,10 +99,10 @@ class _MisProductosState extends State<MisProductos> {
           ),
         ),
       ),
-    ),  
+    ),
 
       body: FutureBuilder<List<ProductoTb>>(
-        future: ProductoDb.productos(), // Llamada al método que recupera los productos
+        future: ProductoDb.getProductosByIdNegocio(), // Llamada al método que recupera los productos
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             productos = snapshot.data!;
@@ -123,35 +124,7 @@ class _MisProductosState extends State<MisProductos> {
   }
 }
 
-// class AddButton extends StatelessWidget {
-//   const AddButton({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     //productos = widget.productos;
-//     return Scaffold(
-//       body: FutureBuilder<List<ProductoTb>>(
-//         future: ProductoDb.productos(), // Llamada al método que recupera los productos
-//         builder: (context, snapshot) {
-//           if (snapshot.hasData) {
-//             List<ProductoTb> productos = snapshot.data!;
-//             return ListView(
-//               children: [
-//                 const TopProfile(),
-//                 RowProducts(productos:productos), // Pasar la lista de productos al widget RowProducts
-//               ],
-//             );
-//           } else if (snapshot.hasError) {
-//             return Text('Error al cargar los productos');
-//           }
-//           // Mostrar un indicador de carga
-//           return const Center(child: CircularProgressIndicator());
-          
-//         },
-//       ),
-//     );
-//   }
-// }
 
 class TopProfile extends StatefulWidget {
   const TopProfile({super.key});

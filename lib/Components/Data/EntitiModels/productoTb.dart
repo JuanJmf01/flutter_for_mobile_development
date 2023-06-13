@@ -1,5 +1,5 @@
 class ProductoTb {
-  late final int? idProducto; //PK
+  int? idProducto; //PK
   final int? idNegocio; //FK
   //final int? idCategoria; //FK
   String nombreProducto;

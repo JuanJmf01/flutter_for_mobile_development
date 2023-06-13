@@ -1,3 +1,4 @@
+import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Pages/allProducts.dart';
 import 'package:etfi_point/Pages/misProductos.dart';
 import 'package:etfi_point/Pages/pagina02.dart';
@@ -229,13 +230,18 @@ class MyApp extends StatelessWidget {
         
       ),
       title: "Mi app",
-      home: Menu()
+      home: Menu(index: 0,)
     );
   }
 }
 
 class Menu extends StatefulWidget {
-  const Menu({super.key});
+  Menu({
+    super.key,
+    required this.index
+  });
+
+  int index;
 
   @override
   State<Menu> createState() => _MenuState();
@@ -244,38 +250,61 @@ class Menu extends StatefulWidget {
 class _MenuState extends State<Menu> {
 
   int _selectedIndex = 0;
+  List<Widget> _widgetOptions = [];
 
-  final List<Widget> _widgetOptions = <Widget>[
-    const Home(),
-    MisProductos(),
-    const ShoppingCart()
-    //const Categorie(idCategorie: 1,)
-  ];
-
+  
   void _selectedOptionBottom(int index){
     setState(() {
       _selectedIndex = index;
     });
   }
+  
+  List<Widget> isUserLoggedIn(){
+    if(!Auth.isUserSignedIn()){
+      _widgetOptions = <Widget>[
+        const Home(),
+        const ShoppingCart()
+      ];
+    }else{
+      _widgetOptions = <Widget>[
+        const Home(),
+        MisProductos(),
+        const ShoppingCart()
+      ];
+    }
+
+    return _widgetOptions;
+  }
+
+  
+  @override
+  void initState() {
+    super.initState();
+
+    _selectedOptionBottom(widget.index);
+    //_widgetOptions = isUserLoggedIn();
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(child: _widgetOptions.elementAt(_selectedIndex),), 
+    body: Container(child: isUserLoggedIn().elementAt(_selectedIndex),), 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _selectedOptionBottom,        
 
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
+        items:  <BottomNavigationBarItem>[
+          const BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.store_outlined),
-            label: 'My store'
-          ),
-          BottomNavigationBarItem(
+          if(Auth.isUserSignedIn())
+            const BottomNavigationBarItem(
+              icon: Icon(Icons.store_outlined),
+              label: 'My store'
+            ),
+          const BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_sharp),
             label: 'Car'
           ),
@@ -285,15 +314,6 @@ class _MenuState extends State<Menu> {
   }
 }
 
-
-class Beginning extends StatelessWidget {
-  const Beginning({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
 
 
 

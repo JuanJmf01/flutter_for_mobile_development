@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Data/DB.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UsuarioDb {
@@ -15,6 +16,7 @@ class UsuarioDb {
         ")");
   }
 
+  // Inserta un negocio. De ser necesario utilizar el retorno del id del metodo
   static Future<int> insert(UsuarioTb usuario) async {
     Database database = await DB.openDB();
 
@@ -36,24 +38,43 @@ class UsuarioDb {
     return results.isNotEmpty;
   }
 
-
+  //Buca un usuario por correo para retornar el id del usuario
   static Future<int?> getIdUsuarioPorCorreo(String email) async {
-  Database database = await DB.openDB();
+    Database database = await DB.openDB();
 
-  List<Map<String, dynamic>> result = await database.query(
-    tableName,
-    columns: ['idUsuario'],
-    where: 'email = ?',
-    whereArgs: [email],
-  );
+    List<Map<String, dynamic>> result = await database.query(
+      tableName,
+      columns: ['idUsuario'],
+      where: 'email = ?',
+      whereArgs: [email],
+    );
 
-  if (result.isNotEmpty) {
-    return result.first['idUsuario'];
-  } else {
-    return null;
+    if (result.isNotEmpty) {
+      return result.first['idUsuario'];
+    } else {
+      return null;
+    }
   }
-}
 
+
+
+  //Obtener idUsuario mediante el correo en firebase
+  static Future<int?> getIdUsuario() async {
+    int? idUsuario;
+    if (FirebaseAuth.instance.currentUser != null) {
+      String? email = FirebaseAuth.instance.currentUser?.email;
+      if (email != null) {
+        try {
+          idUsuario = await getIdUsuarioPorCorreo(email);
+        } catch (e) {
+          // Manejo de errores
+          print('Error al obtener el idUsuario: $e');
+          return null; // Retornar null en caso de error
+        }
+      }
+    }
+    return idUsuario;
+  }
 
 
 }

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
+import 'package:etfi_point/Components/Utils/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/roundedSearchBar.dart';
 import 'package:etfi_point/Pages/categorie.dart';
 import 'package:flutter/material.dart';
@@ -37,43 +38,79 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         preferredSize: const Size.fromHeight(115.0),
         child: AppBar(
           backgroundColor: Colors.grey[200],
-          title:  Column(
+          title: Column(
             children: [
-              TabBar(
-                controller: _tabController,
-                indicatorColor: Colors.black,
-                tabs: const [
-                  Tab(
-                    child: Text('Productos', style: TextStyle(color: Colors.black),),
+              Row(
+                children: [
+                  Expanded(
+                    child: TabBar(
+                      controller: _tabController,
+                      indicatorSize: TabBarIndicatorSize.label,
+                      indicatorColor: Colors.grey[800],
+                      isScrollable: true,
+                      tabs: const [
+                        Tab(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('Productos', style: TextStyle(color: Colors.black)),
+                          ),
+                        ),
+                        Tab(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('Ofertas', style: TextStyle(color: Colors.black)),
+                          ),
+                        ),
+                        Tab(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text('Domiciliarios', style: TextStyle(color: Colors.black)),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  Tab(
-                    child: Text('Ofertas', style: TextStyle(color: Colors.black),),
-                  ),
-                  Tab(
-                    child: Text('Domiciliarios', style: TextStyle(color: Colors.black),),
-                  ),
-                ]
+                ],
               ),
-              const SizedBox(height: 12,)
+              const SizedBox(height: 12),
               //RoundedSearchBar(controller: searchController)
             ],
-            
           ),
-
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (BuildContext context) => ButtonMenu(),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.menu, color: Colors.black, size: 35),
+              ),
+            ),
+          ],
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(50.0),
-           child: Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: RoundedSearchBar(
-              controller: searchController
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: RoundedSearchBar(
+                controller: searchController,
+              ),
             ),
-           ), 
           ),
-
         ),
       ),
       body: TabBarView(
         controller: _tabController,
+        physics: const NeverScrollableScrollPhysics(), // Evita el desplazamiento horizontal
         children: [
           ListView(
             children: [
