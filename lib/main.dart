@@ -3,6 +3,7 @@ import 'package:etfi_point/Pages/allProducts.dart';
 import 'package:etfi_point/Pages/misProductos.dart';
 import 'package:etfi_point/Pages/pagina02.dart';
 import 'package:etfi_point/Pages/shoppingCart.dart';
+import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 
@@ -236,83 +237,110 @@ class MyApp extends StatelessWidget {
 }
 
 class Menu extends StatefulWidget {
-  Menu({
-    super.key,
-    required this.index
-  });
+  Menu({Key? key, required this.index}) : super(key: key);
 
-  int index;
+  final int index;
 
   @override
   State<Menu> createState() => _MenuState();
 }
 
 class _MenuState extends State<Menu> {
-
   int _selectedIndex = 0;
   List<Widget> _widgetOptions = [];
 
-  
-  void _selectedOptionBottom(int index){
+  void _selectedOptionBottom(int index) {
     setState(() {
       _selectedIndex = index;
     });
   }
-  
-  List<Widget> isUserLoggedIn(){
-    if(!Auth.isUserSignedIn()){
+
+  List<Widget> isUserLoggedIn() {
+    if (!Auth.isUserSignedIn()) {
       _widgetOptions = <Widget>[
         const Home(),
-        const ShoppingCart()
+        ShoppingCart(),
+        ShoppingCart(),
       ];
-    }else{
+    } else {
       _widgetOptions = <Widget>[
         const Home(),
         MisProductos(),
-        const ShoppingCart()
+        ShoppingCart(),
+        ShoppingCart(),
       ];
     }
 
     return _widgetOptions;
   }
 
-  
   @override
   void initState() {
     super.initState();
-
     _selectedOptionBottom(widget.index);
-    //_widgetOptions = isUserLoggedIn();
-
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-    body: Container(child: isUserLoggedIn().elementAt(_selectedIndex),), 
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _selectedOptionBottom,        
-
-        items:  <BottomNavigationBarItem>[
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          if(Auth.isUserSignedIn())
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.store_outlined),
-              label: 'My store'
-            ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.shopping_cart_sharp),
-            label: 'Car'
-          ),
-        ],
-      )
+      body: Container(
+        child: isUserLoggedIn().elementAt(_selectedIndex),
+      ),
+      bottomNavigationBar: PreferredSize(
+        preferredSize: Size.fromHeight(0),
+        child: Builder(
+          builder: (BuildContext context) {
+            return BottomNavigationBar(
+              currentIndex: _selectedIndex,
+              onTap: _selectedOptionBottom,
+              showSelectedLabels: false,
+              showUnselectedLabels: false,
+              type: BottomNavigationBarType.fixed,
+              items: <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon( _selectedIndex == 0 ?
+                     CupertinoIcons.house_fill : CupertinoIcons.house,
+                    color: _selectedIndex == 0
+                        ? Colors.black
+                        : const Color.fromARGB(185, 0, 0, 0),
+                    size: _selectedIndex == 0 ? 26.0 : 24.0,
+                  ),
+                  label: '',
+                ),
+                if (Auth.isUserSignedIn())
+                  BottomNavigationBarItem(
+                    icon: Icon( _selectedIndex == 1 ?
+                      CupertinoIcons.bag_fill : CupertinoIcons.bag,
+                      color:Colors.black,                   
+                      size: _selectedIndex == 1 ? 29.0 : 26.0,
+                    ),
+                    label: '',
+                  ),
+                BottomNavigationBarItem(
+                  icon: Icon( _selectedIndex == 2 ?
+                    CupertinoIcons.cart_fill : CupertinoIcons.shopping_cart,
+                    color:Colors.black,
+                    size: _selectedIndex == 2 ? 28.0 : 24.0,
+                  ),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(
+                    CupertinoIcons.search,
+                    color:Colors.black,
+                    size: _selectedIndex == 3 ? 28.0 : 24.0,   
+                  ),
+                  label: '',
+                ),
+              ],
+            );
+          },
+        ),
+      ),
     );
   }
 }
+
 
 
 

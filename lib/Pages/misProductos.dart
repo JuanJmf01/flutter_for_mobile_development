@@ -109,7 +109,10 @@ class _MisProductosState extends State<MisProductos> {
             return ListView(
               children: [
                 const TopProfile(),
-                RowProducts(productos:productos), // Pasar la lista de productos al widget RowProducts
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: RowProducts(productos:productos),
+                ), // Pasar la lista de productos al widget RowProducts
               ],
             );
           } else if (snapshot.hasError) {

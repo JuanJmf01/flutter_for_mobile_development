@@ -350,23 +350,13 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           oferta: enOferta,
                           imagePath: _imagePath ?? "");
                       
-                      int idProducto = 0;
-
-                          
+                      int idProducto = 0;                     
               
                       try {
                         if(_producto?.idProducto != null && _producto != null){
                           await ProductoDb.update(_producto!, categoriasSeleccionadas);
                         }else{
-                          print('Entroooo');
                           idProducto = await ProductoDb.insert(_producto!, categoriasSeleccionadas);
-                        }
-
-
-                        if(idProducto != null){
-                          print('mi id producto $idProducto');
-                        }else{
-                          print('es nulo $idProducto');
                         }
 
                         if (context.mounted) {
@@ -404,7 +394,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
-                    child: Text(widget.nameSavebutton, style: const TextStyle(fontSize: 15)), //tamaño del texto del botón
+                    child: Text(widget.nameSavebutton, style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w700, letterSpacing: 1.0)), //tamaño del texto del botón
                   ),
                 ),
               )

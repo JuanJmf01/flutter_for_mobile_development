@@ -104,12 +104,23 @@ class LoginApp extends StatelessWidget {
                       },
                     ),
                   ),
+                  InkWell(
+                    onTap: (){},
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage('/lib/images/GooglePng.png'),
+                          fit: BoxFit.cover,
+                        )
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('¿No tienes una cuenta?'),
+                        const Text('¿No tiea?'),
                         TextButton(
                           onPressed: () {
                             // Acción al presionar el botón de "Regístrate"

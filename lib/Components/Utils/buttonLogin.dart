@@ -5,43 +5,70 @@ import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ButtonLogin extends StatelessWidget {
+class ButtonLogin extends StatefulWidget {
   const ButtonLogin({super.key, this.titulo});
 
   final String? titulo;
 
-  void newUser(UserCredential credenciales)async {
+  @override
+  State<ButtonLogin> createState() => _ButtonLoginState();
+}
+
+class _ButtonLoginState extends State<ButtonLogin> {
+  bool _isPressed = false;
+
+  void newUser(UserCredential credenciales) async {
     final user = credenciales.user!;
     var name;
     var emailAdress;
 
-    if(user != null){
-      for(final providerProfile in user.providerData){
+    if (user != null) {
+      for (final providerProfile in user.providerData) {
         name = providerProfile.displayName;
         emailAdress = providerProfile.email;
       }
     }
 
-    UsuarioTb usuario = UsuarioTb(
-      nombres: name,
-      email: emailAdress
-    );
+    UsuarioTb usuario = UsuarioTb(nombres: name, email: emailAdress);
 
     await UsuarioDb.insert(usuario);
     print(usuario);
-
   }
 
-  void pruebaCrearUsuario() async{
-     UsuarioTb usuario = UsuarioTb(
-      nombres: 'prueba juan',
-      email: 'pruebajuan@gmail.com'
-    );  
+  void logInWithGoogle(BuildContext context) async {
+    try {
+      UserCredential userCredential = await Auth.signInWithGoogle();
+      if (userCredential != null) {
+        final email = userCredential.user?.email;
+        bool userExists = await UsuarioDb.existsUserByEmail(email!);
+        if (!userExists) {
+          newUser(userCredential);
+        }
+        if (context.mounted) {
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => Menu(index: 1,)
+            ),
+          );
+        }
+      }
+    } catch (error, stacktrace) {
+      print('Error al iniciar sesion con google $stacktrace');
+    }
+  }
 
-    final idUsuarioPrueba = await UsuarioDb.insert(usuario);
-    print('Funciona hasta aca');
-    print(idUsuarioPrueba);
+  void _onTap() {
+    setState(() {
+      _isPressed = true;
+    });
 
+    Future.delayed(const Duration(milliseconds: 200), () {
+      setState(() {
+        _isPressed = false;
+      });
+    });
   }
 
   @override
@@ -72,8 +99,13 @@ class ButtonLogin extends StatelessWidget {
           //const SizedBox(height: 10.0),
           Padding(
             padding: const EdgeInsets.only(top: 40.0),
-            child: Title(color: Colors.black,
-            child: Text(titulo ?? 'Iniciar sesion', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 25),)),
+            child: Title(
+                color: Colors.black,
+                child: Text(
+                  widget.titulo ?? 'Iniciar sesion',
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 25),
+                )),
           ),
           const Padding(
             padding: EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
@@ -95,9 +127,7 @@ class ButtonLogin extends StatelessWidget {
               width: double.infinity,
               height: 50.0,
               child: ElevatedButton(
-                onPressed: () {
-                  pruebaCrearUsuario();
-                },
+                onPressed: () {},
                 style: ButtonStyle(
                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
@@ -139,36 +169,42 @@ class ButtonLogin extends StatelessWidget {
               ],
             ),
           ),
-          CircleAvatar(
-            radius: 25.0,
-            backgroundColor: Colors.blue,
-            child: IconButton(
-              icon: const Icon(Icons.abc),
-              onPressed: () async {
-                try{
-                  
-                  UserCredential userCredential = await Auth.signInWithGoogle();
-                  if (userCredential != null) {
-                    final email = userCredential.user?.email;
-                    bool userExists = await UsuarioDb.existsUserByEmail(email!);
-                    if(!userExists){
-                      newUser(userCredential);
-                    }
-                    if(context.mounted){
-                      Navigator.pop(context);   
-                      Navigator.pushReplacement(
-                        context,MaterialPageRoute(builder: (context) => Menu(index: 1,)),
-                      );
-                    }
-                    
-                  }
-                }catch(error, stacktrace){
-                  print('Error al iniciar sesion con google $stacktrace');
-                } 
-                    
-              },
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _onTap();
+                  logInWithGoogle(context);
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  width: _isPressed ? 55.0 : 65.0,
+                  height: _isPressed ? 55.0 : 65.0,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20.0),
+                      topRight: Radius.circular(20.0),
+                      bottomLeft: Radius.circular(20.0),
+                      bottomRight: Radius.circular(20.0),
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: Image.asset(
+                          'lib/images/GooglePng.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
+
           Padding(
             padding: const EdgeInsets.only(top: 70.0),
             child: Row(

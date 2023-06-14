@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Utils/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/roundedSearchBar.dart';
@@ -155,39 +156,58 @@ class Ofertas extends StatelessWidget {
 
 
 class HorizontalList extends StatelessWidget {
-   HorizontalList({super.key});
+  const HorizontalList({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final List<Producto> producto = [
-      const Producto(id: 1, idCategorie: 1, image: 'https://colombinacontentmanager-prd.s3.us-east-1.amazonaws.com/Dulces/7702011128072_A1N1_es.jpg', price: '2800'),
-      const Producto(id: 2, idCategorie: 2, image: 'https://locatelcolombia.vtexassets.com/arquivos/ids/194239/7702535005354.png?v=636153524310130000', price: '2800'),
-      const Producto( id: 3, idCategorie: 3, image: 'https://i0.wp.com/marvin.com.mx/wp-content/uploads/2020/12/mcdonalds-gran-dia-big-mac-fundacion-infantil-2020.jpg', price: '5400'),
-      const Producto( id: 4, idCategorie: 2, image: 'https://static.merqueo.com/images/products/large/5e1499d4-a8c5-45c8-b13f-304a2f43e554.png', price: '5400'),
-      const Producto(id: 5, idCategorie: 3, image: 'https://clubvivamos.ceet.co/club-suscriptores-api/v1/handler/M/beneficio/944', price: '2800'),
-      const Producto( id: 6, idCategorie: 1, image: 'https://jumbocolombiaio.vtexassets.com/arquivos/ids/213425/7702011200785.jpg?v=637814238918200000', price: '5400'),
-    ];
-    
     return Container(
-      height: 210.0,
-      color: Colors.grey[200],
-      child: ListView.builder(
-        shrinkWrap: true,
+      height: 255,
+      child: ListView.separated(
+        padding: EdgeInsets.all(15.0),
         scrollDirection: Axis.horizontal,
-        itemCount: producto.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Container(
-            padding: const EdgeInsets.all(8.0),
-            // child: IndividualProduct(
-            //     id: producto[index].id,
-            //     image: producto[index].image,
-            //     price: producto[index].price
-            //   ),
-          );
-        },
+        itemCount: 6,
+        separatorBuilder: (context, _) => SizedBox(width: 12),
+        itemBuilder: (context, index) => buildCard(),    
       ),
     );
   }
+
+
+  Widget buildCard() => 
+    Container(
+            width: 200,
+            //color: Colors.redAccent.shade200,
+            child: Column(
+              children: [ 
+                Expanded(                 
+                  child: AspectRatio(
+                    aspectRatio: 4/3,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(33.0),
+                      child: Container(
+                        color: Colors.grey[200],  //Intercambior por iamgen  (abajo)
+                      ),
+                      // child: Material(
+                      //   child: Ink.image(
+                      //     image: AssetImage('lib/images/PapasSaladas.jpg'),
+                      //     fit: BoxFit.cover,
+                      //     child: InkWell(
+                      //       onTap: (){},
+                      //     ),
+                      //   ),
+                      // )
+                    )
+                  )
+                ),
+                const Padding(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: Text('Prueba title', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),),
+                )
+              ],
+            ),
+          );
+
+
 }
 
 
