@@ -54,7 +54,7 @@ class ProductoDb {
       }
     });
 
-    return idProducto; 
+    return idProducto;
   }
 
   //Actualiza un producto y actualiza las los idCategoria y idProducto en la tabla productosCategorias en caso de ser cambiadas por el usuario
@@ -179,7 +179,6 @@ class ProductoDb {
     return productos;
   }
 
-
   // Traer todos los productos por negocio (productos que tenga cada vendedor)
   static Future<List<ProductoTb>> getProductosByIdNegocio() async {
     try {
@@ -216,5 +215,24 @@ class ProductoDb {
       print('Error al obtener los productos por idNegocio: $e');
       return [];
     }
+  }
+
+  // Retornamos una lista de productos por idCategorias
+  static Future<List<ProductoTb>> getProductosPorIdProducto(int idProducto) async {
+
+    //Primero obtenemos todas las categorias en una lista 
+    final List<int> idCategorias = await ProductosCategoriasDb.getIdCategoriasPorIdProducto(idProducto);
+    final List<ProductoTb> productos = [];
+
+    //Pasamos categoria por categoria al metodo 'getProductosByCategoria' y vamos insertando uno a uno en una lista
+    for (int idCategoria in idCategorias) {
+      final List<ProductoTb> productosPorCategoria =
+          await getProductosByCategoria(idCategoria);
+      productos.addAll(productosPorCategoria);
+    }
+
+    productos.removeWhere((producto) => producto.idProducto == idProducto);
+
+    return productos;
   }
 }

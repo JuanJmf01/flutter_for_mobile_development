@@ -90,34 +90,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   }
 
   void obtenerCategoriasSeleccionadas() async {
-    final idCategoriasDeProducto;
-    if (widget.data?.idProducto != null) {
-      idCategoriasDeProducto =
-          await ProductosCategoriasDb.obtenerIdCategoriasPorIdProducto(
-              widget.data!.idProducto!);
-      //print(idCategoriasDeProducto);
 
-      for (int idCategoria in idCategoriasDeProducto) {
-        final categoriaMap =
-            await CategoriaDb.obtenerCategoriasPorId(idCategoria);
-        if (categoriaMap.isNotEmpty) {
-          final nombreCategoria = categoriaMap[idCategoria];
-          if (nombreCategoria != null) {
-            final categoria = CategoriaTb(
-              idCategoria: idCategoria,
-              nombre: nombreCategoria,
-            );
-            if (!categoriasSeleccionadas.contains(categoria)) {
-              categoriasSeleccionadas.add(categoria);
-            }
-
-            //print(categoria);
-          }
-        }
-      }
-      print(categoriasSeleccionadas);
-      //print('MisCateDisponibles');
-      //print(categoriasDisponibles);
+    if(widget.data!.idProducto != null){
+      categoriasSeleccionadas = await CategoriaDb.getCategoriasSeleccionadas(widget.data!.idProducto!);
+    }else{
+      print('idProducto es nulo');
     }
 
     setState(() {});
@@ -185,7 +162,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         GeneralInputs(
                             controller: _descripcionController,
                             labelText: 'Agrega una descripción',
-                            color: colorTextField),
+                            color: colorTextField,
+                            keyboardType: TextInputType.multiline,
+                            minLines: 3,
+                        ),
                         Padding(
                           padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
                           child: GeneralInputs(

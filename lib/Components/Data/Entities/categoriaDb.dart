@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Data/DB.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
+import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
 import 'package:sqflite/sqflite.dart';
 
 class CategoriaDb {
@@ -36,7 +37,8 @@ class CategoriaDb {
     return categoriasList;
   }
 
-  static Future<int?> obtenerIdCategoriaPorNombre(String nombreCategoria) async {
+  static Future<int?> obtenerIdCategoriaPorNombre(
+      String nombreCategoria) async {
     Database database = await DB.openDB();
     List<Map<String, dynamic>> resultado = await database.query(
       'categorias',
@@ -49,9 +51,10 @@ class CategoriaDb {
     } else {
       return null;
     }
-  } 
+  }
 
- static Future<Map<int, String>> obtenerCategoriasPorId(int idCategoria) async {
+  //Obtenemos una sola categoria (el nombre) por un idCategoria
+  static Future<Map<int, String>> obtenerCategoriasPorId(int idCategoria) async {
     Database database = await DB.openDB();
     List<Map<String, dynamic>> resultado = await database.query(
       tableName,
@@ -65,13 +68,37 @@ class CategoriaDb {
       String nombreCategoria = map["nombre"] as String;
       categorias[idCategoria] = nombreCategoria;
     });
-    
+
     return categorias;
   }
 
+  //Obtenemos todas la categorias en una lista de un producto especifico
+  static Future<List<CategoriaTb>> getCategoriasSeleccionadas(int idProducto) async {
+    try {
+      //Obtenemos una lista de idCategorias que pertenescan unicamnete a idProducto
+      final idCategoriasDeProducto = await ProductosCategoriasDb.getIdCategoriasPorIdProducto(idProducto);
+      final categoriasSeleccionadas = <CategoriaTb>[];
 
+      //Recorremos 'idCategoriasDeProducto' y en cada ciclo llamamos al metodo 'obtenerCategoriasPorId'
+      //'obtenerCategoriasPorId' nos retorna una categoria (nombre de la categoria) y lo guardamos en la lista 'categoriasSeleccionadas'
+      for (int idCategoria in idCategoriasDeProducto) {
+        final categoriaMap = await obtenerCategoriasPorId(idCategoria);
+        if (categoriaMap.isNotEmpty) {
+          final nombreCategoria = categoriaMap[idCategoria];
+          if (nombreCategoria != null) {
+            final categoria = CategoriaTb(
+              idCategoria: idCategoria,
+              nombre: nombreCategoria,
+            );
+            categoriasSeleccionadas.add(categoria);
+          }
+        }
+      }
 
+      return categoriasSeleccionadas;
+    } catch (error) {
+      print('Error al obtener las categorías seleccionadas: $error');
+      return [];
+    }
+  }
 }
-
-
-  

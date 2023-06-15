@@ -1,7 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
-import 'package:etfi_point/Pages/allProducts.dart';
 import 'package:flutter/material.dart';
 
 class Categorie extends StatelessWidget {

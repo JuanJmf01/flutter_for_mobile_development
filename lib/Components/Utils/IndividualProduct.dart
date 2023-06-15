@@ -157,6 +157,7 @@ class _RowProductsState extends State<RowProducts> {
                             ),
                             IconButton(
                               onPressed: () async{
+                                print(producto.idProducto);
                                 result = await Navigator.push<String>(
                                   context,
                                   MaterialPageRoute(

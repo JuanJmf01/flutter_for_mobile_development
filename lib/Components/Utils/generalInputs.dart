@@ -9,6 +9,7 @@ class GeneralInputs extends StatelessWidget {
     required this.color,
     this.keyboardType, 
     this.inputFormatters,
+    this.minLines,
   });
 
   final TextEditingController controller;
@@ -16,6 +17,7 @@ class GeneralInputs extends StatelessWidget {
   Color color;
   TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  int? minLines;
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +28,8 @@ class GeneralInputs extends StatelessWidget {
       ),
       child: TextField(
         controller: controller,
+        minLines: minLines ?? 1,
+        maxLines: 10,
         decoration: InputDecoration(
           labelText: labelText,
           border: InputBorder.none, // Sin borde
