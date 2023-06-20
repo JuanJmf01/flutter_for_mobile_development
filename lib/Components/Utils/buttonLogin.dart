@@ -1,4 +1,6 @@
+import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
@@ -29,9 +31,9 @@ class _ButtonLoginState extends State<ButtonLogin> {
       }
     }
 
-    UsuarioTb usuario = UsuarioTb(nombres: name, email: emailAdress);
-
+    UsuarioCreacionTb usuario = UsuarioCreacionTb(nombres: name, email: emailAdress);
     await UsuarioDb.insert(usuario);
+    
     print(usuario);
   }
 

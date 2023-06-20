@@ -16,11 +16,28 @@ class UsuarioDb {
         ")");
   }
 
-  // Inserta un negocio. De ser necesario utilizar el retorno del id del metodo
-  static Future<int> insert(UsuarioTb usuario) async {
+  // Inserta un usuario. De ser necesario utilizar el retorno del id del metodo
+  static Future<int> insert(UsuarioCreacionTb usuario) async {
     Database database = await DB.openDB();
 
     return database.insert(tableName, usuario.toMap());
+  }
+
+  //Retorna toda la informacion de un usuario por idUsuario
+  static Future<UsuarioTb> getUserById(int idUsuario) async {
+    Database database = await DB.openDB();
+
+    List<Map<String, dynamic>> result = await database.query(
+      tableName,
+      where: 'idUsuario = ?',
+      whereArgs: [idUsuario],
+    );
+
+    if (result.isEmpty) {
+      throw Exception('User not found');
+    }
+
+    return UsuarioTb.fromMap(result.first);
   }
 
   //Buscar si existe un usuario por email
@@ -38,8 +55,8 @@ class UsuarioDb {
     return results.isNotEmpty;
   }
 
-  //Buca un usuario por correo para retornar el id del usuario
-  static Future<int?> getIdUsuarioPorCorreo(String email) async {
+  // Busca un usuario por correo para retornar el id del usuario
+  static Future<int> getIdUsuarioPorCorreo(String email) async {
     Database database = await DB.openDB();
 
     List<Map<String, dynamic>> result = await database.query(
@@ -52,29 +69,25 @@ class UsuarioDb {
     if (result.isNotEmpty) {
       return result.first['idUsuario'];
     } else {
-      return null;
+      throw Exception('Usuario no encontrado');
     }
   }
 
-
-
-  //Obtener idUsuario mediante el correo en firebase
-  static Future<int?> getIdUsuario() async {
-    int? idUsuario;
+  // Obtener idUsuario mediante el correo en firebase
+  static Future<int> getIdUsuario() async {
     if (FirebaseAuth.instance.currentUser != null) {
       String? email = FirebaseAuth.instance.currentUser?.email;
       if (email != null) {
         try {
-          idUsuario = await getIdUsuarioPorCorreo(email);
+          int idUsuario = await getIdUsuarioPorCorreo(email);
+          return idUsuario;
         } catch (e) {
           // Manejo de errores
           print('Error al obtener el idUsuario: $e');
-          return null; // Retornar null en caso de error
+          throw Exception('Error al obtener el idUsuario');
         }
       }
     }
-    return idUsuario;
+    throw Exception('No se pudo obtener el idUsuario');
   }
-
-
 }

@@ -1,6 +1,4 @@
-import 'package:etfi_point/Components/Auth/Pages/registerBusiness.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
@@ -103,8 +101,8 @@ class _MisProductosState extends State<MisProductos> {
     ),
 
       body: FutureBuilder<List<ProductoTb>>(
-        //future: ProductoDb.getProductosByIdNegocio(), // Llamada al método que recupera los productos
-        future: ProductoDb.getProductosPorIdProducto(22), // Llamada al método que recupera los productos
+        future: ProductoDb.getProductosByIdNegocio(), // Llamada al método que recupera los productos
+        //future: ProductoDb.getProductosPorIdProducto(22), // Llamada al método que recupera los productos
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             productos = snapshot.data!;

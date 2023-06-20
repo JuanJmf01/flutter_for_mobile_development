@@ -1,4 +1,4 @@
-import 'package:etfi_point/Components/Utils/productDetail.dart';
+import 'package:etfi_point/Pages/productDetail.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 

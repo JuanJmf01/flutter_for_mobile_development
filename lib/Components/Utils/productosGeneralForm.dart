@@ -6,7 +6,6 @@ import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
@@ -66,6 +65,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     _imagePath = widget.data?.imagePath;
     enOferta = widget.data?.oferta;
     estaEnOferta();
+    
     obtenerCategoriasSeleccionadas();
 
     obtenerCategorias();
@@ -91,10 +91,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   void obtenerCategoriasSeleccionadas() async {
 
-    if(widget.data!.idProducto != null){
+    print(widget.data?.idProducto);
+    if(widget.data?.idProducto != null){
       categoriasSeleccionadas = await CategoriaDb.getCategoriasSeleccionadas(widget.data!.idProducto!);
-    }else{
-      print('idProducto es nulo');
     }
 
     setState(() {});

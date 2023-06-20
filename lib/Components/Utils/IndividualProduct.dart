@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
-import 'package:etfi_point/Components/Utils/productDetail.dart';
+import 'package:etfi_point/Pages/productDetail.dart';
 import 'package:etfi_point/Pages/editarProducto.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

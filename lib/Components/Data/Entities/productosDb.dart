@@ -218,21 +218,28 @@ class ProductoDb {
   }
 
   // Retornamos una lista de productos por idCategorias
-  static Future<List<ProductoTb>> getProductosPorIdProducto(int idProducto) async {
+static Future<List<ProductoTb>> getProductosPorIdProducto(int idProducto) async {
 
-    //Primero obtenemos todas las categorias en una lista 
-    final List<int> idCategorias = await ProductosCategoriasDb.getIdCategoriasPorIdProducto(idProducto);
-    final List<ProductoTb> productos = [];
+  //Obtenemos todas las categorias en una lista 
+  final List<int> idCategorias = await ProductosCategoriasDb.getIdCategoriasPorIdProducto(idProducto);
+  final Set<int> idProductosSinRepetir = {};
+  final List<ProductoTb> productos = [];
 
-    //Pasamos categoria por categoria al metodo 'getProductosByCategoria' y vamos insertando uno a uno en una lista
-    for (int idCategoria in idCategorias) {
-      final List<ProductoTb> productosPorCategoria =
-          await getProductosByCategoria(idCategoria);
-      productos.addAll(productosPorCategoria);
-    }
-
-    productos.removeWhere((producto) => producto.idProducto == idProducto);
-
-    return productos;
+  //Pasamos categoria por categoria al metodo 'getProductosByCategoria' y vamos insertando uno a uno en una lista
+  for (int idCategoria in idCategorias) {
+    final List<ProductoTb> productosPorCategoria = await getProductosByCategoria(idCategoria);
+    print(productos);
+    productos.addAll(productosPorCategoria);
   }
+
+  productos.removeWhere((producto) => producto.idProducto == idProducto);
+  productos.retainWhere((producto) => idProductosSinRepetir.add(producto.idProducto!));
+
+  return productos;
 }
+
+
+
+
+}
+
