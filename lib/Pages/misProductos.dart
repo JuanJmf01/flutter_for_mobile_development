@@ -7,7 +7,6 @@ import 'package:etfi_point/Components/Utils/roundedSearchBar.dart';
 import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:flutter/material.dart';
 
-
 class MisProductos extends StatefulWidget {
   MisProductos({Key? key}) : super(key: key);
 
@@ -16,102 +15,99 @@ class MisProductos extends StatefulWidget {
 }
 
 class _MisProductosState extends State<MisProductos> {
-
   List<ProductoTb> productos = [];
+  int? result;
 
-  ProductoTb? accionAEjecutar;
-
-  @override
-  void initState() {
-    super.initState();
-
-  }
-
-  void addProduct(producto) async {
-    print('Llega aca');
-    print(producto);
-    setState(() {
-      productos.add(producto);
-      //result = false;
-    });
-    print(productos);
+  ProductoTb? findProductById(int id) {
+    for (var producto in productos) {
+      if (producto.idProducto == id) {
+        return producto;
+      }
+    }
+    return null;
   }
 
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
 
-  final TextEditingController searchController = TextEditingController();
-
-  return Scaffold(
-    appBar: PreferredSize(
-      preferredSize: const Size.fromHeight(115.0), // Ajusta la altura según tus necesidades
-      child: AppBar(
-        backgroundColor: Colors.grey[200],
-        title: const Text('NickName', style: TextStyle(color: Colors.black), ),
-        actions: [
-          if(Auth.isUserSignedIn())
-            IconButton(
-            onPressed: () async {
-              accionAEjecutar = await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) =>  const CrearProducto())
-                //MaterialPageRoute(builder: (context) =>   RegisterBusiness())
-              );
-              //MaterialPageRoute(builder: (context) => const Pruebas()));
-              if(accionAEjecutar != null){
-                print('se ejecuto la accion');
-                print(accionAEjecutar);
-                addProduct(accionAEjecutar);
-              }
-            },
-            icon: const Icon(Icons.add_circle_outline, color: Colors.black, size: 33, ),
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(115.0),
+        child: AppBar(
+          backgroundColor: Colors.grey[200],
+          title: const Text(
+            'NickName',
+            style: TextStyle(color: Colors.black),
           ),
-
-          Padding(
-            padding: const EdgeInsets.only(right: 10.0),
-            child: IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  isScrollControlled: true,
-                  context: context, 
-                  builder: (BuildContext context) => ButtonMenu(),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10.0),
-                      topRight: Radius.circular(10.0),
+          actions: [
+            if (Auth.isUserSignedIn())
+              IconButton(
+                onPressed: () async {
+                  result = await Navigator.push<int>(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const CrearProducto()));
+                  if (result != null) {
+                    print(' $result');
+                  }
+                },
+                icon: const Icon(
+                  Icons.add_circle_outline,
+                  color: Colors.black,
+                  size: 33,
+                ),
+              ),
+            Padding(
+              padding: const EdgeInsets.only(right: 10.0),
+              child: IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (BuildContext context) => ButtonMenu(),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10.0),
+                        topRight: Radius.circular(10.0),
+                      ),
                     ),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.menu,color: Colors.black,size: 35,),
+                  );
+                },
+                icon: const Icon(
+                  Icons.menu,
+                  color: Colors.black,
+                  size: 35,
+                ),
+              ),
             ),
-          ),
-        ],
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(50.0), // Ajusta la altura según tus necesidades
-          child: Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
-            child: RoundedSearchBar(
-              controller: searchController,
+          ],
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(50.0),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 12.0),
+              child: RoundedSearchBar(
+                controller: searchController,
+              ),
             ),
           ),
         ),
       ),
-    ),
-
       body: FutureBuilder<List<ProductoTb>>(
-        future: ProductoDb.getProductosByIdNegocio(), // Llamada al método que recupera los productos
-        //future: ProductoDb.getProductosPorIdProducto(22), // Llamada al método que recupera los productos
+        future: ProductoDb.getProductosByIdNegocio(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             productos = snapshot.data!;
+            if (result != null) {
+              print('result aqui $result');
+            }
             return ListView(
               children: [
                 const TopProfile(),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: RowProducts(productos:productos),
+                  child: RowProducts(productos: productos),
                 ), // Pasar la lista de productos al widget RowProducts
               ],
             );
@@ -120,14 +116,11 @@ class _MisProductosState extends State<MisProductos> {
           }
           // Mostrar un indicador de carga
           return const Center(child: CircularProgressIndicator());
-          
         },
       ),
     );
   }
 }
-
-
 
 class TopProfile extends StatefulWidget {
   const TopProfile({super.key});

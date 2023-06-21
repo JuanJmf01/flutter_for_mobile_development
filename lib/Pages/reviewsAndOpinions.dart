@@ -15,8 +15,6 @@ class ReviewsAndOpinions extends StatefulWidget {
 class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
   int selectIndex = 0;
 
-  List<int> starCounts2 = [10, 20, 30, 40, 50];
-
   Future<List<int>> obtenerStarCounts() async {
     return await RatingsDb.getStarCounts(widget.idProducto);
   }
@@ -24,7 +22,6 @@ class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
   void onRatingSelected(int index) {
     setState(() {
       selectIndex = index;
-      print(selectIndex);
     });
   }
 
@@ -75,11 +72,9 @@ class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
 
 class GeneralReviews extends StatelessWidget {
   final List<int> starCounts;
-  //final double averageRating;
 
   GeneralReviews({
     required this.starCounts,
-    //required this.averageRating,
   });
 
   String formatVotes(int votes) {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Stars extends StatelessWidget {
-  Stars(
+   const Stars(
       {super.key,
       required this.index,
       required this.size,
@@ -14,7 +14,7 @@ class Stars extends StatelessWidget {
   final double separationEachStar;
   final Color color;
 
-  int? rating = 0;
+  final int? rating = 0;
 
   @override
   Widget build(BuildContext context) {

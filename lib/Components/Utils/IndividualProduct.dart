@@ -2,10 +2,13 @@ import 'dart:io';
 
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Utils/Icons/cartIcons.dart';
+import 'package:etfi_point/Components/Utils/Icons/deletedIcons.dart';
+import 'package:etfi_point/Components/Utils/Icons/modifyIcons.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:etfi_point/Pages/productDetail.dart';
 import 'package:etfi_point/Pages/editarProducto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class RowProducts extends StatefulWidget {
@@ -19,46 +22,38 @@ class RowProducts extends StatefulWidget {
 
 class _RowProductsState extends State<RowProducts> {
   List<ProductoTb> productos = [];
-
-  bool hasProducts = false;
-  String? result = '';
+  int? result;
 
   @override
   void initState() {
     super.initState();
 
-    print(result);
 
     productos = widget.productos;
-    hasProducts = widget.productos.isNotEmpty;
   }
 
   Future<void> _navigateToProductDetail(int productId) async {
-    result = await Navigator.push(
+    await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetail(id: productId),
       ),
     );
-    if (result == 'update') {
-      updatedProduct(productId);
-    } else if (result == 'delete') {
-      deleteProduct(productId);
-    }
   }
 
   //ACTUALIZACION DE ESTADO
   //Actualiza el producto en la lista 'productos' una vez se actualizo en BD (update)
-  void updatedProduct(id) async {
+  void renderizarProductoModificado(idProducto) async {
     try {
-      final productoAux = await ProductoDb.individualProduct(id);
+      final productoAux = await ProductoDb.individualProduct(idProducto);
       setState(() {
-        productos.removeWhere((element) => element.idProducto == id);
+        productos.removeWhere((element) => element.idProducto == idProducto);
         productos.add(productoAux);
-        productos.sort((a, b) => a.idProducto!.compareTo(b.idProducto ?? 1));
+        productos.sort((a, b) => a.idProducto.compareTo(b.idProducto));
       });
     } catch (error) {
-      print('Error al obtener el producto: $error');
+      print(
+          'Error al obtener el producto (individualProduct, renderizarProductoAgregadoOModificado): $error');
     }
   }
 
@@ -111,7 +106,7 @@ class _RowProductsState extends State<RowProducts> {
                       ),
                       child: InkWell(
                         onTap: () {
-                          _navigateToProductDetail(producto.idProducto ?? 1);
+                          _navigateToProductDetail(producto.idProducto);
                         },
                         child: Image.file(
                           File(producto.imagePath),
@@ -147,40 +142,33 @@ class _RowProductsState extends State<RowProducts> {
                         ),
                         Row(
                           children: [
-                            // IconButton(
-                            //   onPressed: () {},
-                            //   icon: Icon(CupertinoIcons.heart, size: 20,),
-                            // ),
-                            IconButton(
-                              onPressed: () {},
-                              icon: Icon(CupertinoIcons.cart),
-                            ),
-                            IconButton(
-                              onPressed: () async{
-                                print(producto.idProducto);
-                                result = await Navigator.push<String>(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => EditarProducto(producto: producto),
-                                  ),
-                                );
-                                if(result == 'update'){
-                                  print('Funciona');
-                                  print(producto.idProducto);
-                                  updatedProduct(producto.idProducto);
-                                }
-                              },
-                              icon: Icon(Icons.edit_outlined),
-                            ),
-                            IconButton(
-                              onPressed: () {
+                            CartPrincipalIcon(onpress: () {
+                              print('carrito de compras');
+                            }),
+                            ModifyPrincipalIcon(onpress: () async {
+                              print(producto.idProducto);
+                              result = await Navigator.push<int>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditarProducto(producto: producto),
+                                ),
+                              );
+                              if (result != null) {
+                                print('Funciona $result');
+                                renderizarProductoModificado(result);
+                              }
+                            }),
+                           
+                            DeletedPrincipalIcon(
+                              onpress: () {
                                 showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
                                     return ConfirmationDialog(
                                       titulo: 'Advertencia',
                                       message:
-                                          '¿Seguro que deseas eleiminar este producto?',
+                                          '¿Seguro que deseas eliminar este producto?',
                                       onAcceptMessage: 'Aceptar',
                                       onCancelMessage: 'Cancelar',
                                       onAccept: () async {
@@ -189,11 +177,11 @@ class _RowProductsState extends State<RowProducts> {
                                               'Id producto: ${producto.idProducto}');
                                           await ProductoDb.delete(
                                               producto.idProducto ?? 1);
-                                          Navigator.of(context).pop();
+                                          if (context.mounted) {
+                                            Navigator.of(context).pop();
+                                          }
                                           deleteProduct(producto.idProducto);
-                                          // Realizar cualquier otra acción necesaria después de eliminar el producto
                                         } catch (error) {
-                                          // Manejar cualquier error que ocurra durante la eliminación del producto
                                           print(
                                               'Error al eliminar el producto: $error');
                                         }
@@ -205,10 +193,7 @@ class _RowProductsState extends State<RowProducts> {
                                   },
                                 );
                               },
-                              icon: Icon(
-                                CupertinoIcons.delete,
-                              ),
-                            ),
+                            )
                           ],
                         ),
                       ],

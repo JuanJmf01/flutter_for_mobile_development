@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Pages/allProducts.dart';
+import 'package:etfi_point/Pages/filtros.dart';
 import 'package:etfi_point/Pages/misProductos.dart';
 import 'package:etfi_point/Pages/pagina02.dart';
 import 'package:etfi_point/Pages/shoppingCart.dart';
@@ -260,14 +261,14 @@ class _MenuState extends State<Menu> {
       _widgetOptions = <Widget>[
         const Home(),
         ShoppingCart(),
-        ShoppingCart(),
+        Filtros()
       ];
     } else {
       _widgetOptions = <Widget>[
         const Home(),
         MisProductos(),
         ShoppingCart(),
-        ShoppingCart(),
+        Filtros()
       ];
     }
 

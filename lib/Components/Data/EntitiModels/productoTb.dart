@@ -1,5 +1,5 @@
 class ProductoTb {
-  int? idProducto; // PK
+  int idProducto; // PK
   int idNegocio; // FK
   String nombreProducto;
   double precio;
@@ -12,8 +12,8 @@ class ProductoTb {
   //int? estado;
 
   ProductoTb({
-    this.idProducto,
-    required  this.idNegocio,
+    required this.idProducto,
+    required this.idNegocio,
     required this.nombreProducto,
     required this.precio,
     this.descripcion,

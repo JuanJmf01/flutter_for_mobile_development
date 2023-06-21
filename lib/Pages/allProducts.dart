@@ -15,20 +15,6 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  final TextEditingController searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,46 +25,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         preferredSize: const Size.fromHeight(115.0),
         child: AppBar(
           backgroundColor: Colors.grey[200],
-          title: Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TabBar(
-                      controller: _tabController,
-                      indicatorSize: TabBarIndicatorSize.label,
-                      indicatorColor: Colors.grey[800],
-                      isScrollable: true,
-                      tabs: const [
-                        Tab(
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text('Productos',
-                                style: TextStyle(color: Colors.black)),
-                          ),
-                        ),
-                        Tab(
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text('Ofertas',
-                                style: TextStyle(color: Colors.black)),
-                          ),
-                        ),
-                        Tab(
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text('Domiciliarios',
-                                style: TextStyle(color: Colors.black)),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 10.0),
@@ -111,28 +57,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           ),
         ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        physics:
-            const NeverScrollableScrollPhysics(), // Evita el desplazamiento horizontal
-        children: [
-          ListView(
-            children: [
-              HorizontalList(),
-              HorizontalCategories(),
-              //RowProducts(producto: producto)
-            ],
-          ),
-          // Agrega aquí el contenido de la pestaña "Ofertas"
-          Ofertas(),
-          // Agrega aquí el contenido de la pestaña "Nuevos"
-          Container(
-            child: Center(
-              child: Text('Nuevos'),
-            ),
-          ),
-        ],
-      ),
+      body: Center(
+        child: Text('Ppee')
+      )
     );
   }
 }

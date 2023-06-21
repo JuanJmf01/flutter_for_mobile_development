@@ -4,6 +4,7 @@ import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
+import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -13,7 +14,7 @@ class DB {
     final databasesPath = await getDatabasesPath();
     final path = join(databasesPath, 'etfi_point');
     print(path);
-    return await openDatabase(path, version: 3, onCreate: (db, version) async {
+    return await openDatabase(path, version: 4, onCreate: (db, version) async {
       await CategoriaDb.createTableCategorias(db);
       await UsuarioDb.createTableUsuarios(db);
       await NegocioDb.createTableNegocios(db);
@@ -36,6 +37,8 @@ class DB {
         await CarritoComprasDb.createTableCarritoCompras(db);
       } else if (oldVersion == 2 && newVersion == 3) {
         await RatingsDb.createTableRatings(db);
+      }else if (oldVersion == 3 && newVersion == 4){
+        await subCategoriaDb.createTableSubCategorias(db);
       }
       // } else if (oldVersion == 3 && newVersion == 4) {
       //   await db.execute("ALTER TABLE ${ProductoDb.tableName} \n"

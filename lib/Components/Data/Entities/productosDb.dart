@@ -25,20 +25,11 @@ class ProductoDb {
 
   //Save actualiza o crea un nuevo producto. Si producto != null entt se trata de actualizacion de producto
   //Si producto == null entonces se trata de una creacion de producto
-  static Future<void> save(
-      ProductoTb producto, List<CategoriaTb> categorias) async {
-    if (producto.idProducto != null) {
-      // Actualizar el producto existente
-      await update(producto, categorias);
-    } else {
-      // Insertar un nuevo producto
-      await insert(producto, categorias);
-    }
-  }
+
 
   //Inserta un producto y los idCategoria en la tabla productosCategoria con su respectivo idproducto
   static Future<int> insert(
-      ProductoTb producto, categoriasSeleccionadas) async {
+      ProductoCreacionTb producto, categoriasSeleccionadas) async {
     Database database = await DB.openDB();
 
     int idProducto = await database.insert(tableName, producto.toMap());

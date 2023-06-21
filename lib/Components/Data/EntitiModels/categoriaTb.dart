@@ -29,8 +29,8 @@ class CategoriaTb {
   @override
   int get hashCode => idCategoria.hashCode ^ nombre.hashCode;
 
-  @override
-  String toString() {
-    return 'CategoriaTb{idCategoria: $idCategoria, nombre: $nombre}';
-  }
+  // @override
+  // String toString() {
+  //   return 'CategoriaTb{idCategoria: $idCategoria, nombre: $nombre}';
+  // }
 }

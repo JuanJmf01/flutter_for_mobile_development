@@ -65,12 +65,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     _imagePath = widget.data?.imagePath;
     enOferta = widget.data?.oferta;
     estaEnOferta();
-    
+
     obtenerCategoriasSeleccionadas();
 
     obtenerCategorias();
 
-    _producto = widget.data;
+    if (widget.data != null) {
+      _producto = widget.data;
+    }
   }
 
   void estaEnOferta() {
@@ -90,10 +92,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   }
 
   void obtenerCategoriasSeleccionadas() async {
-
     print(widget.data?.idProducto);
-    if(widget.data?.idProducto != null){
-      categoriasSeleccionadas = await CategoriaDb.getCategoriasSeleccionadas(widget.data!.idProducto!);
+    if (widget.data?.idProducto != null) {
+      categoriasSeleccionadas = await CategoriaDb.getCategoriasSeleccionadas(
+          widget.data!.idProducto!);
     }
 
     setState(() {});
@@ -102,6 +104,73 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void obtenerCategorias() async {
     categoriasDisponibles = await CategoriaDb.categorias();
     setState(() {});
+  }
+
+  Future<int> crearNegocioSiNoExiste() async {
+    int idNegocio = 0;
+    //-- Se crea un negocio en caso de que no exista. Si existe, se asigna el valor idNegocio en _producto a ser creado
+    // En caso de que no exista 'idNegocioIfExists' sera igual a null por lo tanto se creara un nuevo negocio con 'idUsuario'
+    final idUsuario = await UsuarioDb.getIdUsuario();
+    int? idNegocioIfExists =
+        await NegocioDb.findIdNegocioByIdUsuario(idUsuario);
+    print('Existe o no : $idNegocioIfExists');
+    if (idNegocioIfExists == null) {
+      NegocioTb negocio = NegocioTb(
+        idUsuario: idUsuario,
+      );
+      idNegocio = await NegocioDb.insert(negocio);
+    } else {
+      idNegocio = idNegocioIfExists;
+    }
+
+    return idNegocio;
+  }
+
+  Future<int> crearProducto(ProductoCreacionTb producto) async {
+    int idProducto = 0;
+    try {
+      idProducto = await ProductoDb.insert(producto, categoriasSeleccionadas);
+      mostrarCuadroExito(idProducto);
+    } catch (error) {
+      print('Problemas al insertar el producto $error');
+    }
+
+    return idProducto;
+  }
+
+  void actualizarProducto(ProductoTb producto) async {
+    try {
+      await ProductoDb.update(producto, categoriasSeleccionadas);
+      mostrarCuadroExito(producto.idProducto);
+    } catch (error) {
+      print('Problemas al actualizar el producto $error');
+    }
+  }
+
+  //Recibimos idProducto para enviarlo a la pagina anterior y poder renderizar un solo producto y no toda la pestaña
+  void mostrarCuadroExito(int idProducto) {
+    if (context.mounted) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return ConfirmationDialog(
+            titulo: widget.exitoTitle,
+            message: widget.exitoMessage,
+            onAccept: () {
+              Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+              if (_producto?.idProducto != null) {
+                Navigator.pop(context, idProducto);
+                print('actualizar');
+              } else {
+                Navigator.pop(context, idProducto);
+                print('agregar');
+              }
+            },
+            onAcceptMessage: 'Cerrar y volver',
+          );
+        },
+      );
+    }
   }
 
   @override
@@ -118,9 +187,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
             iconTheme: IconThemeData(color: Colors.black),
             toolbarHeight: 70, // Establecer una altura mayor
             title: Text(
-          widget.titulo,
-          style: TextStyle(color: Colors.black),
-        )),
+              widget.titulo,
+              style: TextStyle(color: Colors.black),
+            )),
         backgroundColor: Colors.grey[200],
         body: Column(
           children: [
@@ -132,7 +201,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
                       children: [
-
                         CheckboxListTile(
                             title: const Text('¿Producto en oferta?'),
                             value: isChecked,
@@ -147,26 +215,29 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             labelText: 'Agrega un nombre',
                             color: colorTextField),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
                           child: GeneralInputs(
                             controller: _precioController,
                             labelText: 'Agrega un precio',
                             color: colorTextField,
                             keyboardType: TextInputType.number,
                             inputFormatters: [
-                              FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                              FilteringTextInputFormatter.allow(
+                                  RegExp(r'[0-9]')),
                             ],
                           ),
                         ),
                         GeneralInputs(
-                            controller: _descripcionController,
-                            labelText: 'Agrega una descripción',
-                            color: colorTextField,
-                            keyboardType: TextInputType.multiline,
-                            minLines: 3,
+                          controller: _descripcionController,
+                          labelText: 'Agrega una descripción',
+                          color: colorTextField,
+                          keyboardType: TextInputType.multiline,
+                          minLines: 3,
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
                           child: GeneralInputs(
                             controller: _cantidadDisponibleController,
                             labelText: 'Agrega una cantidad disponible',
@@ -210,7 +281,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           dropdownColor: Colors.grey[200],
                         ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 35.0),
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 35.0),
                           child: Wrap(
                             //direction: Axis.horizontal,
                             //alignment: WrapAlignment.start,
@@ -269,13 +341,16 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             ),
                           ),
                         Padding(
-                          padding: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
                           child: ElevatedButton.icon(
                             onPressed: _pickImage,
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(16.0), // Ajustar el padding del botón
+                              padding: EdgeInsets.all(
+                                  16.0), // Ajustar el padding del botón
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0), // Establecer bordes redondeados
+                                borderRadius: BorderRadius.circular(
+                                    10.0), // Establecer bordes redondeados
                               ),
                             ),
                             icon: Icon(Icons.image),
@@ -293,74 +368,44 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
               SizedBox(
                 width: double.infinity,
                 height: 50.0,
-               
                 child: ElevatedButton(
                   onPressed: () async {
                     if (_imagePath != null && _imagePath!.isNotEmpty) {
-                      
-                      //-- Se crea un negocio en caso de que no exista. Si existe, se asigna el valor idNegocio en _producto a ser creado
-                      final idUsuario = await UsuarioDb.getIdUsuario();
-                      int? idNegocio;
-                      int? idNegocioIfExists = await NegocioDb.findIdNegocioByIdUsuario(idUsuario!);
-                      print('Existe o no : $idNegocioIfExists');
-                      if (idNegocioIfExists == null) {
-                        NegocioTb negocio = NegocioTb(
-                          idUsuario: idUsuario,
-                        );
-                        idNegocio = await NegocioDb.insert(negocio);
-                      } else {
-                        idNegocio = idNegocioIfExists;
-                      }
-              
                       //--- Se asigna cada String de los campso de texto a una variable ---//
                       final nombreProducto = _nombreController.text;
-                      double precio = double.tryParse(_precioController.text) ?? 0.0;
+                      double precio =
+                          double.tryParse(_precioController.text) ?? 0.0;
                       final descripcion = _descripcionController.text;
-                      int cantidadDisponible = int.tryParse(_cantidadDisponibleController.text) ?? 0;
-              
-                      //-- Creamos el producto --//
-                      _producto = ProductoTb(
-                          idProducto: widget.data?.idProducto,
-                          idNegocio: idNegocio,
-                          nombreProducto: nombreProducto,
-                          precio: precio,
-                          descripcion: descripcion,
-                          cantidadDisponible: cantidadDisponible,
-                          oferta: enOferta,
-                          imagePath: _imagePath ?? "");
-                      
-                      int idProducto = 0;                     
-              
-                      try {
-                        if(_producto?.idProducto != null && _producto != null){
-                          await ProductoDb.update(_producto!, categoriasSeleccionadas);
-                        }else{
-                          idProducto = await ProductoDb.insert(_producto!, categoriasSeleccionadas);
-                        }
+                      int cantidadDisponible =
+                          int.tryParse(_cantidadDisponibleController.text) ?? 0;
 
-                        if (context.mounted) {
-                          showDialog(
-                            context: context,
-                            builder: (BuildContext context) {
-                              return ConfirmationDialog(
-                                titulo: widget.exitoTitle,
-                                message: widget.exitoMessage,
-                                onAccept: () {
-                                  Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
-                                  if (_producto?.idProducto != null) {
-                                    Navigator.pop(context, 'update');
-                                  } else {
-                                    _producto?.idProducto = idProducto;
-                                    Navigator.pop(context, _producto);
-                                  }
-                                },
-                                onAcceptMessage: 'Cerrar y volver',
-                              );
-                            },
-                          );
-                        }
-                      } catch (error) {
-                        print('Error al actualizar el producto: $error');
+                      ProductoCreacionTb productoCreacion;
+                      int idNegocio = await crearNegocioSiNoExiste();
+
+                      if (widget.data?.idProducto == null) {
+                        //-- Creamos el producto --//
+                        productoCreacion = ProductoCreacionTb(
+                            idNegocio: idNegocio,
+                            nombreProducto: nombreProducto,
+                            precio: precio,
+                            descripcion: descripcion,
+                            cantidadDisponible: cantidadDisponible,
+                            oferta: enOferta,
+                            imagePath: _imagePath ?? "");
+
+                        crearProducto(productoCreacion);
+                      } else {
+                        _producto = ProductoTb(
+                            idProducto: widget.data!.idProducto,
+                            idNegocio: widget.data!.idNegocio,
+                            nombreProducto: nombreProducto,
+                            precio: precio,
+                            descripcion: descripcion,
+                            cantidadDisponible: cantidadDisponible,
+                            oferta: enOferta,
+                            imagePath: _imagePath ?? "");
+
+                        actualizarProducto(_producto!);
                       }
                     }
                   },
@@ -373,7 +418,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(12.0),
-                    child: Text(widget.nameSavebutton, style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w700, letterSpacing: 1.0)), //tamaño del texto del botón
+                    child: Text(widget.nameSavebutton,
+                        style: const TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 1.0)), //tamaño del texto del botón
                   ),
                 ),
               )
