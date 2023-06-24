@@ -1,11 +1,18 @@
 class ProductoCategoriaTb {
-  final int? idProducto;
-  final int? idCategoria;
+  final int idProducto;
+  final int idCategoria;
 
   ProductoCategoriaTb({
-    this.idCategoria, 
-    this.idProducto,
+    required this.idCategoria, 
+    required this.idProducto,
   });
+
+  factory ProductoCategoriaTb.fromJson(Map<String, dynamic> json) {
+    return ProductoCategoriaTb(
+      idProducto: json['idProducto'],
+      idCategoria: json['idCategoria'],
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {

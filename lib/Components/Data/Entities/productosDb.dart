@@ -173,8 +173,8 @@ class ProductoDb {
   // Traer todos los productos por negocio (productos que tenga cada vendedor)
   static Future<List<ProductoTb>> getProductosByIdNegocio() async {
     try {
-      int? idUsuario = await UsuarioDb.getIdUsuario();
-      int? idNegocio = await NegocioDb.findIdNegocioByIdUsuario(idUsuario!);
+      int idUsuario = await UsuarioDb.getIdUsuario();
+      int? idNegocio = await NegocioDb.findIdNegocioByIdUsuario(idUsuario);
       if (idNegocio != null) {
         Database database = await DB.openDB();
 

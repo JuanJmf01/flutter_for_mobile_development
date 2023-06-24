@@ -136,7 +136,7 @@ class HorizontalCategories extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<CategoriaTb>>(
-        future: CategoriaDb.categorias(),
+        future: CategoriaDb.getCategorias(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             categorias = snapshot.data!;

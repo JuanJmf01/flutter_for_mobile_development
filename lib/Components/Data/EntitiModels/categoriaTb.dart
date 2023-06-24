@@ -3,11 +3,15 @@ class CategoriaTb {
   final String nombre;
   final String? imagePath;
 
-  CategoriaTb({
-    this.idCategoria, 
-    required this.nombre,
-    this.imagePath
-  });
+  CategoriaTb({this.idCategoria, required this.nombre, this.imagePath});
+
+  factory CategoriaTb.fromJson(Map<String, dynamic> json) {
+    return CategoriaTb(
+      idCategoria: json['idCategoria'],
+      nombre: json['nombre'],
+      imagePath: json['imagePath'],
+    );
+  }
 
   Map<String, dynamic> toMap() {
     return {

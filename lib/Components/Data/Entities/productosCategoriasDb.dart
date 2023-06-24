@@ -1,5 +1,6 @@
-import 'package:etfi_point/Components/Data/DB.dart';
+import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoCategoriaTb.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ProductosCategoriasDb {
@@ -13,40 +14,27 @@ class ProductosCategoriasDb {
         ")");
   }
 
-  static Future<int> insert(ProductoCategoriaTb productoCategoria) async {
-    Database database = await DB.openDB();
+  // -------- Consultas despues de la migracion a mySQL --------- //
 
-    return database.insert(tableName, productoCategoria.toMap());
-  }
-
-  //Obtener los IdCategoria de un producto (un producto puede tener varias categorias)
+  //Obtiene todos los idCategorias de productosCategorias que coincidan con idProducto
   static Future<List<int>> getIdCategoriasPorIdProducto(int idProducto) async {
-    Database database = await DB.openDB();
-    List<Map<String, dynamic>> resultado = await database.query(
-      tableName,
-      columns: ['idCategoria'],
-      where: 'idProducto = ?',
-      whereArgs: [idProducto],
-    );
+    try {
+      Dio dio = Dio();
 
-    List<int> idCategorias =
-        resultado.map((map) => map['idCategoria'] as int).toList();
-    return idCategorias;
-  }
+      Response response =
+          await dio.get('${MisRutas.rutaProductosCategorias}/$idProducto');
 
-  //Obtener los idProductos de un categoria (una categoria puede tener varios productos)
-  // NO ES ESTA UTILIZANDO. ELIMINAR ESTA LINEA EN CASO CONTRARIO
-  static Future<List<int>> getIdProducosPorIdCategoria(int idCategoria) async {
-    Database database = await DB.openDB();
-    List<Map<String, dynamic>> resultado = await database.query(
-      tableName,
-      columns: ['idProducto'],
-      where: 'idCategoria = ?',
-      whereArgs: [idCategoria],
-    );
+      if (response.statusCode == 200) {
+        ProductoCategoriaTb productoCategoria =
+            ProductoCategoriaTb.fromJson(response.data);
+        int idCategoria = productoCategoria.idCategoria;
 
-    List<int> idProductos =
-        resultado.map((map) => map['idProducto'] as int).toList();
-    return idProductos;
+        return [idCategoria];
+      } else {
+        throw Exception('Failed to fetch product categories');
+      }
+    } catch (error) {
+      throw Exception('Error en getIdCategoriasPorIdProducto: $error');
+    }
   }
 }

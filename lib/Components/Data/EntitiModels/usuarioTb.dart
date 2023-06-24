@@ -15,6 +15,8 @@ class UsuarioTb {
     this.domiciliario,
   });
 
+
+
   factory UsuarioTb.fromMap(Map<String, dynamic> map) {
     return UsuarioTb(
       idUsuario: map['idUsuario'],
@@ -40,19 +42,29 @@ class UsuarioTb {
 }
 
 class UsuarioCreacionTb {
-  String nombres;
+  String? nombres;
   String? apellidos;
   String email;
   String? numeroCelular;
   int? domiciliario; // bool (0 or 1)
 
   UsuarioCreacionTb({
-    required this.nombres,
+    this.nombres,
     this.apellidos,
     required this.email,
     this.numeroCelular,
     this.domiciliario,
   });
+
+    factory UsuarioCreacionTb.fromJson(Map<String, dynamic> json) {
+    return UsuarioCreacionTb(
+      nombres: json['nombres'],
+      apellidos: json['apellidos'],
+      email: json['email'],
+      numeroCelular: json['numeroCelular'],
+      domiciliario: json['domiciliario'],
+    );
+  }
 
 
    factory UsuarioCreacionTb.fromMap(Map<String, dynamic> map) {

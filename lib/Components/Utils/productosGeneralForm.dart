@@ -102,7 +102,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   }
 
   void obtenerCategorias() async {
-    categoriasDisponibles = await CategoriaDb.categorias();
+    categoriasDisponibles = await CategoriaDb.getCategorias();
     setState(() {});
   }
 

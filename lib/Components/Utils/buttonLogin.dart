@@ -1,6 +1,4 @@
-import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
-import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +18,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
   bool _isPressed = false;
 
   void newUser(UserCredential credenciales) async {
-    final user = credenciales.user!;
+    final user = credenciales.user;
     var name;
     var emailAdress;
 
@@ -32,7 +30,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
     }
 
     UsuarioCreacionTb usuario = UsuarioCreacionTb(nombres: name, email: emailAdress);
-    await UsuarioDb.insert(usuario);
+    await UsuarioDb.insertUsuario(usuario);
     
     print(usuario);
   }
@@ -40,21 +38,19 @@ class _ButtonLoginState extends State<ButtonLogin> {
   void logInWithGoogle(BuildContext context) async {
     try {
       UserCredential userCredential = await Auth.signInWithGoogle();
-      if (userCredential != null) {
-        final email = userCredential.user?.email;
-        bool userExists = await UsuarioDb.existsUserByEmail(email!);
-        if (!userExists) {
-          newUser(userCredential);
-        }
-        if (context.mounted) {
-          Navigator.pop(context);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => Menu(index: 1,)
-            ),
-          );
-        }
+      final email = userCredential.user?.email;
+      bool userExists = await UsuarioDb.ifExistsUserByEmail(email!);
+      if (!userExists) {
+        newUser(userCredential);
+      }
+      if (context.mounted) {
+        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Menu(index: 1,)
+          ),
+        );
       }
     } catch (error, stacktrace) {
       print('Error al iniciar sesion con google $stacktrace');
