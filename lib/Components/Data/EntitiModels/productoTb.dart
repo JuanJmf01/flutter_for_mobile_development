@@ -4,10 +4,10 @@ class ProductoTb {
   String nombreProducto;
   double precio;
   String? descripcion;
+  String? descripcionDetallada;
   int cantidadDisponible;
   int? oferta; // bool (0 or 1)
   String imagePath;
-  //String? descripcionDetallada;
   //String? fechaDeCreacion;
   //int? estado;
 
@@ -17,10 +17,10 @@ class ProductoTb {
     required this.nombreProducto,
     required this.precio,
     this.descripcion,
+    this.descripcionDetallada,
     required this.cantidadDisponible,
     this.oferta,
     required this.imagePath,
-    //this.descripcionDetallada,
     //this.fechaDeCreacion,
     //this.estado,
   });
@@ -65,6 +65,8 @@ class ProductoCreacionTb {
     this.oferta,
     required this.imagePath,
   });
+
+  //FromJson
 
   Map<String, dynamic> toMap() {
     return {

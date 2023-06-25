@@ -1,4 +1,5 @@
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
@@ -22,10 +23,6 @@ class ProductoDb {
         "FOREIGN KEY (idNegocio) REFERENCES negocios(idNegocio) \n"
         ")");
   }
-
-  //Save actualiza o crea un nuevo producto. Si producto != null entt se trata de actualizacion de producto
-  //Si producto == null entonces se trata de una creacion de producto
-
 
   //Inserta un producto y los idCategoria en la tabla productosCategoria con su respectivo idproducto
   static Future<int> insert(
@@ -173,8 +170,10 @@ class ProductoDb {
   // Traer todos los productos por negocio (productos que tenga cada vendedor)
   static Future<List<ProductoTb>> getProductosByIdNegocio() async {
     try {
+      print('en caso de errores in getProductosByIdNegocio');
       int idUsuario = await UsuarioDb.getIdUsuario();
-      int? idNegocio = await NegocioDb.findIdNegocioByIdUsuario(idUsuario);
+      NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
+      int? idNegocio = negocio?.idNegocio;
       if (idNegocio != null) {
         Database database = await DB.openDB();
 
@@ -209,28 +208,31 @@ class ProductoDb {
   }
 
   // Retornamos una lista de productos por idCategorias
-static Future<List<ProductoTb>> getProductosPorIdProducto(int idProducto) async {
+  static Future<List<ProductoTb>> getProductosPorIdProducto(
+      int idProducto) async {
+    //Obtenemos todas las categorias en una lista
+    final List<int> idCategorias =
+        await ProductosCategoriasDb.getIdCategoriasPorIdProducto(idProducto);
+    final Set<int> idProductosSinRepetir = {};
+    final List<ProductoTb> productos = [];
 
-  //Obtenemos todas las categorias en una lista 
-  final List<int> idCategorias = await ProductosCategoriasDb.getIdCategoriasPorIdProducto(idProducto);
-  final Set<int> idProductosSinRepetir = {};
-  final List<ProductoTb> productos = [];
+    //Pasamos categoria por categoria al metodo 'getProductosByCategoria' y vamos insertando uno a uno en una lista
+    for (int idCategoria in idCategorias) {
+      final List<ProductoTb> productosPorCategoria =
+          await getProductosByCategoria(idCategoria);
+      print(productos);
+      productos.addAll(productosPorCategoria);
+    }
 
-  //Pasamos categoria por categoria al metodo 'getProductosByCategoria' y vamos insertando uno a uno en una lista
-  for (int idCategoria in idCategorias) {
-    final List<ProductoTb> productosPorCategoria = await getProductosByCategoria(idCategoria);
-    print(productos);
-    productos.addAll(productosPorCategoria);
+    productos.removeWhere((producto) => producto.idProducto == idProducto);
+    productos.retainWhere(
+        (producto) => idProductosSinRepetir.add(producto.idProducto!));
+
+    return productos;
   }
 
-  productos.removeWhere((producto) => producto.idProducto == idProducto);
-  productos.retainWhere((producto) => idProductosSinRepetir.add(producto.idProducto!));
-
-  return productos;
-}
-
+    // -------- Consultas despues de la migracion a mySQL --------- //
 
 
 
 }
-

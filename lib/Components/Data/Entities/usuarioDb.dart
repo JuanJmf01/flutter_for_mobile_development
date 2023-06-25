@@ -116,7 +116,7 @@ class UsuarioDb {
       );
 
       if (response.statusCode == 200) {
-        print('Usuario insertado correctamente');
+        print('Usuario insertado correctamente (print)');
         print(response.data);
         // Realiza las operaciones necesarias con la respuesta
       } else {
@@ -127,7 +127,6 @@ class UsuarioDb {
       print('Error de conexión: $error');
     }
   }
-
 
   static Future<int?> getIdUsuarioByCorreo(String correo) async {
     Dio dio = Dio();
@@ -164,8 +163,6 @@ class UsuarioDb {
     }
   }
 
-  
-
   static Future<bool> ifExistsUserByEmail(String email) async {
     try {
       int? id = await getIdUsuarioByCorreo(email);
@@ -175,6 +172,4 @@ class UsuarioDb {
       return false;
     }
   }
-
-
 }

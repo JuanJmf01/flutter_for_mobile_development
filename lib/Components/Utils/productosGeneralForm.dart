@@ -111,16 +111,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     //-- Se crea un negocio en caso de que no exista. Si existe, se asigna el valor idNegocio en _producto a ser creado
     // En caso de que no exista 'idNegocioIfExists' sera igual a null por lo tanto se creara un nuevo negocio con 'idUsuario'
     final idUsuario = await UsuarioDb.getIdUsuario();
-    int? idNegocioIfExists =
-        await NegocioDb.findIdNegocioByIdUsuario(idUsuario);
-    print('Existe o no : $idNegocioIfExists');
-    if (idNegocioIfExists == null) {
-      NegocioTb negocio = NegocioTb(
+    NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
+    if (negocio?.idNegocio == null) {
+      NegocioCreacionTb negocio = NegocioCreacionTb(
         idUsuario: idUsuario,
       );
-      idNegocio = await NegocioDb.insert(negocio);
+      idNegocio = await NegocioDb.insertNegocio(negocio);
     } else {
-      idNegocio = idNegocioIfExists;
+      idNegocio = negocio!.idNegocio;
     }
 
     return idNegocio;

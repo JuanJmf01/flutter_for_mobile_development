@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/DB.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
@@ -10,12 +9,6 @@ class CategoriaDb {
   static Future<void> createTableCategorias(Database db) async {
     await db.execute(
         "CREATE TABLE $tableName (idCategoria INTEGER PRIMARY KEY, nombre TEXT, imagePath TEXT)");
-  }
-
-  static Future<int> insert(CategoriaTb categoria) async {
-    Database database = await DB.openDB();
-
-    return database.insert("categorias", categoria.toMap());
   }
 
   // static Future<List<CategoriaTb>> categoias() async {

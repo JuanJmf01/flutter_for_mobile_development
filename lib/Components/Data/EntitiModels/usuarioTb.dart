@@ -15,16 +15,14 @@ class UsuarioTb {
     this.domiciliario,
   });
 
-
-
-  factory UsuarioTb.fromMap(Map<String, dynamic> map) {
+   factory UsuarioTb.fromJson(Map<String, dynamic> json) {
     return UsuarioTb(
-      idUsuario: map['idUsuario'],
-      nombres: map['nombres'],
-      apellidos: map['apellidos'],
-      email: map['email'],
-      numeroCelular: map['numeroCelular'],
-      domiciliario: map['domiciliario'],
+      idUsuario: json['idUsuario'],
+      nombres: json['nombres'],
+      apellidos: json['apellidos'],
+      email: json['email'],
+      numeroCelular: json['numeroCelular'],
+      domiciliario: json['domiciliario'],
     );
   }
 
@@ -37,7 +35,7 @@ class UsuarioTb {
       'numeroCelular': numeroCelular,
       'domiciliario': domiciliario,
     };
-  } 
+  }
 
 }
 
@@ -56,24 +54,14 @@ class UsuarioCreacionTb {
     this.domiciliario,
   });
 
-    factory UsuarioCreacionTb.fromJson(Map<String, dynamic> json) {
+  //Al recibir un JSON de la API debe ser convertico a un instancia de tipo UsuarioCreacionTb para que sea utilizada
+  factory UsuarioCreacionTb.fromJson(Map<String, dynamic> json) {
     return UsuarioCreacionTb(
       nombres: json['nombres'],
       apellidos: json['apellidos'],
       email: json['email'],
       numeroCelular: json['numeroCelular'],
       domiciliario: json['domiciliario'],
-    );
-  }
-
-
-   factory UsuarioCreacionTb.fromMap(Map<String, dynamic> map) {
-    return UsuarioCreacionTb(
-      nombres: map['nombres'],
-      apellidos: map['apellidos'],
-      email: map['email'],
-      numeroCelular: map['numeroCelular'],
-      domiciliario: map['domiciliario'],
     );
   }
 
