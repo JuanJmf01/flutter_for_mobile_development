@@ -18,7 +18,6 @@ class DB {
       await CategoriaDb.createTableCategorias(db);
       await UsuarioDb.createTableUsuarios(db);
       await NegocioDb.createTableNegocios(db);
-      await ProductoDb.createTableProductos(db);
       await CarritoComprasDb.createTableCarritoCompras(db);
       await ProductosCategoriasDb.createTableProductosCategorias(db);
     }, onUpgrade: (db, oldVersion, newVersion) async {
@@ -33,7 +32,6 @@ class DB {
         await db.execute("PRAGMA foreign_keys = ON;");
         await UsuarioDb.createTableUsuarios(db);
         await NegocioDb.createTableNegocios(db);
-        await ProductoDb.createTableProductos(db);
         await CarritoComprasDb.createTableCarritoCompras(db);
       } else if (oldVersion == 2 && newVersion == 3) {
         await RatingsDb.createTableRatings(db);

@@ -45,7 +45,7 @@ class _RowProductsState extends State<RowProducts> {
   //Actualiza el producto en la lista 'productos' una vez se actualizo en BD (update)
   void renderizarProductoModificado(idProducto) async {
     try {
-      final productoAux = await ProductoDb.individualProduct(idProducto);
+      final productoAux = await ProductoDb.getProducto(idProducto);
       setState(() {
         productos.removeWhere((element) => element.idProducto == idProducto);
         productos.add(productoAux);
@@ -175,8 +175,8 @@ class _RowProductsState extends State<RowProducts> {
                                         try {
                                           print(
                                               'Id producto: ${producto.idProducto}');
-                                          await ProductoDb.delete(
-                                              producto.idProducto ?? 1);
+                                          await ProductoDb.deleteProducto(
+                                              producto.idProducto);
                                           if (context.mounted) {
                                             Navigator.of(context).pop();
                                           }

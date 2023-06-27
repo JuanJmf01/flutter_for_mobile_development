@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
@@ -17,6 +19,36 @@ class ProductosCategoriasDb {
   // -------- Consultas despues de la migracion a mySQL --------- //
 
   //Obtiene todos los idCategorias de productosCategorias que coincidan con idProducto
+
+  static Future<void> insertCategoriasSeleccionadas(
+      ProductoCategoriaTb productoCategoria) async {
+    Dio dio = Dio();
+    Map<String, dynamic> data = productoCategoria.toMap();
+    String url = MisRutas.rutaProductosCategorias;
+
+    try {
+      Response response = await dio.post(
+        url,
+        data: jsonEncode(data),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('productoCategoria insertado correctamente (print)');
+        print(response.data);
+        // Realiza las operaciones necesarias con la respuesta
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Ocurrió un error en la conexión
+      print('Error de conexión: $error');
+    }
+  }
+
+  //Retorna una lista de idCategorias (categorias) pertenecientes a un producto
   static Future<List<int>> getIdCategoriasPorIdProducto(int idProducto) async {
     try {
       Dio dio = Dio();
@@ -25,16 +57,47 @@ class ProductosCategoriasDb {
           await dio.get('${MisRutas.rutaProductosCategorias}/$idProducto');
 
       if (response.statusCode == 200) {
-        ProductoCategoriaTb productoCategoria =
-            ProductoCategoriaTb.fromJson(response.data);
-        int idCategoria = productoCategoria.idCategoria;
+        List<int> idCategorias = [];
 
-        return [idCategoria];
+        for (var productoCategoria in response.data) {
+          int idCategoria = productoCategoria['idCategoria'];
+          idCategorias.add(idCategoria);
+        }
+
+        return idCategorias;
       } else {
         throw Exception('Failed to fetch product categories');
       }
     } catch (error) {
       throw Exception('Error en getIdCategoriasPorIdProducto: $error');
     }
+  }
+
+  static Future<bool> deleteProductosCategorias(int idProducto) async {
+    Dio dio = Dio();
+    String url = '${MisRutas.rutaProductosCategorias}/$idProducto';
+
+    try {
+      Response response = await dio.delete(
+        url,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 202) {
+        print('ProductosCategorias eliminados correctamente');
+        return true;
+        // Realiza las operaciones necesarias con la respuesta
+      } else if (response.statusCode == 404) {
+        print('Producto no encontrado en deleteProductosCategorias');
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Ocurrió un error en la conexión
+      print('Error de conexión: $error');
+    }
+    return false;
   }
 }

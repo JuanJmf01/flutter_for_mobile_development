@@ -25,6 +25,20 @@ class ProductoTb {
     //this.estado,
   });
 
+    factory ProductoTb.fromJson(Map<String, dynamic> json) {
+    return ProductoTb(
+      idProducto: json['idProducto'],
+      idNegocio: json['idNegocio'],
+      nombreProducto: json['nombreProducto'],
+      precio: json['precio'].toDouble(),
+      descripcion: json['descripcion'],
+      descripcionDetallada: json['descripcionDetallada'],
+      cantidadDisponible: json['cantidadDisponible'],
+      oferta: json['oferta'],
+      imagePath: json['imagePath'],
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'idProducto': idProducto,
@@ -52,6 +66,7 @@ class ProductoCreacionTb {
   final String nombreProducto;
   final double precio;
   final String? descripcion;
+  final String? descripcionDetallada;
   final int cantidadDisponible;
   final int? oferta; // bool (0 or 1)
   final String imagePath;
@@ -61,6 +76,7 @@ class ProductoCreacionTb {
     required this.nombreProducto,
     required this.precio,
     this.descripcion,
+    this.descripcionDetallada,
     required this.cantidadDisponible,
     this.oferta,
     required this.imagePath,
@@ -74,6 +90,7 @@ class ProductoCreacionTb {
       'nombreProducto': nombreProducto,
       'precio': precio,
       'descripcion': descripcion,
+      'descripcionDetallada': descripcionDetallada,
       'cantidadDisponible': cantidadDisponible,
       'oferta': oferta,
       'imagePath': imagePath,

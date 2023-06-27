@@ -39,6 +39,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
     try {
       UserCredential userCredential = await Auth.signInWithGoogle();
       final email = userCredential.user?.email;
+      print(email);
       bool userExists = await UsuarioDb.ifExistsUserByEmail(email!);
       if (!userExists) {
         newUser(userCredential);

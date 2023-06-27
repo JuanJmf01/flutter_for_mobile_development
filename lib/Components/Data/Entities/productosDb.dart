@@ -1,139 +1,20 @@
-import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:sqflite/sqflite.dart';
 
 import '../DB.dart';
 
 class ProductoDb {
   static const tableName = "productos";
-  static Future<void> createTableProductos(Database db) async {
-    await db.execute("CREATE TABLE $tableName (\n"
-        "idProducto INTEGER PRIMARY KEY,\n"
-        "idNegocio INTEGER,\n"
-        "nombreProducto TEXT NOT NULL,"
-        "precio REAL NOT NULL,\n"
-        "descripcion TEXT,\n"
-        "cantidadDisponible INTEGER NOT NULL,\n"
-        "oferta INTEGER,\n" //bool (0 or 1)
-        "imagePath TEXT,\n"
-        "FOREIGN KEY (idNegocio) REFERENCES negocios(idNegocio) \n"
-        ")");
-  }
 
-  //Inserta un producto y los idCategoria en la tabla productosCategoria con su respectivo idproducto
-  static Future<int> insert(
-      ProductoCreacionTb producto, categoriasSeleccionadas) async {
-    Database database = await DB.openDB();
-
-    int idProducto = await database.insert(tableName, producto.toMap());
-
-    await database.transaction((txn) async {
-      for (int idCategoria in categoriasSeleccionadas
-          .map((categoria) => categoria.idCategoria)) {
-        Map<String, dynamic> productoCategoriaMap = {
-          'idProducto': idProducto,
-          'idCategoria': idCategoria,
-        };
-        await txn.insert('productosCategorias', productoCategoriaMap);
-      }
-    });
-
-    return idProducto;
-  }
-
-  //Actualiza un producto y actualiza las los idCategoria y idProducto en la tabla productosCategorias en caso de ser cambiadas por el usuario
-  static Future<void> update(
-      ProductoTb producto, List<CategoriaTb> categoriasSeleccionadas) async {
-    Database database = await DB.openDB();
-
-    await database.transaction((txn) async {
-      await txn.update(tableName, producto.toMap(),
-          where: 'idProducto = ?', whereArgs: [producto.idProducto]);
-
-      await txn.delete('productosCategorias',
-          where: 'idProducto = ?', whereArgs: [producto.idProducto]);
-
-      for (CategoriaTb categoria in categoriasSeleccionadas) {
-        Map<String, dynamic> productoCategoriaMap = {
-          'idProducto': producto.idProducto,
-          'idCategoria': categoria.idCategoria,
-        };
-        await txn.insert('productosCategorias', productoCategoriaMap);
-      }
-    });
-  }
-
-  //Retorna un solo producto. lo bisca por id
-  static Future<ProductoTb> individualProduct(int id) async {
-    Database database = await DB.openDB();
-    final List<Map<String, dynamic>> productoMap = await database.query(
-      tableName,
-      where: 'idProducto = ?',
-      whereArgs: [id],
-      limit: 1,
-    );
-
-    if (productoMap.isNotEmpty) {
-      return ProductoTb(
-        idProducto: productoMap[0]['idProducto'],
-        idNegocio: productoMap[0]['idNegocio'],
-        nombreProducto: productoMap[0]['nombreProducto'],
-        precio: productoMap[0]['precio'],
-        descripcion: productoMap[0]['descripcion'],
-        cantidadDisponible: productoMap[0]['cantidadDisponible'],
-        oferta: productoMap[0]['oferta'],
-        imagePath: productoMap[0]['imagePath'],
-      );
-    } else {
-      throw Exception('No se encontró un producto con el id especificado');
-    }
-  }
-
-  //Retorna todos los productos
-  static Future<List<ProductoTb>> productos() async {
-    Database database = await DB.openDB();
-    final List<Map<String, dynamic>> nombresMap =
-        await database.query(tableName);
-    final List<ProductoTb> productosList = List.generate(
-      nombresMap.length,
-      (i) => ProductoTb(
-        idProducto: nombresMap[i]['idProducto'],
-        //idCategoria: nombresMap[i]['idProducto'],
-        idNegocio: nombresMap[i]['idNegocio'],
-        nombreProducto: nombresMap[i]['nombreProducto'],
-        precio: nombresMap[i]['precio'],
-        descripcion: nombresMap[i]['descripcion'],
-        cantidadDisponible: nombresMap[i]['cantidadDisponible'],
-        oferta: nombresMap[i]['oferta'],
-        imagePath: nombresMap[i]['imagePath'],
-      ),
-    );
-
-    // Imprimir los productos en la consola
-    // for (var producto in productosList) {
-    //   print(producto);
-    // }
-
-    return productosList;
-  }
-
-  static Future<void> delete(int idProducto) async {
-    Database database = await DB.openDB();
-
-    await database.transaction((txn) async {
-      // Eliminar el producto de la tabla productos
-      await txn
-          .delete(tableName, where: "idProducto = ?", whereArgs: [idProducto]);
-
-      // Eliminar los registros de la tabla productosCategorias que coincidan con el idProducto
-      await txn.delete(ProductosCategoriasDb.tableName,
-          where: "idProducto = ?", whereArgs: [idProducto]);
-    });
-  }
 
   static Future<List<ProductoTb>> getProductosByCategoria(
       int idCategoria) async {
@@ -163,48 +44,7 @@ class ProductoDb {
 
       productos.add(producto);
     }
-
     return productos;
-  }
-
-  // Traer todos los productos por negocio (productos que tenga cada vendedor)
-  static Future<List<ProductoTb>> getProductosByIdNegocio() async {
-    try {
-      print('en caso de errores in getProductosByIdNegocio');
-      int idUsuario = await UsuarioDb.getIdUsuario();
-      NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
-      int? idNegocio = negocio?.idNegocio;
-      if (idNegocio != null) {
-        Database database = await DB.openDB();
-
-        List<Map<String, dynamic>> results = await database.query(
-          tableName,
-          where: 'idNegocio = ?',
-          whereArgs: [idNegocio],
-        );
-
-        List<ProductoTb> productosList = results.map((map) {
-          return ProductoTb(
-            idProducto: map['idProducto'],
-            idNegocio: map['idNegocio'],
-            nombreProducto: map['nombreProducto'],
-            precio: map['precio'],
-            descripcion: map['descripcion'],
-            cantidadDisponible: map['cantidadDisponible'],
-            oferta: map['oferta'],
-            imagePath: map['imagePath'],
-          );
-        }).toList();
-
-        return productosList;
-      } else {
-        print('No se encontró el idNegocio correspondiente al idUsuario');
-        return [];
-      }
-    } catch (e) {
-      print('Error al obtener los productos por idNegocio: $e');
-      return [];
-    }
   }
 
   // Retornamos una lista de productos por idCategorias
@@ -231,8 +71,160 @@ class ProductoDb {
     return productos;
   }
 
-    // -------- Consultas despues de la migracion a mySQL --------- //
+  // -------- Consultas despues de la migracion a mySQL --------- //
 
+  //Insertar un producto requiere insertar categorias por id en productosCategorias (tabla)
+  static Future<int> insertProducto(
+      ProductoCreacionTb producto, categoriasSeleccionadas) async {
+    print('Producto: $producto');
+    print('categorias: $categoriasSeleccionadas');
 
+    Dio dio = Dio();
+    Map<String, dynamic> data = producto.toMap();
+    String url = MisRutas.rutaProductos;
 
+    try {
+      Response response = await dio.post(url,
+          data: jsonEncode(data),
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ));
+      if (response.statusCode == 200) {
+        print('Producto insertado correctamenre (print)');
+        print(response.data);
+        int idProducto = response.data;
+
+        // Insertar categorías seleccionadas
+        for (var i = 0; i < categoriasSeleccionadas.length; i++) {
+          ProductoCategoriaTb productoCategoria = ProductoCategoriaTb(
+            idProducto: idProducto,
+            idCategoria: categoriasSeleccionadas[i].idCategoria,
+          );
+
+          await ProductosCategoriasDb.insertCategoriasSeleccionadas(
+              productoCategoria);
+        }
+        return idProducto;
+      } else {
+        throw Exception(
+            'Error en la solicitud en insertProducto: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Ha ocurrido un error $error');
+      throw Exception('Error de conexión: $error');
+    }
+  }
+
+  static Future<ProductoTb> getProducto(int idProducto) async {
+    Dio dio = Dio();
+
+    try {
+      Response response =
+          await dio.get('${MisRutas.rutaProductos}/$idProducto');
+      if (response.statusCode == 200) {
+        ProductoTb producto = ProductoTb.fromJson(response.data);
+        return producto;
+      } else {
+        throw Exception('Error en la respuesta: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Error en la solicitud: $error');
+    }
+  }
+
+  static Future<List<ProductoTb>> getProductosByNegocio() async {
+    Dio dio = Dio();
+
+    try {
+      int idUsuario = await UsuarioDb.getIdUsuario();
+      NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
+      int? idNegocio = negocio?.idNegocio;
+      print('idNegocio : $idNegocio');
+      if (idNegocio != null) {
+        Response response =
+            await dio.get('${MisRutas.rutaProductosByNegocio}/$idNegocio');
+
+        if (response.statusCode == 200) {
+          print('llega dentro del if getProductosByNegoicio');
+          List<ProductoTb> productos = List<ProductoTb>.from(response.data
+              .map((productoData) => ProductoTb.fromJson(productoData)));
+          print('productos_: $productos');
+          return productos;
+        } else {
+          print('Error: ${response.statusCode}');
+          return [];
+        }
+      } else {
+        print('idNegocio no encontrado. Crea un negocio');
+        return [];
+      }
+    } catch (error) {
+      print('Error: $error');
+      return [];
+    }
+  }
+
+  static Future<void> updateProducto(
+      ProductoTb producto, categoriasSeleccionadas) async {
+    int idProducto = producto.idProducto;
+    Dio dio = Dio();
+    String url = '${MisRutas.rutaProductos}/$idProducto';
+
+    try {
+      ProductosCategoriasDb.deleteProductosCategorias(idProducto);
+      for (var i = 0; i < categoriasSeleccionadas.length; i++) {
+        ProductoCategoriaTb productoCategoria = ProductoCategoriaTb(
+          idProducto: idProducto,
+          idCategoria: categoriasSeleccionadas[i].idCategoria,
+        );
+
+        await ProductosCategoriasDb.insertCategoriasSeleccionadas(
+            productoCategoria);
+      }
+
+      Response response = await dio.patch(
+        url,
+        data: producto.toMap(),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('Producto actualizado correctamente');
+        print(response.data);
+        // Realiza las operaciones necesarias con la respuesta
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Ocurrió un error en la conexión
+      print('Error de conexión: $error');
+    }
+  }
+
+  static Future<void> deleteProducto(int idProducto) async {
+    Dio dio = Dio();
+
+    try {
+      bool result =
+          await ProductosCategoriasDb.deleteProductosCategorias(idProducto);
+      if (result) {
+        Response response =
+            await dio.delete('${MisRutas.rutaProductos}/$idProducto');
+
+        if (response.statusCode == 202) {
+          print('Producto eliminado correctamente');
+        } else if (response.statusCode == 404) {
+          print('Producto no encontrado');
+        } else {
+          print('Error: ${response.statusCode}');
+        }
+      } else {
+        print('No se pudieron eliminar productosCategorias');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
 }

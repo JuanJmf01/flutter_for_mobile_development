@@ -64,9 +64,8 @@ class CategoriaDb {
       //'obtenerCategoriasPorId' nos retorna una categoria (nombre de la categoria) y lo guardamos en la lista 'categoriasSeleccionadas'
       for (int idCategoria in idCategoriasDeProducto) {
         final categoria = await getCategoria(idCategoria);
-        
-            categoriasSeleccionadas.add(categoria);
-          
+
+        categoriasSeleccionadas.add(categoria);
       }
 
       return categoriasSeleccionadas;
@@ -84,10 +83,13 @@ class CategoriaDb {
       Dio dio = Dio();
 
       Response response = await dio.get(MisRutas.rutaCategorias);
-
+      print('llega a getCate');
       if (response.statusCode == 200) {
+        print('llega al if getCate');
+
         List<CategoriaTb> categorias = List<CategoriaTb>.from(
-          response.data.map((categoriaData) => CategoriaTb.fromJson(categoriaData)),
+          response.data
+              .map((categoriaData) => CategoriaTb.fromJson(categoriaData)),
         );
         return categorias;
       } else {
@@ -106,7 +108,8 @@ class CategoriaDb {
   static Future<CategoriaTb> getCategoria(int idCategoria) async {
     try {
       Dio dio = Dio();
-      Response response = await dio.get('${MisRutas.rutaCategorias}/$idCategoria');
+      Response response =
+          await dio.get('${MisRutas.rutaCategorias}/$idCategoria');
 
       if (response.statusCode == 200) {
         return CategoriaTb.fromJson(response.data);

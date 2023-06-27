@@ -30,7 +30,7 @@ class _ProductDetailState extends State<ProductDetail> {
   }
 
   Future<ProductoTb> producto() async {
-    final ProductoTb productos = await ProductoDb.individualProduct(widget.id);
+    final ProductoTb productos = await ProductoDb.getProducto(widget.id);
 
     return productos;
   }

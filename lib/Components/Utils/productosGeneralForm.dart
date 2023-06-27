@@ -95,7 +95,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     print(widget.data?.idProducto);
     if (widget.data?.idProducto != null) {
       categoriasSeleccionadas = await CategoriaDb.getCategoriasSeleccionadas(
-          widget.data!.idProducto!);
+          widget.data!.idProducto);
     }
 
     setState(() {});
@@ -127,7 +127,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   Future<int> crearProducto(ProductoCreacionTb producto) async {
     int idProducto = 0;
     try {
-      idProducto = await ProductoDb.insert(producto, categoriasSeleccionadas);
+      idProducto = await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
       mostrarCuadroExito(idProducto);
     } catch (error) {
       print('Problemas al insertar el producto $error');
@@ -138,7 +138,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   void actualizarProducto(ProductoTb producto) async {
     try {
-      await ProductoDb.update(producto, categoriasSeleccionadas);
+      await ProductoDb.updateProducto(producto, categoriasSeleccionadas);
       mostrarCuadroExito(producto.idProducto);
     } catch (error) {
       print('Problemas al actualizar el producto $error');
@@ -255,7 +255,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             filled: true,
                             fillColor: Colors.white,
                           ),
-                          value: categoriaSeleccionada,
+                          //value: categoriaSeleccionada,
                           items: categoriasDisponibles
                               .map(
                                 (categoria) => DropdownMenuItem<CategoriaTb>(

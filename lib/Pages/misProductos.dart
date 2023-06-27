@@ -95,7 +95,7 @@ class _MisProductosState extends State<MisProductos> {
         ),
       ),
       body: FutureBuilder<List<ProductoTb>>(
-        future: ProductoDb.getProductosByIdNegocio(),
+        future: ProductoDb.getProductosByNegocio(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             productos = snapshot.data!;
