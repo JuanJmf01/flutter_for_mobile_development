@@ -116,7 +116,7 @@ class _ProductDetailState extends State<ProductDetail> {
                             return Text('Error al obtener los datos');
                           } else {
                             return Center(
-                              child: Text('e'),
+                              child: CircularProgressIndicator(),
                             );
                           }
                         });
@@ -178,6 +178,9 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
   }
 }
 
+
+
+
 class FastDescription extends StatefulWidget {
   const FastDescription(
       {super.key,
@@ -226,16 +229,17 @@ class _FastDescriptionState extends State<FastDescription> {
 
     RatingsCreacionTb ratingsAndothers = RatingsCreacionTb(
         idUsuario: idUsuario,
-        idProducto: idProducto!,
+        idProducto: idProducto,
         likes: like,
         ratings: rating ?? 0);
 
-    await RatingsDb.saveRating(ratingsAndothers);
+    await RatingsDb.saveRating(ratingsAndothers, widget.ifExistOrNotUserRatingByProducto);
   }
 
   void obtenerRatingsAndOther() async {
-    ratingsAndOthers = await RatingsDb.getRatingAndOthersByIdProductoAndIdUser(
-        widget.idUsuario, widget.producto.idProducto!);
+    ratingsAndOthers = await RatingsDb.getRatingByProductoAndUsuario(
+        widget.idUsuario, widget.producto.idProducto);
+    print(ratingsAndOthers);
 
     if (ratingsAndOthers?.likes == 1) {
       setState(() {
@@ -270,7 +274,7 @@ class _FastDescriptionState extends State<FastDescription> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 10.0),
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
+            borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(20.0),
                 bottomRight: Radius.circular(20.0)),
             color: Colors.grey.shade100),
@@ -299,7 +303,7 @@ class _FastDescriptionState extends State<FastDescription> {
                       ),
                       IconButton(
                         onPressed: () {},
-                        icon: Icon(
+                        icon: const Icon(
                           Icons.send_outlined,
                           size: 27,
                         ),
@@ -344,7 +348,7 @@ class _FastDescriptionState extends State<FastDescription> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ReviewsAndOpinions(
-                                    idProducto: widget.producto.idProducto!,
+                                    idProducto: widget.producto.idProducto,
                                   ),
                                 ),
                               );

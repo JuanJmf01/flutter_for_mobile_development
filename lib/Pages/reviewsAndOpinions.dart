@@ -316,10 +316,10 @@ class CajaDeFiltros extends StatelessWidget {
 }
 
 class Comments extends StatefulWidget {
-  Comments({Key? key, this.selectIndex, required this.idProducto})
+  Comments({Key? key, required this.selectIndex, required this.idProducto})
       : super(key: key);
 
-  final int? selectIndex;
+  final int selectIndex;
   final int idProducto;
 
   @override
@@ -327,8 +327,11 @@ class Comments extends StatefulWidget {
 }
 
 class _CommentsState extends State<Comments> {
-  int? rating = 0;
+  int rating = 0;
   int selectIndex = 0;
+
+  List<Map<String, dynamic>> reviews = [];
+  List<Map<String, dynamic>> reviewsAux = [];
 
   @override
   void initState() {
@@ -339,7 +342,8 @@ class _CommentsState extends State<Comments> {
   void didUpdateWidget(Comments oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectIndex != widget.selectIndex) {
-      selectIndex = widget.selectIndex ?? 0;
+      selectIndex = widget.selectIndex;
+
       //print(selectIndex);
     }
   }
@@ -348,36 +352,37 @@ class _CommentsState extends State<Comments> {
     List<Map<String, dynamic>> ratings;
     if (selectIndex == 0) {
       ratings = await obtenerRatingsAndOthersbyProduct();
+      reviewsAux = ratings;
     } else {
-      ratings = await obtenerRatingsAndOthersbyProductAndCalification();
+      ratings = filtrarReviewsPorRating(selectIndex);
     }
-
     return ratings;
   }
 
   Future<List<Map<String, dynamic>>> obtenerRatingsAndOthersbyProduct() async {
     final List<Map<String, dynamic>> ratings =
-        await RatingsDb.getRatingsByIdProducto(widget.idProducto);
+        await RatingsDb.getReviewsByProducto(widget.idProducto);
 
     return ratings;
   }
 
-  Future<List<Map<String, dynamic>>>
-      obtenerRatingsAndOthersbyProductAndCalification() async {
-    final List<Map<String, dynamic>> ratings =
-        await RatingsDb.getRatingsByIdProductoAndRating(
-            widget.idProducto, selectIndex);
+  List<Map<String, dynamic>> filtrarReviewsPorRating(int rating) {
+    print('llega a filtrar');
+    reviews = [];
+    reviews = reviewsAux.where((review) {
+      return review['ratings'] == rating;
+    }).toList();
 
-    return ratings;
+    return reviews;
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Map>>(
+    return FutureBuilder<List<Map<String, dynamic>>>(
       future: identifyQuery(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          final List<Map> reviews = snapshot.data!;
+          reviews = snapshot.data!;
           return Expanded(
             child: Padding(
               padding: const EdgeInsets.all(5.0),
