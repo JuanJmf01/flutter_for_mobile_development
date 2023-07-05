@@ -1,21 +1,20 @@
-import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Auth/auth.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
-import 'package:etfi_point/Components/Data/Routes/rutas.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Pages/allProducts.dart';
 import 'package:etfi_point/Pages/filtros.dart';
 import 'package:etfi_point/Pages/misProductos.dart';
 import 'package:etfi_point/Pages/pagina02.dart';
 import 'package:etfi_point/Pages/shoppingCart.dart';
+import 'package:etfi_point/firebase_options.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:provider/provider.dart';
 
 // class CategoriaApi {
-//   static const baseUrl = 'http://192.168.68.101:3000/api';
+//   static const baseUrl = 'http://ipconfig/api';
 
 //   static Future<List<CategoriaTb>> getCategorias() async {
 //     try {
@@ -47,202 +46,41 @@ import 'package:firebase_core/firebase_core.dart';
 //   }
 // }
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  runApp(MyApp());
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<LoginProvider>(
+          create: (_) => LoginProvider(),
+        ),
+        ChangeNotifierProvider<UsuarioProvider>(
+          create: (_) => UsuarioProvider(),
+        ),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
-// void main () async{
-//   WidgetsFlutterBinding.ensureInitialized();
-
-//   ProductoTb producto1 = ProductoTb(
-//     idNegocio: 1,
-//     nombreProducto: "Doritos",
-//     precio: 2000.00,
-//     descripcion: "Doritos morados 75g",
-//     cantidadDisponible: 10,
-//     oferta: 0,
-//     imagePath: "/data/user/0/com.example.etfi_point/cache/7c8d9b65-918d-432b-acaf-a877db70bcbd/Dorito.jpg"
-//   );
-
-//    ProductoTb producto2 = ProductoTb(
-//     idNegocio: 1,
-//     nombreProducto: "Cocacola",
-//     precio: 2300.00,
-//     descripcion: "Cocacola con azucar 750Ml. Personal",
-//     cantidadDisponible: 3,
-//     oferta: 1,
-//     imagePath: "/data/user/0/com.example.etfi_point/cache/8b8008f4-7ac0-425e-a2b6-eb882c21bf71/Cocacola.jpg"
-//   );
-
-//   ProductoTb producto3 = ProductoTb(
-//     idNegocio: 2,
-//     nombreProducto: "Galleta de helado",
-//     precio: 3000.00,
-//     descripcion: "Galleta rellena de helado. Diferentes sabores",
-//     cantidadDisponible: 3,
-//     oferta: 0,
-//     imagePath: "/data/user/0/com.example.etfi_point/cache/9fdceb59-0e55-4a87-9d43-ef3617ed8c0c/GalletaHelado.jpg"
-//   );
-
-//   ProductoTb producto4 = ProductoTb(
-//     idNegocio: 2,
-//     nombreProducto: "Mango en bolsa",
-//     precio: 2000.00,
-//     descripcion: "Mango picado en bolsa maduro y biche. Sal, limon y/o pimienta",
-//     cantidadDisponible: 7,
-//     oferta: 1,
-//     imagePath: "/data/user/0/com.example.etfi_point/cache/bd2d5f0a-2d60-4bef-83a8-a23054fd3e1f/Mango.jpg"
-//   );
-
-//   await ProductoDb.insert(producto1);
-//   await ProductoDb.insert(producto2);
-//   await ProductoDb.insert(producto3);
-//   await ProductoDb.insert(producto4);
-
-// //Mecato
-//   ProductoCategoriaTb productoCategoria1 = ProductoCategoriaTb(
-//     idProducto: 1,
-//     idCategoria: 1
-//   );
-
-//   //Liquido
-//     ProductoCategoriaTb productoCategoria2 = ProductoCategoriaTb(
-//     idProducto: 2,
-//     idCategoria: 3
-//   );
-
-//     ProductoCategoriaTb productoCategoria22 = ProductoCategoriaTb(
-//     idProducto: 2,
-//     idCategoria: 2
-//   );
-
-//   //Helado
-//     ProductoCategoriaTb productoCategoria3 = ProductoCategoriaTb(
-//     idProducto: 3,
-//     idCategoria: 2
-//   );
-
-//    //Helado
-//     ProductoCategoriaTb productoCategoria33 = ProductoCategoriaTb(
-//     idProducto: 3,
-//     idCategoria: 4
-//   );
-
-//   //Fruta
-//     ProductoCategoriaTb productoCategoria4 = ProductoCategoriaTb(
-//     idProducto: 4,
-//     idCategoria: 2
-//   );
-
-//     await ProductosCategoriasDb.insert(productoCategoria1);
-//     await ProductosCategoriasDb.insert(productoCategoria2);
-//     await ProductosCategoriasDb.insert(productoCategoria22);
-//     await ProductosCategoriasDb.insert(productoCategoria3);
-//     await ProductosCategoriasDb.insert(productoCategoria33);
-//     await ProductosCategoriasDb.insert(productoCategoria4);
-
-// UsuarioTb usuario0 = UsuarioTb(
-//   nombres: "Juan",
-//   apellidos: "Cliente",
-//   email: "juanCliente@gmail.com",
-//   numeroCelular: "3003236322",
-//   domiciliario: 0,
-//   password: "JuanCliente123"
-// );
-
-// UsuarioTb usuario1 = UsuarioTb(
-//   nombres: "Juan",
-//   apellidos: "Vendedor",
-//   email: "juanVendedor@gmail.com",
-//   numeroCelular: "3003236322",
-//   domiciliario: 0,
-//   password: "JuanVendedor123"
-// );
-
-// UsuarioTb usuario2 = UsuarioTb(
-//   nombres: "Ana",
-//   apellidos: "Vendedora",
-//   email: "anaVendedora@gmail.com",
-//   numeroCelular: "3023680366",
-//   domiciliario: 0,
-//   password: "AnaVendedora123"
-// );
-
-// NegocioTb negocio1 = NegocioTb(
-//   idUsuario: 2,
-//   nombreNegocio: "JuanVende",
-//   descripcionNegocio: "DetoditoUnPoco",
-//   facebook: "https://es-la.facebook.com/",
-//   vendedor: 0
-// );
-
-// NegocioTb negocio2 = NegocioTb(
-//   idUsuario: 3,
-//   nombreNegocio: "AnaVende",
-//   descripcionNegocio: "UnPocoDeAna",
-//   instagram: "https://www.instagram.com/",
-//   vendedor: 0
-// );
-
-// await UsuarioDb.insert(usuario0);
-
-// await UsuarioDb.insert(usuario1);
-// await NegocioDb.insert(negocio1);
-// await UsuarioDb.insert(usuario2);
-// await NegocioDb.insert(negocio2);
-
-// CategoriaTb categoria1 = CategoriaTb(
-//   nombre: "Mecato",
-//   imagePath: "/data/user/0/com.example.etfi_point/cache/8884bfbb-4762-4799-88a3-5d5471da2868/MecatoLogoR.png"
-// );
-// CategoriaTb categoria2 = CategoriaTb(
-//   nombre: "Dulces",
-//   imagePath: "/data/user/0/com.example.etfi_point/cache/60b5c0d6-e29b-4afc-9a0e-e141bf4d97e8/chucheria.png"
-// );
-// CategoriaTb categoria3 = CategoriaTb(
-//   nombre: "Liquidos",
-//   imagePath: "/data/user/0/com.example.etfi_point/cache/f2a6110b-66d9-4e45-8ee3-c88458bdc43b/refresco.png"
-// );
-// CategoriaTb categoria4 = CategoriaTb(
-//   nombre: "Helados",
-//   imagePath: "/data/user/0/com.example.etfi_point/cache/3dd3479b-e762-40cd-a0c2-de278f809948/HeladoLogoR.png"
-// );
-// CategoriaTb categoria5 = CategoriaTb(
-//   nombre: "Frutas",
-//   imagePath: "/data/user/0/com.example.etfi_point/cache/ba669002-8c4d-4df6-bcfd-1394874191f9/FrutasLogoR.png"
-// );
-// CategoriaTb categoria6 = CategoriaTb(
-//   nombre: "Restaurantes",
-//   imagePath: "/data/user/0/com.example.etfi_point/cache/e96ca00f-5c62-4c0f-905d-084a95c81e15/pizza.png"
-// );
-
-// await CategoriaDb.insert(categoria1);
-// await CategoriaDb.insert(categoria2);
-// await CategoriaDb.insert(categoria3);
-// await CategoriaDb.insert(categoria4);
-// await CategoriaDb.insert(categoria5);
-// await CategoriaDb.insert(categoria6);
-
-// }
-
-// void main() async {
-
-//   WidgetsFlutterBinding.ensureInitialized();
-
-//   // Creamos un objeto PruebaTb con los datos que queremos insertar
-//   PruebaTb nuevaPrueba = PruebaTb(nombre: "Prueba 1",);
-
-//   // Insertamos el objeto en la tabla "pruebas"
-//   await PruebasDb.insert(nuevaPrueba);
-
-//   // Cerramos la conexión con la base de datos
-// }
-
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+
+    print('Una vez SE EJECUTA');
+    context.read<LoginProvider>().checkUserSignedIn();
+    context.read<UsuarioProvider>().obtenerIdUsuario();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -274,8 +112,9 @@ class _MenuState extends State<Menu> {
     });
   }
 
-  List<Widget> isUserLoggedIn() {
-    if (!Auth.isUserSignedIn()) {
+  List<Widget> isUserLoggedIn(bool isUserSignedIn) {
+    print('IMPRIMIR: $isUserSignedIn');
+    if (!isUserSignedIn) {
       _widgetOptions = <Widget>[const Home(), ShoppingCart(), Filtros()];
     } else {
       _widgetOptions = <Widget>[
@@ -297,9 +136,11 @@ class _MenuState extends State<Menu> {
 
   @override
   Widget build(BuildContext context) {
+    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+
     return Scaffold(
       body: Container(
-        child: isUserLoggedIn().elementAt(_selectedIndex),
+        child: isUserLoggedIn(isUserSignedIn).elementAt(_selectedIndex),
       ),
       bottomNavigationBar: PreferredSize(
         preferredSize: Size.fromHeight(0),
@@ -324,7 +165,7 @@ class _MenuState extends State<Menu> {
                   ),
                   label: '',
                 ),
-                if (Auth.isUserSignedIn())
+                if (isUserSignedIn)
                   BottomNavigationBarItem(
                     icon: Icon(
                       _selectedIndex == 1

@@ -69,7 +69,8 @@ class RatingsDb {
         throw Exception('Error en la respuesta: ${response.statusCode}');
       }
     } catch (error) {
-      throw Exception('Error en la solicitud: $error');
+      print('No hay reviews que mostrar');
+      return [];
     }
   }
 
@@ -185,5 +186,29 @@ class RatingsDb {
     //List<int> starCount2 = [5459,2839,1500,500,142];
 
     return starCounts;
+  }
+
+  static Future<void> deleteRatings(int idProducto) async {
+    Dio dio = Dio();
+    String url = '${MisRutas.rutaRatings}/$idProducto';
+
+    try {
+      Response response = await dio.delete(
+        url,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 202) {
+        print('Ratings eliminados correctamente');
+      } else if (response.statusCode == 404) {
+        print('Ratings no encontrado');
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error de conexión: $error');
+    }
   }
 }

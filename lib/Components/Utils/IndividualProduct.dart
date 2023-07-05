@@ -1,12 +1,10 @@
-import 'dart:io';
-
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/cartIcons.dart';
 import 'package:etfi_point/Components/Utils/Icons/deletedIcons.dart';
 import 'package:etfi_point/Components/Utils/Icons/modifyIcons.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
-import 'package:etfi_point/Pages/crearProducto.dart';
+import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/productDetail.dart';
 import 'package:etfi_point/Pages/editarProducto.dart';
 import 'package:flutter/material.dart';
@@ -27,7 +25,6 @@ class _RowProductsState extends State<RowProducts> {
   @override
   void initState() {
     super.initState();
-
 
     productos = widget.productos;
   }
@@ -108,11 +105,11 @@ class _RowProductsState extends State<RowProducts> {
                         onTap: () {
                           _navigateToProductDetail(producto.idProducto);
                         },
-                        child: Image.file(
-                          File(producto.imagePath),
-                          height: 180,
+                        child: ShowImage(
+                          height: 180.0,
                           width: double.infinity,
                           fit: BoxFit.cover,
+                          networkImage: producto.urlImage,
                         ),
                       )),
                   Padding(
@@ -159,7 +156,6 @@ class _RowProductsState extends State<RowProducts> {
                                 renderizarProductoModificado(result);
                               }
                             }),
-                           
                             DeletedPrincipalIcon(
                               onpress: () {
                                 showDialog(

@@ -1,18 +1,20 @@
-import 'dart:io';
-
-import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
+import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
+import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:provider/provider.dart';
 
 class ProductosGeneralForm extends StatefulWidget {
   const ProductosGeneralForm({
@@ -46,7 +48,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   CategoriaTb? categoriaSeleccionada;
   List<CategoriaTb> categoriasDisponibles = [];
   List<CategoriaTb> categoriasSeleccionadas = [];
-  String? _imagePath;
+  String? urlImage;
+  Asset? imagenToUpload;
 
   int? enOferta = 0;
   bool isChecked = false;
@@ -57,12 +60,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void initState() {
     super.initState();
 
+    print('dataUpdat_: ${widget.data}');
+
     _nombreController.text = widget.data?.nombreProducto ?? '';
     _precioController.text = (widget.data?.precio ?? 0).toStringAsFixed(0);
     _descripcionController.text = widget.data?.descripcion ?? '';
     _cantidadDisponibleController.text =
         widget.data?.cantidadDisponible.toString() ?? '';
-    _imagePath = widget.data?.imagePath;
+    urlImage = widget.data?.urlImage;
     enOferta = widget.data?.oferta;
     estaEnOferta();
 
@@ -76,26 +81,17 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   }
 
   void estaEnOferta() {
-    if (enOferta == 1) {
-      isChecked = true;
-    } else {
-      isChecked = false;
-    }
-  }
-
-  Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    setState(() {
-      _imagePath = image?.path;
-    });
+    enOferta == 1
+        ? isChecked = true
+        : enOferta == 0
+            ? isChecked = false
+            : isChecked = false;
   }
 
   void obtenerCategoriasSeleccionadas() async {
-    print(widget.data?.idProducto);
     if (widget.data?.idProducto != null) {
-      categoriasSeleccionadas = await CategoriaDb.getCategoriasSeleccionadas(
-          widget.data!.idProducto);
+      categoriasSeleccionadas =
+          await CategoriaDb.getCategoriasSeleccionadas(widget.data!.idProducto);
     }
 
     setState(() {});
@@ -106,11 +102,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     setState(() {});
   }
 
-  Future<int> crearNegocioSiNoExiste() async {
+  Future<int> crearNegocioSiNoExiste(idUsuario) async {
     int idNegocio = 0;
     //-- Se crea un negocio en caso de que no exista. Si existe, se asigna el valor idNegocio en _producto a ser creado
-    // En caso de que no exista 'idNegocioIfExists' sera igual a null por lo tanto se creara un nuevo negocio con 'idUsuario'
-    final idUsuario = await UsuarioDb.getIdUsuario();
+    // En caso de que no exista 'idNegocioIfExists' sera igual a null por lo tanto se creara un nuevo negocio con 'idUsuario';
     NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
     if (negocio?.idNegocio == null) {
       NegocioCreacionTb negocio = NegocioCreacionTb(
@@ -127,7 +122,12 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   Future<int> crearProducto(ProductoCreacionTb producto) async {
     int idProducto = 0;
     try {
-      idProducto = await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
+      idProducto =
+          await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
+      if (imagenToUpload != null) {
+        await productImageDb.uploadImage(
+            imagenToUpload!, 'productos', idProducto, 1);
+      }
       mostrarCuadroExito(idProducto);
     } catch (error) {
       print('Problemas al insertar el producto $error');
@@ -137,9 +137,16 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   }
 
   void actualizarProducto(ProductoTb producto) async {
+    int idProducto = producto.idProducto;
+    if (imagenToUpload != null) {
+      await productImageDb.updateImage(
+          imagenToUpload!, 'productos', producto.nombreImage, idProducto);
+    } else {
+      print('Imagen a actualizar es null');
+    }
     try {
       await ProductoDb.updateProducto(producto, categoriasSeleccionadas);
-      mostrarCuadroExito(producto.idProducto);
+      mostrarCuadroExito(idProducto);
     } catch (error) {
       print('Problemas al actualizar el producto $error');
     }
@@ -155,13 +162,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
             titulo: widget.exitoTitle,
             message: widget.exitoMessage,
             onAccept: () {
-              Navigator.of(context).pop(); // Cerrar el cuadro de diálogo
+              Navigator.of(context).pop();
               if (_producto?.idProducto != null) {
                 Navigator.pop(context, idProducto);
-                print('actualizar');
               } else {
                 Navigator.pop(context, idProducto);
-                print('agregar');
               }
             },
             onAcceptMessage: 'Cerrar y volver',
@@ -173,8 +178,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   @override
   Widget build(BuildContext context) {
-    Color colorTextField = Colors.white;
+    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
 
+    Color colorTextField = Colors.white;
     return GestureDetector(
       onTap: () {
         _focusScopeNode.unfocus();
@@ -209,81 +216,85 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                               });
                             }),
                         GeneralInputs(
+                            verticalPadding: 15.0,
                             controller: _nombreController,
                             labelText: 'Agrega un nombre',
                             color: colorTextField),
-                        Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
-                          child: GeneralInputs(
-                            controller: _precioController,
-                            labelText: 'Agrega un precio',
-                            color: colorTextField,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.allow(
-                                  RegExp(r'[0-9]')),
-                            ],
-                          ),
+                        GeneralInputs(
+                          controller: _precioController,
+                          labelText: 'Agrega un precio',
+                          color: colorTextField,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                          ],
                         ),
                         GeneralInputs(
+                          verticalPadding: 15.0,
                           controller: _descripcionController,
                           labelText: 'Agrega una descripción',
                           color: colorTextField,
                           keyboardType: TextInputType.multiline,
-                          minLines: 3,
+                          minLines: 2,
+                        ),
+                        // GeneralInputs(
+                        //   verticalPadding: 15.0,
+                        //   controller: _descripcionController,
+                        //   labelText: 'Agrega una descripción',
+                        //   color: colorTextField,
+                        //   keyboardType: TextInputType.multiline,
+                        //   minLines: 3,
+                        //   maxLines: 10,
+                        // ),
+                        GeneralInputs(
+                          controller: _cantidadDisponibleController,
+                          labelText: 'Agrega una cantidad disponible',
+                          color: colorTextField,
+                          keyboardType: TextInputType.number,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.digitsOnly
+                          ],
                         ),
                         Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 15.0),
-                          child: GeneralInputs(
-                            controller: _cantidadDisponibleController,
-                            labelText: 'Agrega una cantidad disponible',
-                            color: colorTextField,
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                          ),
-                        ),
-                        DropdownButtonFormField<CategoriaTb>(
-                          decoration: InputDecoration(
-                            hintText: 'Selecciona una categoría',
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide.none),
-                            filled: true,
-                            fillColor: Colors.white,
-                          ),
-                          //value: categoriaSeleccionada,
-                          items: categoriasDisponibles
-                              .map(
-                                (categoria) => DropdownMenuItem<CategoriaTb>(
-                                  value: categoria,
-                                  child: Text(
-                                    categoria.nombre,
-                                    style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500),
+                          padding: const EdgeInsets.symmetric(vertical: 15.0),
+                          child: DropdownButtonFormField<CategoriaTb>(
+                            decoration: InputDecoration(
+                              hintText: 'Selecciona una categoría',
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide: BorderSide.none),
+                              filled: true,
+                              fillColor: Colors.white,
+                            ),
+                            //value: categoriaSeleccionada,
+                            items: categoriasDisponibles
+                                .map(
+                                  (categoria) => DropdownMenuItem<CategoriaTb>(
+                                    value: categoria,
+                                    child: Text(
+                                      categoria.nombre,
+                                      style: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500),
+                                    ),
                                   ),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (CategoriaTb? newValue) {
-                            setState(() {
-                              if (!categoriasSeleccionadas.contains(newValue)) {
-                                categoriasSeleccionadas.add(newValue!);
-                              }
-                            });
-                          },
-                          dropdownColor: Colors.grey[200],
+                                )
+                                .toList(),
+                            onChanged: (CategoriaTb? newValue) {
+                              setState(() {
+                                if (!categoriasSeleccionadas
+                                    .contains(newValue)) {
+                                  categoriasSeleccionadas.add(newValue!);
+                                }
+                              });
+                            },
+                            dropdownColor: Colors.grey[200],
+                          ),
                         ),
                         Padding(
                           padding:
                               const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 35.0),
                           child: Wrap(
-                            //direction: Axis.horizontal,
-                            //alignment: WrapAlignment.start,
                             children: categoriasSeleccionadas.map((categoria) {
                               return Container(
                                 margin: EdgeInsets.all(5.0),
@@ -321,30 +332,32 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             }).toList(),
                           ),
                         ),
-                        if (_imagePath != null && _imagePath!.isNotEmpty)
-                          Container(
-                            width: 350,
-                            height: 300,
-                            margin: const EdgeInsets.all(0.0),
-                            decoration: BoxDecoration(
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(20.0),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: Image.file(
-                                File(_imagePath!),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
+                      if (imagenToUpload != null || urlImage != null)
+                        ShowImage(
+                          width: 350,
+                          height: 300,
+                          color: Colors.grey[300],
+                          borderRadius: BorderRadius.circular(20.0),
+                          widthAsset: 350,
+                          heightAsset: 300,
+                          imageAsset: imagenToUpload,
+                          networkImage: urlImage,
+                          fit: BoxFit.cover,
+                        ),
                         Padding(
                           padding:
                               const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
                           child: ElevatedButton.icon(
-                            onPressed: _pickImage,
+                            onPressed: () async {
+                              final asset = await getImageAsset();
+                              if (asset != null) {
+                                setState(() {
+                                  imagenToUpload = asset;
+                                });
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(
+                              padding: const EdgeInsets.all(
                                   16.0), // Ajustar el padding del botón
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(
@@ -362,49 +375,53 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                 ),
               ),
             ),
-            if (Auth.isUserSignedIn())
+            if (isUserSignedIn)
               SizedBox(
                 width: double.infinity,
                 height: 50.0,
                 child: ElevatedButton(
                   onPressed: () async {
-                    if (_imagePath != null && _imagePath!.isNotEmpty) {
-                      //--- Se asigna cada String de los campso de texto a una variable ---//
-                      final nombreProducto = _nombreController.text;
-                      double precio =
-                          double.tryParse(_precioController.text) ?? 0.0;
-                      final descripcion = _descripcionController.text;
-                      int cantidadDisponible =
-                          int.tryParse(_cantidadDisponibleController.text) ?? 0;
+                    //--- Se asigna cada String de los campso de texto a una variable ---//
+                    final nombreProducto = _nombreController.text;
+                    double precio =
+                        double.tryParse(_precioController.text) ?? 0.0;
+                    final descripcion = _descripcionController.text;
+                    int cantidadDisponible =
+                        int.tryParse(_cantidadDisponibleController.text) ?? 0;
 
-                      ProductoCreacionTb productoCreacion;
-                      int idNegocio = await crearNegocioSiNoExiste();
+                    ProductoCreacionTb productoCreacion;
+                    int idNegocio = await crearNegocioSiNoExiste(idUsuario);
 
-                      if (widget.data?.idProducto == null) {
-                        //-- Creamos el producto --//
-                        productoCreacion = ProductoCreacionTb(
-                            idNegocio: idNegocio,
-                            nombreProducto: nombreProducto,
-                            precio: precio,
-                            descripcion: descripcion,
-                            cantidadDisponible: cantidadDisponible,
-                            oferta: enOferta,
-                            imagePath: _imagePath ?? "");
+                    print('producto_:: ${widget.data?.idProducto}');
+                    if (widget.data?.idProducto == null) {
+                      //-- Creamos el producto --//
+                      productoCreacion = ProductoCreacionTb(
+                          idNegocio: idNegocio,
+                          nombreProducto: nombreProducto,
+                          precio: precio,
+                          descripcion: descripcion,
+                          cantidadDisponible: cantidadDisponible,
+                          oferta: enOferta);
 
-                        crearProducto(productoCreacion);
-                      } else {
-                        _producto = ProductoTb(
-                            idProducto: widget.data!.idProducto,
-                            idNegocio: widget.data!.idNegocio,
-                            nombreProducto: nombreProducto,
-                            precio: precio,
-                            descripcion: descripcion,
-                            cantidadDisponible: cantidadDisponible,
-                            oferta: enOferta,
-                            imagePath: _imagePath ?? "");
+                      imagenToUpload != null
+                          ? crearProducto(productoCreacion)
+                          : print('imagenToUpload es null');
+                    } else {
+                      _producto = ProductoTb(
+                        idProducto: widget.data!.idProducto,
+                        idNegocio: widget.data!.idNegocio,
+                        nombreProducto: nombreProducto,
+                        precio: precio,
+                        descripcion: descripcion,
+                        cantidadDisponible: cantidadDisponible,
+                        oferta: enOferta,
+                        urlImage: urlImage!,
+                        nombreImage: widget.data!.nombreImage,
+                      );
 
-                        actualizarProducto(_producto!);
-                      }
+                      urlImage != null
+                          ? actualizarProducto(_producto!)
+                          : print('urlImage es null');
                     }
                   },
                   style: ButtonStyle(

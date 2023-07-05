@@ -1,14 +1,21 @@
 import 'dart:io';
+import 'dart:typed_data';
 
+import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
+import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
-import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
+import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/reviewsAndOpinions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:provider/provider.dart';
 
 class ProductDetail extends StatefulWidget {
   ProductDetail({
@@ -23,33 +30,28 @@ class ProductDetail extends StatefulWidget {
 }
 
 class _ProductDetailState extends State<ProductDetail> {
-  int idUsuario = 0;
-
-  void obtenerIdUsuario() async {
-    idUsuario = await UsuarioDb.getIdUsuario();
-  }
-
   Future<ProductoTb> producto() async {
-    final ProductoTb productos = await ProductoDb.getProducto(widget.id);
+    final ProductoTb producto = await ProductoDb.getProducto(widget.id);
 
-    return productos;
+    return producto;
   }
 
+//Modificar para retornar productos relacionados
   Future<List<ProductoTb>> obtenerProductosRelacionados() async {
     List<ProductoTb> productosRelacionados = [];
-    if (widget.id != null) {
-      productosRelacionados =
-          await ProductoDb.getProductosPorIdProducto(widget.id);
-    } else {
-      print('idProducto es nulo');
-    }
+    // if (widget.id != null) {
+    //   productosRelacionados =
+    //       await ProductoDb.getProductosByCategoria(widget.id);
+    //   print('Relacionados_: $productosRelacionados');
+    // } else {
+    //   print('idProducto es nulo');
+    // }
 
     return productosRelacionados;
   }
 
-  Future<bool> existeOrNotUserRatingByProducto() async {
+  Future<bool> existeOrNotUserRatingByProducto(idUsuario) async {
     int idProducto = widget.id;
-    idUsuario = idUsuario;
 
     bool result = await RatingsDb.existOrNotRating(idUsuario, idProducto);
 
@@ -59,12 +61,12 @@ class _ProductDetailState extends State<ProductDetail> {
   @override
   void initState() {
     super.initState();
-
-    obtenerIdUsuario();
   }
 
   @override
   Widget build(BuildContext context) {
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+
     return Scaffold(
       backgroundColor: Colors.grey[300],
       body: FutureBuilder<ProductoTb>(
@@ -78,7 +80,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   if (snapshot.hasData) {
                     final productosRelacionados = snapshot.data!;
                     return FutureBuilder<bool>(
-                        future: existeOrNotUserRatingByProducto(),
+                        future: existeOrNotUserRatingByProducto(idUsuario),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             bool result = snapshot.data!;
@@ -88,50 +90,47 @@ class _ProductDetailState extends State<ProductDetail> {
                                   child: CustomScrollView(
                                     slivers: [
                                       SliverAppBarDetail(
-                                          imagePath: producto.imagePath),
+                                          urlImage: producto.urlImage),
                                       FastDescription(
                                           producto: producto,
                                           ifExistOrNotUserRatingByProducto:
                                               result,
-                                          idUsuario: idUsuario),
-                                      //
-                                      // SliverToBoxAdapter(
-                                      //     child: Container(
-                                      //   height: 400,
-                                      //   child: Comments(idProducto: widget.id),
-                                      // )),
+                                          idUsuario: idUsuario!),
                                       AdvancedDescription(
                                         descripcionDetallada:
                                             producto.descripcion,
+                                        idProducto: widget.id,
                                       ),
+                                      SummaryReviews(
+                                          idProducto: producto.idProducto),
                                       ProductosRelacionados(
                                           productos: productosRelacionados)
                                     ],
                                   ),
                                 ),
-                                StaticBottomNavigator()
+                                const StaticBottomNavigator()
                               ],
                             );
                           } else if (snapshot.hasError) {
-                            return Text('Error al obtener los datos');
+                            return const Text('Error al obtener los datos');
                           } else {
-                            return Center(
+                            return const Center(
                               child: CircularProgressIndicator(),
                             );
                           }
                         });
                   } else if (snapshot.hasError) {
-                    return Text('Error al obtener los datos');
+                    return const Text('Error al obtener los datos');
                   } else {
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   }
                 });
           } else if (snapshot.hasError) {
-            return Text('Error al obtener los datos');
+            return const Text('Error al obtener los datos');
           } else {
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           }
@@ -142,9 +141,9 @@ class _ProductDetailState extends State<ProductDetail> {
 }
 
 class SliverAppBarDetail extends StatefulWidget {
-  const SliverAppBarDetail({super.key, required this.imagePath});
+  const SliverAppBarDetail({super.key, required this.urlImage});
 
-  final String imagePath;
+  final String urlImage;
 
   @override
   State<SliverAppBarDetail> createState() => _SliverAppBarDetailState();
@@ -159,7 +158,7 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
       pinned: true,
       centerTitle: false,
       stretch: true,
-      expandedHeight: 380.0,
+      expandedHeight: 350.0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
         color: Colors.black,
@@ -168,18 +167,14 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
         },
       ),
       flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [StretchMode.zoomBackground],
-        background: Image(
-          image: FileImage(File(widget.imagePath)),
-          fit: BoxFit.cover,
-        ),
-      ),
+          stretchModes: const [StretchMode.zoomBackground],
+          background: ShowImage(
+            networkImage: widget.urlImage,
+            fit: BoxFit.cover,
+          )),
     );
   }
 }
-
-
-
 
 class FastDescription extends StatefulWidget {
   const FastDescription(
@@ -200,6 +195,7 @@ class _FastDescriptionState extends State<FastDescription> {
   RatingsCreacionTb? ratingsAndOthers;
   bool pressHearIndex = false;
   int? rating = 0;
+  bool ifExistOrNotUserRatingByProducto = false;
 
   void _selectedHeard() {
     setState(() {
@@ -233,7 +229,10 @@ class _FastDescriptionState extends State<FastDescription> {
         likes: like,
         ratings: rating ?? 0);
 
-    await RatingsDb.saveRating(ratingsAndothers, widget.ifExistOrNotUserRatingByProducto);
+    await RatingsDb.saveRating(
+        ratingsAndothers, ifExistOrNotUserRatingByProducto);
+
+    ifExistOrNotUserRatingByProducto = true;
   }
 
   void obtenerRatingsAndOther() async {
@@ -258,6 +257,8 @@ class _FastDescriptionState extends State<FastDescription> {
   void initState() {
     super.initState();
 
+    ifExistOrNotUserRatingByProducto = widget.ifExistOrNotUserRatingByProducto;
+
     bool result = widget.ifExistOrNotUserRatingByProducto;
     if (result) {
       obtenerRatingsAndOther();
@@ -269,7 +270,6 @@ class _FastDescriptionState extends State<FastDescription> {
   @override
   Widget build(BuildContext context) {
     final producto = widget.producto;
-
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.only(bottom: 10.0),
@@ -279,7 +279,7 @@ class _FastDescriptionState extends State<FastDescription> {
                 bottomRight: Radius.circular(20.0)),
             color: Colors.grey.shade100),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(3.0, 7.0, 20.0, 15.0),
+          padding: const EdgeInsets.fromLTRB(3.0, 7.0, 20.0, 15.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -334,9 +334,8 @@ class _FastDescriptionState extends State<FastDescription> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Container(
                           height: 20,
-                          width: 1,
                           color: Colors.grey,
-                          margin: EdgeInsets.only(left: 15.0),
+                          margin: const EdgeInsets.only(left: 0.0),
                         ),
                       ),
                       Padding(
@@ -353,12 +352,15 @@ class _FastDescriptionState extends State<FastDescription> {
                                 ),
                               );
                             },
-                            child: Text(
-                              '+ 1k',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
+                            child: Padding(
+                              padding: const EdgeInsets.only(left: 10.0),
+                              child: Text(
+                                '+ 20K',
+                                style: TextStyle(
+                                  color: Colors.blue[500],
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           )),
@@ -397,15 +399,50 @@ class _FastDescriptionState extends State<FastDescription> {
 }
 
 class AdvancedDescription extends StatefulWidget {
-  const AdvancedDescription({super.key, this.descripcionDetallada});
+  const AdvancedDescription(
+      {super.key, this.descripcionDetallada, required this.idProducto});
 
   final String? descripcionDetallada;
+  final int idProducto;
 
   @override
   State<AdvancedDescription> createState() => _AdvancedDescriptionState();
 }
 
 class _AdvancedDescriptionState extends State<AdvancedDescription> {
+  File? imagenToUpload;
+  List<ProductImagesTb> productSecondaryImages = [];
+  List<Asset?> selectedImages = [];
+  List<String?> urlImages = [];
+
+  void insertProductImage() async {
+    if (selectedImages.isNotEmpty) {
+      for (Asset? image in selectedImages) {
+        await productImageDb.uploadImage(
+            image!, 'productos', widget.idProducto, 0);
+      }
+    }
+  }
+
+  void getListSecondaryProductImages() async {
+    productSecondaryImages =
+        await productImageDb.getProductSecondaryImages(widget.idProducto);
+
+    setState(() {
+      urlImages =
+          productSecondaryImages.map((image) => image.urlImage).toList();
+    });
+
+    print('URL IMAGES_: $urlImages');
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    getListSecondaryProductImages();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -427,7 +464,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 23.0, 30.0, 60.0),
+                  padding: const EdgeInsets.fromLTRB(16.0, 23.0, 30.0, 30.0),
                   child: widget.descripcionDetallada != null &&
                           widget.descripcionDetallada!.isNotEmpty
                       ? Text(
@@ -447,22 +484,130 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 ),
               ],
             ),
-            Container(
-              width: double.infinity,
-              height: 320,
-              child: Image.asset(
-                'lib/images/feature.png',
-                fit: BoxFit.cover,
+            if (urlImages.isNotEmpty)
+              for (var url in urlImages)
+                ShowImage(
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  networkImage: url,
+                ),
+            // Container(
+            //   width: double.infinity,
+            //   child: Image.network(
+            //     url!,
+            //     fit: BoxFit.cover,
+            //   ),
+            // ),
+            if (selectedImages.isNotEmpty)
+              for (var asset in selectedImages)
+                FutureBuilder<ByteData>(
+                  future: asset!.getByteData(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<ByteData> snapshot) {
+                    if (snapshot.hasData) {
+                      final byteData = snapshot.data!;
+                      final bytes = byteData.buffer.asUint8List();
+                      return Container(
+                        width: double.infinity,
+                        child: Image.memory(
+                          bytes,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return const Text('Error al cargar la imagen');
+                    } else {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                  },
+                ),
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: IconButton(
+                    onPressed: () async {
+                      List<Asset?> imagesAsset =
+                          await getImagesAsset(selectedImages);
+                      if (imagesAsset.isNotEmpty) {
+                        setState(() {
+                          selectedImages = imagesAsset;
+                        });
+                      }
+                    },
+                    icon: Icon(CupertinoIcons.add_circled,
+                        size: 40, color: Colors.grey.shade600)),
               ),
             ),
-            Container(
-              width: double.infinity,
-              height: 320,
-              child: Image.asset(
-                'lib/images/PapasSaladas.jpg',
-                fit: BoxFit.cover,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 25.0),
+              child: SizedBox(
+                height: 50.0,
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    insertProductImage();
+                  },
+                  child: const Text(
+                    'Guardar Imagenes',
+                    style: TextStyle(fontSize: 20.0),
+                  ),
+                ),
               ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SummaryReviews extends StatefulWidget {
+  const SummaryReviews({super.key, required this.idProducto});
+
+  final int idProducto;
+
+  @override
+  State<SummaryReviews> createState() => _SummaryReviewsState();
+}
+
+class _SummaryReviewsState extends State<SummaryReviews> {
+  @override
+  Widget build(BuildContext context) {
+    return SliverToBoxAdapter(
+      child: Container(
+        margin: const EdgeInsets.only(top: 12.0),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.0),
+            color: Colors.grey.shade200),
+        child: Column(
+          children: [
+            Comments(
+              idProducto: widget.idProducto,
+              selectIndex: 0,
+              maxCommentsToShow: 3,
+              paddingOutsideHorizontal: 5.0,
+              paddingOutsideVertical: 2.0,
+              containerPadding: 10.0,
+              color: Colors.grey[300],
+              fontSizeDescription: 13,
+              fontSizeName: 14,
+              fontSizeStarts: 20,
             ),
+            TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ReviewsAndOpinions(
+                        idProducto: widget.idProducto,
+                      ),
+                    ),
+                  );
+                },
+                child: Text(
+                  'More Reviews',
+                  style: TextStyle(color: Colors.blue[500], fontSize: 17),
+                ))
           ],
         ),
       ),
@@ -515,33 +660,18 @@ class _StaticBottomNavigatorState extends State<StaticBottomNavigator> {
   Widget build(BuildContext context) {
     return Container(
       height: 57.0,
-      color: Colors.white,
+      color: Colors.white60,
       child: Row(
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 0.0),
             child: Row(
               children: [
-                // SizedBox(
-                //   width: 35.0,
-                //   child: IconButton(
-                //     onPressed: () {
-                //       _selectedHeard();
-                //     },
-                //     icon: Icon(
-                //       pressHearIndex
-                //           ? CupertinoIcons.heart_fill
-                //           : CupertinoIcons.heart,
-                //       color: pressHearIndex ? Colors.red : Colors.black,
-                //       size: pressHearIndex ? 32 : 30,
-                //     ),
-                //   ),
-                // ),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(3.0, 0, 7.0, 0.0),
                   child: IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.store_outlined,
                       color: Colors.black,
                       size: 31,
@@ -552,7 +682,7 @@ class _StaticBottomNavigatorState extends State<StaticBottomNavigator> {
                   width: 35.0,
                   child: IconButton(
                     onPressed: () {},
-                    icon: Icon(
+                    icon: const Icon(
                       CupertinoIcons.bubble_right,
                       size: 29,
                     ),

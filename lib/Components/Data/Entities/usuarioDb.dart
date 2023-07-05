@@ -10,24 +10,6 @@ class UsuarioDb {
 
 
   // Obtener idUsuario mediante el correo en firebase
-  static Future<int> getIdUsuario() async {
-    if (FirebaseAuth.instance.currentUser != null) {
-      String? email = FirebaseAuth.instance.currentUser?.email;
-      if (email != null) {
-        try {
-          int? idUsuario = await getIdUsuarioByCorreo(email);
-          if (idUsuario != null) {
-            return idUsuario;
-          }
-        } catch (e) {
-          // Manejo de errores
-          print('Error al obtener el idUsuario: $e');
-          throw Exception('Error al obtener el idUsuario');
-        }
-      }
-    }
-    throw Exception('No se pudo obtener el idUsuario');
-  }
 
 // -------- Consultas despues de la migracion a mySQL --------- //
 

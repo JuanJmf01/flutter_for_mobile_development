@@ -1,11 +1,13 @@
-import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/ButtonMenu.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/roundedSearchBar.dart';
 import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MisProductos extends StatefulWidget {
   MisProductos({Key? key}) : super(key: key);
@@ -27,11 +29,12 @@ class _MisProductosState extends State<MisProductos> {
     return null;
   }
 
-
   @override
   Widget build(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
+    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
 
+    final TextEditingController searchController = TextEditingController();
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(115.0),
@@ -42,7 +45,7 @@ class _MisProductosState extends State<MisProductos> {
             style: TextStyle(color: Colors.black),
           ),
           actions: [
-            if (Auth.isUserSignedIn())
+            if (isUserSignedIn)
               IconButton(
                 onPressed: () async {
                   result = await Navigator.push<int>(
@@ -84,7 +87,7 @@ class _MisProductosState extends State<MisProductos> {
             ),
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(50.0),
+            preferredSize: const Size.fromHeight(.0),
             child: Padding(
               padding: const EdgeInsets.only(bottom: 12.0),
               child: RoundedSearchBar(
@@ -95,7 +98,7 @@ class _MisProductosState extends State<MisProductos> {
         ),
       ),
       body: FutureBuilder<List<ProductoTb>>(
-        future: ProductoDb.getProductosByNegocio(),
+        future: ProductoDb.getProductosByNegocio(idUsuario),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             productos = snapshot.data!;

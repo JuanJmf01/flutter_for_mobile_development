@@ -7,25 +7,27 @@ class ProductoTb {
   String? descripcionDetallada;
   int cantidadDisponible;
   int? oferta; // bool (0 or 1)
-  String imagePath;
+  String urlImage;
+  String nombreImage;
   //String? fechaDeCreacion;
   //int? estado;
 
-  ProductoTb({
-    required this.idProducto,
-    required this.idNegocio,
-    required this.nombreProducto,
-    required this.precio,
-    this.descripcion,
-    this.descripcionDetallada,
-    required this.cantidadDisponible,
-    this.oferta,
-    required this.imagePath,
-    //this.fechaDeCreacion,
-    //this.estado,
-  });
+  ProductoTb(
+      {required this.idProducto,
+      required this.idNegocio,
+      required this.nombreProducto,
+      required this.precio,
+      this.descripcion,
+      this.descripcionDetallada,
+      required this.cantidadDisponible,
+      this.oferta,
+      required this.urlImage,
+      required this.nombreImage
+      //this.fechaDeCreacion,
+      //this.estado,
+      });
 
-    factory ProductoTb.fromJson(Map<String, dynamic> json) {
+  factory ProductoTb.fromJson(Map<String, dynamic> json) {
     return ProductoTb(
       idProducto: json['idProducto'],
       idNegocio: json['idNegocio'],
@@ -35,7 +37,8 @@ class ProductoTb {
       descripcionDetallada: json['descripcionDetallada'],
       cantidadDisponible: json['cantidadDisponible'],
       oferta: json['oferta'],
-      imagePath: json['imagePath'],
+      urlImage: json['urlImage'],
+      nombreImage: json['nombreImage'],
     );
   }
 
@@ -48,7 +51,8 @@ class ProductoTb {
       'descripcion': descripcion,
       'cantidadDisponible': cantidadDisponible,
       'oferta': oferta,
-      'imagePath': imagePath,
+      'urlImage': urlImage,
+      'nombreImage': nombreImage,
       //'descripcionDetallada': descripcionDetallada,
       //'fechaDeCreacion': fechaDeCreacion,
       //'estado': estado,
@@ -57,7 +61,7 @@ class ProductoTb {
 
   @override
   String toString() {
-    return 'ProductoTb{idProducto: $idProducto, nombreProducto: $nombreProducto}';
+    return 'ProductoTb{idProducto: $idProducto, nombreProducto: $nombreProducto, urlImage: $urlImage, nombreImage: $nombreImage}';
   }
 }
 
@@ -69,7 +73,7 @@ class ProductoCreacionTb {
   final String? descripcionDetallada;
   final int cantidadDisponible;
   final int? oferta; // bool (0 or 1)
-  final String imagePath;
+  final String? urlImage;
 
   ProductoCreacionTb({
     required this.idNegocio,
@@ -79,7 +83,7 @@ class ProductoCreacionTb {
     this.descripcionDetallada,
     required this.cantidadDisponible,
     this.oferta,
-    required this.imagePath,
+    this.urlImage,
   });
 
   //FromJson
@@ -93,7 +97,7 @@ class ProductoCreacionTb {
       'descripcionDetallada': descripcionDetallada,
       'cantidadDisponible': cantidadDisponible,
       'oferta': oferta,
-      'imagePath': imagePath,
+      'urlImage': urlImage,
     };
   }
 

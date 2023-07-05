@@ -1,9 +1,12 @@
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 class ButtonLogin extends StatefulWidget {
   const ButtonLogin({super.key, this.titulo});
@@ -29,9 +32,10 @@ class _ButtonLoginState extends State<ButtonLogin> {
       }
     }
 
-    UsuarioCreacionTb usuario = UsuarioCreacionTb(nombres: name, email: emailAdress);
+    UsuarioCreacionTb usuario =
+        UsuarioCreacionTb(nombres: name, email: emailAdress);
     await UsuarioDb.insertUsuario(usuario);
-    
+
     print(usuario);
   }
 
@@ -45,12 +49,16 @@ class _ButtonLoginState extends State<ButtonLogin> {
         newUser(userCredential);
       }
       if (context.mounted) {
+        context.read<LoginProvider>().checkUserSignedIn();
+        context.read<UsuarioProvider>().obtenerIdUsuario();
+
         Navigator.pop(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => Menu(index: 1,)
-          ),
+              builder: (context) => Menu(
+                    index: 1,
+                  )),
         );
       }
     } catch (error, stacktrace) {
@@ -168,6 +176,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
               ],
             ),
           ),
+
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

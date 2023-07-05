@@ -1,14 +1,17 @@
 import 'package:etfi_point/Components/Auth/auth.dart';
+import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/buttonLogin.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ButtonMenu extends StatelessWidget {
   ButtonMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
+    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[800], // Gris tirando a oscuro
@@ -39,36 +42,38 @@ class ButtonMenu extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 onPressed: () async {
-                  if(Auth.isUserSignedIn()){
+                  if (isUserSignedIn) {
                     showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return ConfirmationDialog(
-                          message: '¿Seguro que deseas cerrar sesion?',
-                          onAcceptMessage: 'Aceptar',
-                          onCancelMessage: 'Cancelar',
-                          onAccept: () async {
-                            await Auth.signOutDos();
-                            if(context.mounted){
+                        context: context,
+                        builder: (BuildContext context) {
+                          return ConfirmationDialog(
+                            message: '¿Seguro que deseas cerrar sesion?',
+                            onAcceptMessage: 'Aceptar',
+                            onCancelMessage: 'Cancelar',
+                            onAccept: () async {
+                              await Auth.signOutDos(context);
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                                Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Menu(
+                                            index: 0,
+                                          )),
+                                );
+                              }
+                            },
+                            onCancel: () {
                               Navigator.of(context).pop();
-                              Navigator.pop(context);
-                              Navigator.pushReplacement(
-                                context,MaterialPageRoute(builder: (context) => Menu(index: 0,)),
-                              );
-                            }
-                           
-                          },
-                          onCancel: () {
-                            Navigator.of(context).pop();
-                          },
-                        );
-                      }
-                    );
-                  }else{
+                            },
+                          );
+                        });
+                  } else {
                     Navigator.pop(context);
                     showModalBottomSheet(
-                      context: context, 
-                      isScrollControlled: true, 
+                      context: context,
+                      isScrollControlled: true,
                       builder: (BuildContext context) => const ButtonLogin(),
                       shape: const RoundedRectangleBorder(
                         borderRadius: BorderRadius.only(
@@ -82,14 +87,14 @@ class ButtonMenu extends StatelessWidget {
                 child: Row(
                   children: [
                     Icon(
-                      Auth.isUserSignedIn()
+                      isUserSignedIn
                           ? Icons.exit_to_app_rounded
                           : Icons.login_outlined,
                       color: Colors.white,
                     ),
                     SizedBox(width: 7.0),
-                    Text(
-                      Auth.isUserSignedIn() ? 'Cerrar sesion' : 'Iniciar Sesion',
+                    Text( 
+                      isUserSignedIn ? 'Cerrar sesion' : 'Iniciar Sesion',
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold, // Texto más grueso
@@ -109,9 +114,11 @@ class ButtonMenu extends StatelessWidget {
                 onPressed: () {
                   Navigator.pop(context);
                   showModalBottomSheet(
-                    context: context, 
-                    isScrollControlled: true, 
-                    builder: (BuildContext context) => const ButtonLogin(titulo: 'Iniciar sesion para continuar',),
+                    context: context,
+                    isScrollControlled: true,
+                    builder: (BuildContext context) => const ButtonLogin(
+                      titulo: 'Iniciar sesion para continuar',
+                    ),
                     shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(10.0),

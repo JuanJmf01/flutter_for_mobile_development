@@ -49,29 +49,37 @@ class ProductosCategoriasDb {
   }
 
   //Retorna una lista de idCategorias (categorias) pertenecientes a un producto
-  static Future<List<int>> getIdCategoriasPorIdProducto(int idProducto) async {
-    try {
-      Dio dio = Dio();
-
-      Response response =
-          await dio.get('${MisRutas.rutaProductosCategorias}/$idProducto');
-
-      if (response.statusCode == 200) {
-        List<int> idCategorias = [];
-
+ static Future<List<int>> getIdCategoriasPorIdProducto(int idProducto) async {
+  print('imprimir idProducto: $idProducto');
+  
+  try {
+    Dio dio = Dio();
+    Response response = await dio.get('${MisRutas.rutaProductosCategorias}/$idProducto');
+    
+    print('dataaa: ${response.data}');
+    
+    if (response.statusCode == 200) {
+      List<int> idCategorias = [];
+      print('dataaa222: ${response.data}');
+      
+      if (response.data is List) {
         for (var productoCategoria in response.data) {
           int idCategoria = productoCategoria['idCategoria'];
           idCategorias.add(idCategoria);
         }
-
-        return idCategorias;
-      } else {
-        throw Exception('Failed to fetch product categories');
       }
-    } catch (error) {
-      throw Exception('Error en getIdCategoriasPorIdProducto: $error');
+      
+      return idCategorias;
+    } else if (response.statusCode == 404) {
+      return []; // Devuelve una lista vacía si no hay categorías encontradas
+    } else {
+      throw Exception('Failed to fetch product categories');
     }
+  } catch (error) {
+    throw Exception('Error de conexión: $error');
   }
+}
+
 
   static Future<bool> deleteProductosCategorias(int idProducto) async {
     Dio dio = Dio();
