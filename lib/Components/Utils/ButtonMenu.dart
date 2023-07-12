@@ -54,7 +54,7 @@ class ButtonMenu extends StatelessWidget {
                               await Auth.signOutDos(context);
                               if (context.mounted) {
                                 Navigator.of(context).pop();
-                                Navigator.pop(context);
+                                //Navigator.pop(context);
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(

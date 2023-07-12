@@ -1,90 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
-import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 
-class productImageDb {
-  static Future<void> uploadImage(Asset image, String fileName, int idProducto,
-      int isPrincipalImage) async {
-    final ByteData byteData = await image.getByteData();
-    final Uint8List bytes = byteData.buffer.asUint8List();
-
-    String currentDateTime = obtenerFechaHoraActual();
-    String nameImage = image.name!;
-    String finalNameImage = '${currentDateTime}_$nameImage';
-
-    print('FINAL NAME: $finalNameImage');
-
-    final Reference ref = storage
-        .ref()
-        .child('imagenes/$fileName/$idProducto')
-        .child(finalNameImage);
-
-    print('REF_: ${ref.fullPath}');
-
-    final UploadTask uploadTask = ref.putData(bytes);
-
-    try {
-      final TaskSnapshot snapshot = await uploadTask;
-      print('snapshot: $snapshot');
-
-      final String url = await snapshot.ref.getDownloadURL();
-      print('url: $url');
-
-      if (snapshot.state == TaskState.success) {
-        ProductImageCreacionTb productImage = ProductImageCreacionTb(
-            idProducto: idProducto,
-            nombreImage: finalNameImage,
-            urlImage: url,
-            isPrincipalImage: isPrincipalImage);
-
-        await insertProductImages(productImage);
-      } else {
-        throw Exception('Error uploading image');
-      }
-    } catch (error) {
-      print('Error uploading image: $error');
-      throw Exception('Error uploading image');
-    }
-  }
-
-  static Future<void> updateImage(Asset newImage, String fileName,
-      String nombreImage, int idProducto) async {
-    final ByteData byteData = await newImage.getByteData();
-    final Uint8List imageData = byteData.buffer.asUint8List();
-
-    try {
-      final Reference ref = FirebaseStorage.instance
-          .ref()
-          .child('imagenes/$fileName/$idProducto/$nombreImage');
-      final UploadTask uploadTask = ref.putData(imageData);
-
-      final TaskSnapshot snapshot = await uploadTask;
-      if (snapshot.state == TaskState.success) {
-        final String url = await snapshot.ref.getDownloadURL();
-
-        ProductImageCreacionTb productImage = ProductImageCreacionTb(
-            idProducto: idProducto,
-            nombreImage: nombreImage,
-            urlImage: url,
-            isPrincipalImage: 1);
-
-        //Actualizar url un base de datos
-        await productImageDb.updateProductImage(productImage);
-      } else {
-        throw Exception('Error updating image');
-      }
-    } catch (error) {
-      print('Error updating image: $error');
-      throw Exception('Error updating image');
-    }
-  }
-
-  static Future<void> insertProductImages(
+class ProductImageDb {
+  static Future<ProductImagesTb> insertProductImages(
       ProductImageCreacionTb productImage) async {
     Dio dio = Dio();
     String url = MisRutas.rutaProductImages;
@@ -101,12 +20,15 @@ class productImageDb {
 
       if (response.statusCode == 200) {
         print('productImage insertado correctamente (print)');
-        print(response.data);
+        ProductImagesTb productImage = ProductImagesTb.fromJson(response.data);
+
+        return productImage;
       } else {
-        print('Error en la solicitud: ${response.statusCode}');
+        throw Exception('Error en la respuesta: ${response.statusCode}');
       }
     } catch (error) {
       print('Error de conexión: $error');
+      throw Exception('Error en la solicitud: $error');
     }
   }
 
@@ -157,7 +79,7 @@ class productImageDb {
       }
     } catch (error) {
       // Ocurrió un error en la conexión
-      print('Error de conexión: $error');
+      print('Error de conexiónnP: $error');
     }
   }
 
@@ -187,19 +109,13 @@ class productImageDb {
     return false;
   }
 
-  static Future<bool> deleteProductImage(
-      int idProducto, int isPrincipalImage) async {
+  static Future<bool> deleteProuctImage(int idProductImage) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaProductImages;
-    Map<String, dynamic> data = {
-      'idProducto': idProducto,
-      'isPrincipalImage': isPrincipalImage
-    };
+    String url = '${MisRutas.rutaProductImage}/$idProductImage';
 
     try {
       Response response = await dio.delete(
         url,
-        data: data,
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),

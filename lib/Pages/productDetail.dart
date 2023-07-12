@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
@@ -7,9 +6,14 @@ import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
+import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
+import 'package:etfi_point/Components/Utils/Icons/switch.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
+import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/reviewsAndOpinions.dart';
 import 'package:flutter/cupertino.dart';
@@ -410,35 +414,92 @@ class AdvancedDescription extends StatefulWidget {
 }
 
 class _AdvancedDescriptionState extends State<AdvancedDescription> {
-  File? imagenToUpload;
   List<ProductImagesTb> productSecondaryImages = [];
-  List<Asset?> selectedImages = [];
-  List<String?> urlImages = [];
+  List<dynamic> allProductImages = [];
+  bool isChecked = false;
+
+  List<ProductImageToUpload> imagesToUpload = [];
+  List<ProductImageToUpdate> imagesToUpdate = [];
+
+  final TextEditingController _descripcionDetalldaController =
+      TextEditingController();
 
   void insertProductImage() async {
-    if (selectedImages.isNotEmpty) {
-      for (Asset? image in selectedImages) {
-        await productImageDb.uploadImage(
-            image!, 'productos', widget.idProducto, 0);
+    if (imagesToUpload.isNotEmpty) {
+      List<ProductImagesTb> productImagesAux = [];
+      for (var imageToUpload in imagesToUpload) {
+        ProductImagesTb productImage = await ProductImagesStorage.cargarImage(
+            imageToUpload.newImage, 'productos', widget.idProducto, 0);
+        productImagesAux.add(productImage);
       }
+
+      setState(() {
+        allProductImages.clear();
+        productSecondaryImages = [
+          ...productSecondaryImages,
+          ...productImagesAux
+        ];
+        allProductImages.addAll(productSecondaryImages);
+
+        imagesToUpload.clear();
+      });
+    }
+  }
+
+  void updateSecondaryImage() async {
+    if (imagesToUpdate.isNotEmpty) {
+      await Future.forEach(imagesToUpdate, (image) async {
+        String nombreImage = image.nombreImage;
+        Asset imageToUpdate = image.newImage;
+
+        String url = await ProductImagesStorage.updateImage(
+          imageToUpdate,
+          'productos',
+          nombreImage,
+          widget.idProducto,
+          0,
+        );
+
+        print('URL image_: $url');
+        for (int i = 0; i < productSecondaryImages.length; i++) {
+          //Solo entra al if en una ocacion por lo que no hay problema con el setState dentro del ciclo for
+          if (productSecondaryImages[i].nombreImage == nombreImage) {
+            setState(() {
+              productSecondaryImages[i] =
+                  productSecondaryImages[i].copyWith(urlImage: url);
+
+              allProductImages.clear();
+              allProductImages.addAll(productSecondaryImages);
+            });
+          } else {
+            print('No encontrado en updateSecondaryImage');
+          }
+        }
+      });
+
+      setState(() {
+        imagesToUpdate.clear();
+      });
+    } else {
+      print('Imagen a actualizar es null');
     }
   }
 
   void getListSecondaryProductImages() async {
-    productSecondaryImages =
-        await productImageDb.getProductSecondaryImages(widget.idProducto);
+    List<ProductImagesTb> productSecondaryImagesAux =
+        await ProductImageDb.getProductSecondaryImages(widget.idProducto);
 
     setState(() {
-      urlImages =
-          productSecondaryImages.map((image) => image.urlImage).toList();
+      productSecondaryImages = productSecondaryImagesAux;
+      allProductImages.addAll(productSecondaryImagesAux);
     });
-
-    print('URL IMAGES_: $urlImages');
   }
 
   @override
   void initState() {
     super.initState();
+
+    _descripcionDetalldaController.text = widget.descripcionDetallada ?? '';
 
     getListSecondaryProductImages();
   }
@@ -453,84 +514,336 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(16.0, 20.0, 0.0, 0.0),
-                  child: Text(
-                    'Descripcion detallada',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 23.0, 30.0, 30.0),
-                  child: widget.descripcionDetallada != null &&
-                          widget.descripcionDetallada!.isNotEmpty
-                      ? Text(
-                          widget.descripcionDetallada!,
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 16,
-                          ),
-                        )
-                      : Text(
-                          'No hay descripción que mostrar',
-                          style: TextStyle(
-                            color: Colors.grey[800],
-                            fontSize: 16,
+            allProductImages.isNotEmpty
+                ? Padding(
+                    padding: EdgeInsets.all(15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                          child: SwitchIcon(
+                            isChecked: isChecked,
+                            onChanged: (value) {
+                              setState(() {
+                                isChecked = value;
+                              });
+                              print(isChecked);
+                            },
                           ),
                         ),
-                ),
+                        Text('Modificar'),
+                      ],
+                    ),
+                  )
+                : SizedBox.shrink(),
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.0,
+                  productSecondaryImages.isNotEmpty ? 0.0 : 20.0, 0.0, 0.0),
+              child: const Text(
+                'Descripcion detallada',
+                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
+              ),
+            ),
+            Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 23.0, 30.0, 30.0),
+                child: isChecked
+                    ? GeneralInputs(
+                        verticalPadding: 15.0,
+                        controller: _descripcionDetalldaController,
+                        labelText:
+                            'Agrega una descripcion detalla del producto',
+                        color: Colors.grey.shade200,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 3,
+                        maxLines: 40,
+                      )
+                    : widget.descripcionDetallada!.isNotEmpty
+                        ? Text(
+                            widget.descripcionDetallada!,
+                            style: TextStyle(
+                              color: Colors.grey[800],
+                              fontSize: 16,
+                            ),
+                          )
+                        : Text(
+                            'No hay descripción que mostrar',
+                            style: TextStyle(
+                              color: Colors.grey[800],
+                              fontSize: 16,
+                            ),
+                          )),
+            Column(
+              children: [
+                for (var image in allProductImages)
+                  Column(
+                    children: [
+                      Container(
+                          child: image is ProductImagesTb
+                              ? ShowImage(
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  networkImage: image.urlImage)
+                              : image is ProductImageToUpload ||
+                                      image is ProductImageToUpdate
+                                  ? FutureBuilder<ByteData>(
+                                      future: image.newImage.getByteData(),
+                                      builder: (BuildContext context,
+                                          AsyncSnapshot<ByteData> snapshot) {
+                                        if (snapshot.hasData) {
+                                          final byteData = snapshot.data!;
+                                          final bytes =
+                                              byteData.buffer.asUint8List();
+                                          return SizedBox(
+                                            width: double.infinity,
+                                            child: Image.memory(
+                                              bytes,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          );
+                                        } else if (snapshot.hasError) {
+                                          return const Text(
+                                              'Error al cargar la imagen');
+                                        } else {
+                                          return const Center(
+                                              child:
+                                                  CircularProgressIndicator());
+                                        }
+                                      },
+                                    )
+                                  : SizedBox.shrink()),
+                      isChecked
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: ElevatedGlobalButton(
+                                      paddingTop: 1.0,
+                                      paddingBottom: 12.0,
+                                      nameSavebutton: image is ProductImagesTb
+                                          ? 'Eliminar'
+                                          : 'Descartar',
+                                      heightSizeBox: 48.0,
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.w700,
+                                      color: image is ProductImagesTb
+                                          ? Colors.red.shade700
+                                          : Colors.lightGreen[500],
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      letterSpacing: 0.5,
+                                      onPress: () async {
+                                        showDialog(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            if (image is ProductImagesTb) {
+                                              return DeletedDialog(
+                                                  onPress: () async {
+                                                    bool result =
+                                                        await ProductImagesStorage
+                                                            .deleteImage(
+                                                                'productos',
+                                                                image
+                                                                    .nombreImage,
+                                                                widget
+                                                                    .idProducto,
+                                                                image
+                                                                    .idProductImage);
+
+                                                    if (result) {
+                                                      setState(() {
+                                                        allProductImages.removeWhere(
+                                                            (element) =>
+                                                                element
+                                                                    .idProductImage ==
+                                                                image
+                                                                    .idProductImage);
+                                                      });
+                                                    } else {
+                                                      print('result: $result');
+                                                    }
+
+                                                    if (context.mounted) {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    }
+                                                  },
+                                                  objectToDelete: 'la imagen');
+                                            } else if (image
+                                                is ProductImageToUpdate) {
+                                              return RuleOut(
+                                                onPress: () {
+                                                  int imageIndex =
+                                                      allProductImages
+                                                          .indexOf(image);
+                                                  ProductImagesTb oldImage =
+                                                      productSecondaryImages[
+                                                          imageIndex];
+
+                                                  setState(() {
+                                                    allProductImages[
+                                                        imageIndex] = oldImage;
+                                                    imagesToUpdate
+                                                        .remove(image);
+                                                  });
+
+                                                  if (context.mounted) {
+                                                    Navigator.of(context).pop();
+                                                  }
+                                                },
+                                                objectToDelete: 'la imagen',
+                                              );
+                                            } else if (image
+                                                is ProductImageToUpload) {
+                                              return RuleOut(
+                                                  onPress: () {
+                                                    int imageIndex =
+                                                        allProductImages
+                                                            .indexOf(image);
+                                                    print(
+                                                        'imageIndex_: $imageIndex');
+                                                    print(
+                                                        'allProductos: $allProductImages');
+                                                    setState(() {
+                                                      allProductImages
+                                                          .removeAt(imageIndex);
+                                                      imagesToUpload
+                                                          .remove(image);
+                                                    });
+
+                                                    if (context.mounted) {
+                                                      Navigator.of(context)
+                                                          .pop();
+                                                    }
+                                                  },
+                                                  objectToDelete: 'La imagen');
+                                            } else {
+                                              return SizedBox.shrink();
+                                            }
+                                          },
+                                        );
+                                      }),
+                                ),
+                                Expanded(
+                                  child: ElevatedGlobalButton(
+                                      paddingTop: 1.0,
+                                      paddingBottom: 12.0,
+                                      nameSavebutton: 'Editar',
+                                      heightSizeBox: 48.0,
+                                      fontSize: 19,
+                                      fontWeight: FontWeight.w700,
+                                      borderRadius: BorderRadius.circular(5.0),
+                                      letterSpacing: 0.5,
+                                      onPress: () async {
+                                        Asset? asset = await getImageAsset();
+                                        if (asset != null) {
+                                          int imageIndex =
+                                              allProductImages.indexOf(image);
+
+                                          int indice = imagesToUpdate
+                                              .indexWhere((element) =>
+                                                  element.indexImage ==
+                                                  imageIndex);
+
+                                          /** Si 'indice' != de -1  es por que ya ha sido cambiada previamente
+                                             * En este caso el objeto ya se encuentra dentro de 'imagesToUpdate' por lo tanto 
+                                             * solo es necesario actualizar "imageToUpdate" respecto a su posicion 'indice' y dejar 
+                                             * "nombreImage" igual ya que este nombre se utiliza para completar la ruta en firebase Storage y actualizar */
+
+                                          if (indice != -1) {
+                                            ProductImageToUpdate newImage =
+                                                ProductImageToUpdate(
+                                              indexImage: imagesToUpdate[indice]
+                                                  .indexImage,
+                                              nombreImage:
+                                                  imagesToUpdate[indice]
+                                                      .nombreImage,
+                                              newImage: asset,
+                                            );
+                                            setState(() {
+                                              allProductImages[indice] =
+                                                  newImage;
+                                              imagesToUpdate[imageIndex] =
+                                                  newImage;
+                                            });
+                                          } else {
+                                            if (image is ProductImagesTb) {
+                                              ProductImageToUpdate newImage =
+                                                  ProductImageToUpdate(
+                                                indexImage: imageIndex,
+                                                nombreImage: image.nombreImage,
+                                                newImage: asset,
+                                              );
+                                              setState(() {
+                                                imagesToUpdate.add(newImage);
+
+                                                allProductImages[imageIndex] =
+                                                    newImage;
+                                              });
+                                            } else if (image
+                                                is ProductImageToUpload) {
+                                                  
+                                              int indiceToUpload =
+                                                  imagesToUpload.indexWhere(
+                                                      (element) =>
+                                                          element.indexImage ==
+                                                          imageIndex);
+                                              ProductImageToUpload newImage =
+                                                  ProductImageToUpload(
+                                                      indexImage: imageIndex,
+                                                      newImage: asset);
+
+                                              setState(() {
+                                                allProductImages[imageIndex] =
+                                                    newImage;
+                                                imagesToUpload[indiceToUpload] =
+                                                    newImage;
+                                              });
+                                            }
+                                          }
+                                        }
+                                        // updateSecondaryImage(image.nombreImage);
+                                      }),
+                                ),
+                              ],
+                            )
+                          : SizedBox.shrink()
+                    ],
+                  )
               ],
             ),
-            if (urlImages.isNotEmpty)
-              for (var url in urlImages)
-                ShowImage(
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  networkImage: url,
-                ),
-            // Container(
-            //   width: double.infinity,
-            //   child: Image.network(
-            //     url!,
-            //     fit: BoxFit.cover,
-            //   ),
-            // ),
-            if (selectedImages.isNotEmpty)
-              for (var asset in selectedImages)
-                FutureBuilder<ByteData>(
-                  future: asset!.getByteData(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<ByteData> snapshot) {
-                    if (snapshot.hasData) {
-                      final byteData = snapshot.data!;
-                      final bytes = byteData.buffer.asUint8List();
-                      return Container(
-                        width: double.infinity,
-                        child: Image.memory(
-                          bytes,
-                          fit: BoxFit.cover,
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return const Text('Error al cargar la imagen');
-                    } else {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                  },
-                ),
+
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: IconButton(
                     onPressed: () async {
-                      List<Asset?> imagesAsset =
-                          await getImagesAsset(selectedImages);
+                      int length = allProductImages.length;
+                      //print('LONGITUD_: $lenght');
+                      List<Asset?> imagesAsset = await getImagesAsset();
+                      List<ProductImageToUpload> allProductImagesAux = [];
+
                       if (imagesAsset.isNotEmpty) {
+                        print('ALL IMAGES: $allProductImages');
+
+                        for (int i = 0; i < imagesAsset.length; i++) {
+                          ProductImageToUpload newImage = ProductImageToUpload(
+                            indexImage: length + i,
+                            newImage: imagesAsset[i]!,
+                          );
+                          allProductImagesAux.add(newImage);
+                          print('newImage_: $newImage');
+                        }
+
                         setState(() {
-                          selectedImages = imagesAsset;
+                          allProductImages = [
+                            ...allProductImages,
+                            ...allProductImagesAux
+                          ];
+
+                          imagesToUpload = [
+                            ...imagesToUpload,
+                            ...allProductImagesAux
+                          ];
                         });
                       }
                     },
@@ -538,22 +851,28 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                         size: 40, color: Colors.grey.shade600)),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8.0, 10.0, 8.0, 25.0),
-              child: SizedBox(
-                height: 50.0,
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    insertProductImage();
-                  },
-                  child: const Text(
-                    'Guardar Imagenes',
-                    style: TextStyle(fontSize: 20.0),
-                  ),
-                ),
-              ),
-            )
+
+            //Boton por separado
+            // ElevatedButton(
+            //   onPressed: () {
+            //     insertProductImage2();
+            //   },
+            //   child: Text('Agregar'),
+            // )
+            ElevatedGlobalButton(
+                paddingLeft: 8.0,
+                paddingTop: 10,
+                paddingRight: 8.0,
+                paddingBottom: 25,
+                fontSize: 20.0,
+                borderRadius: BorderRadius.circular(3.5),
+                nameSavebutton: 'Guardar cambios',
+                heightSizeBox: 50,
+                widthSizeBox: double.infinity,
+                onPress: () {
+                  insertProductImage();
+                  updateSecondaryImage();
+                }),
           ],
         ),
       ),

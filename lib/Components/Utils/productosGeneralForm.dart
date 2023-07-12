@@ -5,6 +5,8 @@ import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
@@ -125,7 +127,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       idProducto =
           await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
       if (imagenToUpload != null) {
-        await productImageDb.uploadImage(
+        await ProductImagesStorage.cargarImage(
             imagenToUpload!, 'productos', idProducto, 1);
       }
       mostrarCuadroExito(idProducto);
@@ -139,8 +141,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void actualizarProducto(ProductoTb producto) async {
     int idProducto = producto.idProducto;
     if (imagenToUpload != null) {
-      await productImageDb.updateImage(
-          imagenToUpload!, 'productos', producto.nombreImage, idProducto);
+      await ProductImagesStorage.updateImage(
+          imagenToUpload!, 'productos', producto.nombreImage, idProducto, 1);
     } else {
       print('Imagen a actualizar es null');
     }
@@ -190,7 +192,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         appBar: AppBar(
             backgroundColor: Colors.white,
             iconTheme: IconThemeData(color: Colors.black),
-            toolbarHeight: 70, // Establecer una altura mayor
+            toolbarHeight: 70,
             title: Text(
               widget.titulo,
               style: TextStyle(color: Colors.black),
@@ -332,18 +334,18 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             }).toList(),
                           ),
                         ),
-                      if (imagenToUpload != null || urlImage != null)
-                        ShowImage(
-                          width: 350,
-                          height: 300,
-                          color: Colors.grey[300],
-                          borderRadius: BorderRadius.circular(20.0),
-                          widthAsset: 350,
-                          heightAsset: 300,
-                          imageAsset: imagenToUpload,
-                          networkImage: urlImage,
-                          fit: BoxFit.cover,
-                        ),
+                        if (imagenToUpload != null || urlImage != null)
+                          ShowImage(
+                            width: 350,
+                            height: 300,
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(20.0),
+                            widthAsset: 350,
+                            heightAsset: 300,
+                            imageAsset: imagenToUpload,
+                            networkImage: urlImage,
+                            fit: BoxFit.cover,
+                          ),
                         Padding(
                           padding:
                               const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
@@ -376,11 +378,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
               ),
             ),
             if (isUserSignedIn)
-              SizedBox(
-                width: double.infinity,
-                height: 50.0,
-                child: ElevatedButton(
-                  onPressed: () async {
+              ElevatedGlobalButton(
+                  nameSavebutton: widget.nameSavebutton,
+                  widthSizeBox: double.infinity,
+                  heightSizeBox: 50.0,
+                  fontSize: 21,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                  onPress: () async {
                     //--- Se asigna cada String de los campso de texto a una variable ---//
                     final nombreProducto = _nombreController.text;
                     double precio =
@@ -423,24 +428,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           ? actualizarProducto(_producto!)
                           : print('urlImage es null');
                     }
-                  },
-                  style: ButtonStyle(
-                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: Text(widget.nameSavebutton,
-                        style: const TextStyle(
-                            fontSize: 21,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 1.0)), //tamaño del texto del botón
-                  ),
-                ),
-              )
+                  })
           ],
         ),
       ),

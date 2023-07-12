@@ -1,3 +1,5 @@
+import 'package:multi_image_picker/multi_image_picker.dart';
+
 class ProductImagesTb {
   final int idProductImage;
   final int idProducto;
@@ -32,9 +34,25 @@ class ProductImagesTb {
     };
   }
 
+  ProductImagesTb copyWith({
+    int? idProductImage,
+    int? idProducto,
+    String? nombreImage,
+    String? urlImage,
+    int? isPrincipalImage,
+  }) {
+    return ProductImagesTb(
+      idProductImage: idProductImage ?? this.idProductImage,
+      idProducto: idProducto ?? this.idProducto,
+      nombreImage: nombreImage ?? this.nombreImage,
+      urlImage: urlImage ?? this.urlImage,
+      isPrincipalImage: isPrincipalImage ?? this.isPrincipalImage,
+    );
+  }
+
   @override
   String toString() {
-    return 'RatingsTb{idProducto: $idProducto, nombreImage: $nombreImage, urlImage: $urlImage, isPrincipalImage: $isPrincipalImage}';
+    return 'ProductImagesTb{idProducto: $idProducto, nombreImage: $nombreImage, urlImage: $urlImage, isPrincipalImage: $isPrincipalImage}';
   }
 }
 
@@ -71,5 +89,33 @@ class ProductImageCreacionTb {
   @override
   String toString() {
     return 'RatingsTb{idProducto: $idProducto, urlImage: $urlImage, isPrincipalImage: $isPrincipalImage}';
+  }
+}
+
+class ProductImageToUpdate {
+  final int indexImage;
+  final String nombreImage;
+  final Asset newImage;
+
+  ProductImageToUpdate(
+      {required this.indexImage,
+      required this.nombreImage,
+      required this.newImage});
+}
+
+class ProductImageToUpload {
+  final int indexImage;
+  final String? nombreImage;
+  final Asset newImage;
+
+  ProductImageToUpload({
+    required this.indexImage,
+    this.nombreImage,
+    required this.newImage,
+  });
+
+  @override
+  String toString() {
+    return 'ProductImageToUpload{indexImage: $indexImage, imageToUpload: $newImage}';
   }
 }

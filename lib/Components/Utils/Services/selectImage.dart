@@ -22,13 +22,13 @@ Future<Asset?> getImageAsset() async {
   }
   return null;
 }
-
-Future <List<Asset?>> getImagesAsset(List<Asset?> selectedImages) async {
+//Future <List<Asset?>> getImagesAsset(List<Asset?> selectedImages) async {
+Future <List<Asset?>> getImagesAsset() async {
   List<Asset> resultList = [];
 
   try {
     resultList = await MultiImagePicker.pickImages(
-      maxImages: 5,
+      maxImages: 6,
       enableCamera: true, // Habilitar la opción de tomar fotos desde la cámara
       //selectedAssets: selectedImages, // Imágenes seleccionadas previamente
     );

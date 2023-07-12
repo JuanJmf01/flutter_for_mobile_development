@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
+import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/main.dart';
@@ -52,7 +53,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
         context.read<LoginProvider>().checkUserSignedIn();
         context.read<UsuarioProvider>().obtenerIdUsuario();
 
-        Navigator.pop(context);
+        //Navigator.pop(context);
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -128,27 +129,17 @@ class _ButtonLoginState extends State<ButtonLogin> {
               labelText: 'Contraseña',
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(top: 40.0),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50.0,
-              child: ElevatedButton(
-                onPressed: () {},
-                style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30.0),
-                    ),
-                  ),
-                ),
-                child: const Text(
-                  'Iniciar sesión',
-                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
-          ),
+            ElevatedGlobalButton(
+              paddingTop: 40.0,
+                nameSavebutton: 'Iniciar sesion',
+                fontSize: 17,
+                fontWeight: FontWeight.bold,
+                borderRadius: BorderRadius.circular(30.0),
+                widthSizeBox: double.infinity,
+                heightSizeBox: 50,
+                onPress: () {
+                  print('inicio sesion');
+                }),
           Padding(
             padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 50.0),
             child: Row(

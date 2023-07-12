@@ -38,7 +38,7 @@ class GeneralInputs extends StatelessWidget {
         child: TextField(
           controller: controller,
           minLines: minLines ?? 1,
-          maxLines: 10,
+          maxLines: maxLines,
           decoration: InputDecoration(
             labelText: labelText,
             border: InputBorder.none, // Sin borde

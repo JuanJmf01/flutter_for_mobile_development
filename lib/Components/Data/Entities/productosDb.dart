@@ -207,7 +207,7 @@ class ProductoDb {
       bool result =
           await ProductosCategoriasDb.deleteProductosCategorias(idProducto);
       if (result) {
-        result = await productImageDb.deleteProductImages(idProducto);
+        result = await ProductImageDb.deleteProductImages(idProducto);
       } else {
         print('problemas al eliminar ProductImages');
       }

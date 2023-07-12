@@ -8,7 +8,6 @@ class ShowImage extends StatelessWidget {
   const ShowImage({super.key, 
     this.imageAsset,
     this.networkImage,
-    this.imageMemory,
     this.height,
     this.width,
     this.heightAsset,
@@ -20,7 +19,6 @@ class ShowImage extends StatelessWidget {
 
   final Asset? imageAsset;
   final String? networkImage;
-  final Uint8List? imageMemory;
   final double? height;
   final double? width;
   final int? heightAsset;
