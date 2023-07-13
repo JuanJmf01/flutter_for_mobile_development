@@ -3,7 +3,6 @@ import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
@@ -121,14 +120,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     return idNegocio;
   }
 
-  Future<int> crearProducto(ProductoCreacionTb producto) async {
+  Future<int> crearProducto(ProductoCreacionTb producto, int idUsuario) async {
     int idProducto = 0;
     try {
       idProducto =
           await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
       if (imagenToUpload != null) {
         await ProductImagesStorage.cargarImage(
-            imagenToUpload!, 'productos', idProducto, 1);
+            imagenToUpload!, 'productos', idUsuario, idProducto, 1);
       }
       mostrarCuadroExito(idProducto);
     } catch (error) {
@@ -138,11 +137,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     return idProducto;
   }
 
-  void actualizarProducto(ProductoTb producto) async {
+  void actualizarProducto(ProductoTb producto, int idUsuario) async {
     int idProducto = producto.idProducto;
     if (imagenToUpload != null) {
-      await ProductImagesStorage.updateImage(
-          imagenToUpload!, 'productos', producto.nombreImage, idProducto, 1);
+      await ProductImagesStorage.updateImage(imagenToUpload!, 'productos',
+          idUsuario, producto.nombreImage, idProducto, 1);
     } else {
       print('Imagen a actualizar es null');
     }
@@ -156,26 +155,24 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   //Recibimos idProducto para enviarlo a la pagina anterior y poder renderizar un solo producto y no toda la pestaña
   void mostrarCuadroExito(int idProducto) {
-    if (context.mounted) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return ConfirmationDialog(
-            titulo: widget.exitoTitle,
-            message: widget.exitoMessage,
-            onAccept: () {
-              Navigator.of(context).pop();
-              if (_producto?.idProducto != null) {
-                Navigator.pop(context, idProducto);
-              } else {
-                Navigator.pop(context, idProducto);
-              }
-            },
-            onAcceptMessage: 'Cerrar y volver',
-          );
-        },
-      );
-    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ConfirmationDialog(
+          titulo: widget.exitoTitle,
+          message: widget.exitoMessage,
+          onAccept: () {
+            Navigator.of(context).pop();
+            if (_producto?.idProducto != null) {
+              Navigator.pop(context, idProducto);
+            } else {
+              Navigator.pop(context, idProducto);
+            }
+          },
+          onAcceptMessage: 'Cerrar y volver',
+        );
+      },
+    );
   }
 
   @override
@@ -367,7 +364,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                               ),
                             ),
                             icon: Icon(Icons.image),
-                            label: Text('Agrega una imagen'),
+                            label: imagenToUpload != null
+                                ? Text('Cambiar imagen')
+                                : Text('Agrega una imagen'),
                           ),
                         ),
                         const SizedBox(height: 100.0)
@@ -408,9 +407,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           cantidadDisponible: cantidadDisponible,
                           oferta: enOferta);
 
-                      imagenToUpload != null
-                          ? crearProducto(productoCreacion)
-                          : print('imagenToUpload es null');
+                      imagenToUpload != null && idUsuario != null
+                          ? crearProducto(productoCreacion, idUsuario)
+                          : print('imagenToUpload es null o idUsuario es null');
                     } else {
                       _producto = ProductoTb(
                         idProducto: widget.data!.idProducto,
@@ -424,8 +423,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         nombreImage: widget.data!.nombreImage,
                       );
 
-                      urlImage != null
-                          ? actualizarProducto(_producto!)
+                      urlImage != null && idUsuario != null
+                          ? actualizarProducto(_producto!, idUsuario)
                           : print('urlImage es null');
                     }
                   })

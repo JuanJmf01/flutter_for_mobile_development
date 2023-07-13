@@ -93,29 +93,31 @@ class ProductImageCreacionTb {
 }
 
 class ProductImageToUpdate {
-  final int indexImage;
   final String nombreImage;
   final Asset newImage;
 
-  ProductImageToUpdate(
-      {required this.indexImage,
-      required this.nombreImage,
-      required this.newImage});
-}
-
-class ProductImageToUpload {
-  final int indexImage;
-  final String? nombreImage;
-  final Asset newImage;
-
-  ProductImageToUpload({
-    required this.indexImage,
-    this.nombreImage,
+  ProductImageToUpdate({
+    required this.nombreImage,
     required this.newImage,
   });
 
   @override
   String toString() {
-    return 'ProductImageToUpload{indexImage: $indexImage, imageToUpload: $newImage}';
+    return 'ProductImageToUpdate{nombreImage: $nombreImage, newImage: $newImage}';
+  }
+}
+
+class ProductImageToUpload {
+  final String nombreImage;
+  final Asset newImage;
+
+  ProductImageToUpload({
+    required this.nombreImage,
+    required this.newImage,
+  });
+
+  @override
+  String toString() {
+    return 'ProductImageToUpload{nombreImage: $nombreImage, newImage: $newImage}';
   }
 }

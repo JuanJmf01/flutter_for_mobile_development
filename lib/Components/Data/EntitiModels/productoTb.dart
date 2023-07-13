@@ -49,11 +49,11 @@ class ProductoTb {
       'nombreProducto': nombreProducto,
       'precio': precio,
       'descripcion': descripcion,
+      'descripcionDetallada': descripcionDetallada,
       'cantidadDisponible': cantidadDisponible,
       'oferta': oferta,
       'urlImage': urlImage,
       'nombreImage': nombreImage,
-      //'descripcionDetallada': descripcionDetallada,
       //'fechaDeCreacion': fechaDeCreacion,
       //'estado': estado,
     };

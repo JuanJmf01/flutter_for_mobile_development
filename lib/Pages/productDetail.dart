@@ -11,6 +11,7 @@ import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Icons/switch.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
@@ -36,6 +37,7 @@ class ProductDetail extends StatefulWidget {
 class _ProductDetailState extends State<ProductDetail> {
   Future<ProductoTb> producto() async {
     final ProductoTb producto = await ProductoDb.getProducto(widget.id);
+    //print('PRODUCTO: $producto');
 
     return producto;
   }
@@ -102,7 +104,7 @@ class _ProductDetailState extends State<ProductDetail> {
                                           idUsuario: idUsuario!),
                                       AdvancedDescription(
                                         descripcionDetallada:
-                                            producto.descripcion,
+                                            producto.descripcionDetallada,
                                         idProducto: widget.id,
                                       ),
                                       SummaryReviews(
@@ -416,20 +418,25 @@ class AdvancedDescription extends StatefulWidget {
 class _AdvancedDescriptionState extends State<AdvancedDescription> {
   List<ProductImagesTb> productSecondaryImages = [];
   List<dynamic> allProductImages = [];
-  bool isChecked = false;
+  bool isChecked = true;
 
   List<ProductImageToUpload> imagesToUpload = [];
   List<ProductImageToUpdate> imagesToUpdate = [];
 
   final TextEditingController _descripcionDetalldaController =
       TextEditingController();
+  String? descripcionDetalladaAux;
 
-  void insertProductImage() async {
+  void insertProductImage(int idUsuario) async {
     if (imagesToUpload.isNotEmpty) {
       List<ProductImagesTb> productImagesAux = [];
       for (var imageToUpload in imagesToUpload) {
         ProductImagesTb productImage = await ProductImagesStorage.cargarImage(
-            imageToUpload.newImage, 'productos', widget.idProducto, 0);
+            imageToUpload.newImage,
+            'productos',
+            idUsuario,
+            widget.idProducto,
+            0);
         productImagesAux.add(productImage);
       }
 
@@ -446,7 +453,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     }
   }
 
-  void updateSecondaryImage() async {
+  void updateSecondaryImage(int idUsuario) async {
     if (imagesToUpdate.isNotEmpty) {
       await Future.forEach(imagesToUpdate, (image) async {
         String nombreImage = image.nombreImage;
@@ -455,6 +462,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         String url = await ProductImagesStorage.updateImage(
           imageToUpdate,
           'productos',
+          idUsuario,
           nombreImage,
           widget.idProducto,
           0,
@@ -495,17 +503,173 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     });
   }
 
+  //Actualizar descripcion detallada
+  void updateDescripcionDetallada() async {
+    final descripcionDetallada = _descripcionDetalldaController.text;
+
+    if (descripcionDetalladaAux != descripcionDetallada) {
+      bool result = await ProductoDb.updateProductDescripcionDetallada(
+          descripcionDetallada, widget.idProducto);
+      if (result) {
+        setState(() {
+          descripcionDetalladaAux = descripcionDetallada;
+        });
+      }
+    } else {
+      print('es la mismas');
+    }
+  }
+
+  void agregarImagenes() async {
+    List<Asset?> imagesAsset = await getImagesAsset();
+    List<ProductImageToUpload> allProductImagesAux = [];
+
+    if (imagesAsset.isNotEmpty) {
+      for (var image in imagesAsset) {
+        String nameImage = image!.name!;
+        ProductImageToUpload newImage = ProductImageToUpload(
+          nombreImage: assingName(nameImage),
+          newImage: image,
+        );
+        allProductImagesAux.add(newImage);
+      }
+
+      setState(() {
+        allProductImages = [...allProductImages, ...allProductImagesAux];
+        imagesToUpload = [...imagesToUpload, ...allProductImagesAux];
+      });
+    }
+  }
+
+  void editarImagenes(final image) async {
+    Asset? asset = await getImageAsset();
+    if (asset != null) {
+      int imageIndex = allProductImages.indexOf(image);
+
+      int indice = imagesToUpdate
+          .indexWhere((element) => element.nombreImage == image.nombreImage);
+
+      /** Si 'indice' != de -1  es por que ya ha sido cambiada previamente
+      * En este caso el objeto ya se encuentra dentro de 'imagesToUpdate' por lo tanto 
+       * solo es necesario actualizar "imageToUpdate" respecto a su posicion 'indice' y dejar 
+       * "nombreImage" igual ya que este nombre se utiliza para completar la ruta en firebase Storage y actualizar */
+      if (indice != -1 || image is ProductImageToUpdate) {
+        ProductImageToUpdate newImage = ProductImageToUpdate(
+          nombreImage: imagesToUpdate[indice].nombreImage,
+          newImage: asset,
+        );
+        setState(() {
+          allProductImages[imageIndex] = newImage;
+          imagesToUpdate[indice] = newImage;
+        });
+      } else {
+        if (image is ProductImagesTb) {
+          ProductImageToUpdate newImage = ProductImageToUpdate(
+            nombreImage: image.nombreImage,
+            newImage: asset,
+          );
+          setState(() {
+            imagesToUpdate.add(newImage);
+
+            allProductImages[imageIndex] = newImage;
+          });
+        } else if (image is ProductImageToUpload) {
+          int indiceToUpload = imagesToUpload.indexWhere(
+              (element) => element.nombreImage == image.nombreImage);
+          String nameImage = asset.name!;
+          ProductImageToUpload newImage = ProductImageToUpload(
+              nombreImage: assingName(nameImage), newImage: asset);
+
+          setState(() {
+            allProductImages[imageIndex] = newImage;
+            imagesToUpload[indiceToUpload] = newImage;
+          });
+        }
+      }
+    }
+  }
+
+  void eliminarImagen(final image, int idUsuario) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        if (image is ProductImagesTb) {
+          return DeletedDialog(
+              onPress: () async {
+                bool result = await ProductImagesStorage.deleteImage(
+                    'productos',
+                    idUsuario,
+                    image.nombreImage,
+                    widget.idProducto,
+                    image.idProductImage);
+
+                if (result) {
+                  setState(() {
+                    allProductImages.removeWhere(
+                        (element) => element.nombreImage == image.nombreImage);
+                    productSecondaryImages.removeWhere(
+                        (element) => element.nombreImage == image.nombreImage);
+                  });
+                } else {
+                  print(
+                      'No fue posible eliminar ProductImagesStorage: $result');
+                }
+
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+              },
+              objectToDelete: 'la imagen');
+        } else if (image is ProductImageToUpdate) {
+          return RuleOut(
+            onPress: () {
+              int imageIndex = allProductImages.indexOf(image);
+              /**De la lista de imagenes originales, sacamos la imagen base o imagen que inicialmente habia */
+              ProductImagesTb oldImage = productSecondaryImages[imageIndex];
+
+              setState(() {
+                allProductImages[imageIndex] = oldImage;
+                imagesToUpdate.remove(image);
+              });
+
+              Navigator.of(context).pop();
+            },
+            objectToDelete: 'La imagen',
+          );
+        } else if (image is ProductImageToUpload) {
+          return RuleOut(
+              onPress: () {
+                int imageIndex = allProductImages.indexOf(image);
+                setState(() {
+                  allProductImages.removeAt(imageIndex);
+                  imagesToUpload.remove(image);
+                });
+
+                Navigator.of(context).pop();
+              },
+              objectToDelete: 'La imagen');
+        } else {
+          return SizedBox.shrink();
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
+    print('DESCRIPCION DETALLADA: ${widget.descripcionDetallada}');
 
     _descripcionDetalldaController.text = widget.descripcionDetallada ?? '';
+    descripcionDetalladaAux = widget.descripcionDetallada;
 
     getListSecondaryProductImages();
   }
 
   @override
   Widget build(BuildContext context) {
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+
     return SliverToBoxAdapter(
       child: Container(
         decoration: BoxDecoration(
@@ -546,7 +710,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
               ),
             ),
             Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 23.0, 30.0, 30.0),
+                padding: EdgeInsets.fromLTRB(
+                    isChecked ? 8.0 : 16, 23.0, isChecked ? 8.0 : 30, 30.0),
                 child: isChecked
                     ? GeneralInputs(
                         verticalPadding: 15.0,
@@ -558,307 +723,112 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                         minLines: 3,
                         maxLines: 40,
                       )
-                    : widget.descripcionDetallada!.isNotEmpty
-                        ? Text(
-                            widget.descripcionDetallada!,
-                            style: TextStyle(
-                              color: Colors.grey[800],
-                              fontSize: 16,
-                            ),
-                          )
-                        : Text(
-                            'No hay descripción que mostrar',
-                            style: TextStyle(
-                              color: Colors.grey[800],
-                              fontSize: 16,
-                            ),
-                          )),
-            Column(
-              children: [
-                for (var image in allProductImages)
-                  Column(
+                    : Text(
+                        descripcionDetalladaAux != null &&
+                                descripcionDetalladaAux!.isNotEmpty
+                            ? descripcionDetalladaAux!
+                            : 'No hay descripcion que mostrar',
+                        style: TextStyle(
+                          color: Colors.grey[800],
+                          fontSize: 16,
+                        ),
+                      )
+                // : Text(
+                //     'No hay descripción que mostrar',
+                //     style: TextStyle(
+                //       color: Colors.grey[800],
+                //       fontSize: 16,
+                //     ),
+                //   ),
+                ),
+            allProductImages.isNotEmpty
+                ? Column(
                     children: [
-                      Container(
-                          child: image is ProductImagesTb
-                              ? ShowImage(
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
-                                  networkImage: image.urlImage)
-                              : image is ProductImageToUpload ||
-                                      image is ProductImageToUpdate
-                                  ? FutureBuilder<ByteData>(
-                                      future: image.newImage.getByteData(),
-                                      builder: (BuildContext context,
-                                          AsyncSnapshot<ByteData> snapshot) {
-                                        if (snapshot.hasData) {
-                                          final byteData = snapshot.data!;
-                                          final bytes =
-                                              byteData.buffer.asUint8List();
-                                          return SizedBox(
-                                            width: double.infinity,
-                                            child: Image.memory(
-                                              bytes,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          );
-                                        } else if (snapshot.hasError) {
-                                          return const Text(
-                                              'Error al cargar la imagen');
-                                        } else {
-                                          return const Center(
-                                              child:
-                                                  CircularProgressIndicator());
-                                        }
-                                      },
-                                    )
-                                  : SizedBox.shrink()),
-                      isChecked
-                          ? Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: ElevatedGlobalButton(
-                                      paddingTop: 1.0,
-                                      paddingBottom: 12.0,
-                                      nameSavebutton: image is ProductImagesTb
-                                          ? 'Eliminar'
-                                          : 'Descartar',
-                                      heightSizeBox: 48.0,
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.w700,
-                                      color: image is ProductImagesTb
-                                          ? Colors.red.shade700
-                                          : Colors.lightGreen[500],
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      letterSpacing: 0.5,
-                                      onPress: () async {
-                                        showDialog(
-                                          context: context,
-                                          builder: (BuildContext context) {
-                                            if (image is ProductImagesTb) {
-                                              return DeletedDialog(
-                                                  onPress: () async {
-                                                    bool result =
-                                                        await ProductImagesStorage
-                                                            .deleteImage(
-                                                                'productos',
-                                                                image
-                                                                    .nombreImage,
-                                                                widget
-                                                                    .idProducto,
-                                                                image
-                                                                    .idProductImage);
-
-                                                    if (result) {
-                                                      setState(() {
-                                                        allProductImages.removeWhere(
-                                                            (element) =>
-                                                                element
-                                                                    .idProductImage ==
-                                                                image
-                                                                    .idProductImage);
-                                                      });
-                                                    } else {
-                                                      print('result: $result');
-                                                    }
-
-                                                    if (context.mounted) {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    }
-                                                  },
-                                                  objectToDelete: 'la imagen');
-                                            } else if (image
-                                                is ProductImageToUpdate) {
-                                              return RuleOut(
-                                                onPress: () {
-                                                  int imageIndex =
-                                                      allProductImages
-                                                          .indexOf(image);
-                                                  ProductImagesTb oldImage =
-                                                      productSecondaryImages[
-                                                          imageIndex];
-
-                                                  setState(() {
-                                                    allProductImages[
-                                                        imageIndex] = oldImage;
-                                                    imagesToUpdate
-                                                        .remove(image);
-                                                  });
-
-                                                  if (context.mounted) {
-                                                    Navigator.of(context).pop();
-                                                  }
-                                                },
-                                                objectToDelete: 'la imagen',
-                                              );
-                                            } else if (image
-                                                is ProductImageToUpload) {
-                                              return RuleOut(
-                                                  onPress: () {
-                                                    int imageIndex =
-                                                        allProductImages
-                                                            .indexOf(image);
-                                                    print(
-                                                        'imageIndex_: $imageIndex');
-                                                    print(
-                                                        'allProductos: $allProductImages');
-                                                    setState(() {
-                                                      allProductImages
-                                                          .removeAt(imageIndex);
-                                                      imagesToUpload
-                                                          .remove(image);
-                                                    });
-
-                                                    if (context.mounted) {
-                                                      Navigator.of(context)
-                                                          .pop();
-                                                    }
-                                                  },
-                                                  objectToDelete: 'La imagen');
-                                            } else {
-                                              return SizedBox.shrink();
-                                            }
-                                          },
-                                        );
-                                      }),
-                                ),
-                                Expanded(
-                                  child: ElevatedGlobalButton(
-                                      paddingTop: 1.0,
-                                      paddingBottom: 12.0,
-                                      nameSavebutton: 'Editar',
-                                      heightSizeBox: 48.0,
-                                      fontSize: 19,
-                                      fontWeight: FontWeight.w700,
-                                      borderRadius: BorderRadius.circular(5.0),
-                                      letterSpacing: 0.5,
-                                      onPress: () async {
-                                        Asset? asset = await getImageAsset();
-                                        if (asset != null) {
-                                          int imageIndex =
-                                              allProductImages.indexOf(image);
-
-                                          int indice = imagesToUpdate
-                                              .indexWhere((element) =>
-                                                  element.indexImage ==
-                                                  imageIndex);
-
-                                          /** Si 'indice' != de -1  es por que ya ha sido cambiada previamente
-                                             * En este caso el objeto ya se encuentra dentro de 'imagesToUpdate' por lo tanto 
-                                             * solo es necesario actualizar "imageToUpdate" respecto a su posicion 'indice' y dejar 
-                                             * "nombreImage" igual ya que este nombre se utiliza para completar la ruta en firebase Storage y actualizar */
-
-                                          if (indice != -1) {
-                                            ProductImageToUpdate newImage =
-                                                ProductImageToUpdate(
-                                              indexImage: imagesToUpdate[indice]
-                                                  .indexImage,
-                                              nombreImage:
-                                                  imagesToUpdate[indice]
-                                                      .nombreImage,
-                                              newImage: asset,
-                                            );
-                                            setState(() {
-                                              allProductImages[indice] =
-                                                  newImage;
-                                              imagesToUpdate[imageIndex] =
-                                                  newImage;
-                                            });
-                                          } else {
-                                            if (image is ProductImagesTb) {
-                                              ProductImageToUpdate newImage =
-                                                  ProductImageToUpdate(
-                                                indexImage: imageIndex,
-                                                nombreImage: image.nombreImage,
-                                                newImage: asset,
-                                              );
-                                              setState(() {
-                                                imagesToUpdate.add(newImage);
-
-                                                allProductImages[imageIndex] =
-                                                    newImage;
-                                              });
-                                            } else if (image
-                                                is ProductImageToUpload) {
-                                                  
-                                              int indiceToUpload =
-                                                  imagesToUpload.indexWhere(
-                                                      (element) =>
-                                                          element.indexImage ==
-                                                          imageIndex);
-                                              ProductImageToUpload newImage =
-                                                  ProductImageToUpload(
-                                                      indexImage: imageIndex,
-                                                      newImage: asset);
-
-                                              setState(() {
-                                                allProductImages[imageIndex] =
-                                                    newImage;
-                                                imagesToUpload[indiceToUpload] =
-                                                    newImage;
-                                              });
-                                            }
+                      for (var image in allProductImages)
+                        Column(
+                          children: [
+                            Container(
+                                child: image is ProductImagesTb
+                                    ? ShowImage(
+                                        width: double.infinity,
+                                        fit: BoxFit.cover,
+                                        networkImage: image.urlImage)
+                                    : image is ProductImageToUpload ||
+                                            image is ProductImageToUpdate
+                                        ? FutureBuilder<ByteData>(
+                                            future:
+                                                image.newImage.getByteData(),
+                                            builder: (BuildContext context,
+                                                AsyncSnapshot<ByteData>
+                                                    snapshot) {
+                                              if (snapshot.hasData) {
+                                                final byteData = snapshot.data!;
+                                                final bytes = byteData.buffer
+                                                    .asUint8List();
+                                                return SizedBox(
+                                                  width: double.infinity,
+                                                  child: Image.memory(
+                                                    bytes,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                );
+                                              } else if (snapshot.hasError) {
+                                                return const Text(
+                                                    'Error al cargar la imagen');
+                                              } else {
+                                                return const Center(
+                                                    child:
+                                                        CircularProgressIndicator());
+                                              }
+                                            },
+                                          )
+                                        : SizedBox.shrink()),
+                            isChecked
+                                ? Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      createCustomButton(
+                                        () {
+                                          if (idUsuario != null) {
+                                            eliminarImagen(image, idUsuario);
                                           }
-                                        }
-                                        // updateSecondaryImage(image.nombreImage);
-                                      }),
-                                ),
-                              ],
-                            )
-                          : SizedBox.shrink()
+                                        },
+                                        image is ProductImagesTb
+                                            ? 'Eliminar'
+                                            : 'Descartar',
+                                        color: image is ProductImagesTb
+                                            ? Colors.red.shade700
+                                            : Colors.lightGreen.shade500,
+                                      ),
+                                      createCustomButton(
+                                        //onPress
+                                        () {
+                                          editarImagenes(image);
+                                        },
+                                        'Editar',
+                                      ),
+                                    ],
+                                  )
+                                : SizedBox.shrink()
+                          ],
+                        )
                     ],
                   )
-              ],
-            ),
-
+                : Center(
+                    child: Text('Aqui puedes agregar imagenes del producto'),
+                  ),
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: IconButton(
-                    onPressed: () async {
-                      int length = allProductImages.length;
-                      //print('LONGITUD_: $lenght');
-                      List<Asset?> imagesAsset = await getImagesAsset();
-                      List<ProductImageToUpload> allProductImagesAux = [];
-
-                      if (imagesAsset.isNotEmpty) {
-                        print('ALL IMAGES: $allProductImages');
-
-                        for (int i = 0; i < imagesAsset.length; i++) {
-                          ProductImageToUpload newImage = ProductImageToUpload(
-                            indexImage: length + i,
-                            newImage: imagesAsset[i]!,
-                          );
-                          allProductImagesAux.add(newImage);
-                          print('newImage_: $newImage');
-                        }
-
-                        setState(() {
-                          allProductImages = [
-                            ...allProductImages,
-                            ...allProductImagesAux
-                          ];
-
-                          imagesToUpload = [
-                            ...imagesToUpload,
-                            ...allProductImagesAux
-                          ];
-                        });
-                      }
-                    },
-                    icon: Icon(CupertinoIcons.add_circled,
-                        size: 40, color: Colors.grey.shade600)),
+                  onPressed: () async {
+                    agregarImagenes();
+                  },
+                  icon: Icon(CupertinoIcons.add_circled,
+                      size: 40, color: Colors.grey.shade600),
+                ),
               ),
             ),
-
-            //Boton por separado
-            // ElevatedButton(
-            //   onPressed: () {
-            //     insertProductImage2();
-            //   },
-            //   child: Text('Agregar'),
-            // )
             ElevatedGlobalButton(
                 paddingLeft: 8.0,
                 paddingTop: 10,
@@ -870,12 +840,32 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 heightSizeBox: 50,
                 widthSizeBox: double.infinity,
                 onPress: () {
-                  insertProductImage();
-                  updateSecondaryImage();
+                  if (idUsuario != null) insertProductImage(idUsuario);
+                  if (idUsuario != null) {
+                    updateSecondaryImage(idUsuario);
+                  }
+                  updateDescripcionDetallada();
                 }),
           ],
         ),
       ),
+    );
+  }
+
+  Widget createCustomButton(VoidCallback onPressedCallback, String placeholder,
+      {Color? color, doubler}) {
+    return Expanded(
+      child: ElevatedGlobalButton(
+          paddingTop: 1.0,
+          paddingBottom: 12.0,
+          nameSavebutton: placeholder,
+          heightSizeBox: 48.0,
+          fontSize: 19,
+          color: color,
+          fontWeight: FontWeight.w700,
+          borderRadius: BorderRadius.circular(5.0),
+          letterSpacing: 0.5,
+          onPress: onPressedCallback),
     );
   }
 }

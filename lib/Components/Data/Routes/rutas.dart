@@ -18,6 +18,7 @@ class MisRutas {
   // -- Rutas para la tabla productos -- //
   static String rutaProductos = '$rutaPrincipal/producto';
   static String rutaProductosByNegocio = '$rutaPrincipal/productoByNegocio';
+  static String rutaDescripcionDetallada = '$rutaPrincipal/producto/descripcionDetallada';
 
   // -- Rutas para la tabla productos -- //
   static String rutaProductImages = '$rutaPrincipal/productImages';

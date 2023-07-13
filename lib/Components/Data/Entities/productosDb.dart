@@ -18,7 +18,7 @@ class ProductoDb {
   //   Database database = await DB.openDB();
 
   //   final List<Map<String, dynamic>> productosMap = await database.rawQuery('''
-  //     SELECT p.* 
+  //     SELECT p.*
   //     FROM $tableName p
   //     INNER JOIN ${ProductosCategoriasDb.tableName} pc
   //       ON p.idProducto = pc.idProducto
@@ -230,6 +230,34 @@ class ProductoDb {
       }
     } catch (error) {
       print('Error in delete product: $error');
+    }
+  }
+
+  static Future<bool> updateProductDescripcionDetallada(
+      String descripcionDetallada, int idProducto) async {
+    Dio dio = Dio();
+    String url = '${MisRutas.rutaDescripcionDetallada}/$idProducto';
+
+    try {
+      Response response = await dio.patch(
+        url,
+        data: jsonEncode({"descripcionDetallada": descripcionDetallada}),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('Descripcion detallada actualizada correctamente');
+        print(response.data);
+        return true;
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+        return false;
+      }
+    } catch (error) {
+      print('Error de conexión en updateProductDescripcionDetallada: $error');
+      return false;
     }
   }
 }
