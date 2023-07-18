@@ -54,9 +54,9 @@ class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
                       child: Comments(
                         selectIndex: selectIndex,
                         idProducto: widget.idProducto,
-                        paddingOutsideHorizontal: 15.0,
-                        paddingOutsideVertical: 5.0,
-                        containerPadding: 15.0,
+                        paddingOutsideHorizontal: 8.0,
+                        paddingOutsideVertical: 2.0,
+                        containerPadding: 12.0,
                       ),
                     ),
                   ],
@@ -355,6 +355,7 @@ class Comments extends StatefulWidget {
     this.fontSizeStarts,
     this.color,
     this.fontSizeDescription,
+    this.minLines,
   }) : super(key: key);
 
   final int selectIndex;
@@ -367,6 +368,7 @@ class Comments extends StatefulWidget {
   final double? fontSizeName;
   final double? fontSizeStarts;
   final double? fontSizeDescription;
+  final int? minLines;
 
   @override
   State<Comments> createState() => _CommentsState();
@@ -457,15 +459,15 @@ class _CommentsState extends State<Comments> {
                         reviews[index]['nombreUsuario'],
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          fontSize: widget.fontSizeName ?? 16.0, //16
+                          fontSize: widget.fontSizeName ?? 16.0,
                         ),
                       ),
                       Row(
                         children: [
                           Stars(
                             index: reviews[index]['ratings'] ?? 0,
-                            size: widget.fontSizeStarts ?? 23.0, //23
-                            separationEachStar: 20,
+                            size: widget.fontSizeStarts ?? 20.0,
+                            separationEachStar: 18,
                             color: Colors.grey.shade800,
                           ),
                         ],
@@ -474,6 +476,8 @@ class _CommentsState extends State<Comments> {
                         padding: const EdgeInsets.only(top: 15.0),
                         child: Text(
                           reviews[index]['comentario'] ?? '',
+                          maxLines: widget.minLines ?? 20,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                               fontSize: widget.fontSizeDescription ?? 16),
                         ),

@@ -1,0 +1,34 @@
+import 'package:flutter/material.dart';
+
+class GlobalTextButton extends StatelessWidget {
+  const GlobalTextButton(
+      {super.key,
+      this.padding,
+      required this.onPressed,
+      required this.textButton,
+      this.color,
+      this.fontSizeTextButton});
+
+  final EdgeInsets? padding;
+  final VoidCallback onPressed;
+  final String textButton;
+  final Color? color;
+  final double? fontSizeTextButton;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: padding ?? const EdgeInsets.all(0.0),
+      child: TextButton(
+        onPressed: onPressed,
+        child: Text(
+          textButton,
+          style: TextStyle(
+            color: color,
+            fontSize: fontSizeTextButton,
+          ),
+        ),
+      ),
+    );
+  }
+}

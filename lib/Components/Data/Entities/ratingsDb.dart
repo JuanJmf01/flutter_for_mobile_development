@@ -35,7 +35,7 @@ class RatingsDb {
       );
       if (response.statusCode == 200) {
         print('Rating insertado correctamente (print)');
-        print(response.data);
+        //print(response.data);
       }
     } catch (error) {
       print('Error de conexión: $error');
@@ -60,7 +60,7 @@ class RatingsDb {
         List<Map<String, dynamic>> reviews = responseData.map((item) {
           return Map<String, dynamic>.from(item);
         }).toList();
-        print(reviews);
+        //print(reviews);
 
         return reviews;
       } else if (response.statusCode == 404) {

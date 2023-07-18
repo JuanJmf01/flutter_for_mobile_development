@@ -1,14 +1,14 @@
 class ProductoTb {
-  int idProducto; // PK
-  int idNegocio; // FK
-  String nombreProducto;
-  double precio;
-  String? descripcion;
-  String? descripcionDetallada;
-  int cantidadDisponible;
-  int? oferta; // bool (0 or 1)
-  String urlImage;
-  String nombreImage;
+  final int idProducto; // PK
+  final int idNegocio; // FK
+  final String nombreProducto;
+  final double precio;
+  final String? descripcion;
+  final String? descripcionDetallada;
+  final int cantidadDisponible;
+  final int? oferta; // bool (0 or 1)
+  final String urlImage;
+  final String nombreImage;
   //String? fechaDeCreacion;
   //int? estado;
 

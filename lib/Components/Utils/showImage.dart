@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ShowImage extends StatelessWidget {
-  const ShowImage({super.key, 
+  const ShowImage({
+    super.key,
+    this.padding,
     this.imageAsset,
     this.networkImage,
     this.height,
@@ -14,6 +16,7 @@ class ShowImage extends StatelessWidget {
     this.borderRadius,
   });
 
+  final EdgeInsets? padding;
   final Asset? imageAsset;
   final String? networkImage;
   final double? height;
@@ -28,27 +31,26 @@ class ShowImage extends StatelessWidget {
   Widget build(BuildContext context) {
     final hasBorderRadius = borderRadius != null;
 
-    return Container(
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-          color: color,
+    return Padding(
+      padding: padding ?? const EdgeInsets.all(0.0),
+      child: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(color: color, borderRadius: borderRadius),
+        child: ClipRRect(
           borderRadius:
-              borderRadius
-          ),
-      child: ClipRRect(
-        borderRadius:
-            hasBorderRadius ? borderRadius! : BorderRadius.circular(0.0),
-        child: imageAsset != null
-            ? AssetThumb(
-                asset: imageAsset!,
-                width: widthAsset ?? 0,
-                height: heightAsset ?? 0,
-              )
-            : Image.network(
-                networkImage!,
-                fit: fit,
-              ),
+              hasBorderRadius ? borderRadius! : BorderRadius.circular(0.0),
+          child: imageAsset != null
+              ? AssetThumb(
+                  asset: imageAsset!,
+                  width: widthAsset ?? 0,
+                  height: heightAsset ?? 0,
+                )
+              : Image.network(
+                  networkImage!,
+                  fit: fit,
+                ),
+        ),
       ),
     );
   }

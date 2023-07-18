@@ -15,6 +15,7 @@ import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
+import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/reviewsAndOpinions.dart';
 import 'package:flutter/cupertino.dart';
@@ -678,29 +679,27 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            allProductImages.isNotEmpty
-                ? Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
-                          child: SwitchIcon(
-                            isChecked: isChecked,
-                            onChanged: (value) {
-                              setState(() {
-                                isChecked = value;
-                              });
-                              print(isChecked);
-                            },
-                          ),
-                        ),
-                        Text('Modificar'),
-                      ],
+            Padding(
+              padding: EdgeInsets.all(15.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                    child: SwitchIcon(
+                      isChecked: isChecked,
+                      onChanged: (value) {
+                        setState(() {
+                          isChecked = value;
+                        });
+                        print(isChecked);
+                      },
                     ),
-                  )
-                : SizedBox.shrink(),
+                  ),
+                  Text('Modificar'),
+                ],
+              ),
+            ),
             Padding(
               padding: EdgeInsets.fromLTRB(16.0,
                   productSecondaryImages.isNotEmpty ? 0.0 : 20.0, 0.0, 0.0),
@@ -732,15 +731,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                           color: Colors.grey[800],
                           fontSize: 16,
                         ),
-                      )
-                // : Text(
-                //     'No hay descripción que mostrar',
-                //     style: TextStyle(
-                //       color: Colors.grey[800],
-                //       fontSize: 16,
-                //     ),
-                //   ),
-                ),
+                      )),
             allProductImages.isNotEmpty
                 ? Column(
                     children: [
@@ -880,8 +871,20 @@ class SummaryReviews extends StatefulWidget {
 }
 
 class _SummaryReviewsState extends State<SummaryReviews> {
+  void navigateToReviewsAndOpinions() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ReviewsAndOpinions(
+          idProducto: widget.idProducto,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    Color color = Colors.blue.shade600;
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.only(top: 12.0),
@@ -889,34 +892,48 @@ class _SummaryReviewsState extends State<SummaryReviews> {
             borderRadius: BorderRadius.circular(20.0),
             color: Colors.grey.shade200),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10.0, 10.0, 17.0, 0.0),
+              child: TextButton(
+                onPressed: navigateToReviewsAndOpinions,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Calificaciones y opiniones',
+                      style: TextStyle(color: color, fontSize: 18),
+                    ),
+                    const Icon(
+                      Icons.arrow_forward,
+                      size: 26,
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Comments(
               idProducto: widget.idProducto,
               selectIndex: 0,
               maxCommentsToShow: 3,
               paddingOutsideHorizontal: 5.0,
-              paddingOutsideVertical: 2.0,
+              paddingOutsideVertical: 0.0,
               containerPadding: 10.0,
-              color: Colors.grey[300],
-              fontSizeDescription: 13,
-              fontSizeName: 14,
-              fontSizeStarts: 20,
+              //color: Colors.grey[300],
+              minLines: 3,
+              fontSizeDescription: 16,
+              fontSizeName: 17,
+              fontSizeStarts: 21,
             ),
-            TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ReviewsAndOpinions(
-                        idProducto: widget.idProducto,
-                      ),
-                    ),
-                  );
-                },
-                child: Text(
-                  'More Reviews',
-                  style: TextStyle(color: Colors.blue[500], fontSize: 17),
-                ))
+            Center(
+              child: GlobalTextButton(
+                onPressed: navigateToReviewsAndOpinions,
+                textButton: 'Todas las calificaciones',
+                color: color,
+                fontSizeTextButton: 17,
+              ),
+            ),
           ],
         ),
       ),

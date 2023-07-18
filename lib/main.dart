@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
 import 'package:etfi_point/Pages/allProducts.dart';
 import 'package:etfi_point/Pages/filtros.dart';
 import 'package:etfi_point/Pages/misProductos.dart';
@@ -59,6 +60,8 @@ void main() async {
         ChangeNotifierProvider<UsuarioProvider>(
           create: (_) => UsuarioProvider(),
         ),
+        ChangeNotifierProvider<ShoppingCartProvider>(
+            create: (_) => ShoppingCartProvider())
       ],
       child: MyApp(),
     ),

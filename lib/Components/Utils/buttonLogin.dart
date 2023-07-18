@@ -3,6 +3,7 @@ import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
+import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
@@ -129,17 +130,17 @@ class _ButtonLoginState extends State<ButtonLogin> {
               labelText: 'Contraseña',
             ),
           ),
-            ElevatedGlobalButton(
+          ElevatedGlobalButton(
               paddingTop: 40.0,
-                nameSavebutton: 'Iniciar sesion',
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                borderRadius: BorderRadius.circular(30.0),
-                widthSizeBox: double.infinity,
-                heightSizeBox: 50,
-                onPress: () {
-                  print('inicio sesion');
-                }),
+              nameSavebutton: 'Iniciar sesion',
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+              borderRadius: BorderRadius.circular(30.0),
+              widthSizeBox: double.infinity,
+              heightSizeBox: 50,
+              onPress: () {
+                print('inicio sesion');
+              }),
           Padding(
             padding: const EdgeInsets.fromLTRB(0.0, 15.0, 0.0, 50.0),
             child: Row(
@@ -209,18 +210,16 @@ class _ButtonLoginState extends State<ButtonLogin> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('¿No tienes una cuenta?'),
-                TextButton(
-                  onPressed: () {
-                    // Acción al presionar el botón de "Regístrate"
-                  },
-                  child: const Text(
-                    'Regístrate',
-                    style: TextStyle(
-                      color: Colors.blue,
-                    ),
-                  ),
+                const Text(
+                  '¿No tienes una cuenta?',
+                  style: TextStyle(fontSize: 14.5),
                 ),
+                GlobalTextButton(
+                  onPressed: () {},
+                  textButton: 'Regístrate',
+                  color: Colors.blue,
+                  fontSizeTextButton: 15,
+                )
               ],
             ),
           ),
