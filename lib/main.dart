@@ -82,7 +82,6 @@ class _MyAppState extends State<MyApp> {
 
     print('Una vez SE EJECUTA');
     context.read<LoginProvider>().checkUserSignedIn();
-    context.read<UsuarioProvider>().obtenerIdUsuario();
   }
 
   @override
@@ -120,6 +119,7 @@ class _MenuState extends State<Menu> {
     if (!isUserSignedIn) {
       _widgetOptions = <Widget>[const Home(), ShoppingCart(), Filtros()];
     } else {
+      context.read<UsuarioProvider>().obtenerIdUsuario();
       _widgetOptions = <Widget>[
         const Home(),
         MisProductos(),

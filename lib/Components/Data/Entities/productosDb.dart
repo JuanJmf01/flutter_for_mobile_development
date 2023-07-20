@@ -10,68 +10,27 @@ import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
+/// The `ProductoDb` class contains static methods for performing CRUD operations on the "productos"
+
 class ProductoDb {
   static const tableName = "productos";
-
-  // static Future<List<ProductoTb>> getProductosByCategoria2(
-  //     int idCategoria) async {
-  //   Database database = await DB.openDB();
-
-  //   final List<Map<String, dynamic>> productosMap = await database.rawQuery('''
-  //     SELECT p.*
-  //     FROM $tableName p
-  //     INNER JOIN ${ProductosCategoriasDb.tableName} pc
-  //       ON p.idProducto = pc.idProducto
-  //     WHERE pc.idCategoria = ?
-  //   ''', [idCategoria]);
-
-  //   List<ProductoTb> productos = [];
-
-  //   for (final productoMap in productosMap) {
-  //     ProductoTb producto = ProductoTb(
-  //       idProducto: productoMap['idProducto'],
-  //       idNegocio: productoMap['idNegocio'],
-  //       nombreProducto: productoMap['nombreProducto'],
-  //       precio: productoMap['precio'],
-  //       descripcion: productoMap['descripcion'],
-  //       cantidadDisponible: productoMap['cantidadDisponible'],
-  //       oferta: productoMap['oferta'],
-  //       urlImage: productoMap['imagePath'],
-  //     );
-
-  //     productos.add(producto);
-  //   }
-  //   return productos;
-  // }
-
-  // Retornamos una lista de productos por idCategorias
-  // static Future<List<ProductoTb>> getProductosByCategoria(
-  //     int idProducto) async {
-  //   //Obtenemos todas las categorias en una lista
-  //   final List<int> idCategorias =
-  //       await ProductosCategoriasDb.getIdCategoriasPorIdProducto(idProducto);
-  //   final Set<int> idProductosSinRepetir = {};
-  //   final List<ProductoTb> productos = [];
-
-  //   //Pasamos categoria por categoria al metodo 'getProductosByCategoria' y vamos insertando uno a uno en una lista
-  //   for (int idCategoria in idCategorias) {
-  //     final List<ProductoTb> productosPorCategoria =
-  //     //Realizar una consulta que se encargue de retornar productos por idCategoria
-  //         await getProductosByCategoria2(idCategoria);
-  //     print(productos);
-  //     productos.addAll(productosPorCategoria);
-  //   }
-
-  //   productos.removeWhere((producto) => producto.idProducto == idProducto);
-  //   productos.retainWhere(
-  //       (producto) => idProductosSinRepetir.add(producto.idProducto!));
-
-  //   return productos;
-  // }
 
   // -------- Consultas despues de la migracion a mySQL --------- //
 
   //Insertar un producto requiere insertar categorias por id en productosCategorias (tabla)
+
+  /// The function `insertProducto` is used to insert a product into a database along with its selected
+  /// categories.
+  ///
+  /// Args:
+  ///   producto (ProductoCreacionTb): The parameter "producto" is of type "ProductoCreacionTb", which is
+  /// a custom class representing the data of a product to be inserted.
+  ///   categoriasSeleccionadas: The parameter "categoriasSeleccionadas" is a list of selected categories
+  /// for a product. Each element in the list represents a category and contains information such as the
+  /// category ID.
+  ///
+  /// Returns:
+  ///   a Future<int>.
   static Future<int> insertProducto(
       ProductoCreacionTb producto, categoriasSeleccionadas) async {
     print('Producto: $producto');
@@ -92,7 +51,7 @@ class ProductoDb {
         print(response.data);
         int idProducto = response.data;
 
-        // Insertar categorías seleccionadas
+        // Insert selected categories
         for (var i = 0; i < categoriasSeleccionadas.length; i++) {
           ProductoCategoriaTb productoCategoria = ProductoCategoriaTb(
             idProducto: idProducto,
@@ -113,6 +72,15 @@ class ProductoDb {
     }
   }
 
+  /// The function `getProducto` retrieves a product from an API using its ID and returns it as a
+  /// `ProductoTb` object.
+  ///
+  /// Args:
+  ///   idProducto (int): The parameter `idProducto` is an integer that represents the ID of the product
+  /// that we want to retrieve from the database.
+  ///
+  /// Returns:
+  ///   a Future object of type ProductoTb.
   static Future<ProductoTb> getProducto(int idProducto) async {
     Dio dio = Dio();
 
@@ -130,7 +98,17 @@ class ProductoDb {
     }
   }
 
-  static Future<List<ProductoTb>> getProductosByNegocio(idUsuario) async {
+  /// The function `getProductosByNegocio` retrieves a list of products associated with a business based
+  /// on the provided user ID.
+  ///
+  /// Args:
+  ///   idUsuario (int): The parameter `idUsuario` is an integuer that represents the ID of the user
+  /// for whom we want to retrieve the products. with the parameter ´idUsuario´ we consult the ´idNegocio´
+  /// and finally retrieve all the products related to ´´idNegocio´´
+  ///
+  /// Returns:
+  ///   a Future object that resolves to a List of ProductoTb objects.
+  static Future<List<ProductoTb>> getProductosByNegocio(int idUsuario) async {
     Dio dio = Dio();
 
     try {
@@ -161,6 +139,14 @@ class ProductoDb {
     }
   }
 
+  /// The function `updateProducto` updates a product in a database by sending a PATCH request with the
+  /// updated product data and also updates the categories associated with the product.
+  ///
+  /// Args:
+  ///   producto (ProductoTb): An object of type ProductoTb, which represents a product.
+  ///   categoriasSeleccionadas: A list of selected categories for the product. Each category is
+  /// represented by an object with an idCategoria property.
+
   static Future<void> updateProducto(
       ProductoTb producto, categoriasSeleccionadas) async {
     int idProducto = producto.idProducto;
@@ -168,7 +154,7 @@ class ProductoDb {
     String url = '${MisRutas.rutaProductos}/$idProducto';
 
     try {
-      await ProductosCategoriasDb.deleteProductosCategorias(idProducto);
+      await ProductosCategoriasDb.deleteProductCategories(idProducto);
       for (var i = 0; i < categoriasSeleccionadas.length; i++) {
         ProductoCategoriaTb productoCategoria = ProductoCategoriaTb(
           idProducto: idProducto,
@@ -200,12 +186,18 @@ class ProductoDb {
     }
   }
 
+  /// The function `deleteProducto` deletes a product from the database along with its associated
+  /// categories, images, and ratings.
+  ///
+  /// Args:
+  ///   idProducto (int): The parameter `idProducto` is an integer that represents the ID of the product
+  /// that needs to be deleted.
   static Future<void> deleteProducto(int idProducto) async {
     Dio dio = Dio();
 
     try {
       bool result =
-          await ProductosCategoriasDb.deleteProductosCategorias(idProducto);
+          await ProductosCategoriasDb.deleteProductCategories(idProducto);
       if (result) {
         result = await ProductImageDb.deleteProductImages(idProducto);
       } else {
@@ -233,6 +225,16 @@ class ProductoDb {
     }
   }
 
+  /// The function `updateProductDescripcionDetallada` updates the detailed description of a product by
+  /// sending a PATCH request to the server.
+  ///
+  /// Args:
+  ///   descripcionDetallada (String): The `descripcionDetallada` parameter is a string that represents
+  /// the updated detailed description of a product.
+  ///   idProducto (int): The id of the product for which you want to update the detailed description.
+  ///
+  /// Returns:
+  ///   a `Future<bool>`.
   static Future<bool> updateProductDescripcionDetallada(
       String descripcionDetallada, int idProducto) async {
     Dio dio = Dio();

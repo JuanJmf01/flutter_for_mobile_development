@@ -8,6 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProductImagesStorage {
+
   static Future<ProductImagesTb> cargarImage(Asset image, String fileName,
       int idUsuario, int idProducto, int isPrincipalImage) async {
     print('Ento a cargarImage');
@@ -57,8 +58,13 @@ class ProductImagesStorage {
     }
   }
 
-  static Future<String> updateImage(Asset newImage, String fileName, int idUsuario,
-      String nombreImage, int idProducto, int isPrincipalImage) async {
+  static Future<String> updateImage(
+      Asset newImage,
+      String fileName,
+      int idUsuario,
+      String nombreImage,
+      int idProducto,
+      int isPrincipalImage) async {
     final ByteData byteData = await newImage.getByteData();
     final Uint8List imageData = byteData.buffer.asUint8List();
 
@@ -90,8 +96,8 @@ class ProductImagesStorage {
     }
   }
 
-  static Future<bool> deleteImage(String fileName, int idUsuario, String imageName,
-      int idProducto, int idProductImage) async {
+  static Future<bool> deleteImage(String fileName, int idUsuario,
+      String imageName, int idProducto, int idProductImage) async {
     try {
       final Reference ref = FirebaseStorage.instance
           .ref()

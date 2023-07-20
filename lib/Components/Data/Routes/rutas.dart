@@ -6,7 +6,6 @@ class MisRutas {
   static String rutaProductosCategorias = '$rutaPrincipal/productosCategorias';
   static String rutaUsuarios = '$rutaPrincipal/usuarios';
   static String rutaNegocios = '$rutaPrincipal/negocios';
-  static String rutaShoppingCart = '$rutaPrincipal/shoppingCart';
 
   // -- Rutas para la tabla ratings -- //
   static String rutaRatings = '$rutaPrincipal/rating';
@@ -20,10 +19,16 @@ class MisRutas {
   static String rutaProductos = '$rutaPrincipal/producto';
   static String rutaProductosByNegocio = '$rutaPrincipal/productoByNegocio';
   static String rutaDescripcionDetallada = '$rutaPrincipal/producto/descripcionDetallada';
+  static String rutaIsShoppingCartProduct = '$rutaPrincipal/producto/shoppingCart';
 
   // -- Rutas para la tabla productos -- //
   static String rutaProductImages = '$rutaPrincipal/productImages';
   static String rutaProductImage = '$rutaPrincipal/productImage';
+
+    // -- Rutas para la tabla shoppingCart -- //
+      static String rutaShoppingCart = '$rutaPrincipal/shoppingCart';
+      static String rutaShoppingCartByProduct = '$rutaPrincipal/shoppingCartByProduct';
+
 
 
 }

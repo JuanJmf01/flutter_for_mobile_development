@@ -2,7 +2,20 @@ import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
+/// The `ProductImageDb` class contains static methods for inserting, retrieving, updating, and deleting
+/// product images from a database using HTTP requests.
+
 class ProductImageDb {
+  /// The function `insertProductImages` sends a POST request to a specified URL with the provided
+  /// product image data and returns the inserted product image if successful.
+  ///
+  /// Args:
+  ///   productImage (ProductImageCreacionTb): The parameter `productImage` is an instance of the class
+  /// `ProductImageCreacionTb`. It represents the data of a product image that needs to be inserted into
+  /// the database.
+  ///
+  /// Returns:
+  ///   a Future object of type ProductImagesTb.
   static Future<ProductImagesTb> insertProductImages(
       ProductImageCreacionTb productImage) async {
     Dio dio = Dio();
@@ -32,6 +45,15 @@ class ProductImageDb {
     }
   }
 
+ /// The function `getProductSecondaryImages` retrieves a list of secondary images for a product using
+ /// an HTTP GET request.
+ /// 
+ /// Args:
+ ///   idProducto (int): The parameter `idProducto` is an integer that represents the ID of a product.
+ /// It is used to fetch the secondary images of a product from the database.
+ /// 
+ /// Returns:
+ ///   a Future object that resolves to a List of ProductImagesTb objects.
   static Future<List<ProductImagesTb>> getProductSecondaryImages(
       int idProducto) async {
     Dio dio = Dio();
@@ -56,6 +78,12 @@ class ProductImageDb {
     }
   }
 
+ /// The function `updateProductImage` sends a PATCH request to update a product image using the Dio
+ /// package in Dart.
+ /// 
+ /// Args:
+ ///   productImage (ProductImageCreacionTb): The parameter `productImage` is an instance of the class
+ /// `ProductImageCreacionTb`. It represents the product image that needs to be updated.
   static Future<void> updateProductImage(
       ProductImageCreacionTb productImage) async {
     Dio dio = Dio();
@@ -83,6 +111,17 @@ class ProductImageDb {
     }
   }
 
+
+
+/// The function `deleteProductImages` sends a DELETE request to a specified URL to delete product
+/// images associated with a given product ID and returns a boolean value indicating whether the deletion was successful.
+/// 
+/// Args:
+///   idProducto (int): The parameter `idProducto` is the ID of the product whose images need to be
+/// deleted.
+/// 
+/// Returns:
+///   a Future<bool>.
   static Future<bool> deleteProductImages(int idProducto) async {
     Dio dio = Dio();
     String url = '${MisRutas.rutaProductImages}/$idProducto';
@@ -109,6 +148,14 @@ class ProductImageDb {
     return false;
   }
 
+ /// The function `deleteProductImage` sends a DELETE request to a specified URL to delete a product
+ /// image and returns a boolean value indicating whether the deletion was successful.
+ /// 
+ /// Args:
+ ///   idProductImage (int): The id of the product image that needs to be deleted.
+ /// 
+ /// Returns:
+ ///   a Future<bool>.
   static Future<bool> deleteProuctImage(int idProductImage) async {
     Dio dio = Dio();
     String url = '${MisRutas.rutaProductImage}/$idProductImage';

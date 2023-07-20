@@ -2,17 +2,18 @@ import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
-import 'package:sqflite/sqflite.dart';
 
 class CategoriaDb {
-  static const tableName = "categorias";
-  static Future<void> createTableCategorias(Database db) async {
-    await db.execute(
-        "CREATE TABLE $tableName (idCategoria INTEGER PRIMARY KEY, nombre TEXT, imagePath TEXT)");
-  }
 
-
-  //Obtenemos todas la categorias en una lista de un producto especifico
+  /// The function `getCategoriasSeleccionadas` retrieves a list of selected categories for a specific
+  /// product.
+  ///
+  /// Args:
+  ///   idProducto (int): The id of the specific product for which we want to retrieve the selected
+  /// categories.
+  ///
+  /// Returns:
+  ///   a Future object that resolves to a List of CategoriaTb objects.
   static Future<List<CategoriaTb>> getCategoriasSeleccionadas(
       int idProducto) async {
     try {
@@ -20,9 +21,9 @@ class CategoriaDb {
       final idCategoriasDeProducto =
           await ProductosCategoriasDb.getIdCategoriasPorIdProducto(idProducto);
       final categoriasSeleccionadas = <CategoriaTb>[];
-
-      //Recorremos 'idCategoriasDeProducto' y en cada ciclo llamamos al metodo 'obtenerCategoriasPorId'
-      //'obtenerCategoriasPorId' nos retorna una categoria (nombre de la categoria) y lo guardamos en la lista 'categoriasSeleccionadas'
+   
+      // Recorremos 'idCategoriasDeProducto' y en cada ciclo llamamos al metodo 'obtenerCategoriasPorId'
+      // 'obtenerCategoriasPorId' nos retorna una categoria (nombre de la categoria) y lo guardamos en la lista 'categoriasSeleccionadas'
       for (int idCategoria in idCategoriasDeProducto) {
         final categoria = await getCategoria(idCategoria);
 
@@ -36,9 +37,12 @@ class CategoriaDb {
     }
   }
 
-  // -------- Consultas despues de la migracion a mySQL --------- //
 
-// Función para obtener las categorías desde la API
+ /// The function `getCategorias` is a static method that makes an HTTP GET request to retrieve a list
+ /// of categories and returns a Future containing a list of `CategoriaTb` objects.
+ /// 
+ /// Returns:
+ ///   a Future object that resolves to a List of CategoriaTb objects.
   static Future<List<CategoriaTb>> getCategorias() async {
     try {
       Dio dio = Dio();
@@ -65,7 +69,15 @@ class CategoriaDb {
     }
   }
 
-  //Funcion para obtener una unica categoria por idCategoria
+ /// The function `getCategoria` is a static method that retrieves a category from an API using the Dio
+ /// library in Dart.
+ /// 
+ /// Args:
+ ///   idCategoria (int): The parameter "idCategoria" is an integer that represents the ID of a
+ /// category.
+ /// 
+ /// Returns:
+ ///   a Future object of type CategoriaTb.
   static Future<CategoriaTb> getCategoria(int idCategoria) async {
     try {
       Dio dio = Dio();

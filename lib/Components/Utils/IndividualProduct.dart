@@ -1,13 +1,17 @@
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/shoppingCartTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Data/Entities/shoppingCartDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/cartIcons.dart';
 import 'package:etfi_point/Components/Utils/Icons/deletedIcons.dart';
 import 'package:etfi_point/Components/Utils/Icons/modifyIcons.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/productDetail.dart';
 import 'package:etfi_point/Pages/editarProducto.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class RowProducts extends StatefulWidget {
   RowProducts({super.key, required this.productos});
@@ -64,6 +68,8 @@ class _RowProductsState extends State<RowProducts> {
 
   @override
   Widget build(BuildContext context) {
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+
     if (productos.isEmpty) {
       return const Padding(
         padding: EdgeInsets.only(top: 40),
@@ -139,8 +145,17 @@ class _RowProductsState extends State<RowProducts> {
                         ),
                         Row(
                           children: [
-                            CartPrincipalIcon(onpress: () {
-                              print('carrito de compras');
+                            CartPrincipalIcon(onpress: () async {
+                              if (idUsuario != null) {
+                                ShoppingCartCreacionTb shoppingCartProduct =
+                                    ShoppingCartCreacionTb(
+                                  idUsuario: idUsuario,
+                                  idProducto: producto.idProducto,
+                                  cantidad: 1,
+                                );
+                                await ShoppingCartDb.insertShoppingCartProduct(
+                                    shoppingCartProduct);
+                              }
                             }),
                             ModifyPrincipalIcon(onpress: () async {
                               print(producto.idProducto);

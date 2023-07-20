@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class UsuarioDb {
   static const tableName = "usuarios";

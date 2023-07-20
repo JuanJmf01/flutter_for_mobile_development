@@ -51,7 +51,7 @@ class ButtonMenu extends StatelessWidget {
                             onAcceptMessage: 'Aceptar',
                             onCancelMessage: 'Cancelar',
                             onAccept: () async {
-                              await Auth.signOutDos(context);
+                              await Auth.signOut(context);
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                                 //Navigator.pop(context);

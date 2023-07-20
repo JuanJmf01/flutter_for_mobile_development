@@ -5,6 +5,11 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 
 class Auth {
+  /// The function `signInWithGoogle` signs in a user using their Google account credentials and returns
+  /// a `UserCredential` object.
+  ///
+  /// Returns:
+  ///   a Future<UserCredential>.
   static Future<UserCredential> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
@@ -29,19 +34,28 @@ class Auth {
     }
   }
 
+  /// The function getCurrentUser() returns the currently authenticated user, or null if there is no
+  /// authenticated user.
+  ///
+  /// Returns:
+  ///   The method is returning the current user, which is of type User.
   static User? getCurrentUser() {
     User? user = FirebaseAuth.instance.currentUser;
     return user;
   }
 
   //Iniciar sesion
+  /// The function "isUserSignedIn" checks if a user is currently signed in.
+  ///
+  /// Returns:
+  ///   The function isUserSignedIn() returns a boolean value.
   static bool isUserSignedIn() {
     User? user = getCurrentUser();
     return user != null;
   }
 
-  //Cerrar sesion dos
-  static signOutDos(BuildContext context) async {
+/// The `signOut` function is responsible for signing out the currently authenticated user.
+  static signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     GoogleSignIn _googleSignIn = GoogleSignIn();
 
@@ -49,7 +63,6 @@ class Auth {
       await _googleSignIn.disconnect();
       if (context.mounted) {
         context.read<LoginProvider>().checkUserSignedIn();
-        
       }
       print('Sesión cerrada correctamente');
     } catch (error) {
