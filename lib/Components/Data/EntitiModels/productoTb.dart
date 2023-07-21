@@ -61,7 +61,7 @@ class ProductoTb {
 
   @override
   String toString() {
-    return 'ProductoTb{idProducto: $idProducto, nombreProducto: $nombreProducto, urlImage: $urlImage, nombreImage: $nombreImage}';
+    return 'ProductoTb{idProducto: $idProducto, nombreProducto: $nombreProducto, nombreImage: $nombreImage}';
   }
 }
 

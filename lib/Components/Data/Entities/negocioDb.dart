@@ -4,7 +4,6 @@ import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
-
 class NegocioDb {
   // -------- Consultas despues de la migracion a mySQL --------- //
 
@@ -69,5 +68,31 @@ class NegocioDb {
       print('Error al obtener el negocio: $error');
     }
     return null;
+  }
+
+  static Future<int?> checkBusinessExists(int idUsuario) async {
+    Dio dio = Dio();
+    String url = "${MisRutas.rutaCheckBusinessExists}/$idUsuario";
+
+    try {
+      Response response = await dio.get(
+        url,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        Map<String, dynamic> data = response.data;
+        int? idNegocio = data['idNegocio'];
+
+        return idNegocio;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      print('Error de conexión: $error');
+      return null;
+    }
   }
 }

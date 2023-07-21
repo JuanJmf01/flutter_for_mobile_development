@@ -5,17 +5,15 @@ import 'package:etfi_point/Components/Data/EntitiModels/shoppingCartTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class ShoppingCartDb {
-
-
-/// Insert a shopping cart product into the database using Dio.
-///
-/// [shoppingCartProduct]: The product to be inserted.
-///
-/// If the product already exists in the cart (status code 409), it prints a message indicating so.
-///
-/// For other status codes, it throws an Exception with the corresponding error message.
-///
-/// In case of a DioException, it handles the 409 status code separately for the existing product case,
+  /// Insert a shopping cart product into the database using Dio.
+  ///
+  /// [shoppingCartProduct]: The product to be inserted.
+  ///
+  /// If the product already exists in the cart (status code 409), it prints a message indicating so.
+  ///
+  /// For other status codes, it throws an Exception with the corresponding error message.
+  ///
+  /// In case of a DioException, it handles the 409 status code separately for the existing product case,
 
   static Future<void> insertShoppingCartProduct(
       ShoppingCartCreacionTb shoppingCartProduct) async {
@@ -55,16 +53,6 @@ class ShoppingCartDb {
     }
   }
 
-/// Retrieve shopping cart products for a specific user from the database.
-///
-/// [idUsuario]: The ID of the user whose shopping cart products are to be fetched.
-///
-/// The function makes a GET request to the server with the [idUsuario] to fetch the shopping cart products.
-///
-/// If the request is successful (status code 200), it converts the response data to a list of [ShoppingCartProductTb]
-///
-/// In case of an error, it handles the error and returns an empty list.
-
   static Future<List<ShoppingCartProductTb>> shoppingCardByUsuario(
       int idUsuario) async {
     Dio dio = Dio();
@@ -92,23 +80,23 @@ class ShoppingCartDb {
         return [];
       }
     } catch (error) {
-      print('Error: $error');
+      print('Errorrr: $error');
       return [];
     }
   }
 
- /// The function `deleteShoppingCardByProduct` deletes a shopping cart product by its ID using the Dio
- /// library in Dart.
- /// 
- /// Args:
- ///   idProducto (int): The parameter "idProducto" is an integer that represents the ID of the product
- /// for which the shopping cart entry needs to be deleted.
-  static Future<void> deleteShoppingCardByProduct(int idProducto) async {
+  static Future<void> deleteShoppingCart(int idPoductCart) async {
     Dio dio = Dio();
 
+    String url = '${MisRutas.rutaShoppingCart}/$idPoductCart';
+
     try {
-      Response response =
-          await dio.delete('${MisRutas.rutaShoppingCartByProduct}/$idProducto');
+      Response response = await dio.delete(
+        url,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
 
       if (response.statusCode == 202) {
         print('ShoppingCartProducto eliminado correctamente');
@@ -121,4 +109,24 @@ class ShoppingCartDb {
       print('Error in delete product: $error');
     }
   }
+
+  // No se esta utilizando pero elimina todos los productos aue un usuario tenga en su carrito
+  // static Future<void> deleteShopingCardByUser(int idProducto) async {
+  //   Dio dio = Dio();
+
+  //   try {
+  //     Response response =
+  //         await dio.delete('${MisRutas.rutaShoppingCartByProduct}/$idProducto');
+
+  //     if (response.statusCode == 202) {
+  //       print('ShoppingCartProducto eliminado correctamente');
+  //     } else if (response.statusCode == 404) {
+  //       print('ShoppingCartProducto no encontrado');
+  //     } else {
+  //       print('Error: ${response.statusCode}');
+  //     }
+  //   } catch (error) {
+  //     print('Error in delete product: $error');
+  //   }
+  // }
 }

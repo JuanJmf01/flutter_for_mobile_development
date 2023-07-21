@@ -7,7 +7,6 @@ import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 class UsuarioDb {
   static const tableName = "usuarios";
 
-
   // Obtener idUsuario mediante el correo en firebase
 
 // -------- Consultas despues de la migracion a mySQL --------- //
@@ -66,7 +65,7 @@ class UsuarioDb {
         print(idUsuario);
         return idUsuario;
       } else if (response.statusCode == 404) {
-        // ID no encontrado, retorna null
+        print('id no encontrado return null');
         return null;
       } else {
         throw Exception('Error en la respuesta: ${response.statusCode}');
@@ -78,10 +77,12 @@ class UsuarioDb {
 
   static Future<bool> ifExistsUserByEmail(String email) async {
     try {
+      print('ifExistsUserByEmail llega aca');
       int? id = await getIdUsuarioByCorreo(email);
       return id != null;
     } catch (error) {
-      print('Error en existsUserByEmail2: $error');
+      //throw Exception('Error en la respuesta: $error');
+      print('Error en la  respuesta ifExistUserByEmail');
       return false;
     }
   }

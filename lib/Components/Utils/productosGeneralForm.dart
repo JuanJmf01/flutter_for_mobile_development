@@ -1,5 +1,7 @@
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
@@ -126,8 +128,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       idProducto =
           await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
       if (imagenToUpload != null) {
-        await ProductImagesStorage.cargarImage(
-            imagenToUpload!, 'productos', idUsuario, idProducto, 1);
+        ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
+            newImage: imagenToUpload!,
+            fileName: 'productos',
+            idUsuario: idUsuario,
+            idProducto: idProducto,
+            isPrincipalImage: 1);
+
+        await ProductImagesStorage.cargarImage(image);
       }
       mostrarCuadroExito(idProducto);
     } catch (error) {
@@ -140,8 +148,15 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void actualizarProducto(ProductoTb producto, int idUsuario) async {
     int idProducto = producto.idProducto;
     if (imagenToUpload != null) {
-      await ProductImagesStorage.updateImage(imagenToUpload!, 'productos',
-          idUsuario, producto.nombreImage, idProducto, 1);
+      ProductImageStorageTb image = ProductImageStorageTb(
+          newImage: imagenToUpload!,
+          fileName: 'productos',
+          idUsuario: idUsuario,
+          nombreImagen: producto.nombreImage,
+          idProducto: idProducto,
+          isPrincipalImage: 1);
+
+      await ProductImagesStorage.updateImage(image);
     } else {
       print('Imagen a actualizar es null');
     }

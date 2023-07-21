@@ -13,4 +13,17 @@ class ShoppingCartProvider extends ChangeNotifier {
         await ShoppingCartDb.shoppingCardByUsuario(idUsuario);
     notifyListeners();
   }
+
+  void incrementarCantidadProductCar(int index) {
+    _shoppingCartProducts[index] = _shoppingCartProducts[index]
+        .copyWith(cantidad: shoppingCartProducts[index].cantidad + 1);
+    notifyListeners();
+  }
+
+
+  void disminuirCantidadProductCar(int index) {
+    _shoppingCartProducts[index] = _shoppingCartProducts[index]
+        .copyWith(cantidad: shoppingCartProducts[index].cantidad - 1);
+    notifyListeners();
+  }
 }

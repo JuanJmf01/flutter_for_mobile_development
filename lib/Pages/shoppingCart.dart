@@ -9,45 +9,78 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ShoppingCart extends StatefulWidget {
-  const ShoppingCart({super.key});
+  ShoppingCart({super.key, this.idUsuario});
+
+  final int? idUsuario;
 
   @override
   State<ShoppingCart> createState() => _ShoppingCartState();
 }
 
 class _ShoppingCartState extends State<ShoppingCart> {
+  List<ShoppingCartProductTb> shoppingCartProducts = [];
+
+  bool isLoading = true;
+
+  Future<void> shoppingCardProducts(int idUsuario) async {
+    await context.read<ShoppingCartProvider>().shoppingCartByUser(idUsuario);
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    int? idUsuario = widget.idUsuario;
+    if (idUsuario != null) {
+      shoppingCardProducts(idUsuario);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
-
-    return Scaffold(
-        backgroundColor: Colors.grey.shade200,
-        appBar: AppBar(
-          backgroundColor: Colors.grey[200],
-        ),
-        body: idUsuario != null
-            ? Column(
-                children: [
-                  Expanded(
-                    child: CustomScrollView(
-                      slivers: [
-                        HorizontalProduct(
-                          idUsuario: idUsuario,
+    shoppingCartProducts =
+        context.watch<ShoppingCartProvider>().shoppingCartProducts;
+    return isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Scaffold(
+            backgroundColor: Colors.grey.shade200,
+            appBar: AppBar(
+              backgroundColor: Colors.grey[200],
+            ),
+            body: idUsuario != null
+                ? Column(
+                    children: [
+                      Expanded(
+                        child: CustomScrollView(
+                          slivers: [
+                            HorizontalProduct(
+                              idUsuario: idUsuario,
+                              shoppingCartProducts: shoppingCartProducts,
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                  StaticBottom()
-                ],
-              )
-            : Text('Debes iniciar sesion'));
+                      ),
+                      StaticBottom(
+                        shoppingCartProducts: shoppingCartProducts,
+                      ),
+                    ],
+                  )
+                : Text('Debes iniciar sesion'),
+          );
   }
 }
 
 class HorizontalProduct extends StatefulWidget {
-  const HorizontalProduct({super.key, required this.idUsuario});
+  const HorizontalProduct(
+      {super.key, required this.idUsuario, required this.shoppingCartProducts});
 
   final int idUsuario;
+  final List<ShoppingCartProductTb> shoppingCartProducts;
 
   @override
   State<HorizontalProduct> createState() => _HorizontalProductState();
@@ -57,43 +90,38 @@ class _HorizontalProductState extends State<HorizontalProduct> {
   List<ShoppingCartProductTb> shoppingCartProducts = [];
 
   bool isSelected = false;
-  bool isLoading = true;
+  bool isLoading = false;
 
-  Future<void> shoppingCardProducts(int idUsuario) async {
-    context.read<ShoppingCartProvider>().shoppingCartByUser(idUsuario);
-
-    setState(() {
-      isLoading = false;
-    });
-  }
+  // Future<void> shoppingCardProducts(int idUsuario) async {
+  //   await context.read<ShoppingCartProvider>().shoppingCartByUser(idUsuario);
+  // }
 
   void aumentar(int index) {
-    setState(() {
-      shoppingCartProducts[index] = shoppingCartProducts[index]
-          .copyWith(cantidad: shoppingCartProducts[index].cantidad + 1);
-    });
+    ShoppingCartProductTb productInCar = shoppingCartProducts[index];
+    if (productInCar.cantidad < productInCar.cantidadDisponible) {
+      context.read<ShoppingCartProvider>().incrementarCantidadProductCar(index);
+    } else {
+      print('Maxima cantidad');
+    }
   }
 
   void disminuir(int index) {
     int cantidad = shoppingCartProducts[index].cantidad;
     if (cantidad > 1) {
-      setState(() {
-        shoppingCartProducts[index] = shoppingCartProducts[index]
-            .copyWith(cantidad: shoppingCartProducts[index].cantidad - 1);
-      });
+      context.read<ShoppingCartProvider>().disminuirCantidadProductCar(index);
     } else if (cantidad == 1) {
-      int idProducto = shoppingCartProducts[index].idProducto;
-      deleteShoppingCartProduct(idProducto, index);
+      int idProductCart = shoppingCartProducts[index].idCarrito;
+      deleteShoppingCartProduct(idProductCart, index);
     }
   }
 
-  void deleteShoppingCartProduct(int idProducto, int index) {
+  void deleteShoppingCartProduct(int idProductCart, int index) {
     showDialog(
         context: context,
         builder: (BuildContext context) {
           return DeletedDialog(
               onPress: () {
-                ShoppingCartDb.deleteShoppingCardByProduct(idProducto);
+                ShoppingCartDb.deleteShoppingCart(idProductCart);
                 setState(() {
                   shoppingCartProducts.removeAt(index);
                 });
@@ -118,13 +146,11 @@ class _HorizontalProductState extends State<HorizontalProduct> {
   @override
   void initState() {
     super.initState();
-    shoppingCardProducts(widget.idUsuario);
+    shoppingCartProducts = widget.shoppingCartProducts;
   }
 
   @override
   Widget build(BuildContext context) {
-    shoppingCartProducts =
-        Provider.of<ShoppingCartProvider>(context).shoppingCartProducts;
     return isLoading
         ? const SliverToBoxAdapter(
             child: Center(child: CircularProgressIndicator()))
@@ -305,8 +331,38 @@ class _CircularSelectorState extends State<CircularSelector> {
   }
 }
 
-class StaticBottom extends StatelessWidget {
-  const StaticBottom({super.key});
+class StaticBottom extends StatefulWidget {
+  const StaticBottom({super.key, required this.shoppingCartProducts});
+
+  final List<ShoppingCartProductTb> shoppingCartProducts;
+
+  @override
+  State<StaticBottom> createState() => _StaticBottomState();
+}
+
+class _StaticBottomState extends State<StaticBottom> {
+  double total = 0.0;
+  List<ShoppingCartProductTb> shoppingCartProducts = [];
+
+  void calcularTotal() {
+    double totalAux = 0.0;
+
+    for (var productCart in shoppingCartProducts) {
+      totalAux += productCart.precio * productCart.cantidad;
+    }
+    print('TotalAux: $totalAux');
+    setState(() {
+      total = totalAux;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    shoppingCartProducts = widget.shoppingCartProducts;
+
+    calcularTotal();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -314,10 +370,12 @@ class StaticBottom extends StatelessWidget {
       height: 57.0,
       color: Colors.white60,
       child: Row(
-        children: [Text('funciona')],
+        children: [
+          Text('\$  ${total.toString()}'),
+        ],
       ),
     );
   }
 }
 
-// // ----------------------------------------------------------------------------------------------------------//
+// // 

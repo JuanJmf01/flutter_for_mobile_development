@@ -125,7 +125,7 @@ class RatingsDb {
   }
 
   /// The function `getRatingByProductoAndUsuario` retrieves a rating by the given user ID and product ID
-  /// using a POST request.
+  /// using a GET request.
   ///
   /// Args:
   ///   idUsuario (int): The parameter "idUsuario" represents the ID of the user.
@@ -146,7 +146,7 @@ class RatingsDb {
         'idProducto': idProducto
       };
 
-      Response response = await dio.post(
+      Response response = await dio.get(
         url,
         data: data,
         options: Options(
@@ -172,40 +172,38 @@ class RatingsDb {
     }
   }
 
-  /// The function checks if a rating exists for a given user and product.
-  ///
-  /// Args:
-  ///   idUsuario (int): The id of the user for whom we want to check if a rating exists or not.
-  ///   idProducto (int): The id of the product for which we want to check if a rating exists or not.
-  ///
-  /// Returns:
-  ///   a `Future<bool>`.
-  static Future<bool> existOrNotRating(int idUsuario, int idProducto) async {
-    RatingsCreacionTb? rating =
-        await getRatingByProductoAndUsuario(idUsuario, idProducto);
-
-    if (rating != null) {
-      print('Existe rating');
-      return true;
-    } else {
-      print('No existe rating');
-      return false;
-    }
-  }
-
-  //Almacenamos en un arreglo la cantidad de calificaciones por cada estrella
+  //Almacenamos en un arreglo 'starCounts' la cantidad de calificaciones por cada estrella
   //Posicion 0: Cantidad de calificaciones por 5 estrellas
   //Posicion 1: Cantidad de calificaciones por 4 estrellas
   //...
   //Posicion 4: Cantidad de calificaciones por 1 estrella
 
-  /// The function `getStarCounts` retrieves the star counts for a given product ID from an API endpoint.
+  /// The `getStarCounts` function retrieves the star count for a product ID that looks like this
+  ///  if a product has 4 different ratings with stars 5, 4, 4, 1, the result will be:
+  ///
+  /// ```JSON
+  ///[
+  ///  {
+  ///   "count": 1, //(Only one person rated 5 stars)
+  ///   "ratings": 5
+  ///  },
+  ///  {
+  ///   "count": 2, //(two people rated 4 stars)
+  ///   "ratings": 4
+  ///  },
+  ///  {
+  ///   "count": 1, //(Only one person rated 1 stars)
+  ///   "ratings": 1
+  ///  }
+  ///]
+  /// ```
   ///
   /// Args:
   ///   idProducto (int): The parameter `idProducto` is an integer that represents the ID of a product.
   ///
   /// Returns:
-  ///   a Future object that resolves to a List of integers.
+  ///   a Future object that resolves to a List of integers
+
   static Future<List<int>> getStarCounts(int idProducto) async {
     Dio dio = Dio();
     String url = '${MisRutas.rutaRatingsCountByProducto}/$idProducto';
@@ -243,7 +241,7 @@ class RatingsDb {
   /// Args:
   ///   idProducto (int): The parameter "idProducto" represents the ID of the product for which the
   /// ratings need to be deleted.
-  static Future<void> deleteRatings(int idProducto) async {
+  static Future<void> deleteRatingsByProducto(int idProducto) async {
     Dio dio = Dio();
     String url = '${MisRutas.rutaRatings}/$idProducto';
 
@@ -264,6 +262,37 @@ class RatingsDb {
       }
     } catch (error) {
       print('Error de conexión: $error');
+    }
+  }
+
+  static Future<bool> checkRatingExists(int idProducto, int idUsuario) async {
+    Dio dio = Dio();
+    String url = MisRutas.rutaRatingsIfExistRating;
+
+    Map<String, dynamic> data = {
+      'idUsuario': idUsuario,
+      'idProducto': idProducto
+    };
+
+    try {
+      Response response = await dio.get(
+        url,
+        data: data,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('existe in checkRatingExists: ${response.data}');
+        return response.data;
+      } else {
+        print('No existe in checkRatingExists');
+        return false;
+      }
+    } catch (error) {
+      print('Error de conexión: $error');
+      return false;
     }
   }
 }

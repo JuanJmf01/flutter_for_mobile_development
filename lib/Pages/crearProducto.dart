@@ -1,5 +1,4 @@
 
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Utils/productosGeneralForm.dart';
 import 'package:flutter/material.dart';
 

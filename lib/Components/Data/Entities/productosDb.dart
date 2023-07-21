@@ -112,9 +112,11 @@ class ProductoDb {
     Dio dio = Dio();
 
     try {
-      NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
-      int? idNegocio = negocio?.idNegocio;
-      print('idNegocio : $idNegocio');
+      //NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
+      //int? idNegocio = negocio?.idNegocio;
+
+      int? idNegocio = await NegocioDb.checkBusinessExists(idUsuario);
+      print('idNegocio: $idNegocio');
       if (idNegocio != null) {
         Response response =
             await dio.get('${MisRutas.rutaProductosByNegocio}/$idNegocio');
@@ -206,7 +208,7 @@ class ProductoDb {
 
       print('resulDelete_: $result');
       if (result) {
-        await RatingsDb.deleteRatings(idProducto);
+        await RatingsDb.deleteRatingsByProducto(idProducto);
         Response response =
             await dio.delete('${MisRutas.rutaProductos}/$idProducto');
 

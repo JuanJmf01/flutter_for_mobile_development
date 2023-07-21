@@ -9,6 +9,7 @@ class UsuarioProvider extends ChangeNotifier {
   int? get idUsuario => _idUsuario;
 
   Future<void> obtenerIdUsuario() async {
+    print('se llama a obtenerIdUsuario');
     if (FirebaseAuth.instance.currentUser != null) {
       String? email = FirebaseAuth.instance.currentUser?.email;
       if (email != null) {
@@ -17,7 +18,7 @@ class UsuarioProvider extends ChangeNotifier {
           if (idUsuario != null) {
             _idUsuario = idUsuario;
             notifyListeners();
-          }else{
+          } else {
             print('ID Usuario null: $_idUsuario');
           }
         } catch (e) {

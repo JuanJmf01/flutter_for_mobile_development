@@ -38,7 +38,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
         UsuarioCreacionTb(nombres: name, email: emailAdress);
     await UsuarioDb.insertUsuario(usuario);
 
-    print(usuario);
+    print('Creando usuario antes de pedir id: $usuario');
   }
 
   void logInWithGoogle(BuildContext context) async {
@@ -50,9 +50,10 @@ class _ButtonLoginState extends State<ButtonLogin> {
       if (!userExists) {
         newUser(userCredential);
       }
+      
       if (context.mounted) {
         context.read<LoginProvider>().checkUserSignedIn();
-        context.read<UsuarioProvider>().obtenerIdUsuario();
+        //context.read<UsuarioProvider>().obtenerIdUsuario();
 
         //Navigator.pop(context);
         Navigator.pushReplacement(

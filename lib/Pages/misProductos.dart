@@ -97,8 +97,8 @@ class _MisProductosState extends State<MisProductos> {
           ),
         ),
       ),
-      body: FutureBuilder<List<ProductoTb>>(
-        future: ProductoDb.getProductosByNegocio(idUsuario!),
+      body: idUsuario != null ? FutureBuilder<List<ProductoTb>>(
+        future: ProductoDb.getProductosByNegocio(idUsuario), 
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             productos = snapshot.data!;
@@ -120,7 +120,7 @@ class _MisProductosState extends State<MisProductos> {
           // Mostrar un indicador de carga
           return const Center(child: CircularProgressIndicator());
         },
-      ),
+      ): Center(child: CircularProgressIndicator())
     );
   }
 }

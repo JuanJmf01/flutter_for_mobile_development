@@ -41,6 +41,7 @@ class Auth {
   ///   The method is returning the current user, which is of type User.
   static User? getCurrentUser() {
     User? user = FirebaseAuth.instance.currentUser;
+    
     return user;
   }
 
@@ -51,6 +52,7 @@ class Auth {
   ///   The function isUserSignedIn() returns a boolean value.
   static bool isUserSignedIn() {
     User? user = getCurrentUser();
+    print('if is null: $user');
     return user != null;
   }
 

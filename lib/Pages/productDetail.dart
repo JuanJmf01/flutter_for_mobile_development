@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
@@ -60,7 +61,7 @@ class _ProductDetailState extends State<ProductDetail> {
   Future<bool> existeOrNotUserRatingByProducto(idUsuario) async {
     int idProducto = widget.id;
 
-    bool result = await RatingsDb.existOrNotRating(idUsuario, idProducto);
+    bool result = await RatingsDb.checkRatingExists(idUsuario, idProducto);
 
     return result;
   }
@@ -209,7 +210,7 @@ class _FastDescriptionState extends State<FastDescription> {
       pressHearIndex = !pressHearIndex;
     });
 
-    _updateRatingsAndOthers();
+    _updateRatingAndOthers();
   }
 
   void rateStar(int starIndex) {
@@ -222,10 +223,10 @@ class _FastDescriptionState extends State<FastDescription> {
         rating = starIndex;
       });
     }
-    _updateRatingsAndOthers();
+    _updateRatingAndOthers();
   }
 
-  void _updateRatingsAndOthers() async {
+  void _updateRatingAndOthers() async {
     int idUsuario = widget.idUsuario;
     int? idProducto = widget.producto.idProducto;
     int like = pressHearIndex ? 1 : 0;
@@ -432,12 +433,15 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     if (imagesToUpload.isNotEmpty) {
       List<ProductImagesTb> productImagesAux = [];
       for (var imageToUpload in imagesToUpload) {
-        ProductImagesTb productImage = await ProductImagesStorage.cargarImage(
-            imageToUpload.newImage,
-            'productos',
-            idUsuario,
-            widget.idProducto,
-            0);
+        ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
+            newImage: imageToUpload.newImage,
+            fileName: 'productos',
+            idUsuario: idUsuario,
+            idProducto: widget.idProducto,
+            isPrincipalImage: 0);
+
+        ProductImagesTb productImage =
+            await ProductImagesStorage.cargarImage(image);
         productImagesAux.add(productImage);
       }
 
@@ -456,18 +460,19 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
   void updateSecondaryImage(int idUsuario) async {
     if (imagesToUpdate.isNotEmpty) {
-      await Future.forEach(imagesToUpdate, (image) async {
-        String nombreImage = image.nombreImage;
-        Asset imageToUpdate = image.newImage;
+      await Future.forEach(imagesToUpdate, (newImage) async {
+        String nombreImage = newImage.nombreImage;
+        Asset imageToUpdate = newImage.newImage;
 
-        String url = await ProductImagesStorage.updateImage(
-          imageToUpdate,
-          'productos',
-          idUsuario,
-          nombreImage,
-          widget.idProducto,
-          0,
-        );
+        ProductImageStorageTb image = ProductImageStorageTb(
+            newImage: imageToUpdate,
+            fileName: 'productos',
+            idUsuario: idUsuario,
+            nombreImagen: nombreImage,
+            idProducto: widget.idProducto,
+            isPrincipalImage: 1);
+
+        String url = await ProductImagesStorage.updateImage(image);
 
         print('URL image_: $url');
         for (int i = 0; i < productSecondaryImages.length; i++) {
@@ -527,9 +532,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
     if (imagesAsset.isNotEmpty) {
       for (var image in imagesAsset) {
-        String nameImage = image!.name!;
         ProductImageToUpload newImage = ProductImageToUpload(
-          nombreImage: assingName(nameImage),
+          nombreImage: assingName(image!),
           newImage: image,
         );
         allProductImagesAux.add(newImage);
@@ -577,9 +581,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         } else if (image is ProductImageToUpload) {
           int indiceToUpload = imagesToUpload.indexWhere(
               (element) => element.nombreImage == image.nombreImage);
-          String nameImage = asset.name!;
           ProductImageToUpload newImage = ProductImageToUpload(
-              nombreImage: assingName(nameImage), newImage: asset);
+              nombreImage: assingName(asset), newImage: asset);
 
           setState(() {
             allProductImages[imageIndex] = newImage;
@@ -597,12 +600,16 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         if (image is ProductImagesTb) {
           return DeletedDialog(
               onPress: () async {
-                bool result = await ProductImagesStorage.deleteImage(
-                    'productos',
-                    idUsuario,
-                    image.nombreImage,
-                    widget.idProducto,
-                    image.idProductImage);
+                ProductImageStorageDeleteTb infoImageToDelete =
+                    ProductImageStorageDeleteTb(
+                        fileName: 'productos',
+                        idUsuario: idUsuario,
+                        nombreImagen: image.nombreImage,
+                        idProducto: image.idProducto,
+                        idProductImage: image.idProductImage);
+
+                bool result =
+                    await ProductImagesStorage.deleteImage(infoImageToDelete);
 
                 if (result) {
                   setState(() {
@@ -621,34 +628,31 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 }
               },
               objectToDelete: 'la imagen');
-        } else if (image is ProductImageToUpdate) {
+        } else if (image is ProductImageToUpdate ||
+            image is ProductImageToUpload) {
           return RuleOut(
             onPress: () {
               int imageIndex = allProductImages.indexOf(image);
               /**De la lista de imagenes originales, sacamos la imagen base o imagen que inicialmente habia */
-              ProductImagesTb oldImage = productSecondaryImages[imageIndex];
 
-              setState(() {
-                allProductImages[imageIndex] = oldImage;
-                imagesToUpdate.remove(image);
-              });
+              if (image is ProductImageToUpdate) {
+                ProductImagesTb oldImage = productSecondaryImages[imageIndex];
+
+                setState(() {
+                  allProductImages[imageIndex] = oldImage;
+                  imagesToUpdate.remove(image);
+                });
+              } else if (image is ProductImageToUpload) {
+                 setState(() {
+                  allProductImages.removeAt(imageIndex);
+                  imagesToUpload.remove(image);
+                });
+              }
 
               Navigator.of(context).pop();
             },
             objectToDelete: 'La imagen',
           );
-        } else if (image is ProductImageToUpload) {
-          return RuleOut(
-              onPress: () {
-                int imageIndex = allProductImages.indexOf(image);
-                setState(() {
-                  allProductImages.removeAt(imageIndex);
-                  imagesToUpload.remove(image);
-                });
-
-                Navigator.of(context).pop();
-              },
-              objectToDelete: 'La imagen');
         } else {
           return SizedBox.shrink();
         }
@@ -659,7 +663,6 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
   @override
   void initState() {
     super.initState();
-    print('DESCRIPCION DETALLADA: ${widget.descripcionDetallada}');
 
     _descripcionDetalldaController.text = widget.descripcionDetallada ?? '';
     descripcionDetalladaAux = widget.descripcionDetallada;

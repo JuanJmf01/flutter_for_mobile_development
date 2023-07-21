@@ -52,7 +52,7 @@ class ProductImagesTb {
 
   @override
   String toString() {
-    return 'ProductImagesTb{idProducto: $idProducto, nombreImage: $nombreImage, urlImage: $urlImage, isPrincipalImage: $isPrincipalImage}';
+    return 'ProductImagesTb{idProducto: $idProducto, nombreImage: $nombreImage, isPrincipalImage: $isPrincipalImage}';
   }
 }
 
@@ -88,7 +88,7 @@ class ProductImageCreacionTb {
 
   @override
   String toString() {
-    return 'RatingsTb{idProducto: $idProducto, urlImage: $urlImage, isPrincipalImage: $isPrincipalImage}';
+    return 'RatingsTb{idProducto: $idProducto, isPrincipalImage: $isPrincipalImage}';
   }
 }
 

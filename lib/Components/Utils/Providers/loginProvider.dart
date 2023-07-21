@@ -6,8 +6,8 @@ class LoginProvider extends ChangeNotifier {
 
   bool get isUserSignedIn => _isUserSignedIn;
 
-  Future<void> checkUserSignedIn() async {
-    _isUserSignedIn = await Auth.isUserSignedIn();
+  checkUserSignedIn()  {
+    _isUserSignedIn = Auth.isUserSignedIn();
     notifyListeners();
   }
 

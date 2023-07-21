@@ -1,3 +1,5 @@
+//Clase no se esta utilizando. En caso de que no se utilice eliminarla cambiar 'RatingsCreacionTb' por  RatingsTb
+
 class RatingsTb {
   final int id;
   final int idUsuario;
