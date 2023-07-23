@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/shoppingCartTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
+import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
 
 class ShoppingCartDb {
   /// Insert a shopping cart product into the database using Dio.
@@ -15,7 +16,7 @@ class ShoppingCartDb {
   ///
   /// In case of a DioException, it handles the 409 status code separately for the existing product case,
 
-  static Future<void> insertShoppingCartProduct(
+  static Future<bool> insertShoppingCartProduct(
       ShoppingCartCreacionTb shoppingCartProduct) async {
     Dio dio = Dio();
     String url = MisRutas.rutaShoppingCart;
@@ -34,8 +35,10 @@ class ShoppingCartDb {
       if (response.statusCode == 200) {
         print(
             'ShoppingCardProduct insertado correctamente. id: ${response.data}');
+        return true;
       } else if (response.statusCode == 409) {
         print('Ya existe');
+        return false;
       } else {
         throw Exception(
             'Error en la solicitud en insertProducto: ${response.statusCode}');
@@ -44,6 +47,7 @@ class ShoppingCartDb {
       if (error is DioException) {
         if (error.response?.statusCode == 409) {
           print('El producto ya existe en el carrito');
+          return false;
         } else {
           throw Exception('Error de conexión: ${error.message}');
         }
@@ -82,6 +86,36 @@ class ShoppingCartDb {
     } catch (error) {
       print('Errorrr: $error');
       return [];
+    }
+  }
+
+  static Future<void> updateCantidadProductCart(
+      int idCarrito, int cantidad) async {
+    Dio dio = Dio();
+
+    String url = '${MisRutas.rutaShoppingCart}/$idCarrito';
+
+    Map<String, dynamic> data = {
+      'cantidad': cantidad,
+    };
+
+    try {
+      Response response = await dio.patch(
+        url,
+        data: data,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('Cantidad actualizada correectamente');
+        print(response.data);
+      } else {
+        throw Exception('Error: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
     }
   }
 

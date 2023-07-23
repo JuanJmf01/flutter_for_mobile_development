@@ -91,10 +91,9 @@ class _HorizontalProductState extends State<HorizontalProduct> {
 
   bool isSelected = false;
   bool isLoading = false;
+  double total = 0.0;
 
-  // Future<void> shoppingCardProducts(int idUsuario) async {
-  //   await context.read<ShoppingCartProvider>().shoppingCartByUser(idUsuario);
-  // }
+
 
   void aumentar(int index) {
     ShoppingCartProductTb productInCar = shoppingCartProducts[index];
@@ -112,6 +111,7 @@ class _HorizontalProductState extends State<HorizontalProduct> {
     } else if (cantidad == 1) {
       int idProductCart = shoppingCartProducts[index].idCarrito;
       deleteShoppingCartProduct(idProductCart, index);
+      //calcularTotal(index, true);
     }
   }
 
@@ -120,8 +120,11 @@ class _HorizontalProductState extends State<HorizontalProduct> {
         context: context,
         builder: (BuildContext context) {
           return DeletedDialog(
-              onPress: () {
-                ShoppingCartDb.deleteShoppingCart(idProductCart);
+              onPress: () async {
+                context
+                    .read<ShoppingCartProvider>()
+                    .calcularTotal(index, true, false);
+                await ShoppingCartDb.deleteShoppingCart(idProductCart);
                 setState(() {
                   shoppingCartProducts.removeAt(index);
                 });
@@ -143,10 +146,18 @@ class _HorizontalProductState extends State<HorizontalProduct> {
     }
   }
 
+  void calcularTotalProvider() {
+    Future.delayed(Duration.zero, () {
+      context.read<ShoppingCartProvider>().calcularTotal(0, false, true);
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     shoppingCartProducts = widget.shoppingCartProducts;
+
+    calcularTotalProvider();
   }
 
   @override
@@ -174,7 +185,6 @@ class _HorizontalProductState extends State<HorizontalProduct> {
                           color: Colors.white,
                         ),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             CircularSelector(
                               padding:
@@ -217,46 +227,28 @@ class _HorizontalProductState extends State<HorizontalProduct> {
                                         fontSize: 17,
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 40.0),
-                                      child: Row(
-                                        children: [
-                                          Text(
-                                            shoppingCartProducts[index]
-                                                .precio
-                                                .toString(),
-                                            style: const TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                              fontSize: 18,
-                                              color: Colors.black87,
-                                            ),
+                                    IncreaseAndDecrease(
+                                        padding:
+                                            const EdgeInsets.only(top: 40.0),
+                                        myWidget: Text(
+                                          shoppingCartProducts[index]
+                                              .precio
+                                              .toString(),
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 18,
+                                            color: Colors.black87,
                                           ),
-                                          const Spacer(),
-                                          createButtonPress(
-                                            () {
-                                              disminuir(index);
-                                            },
-                                            Icons.remove,
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 6.0),
-                                            child: Text(
-                                              shoppingCartProducts[index]
-                                                  .cantidad
-                                                  .toString(),
-                                              style: TextStyle(fontSize: 18),
-                                            ),
-                                          ),
-                                          createButtonPress(
-                                            () {
-                                              aumentar(index);
-                                            },
-                                            Icons.add,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                        ),
+                                        disminuir: () {
+                                          disminuir(index);
+                                        },
+                                        aumentar: () {
+                                          aumentar(index);
+                                        },
+                                        cantidad: shoppingCartProducts[index]
+                                            .cantidad
+                                            .toString()),
                                   ],
                                 ),
                               ),
@@ -268,6 +260,54 @@ class _HorizontalProductState extends State<HorizontalProduct> {
                   );
                 }),
           );
+  }
+}
+
+class IncreaseAndDecrease extends StatelessWidget {
+  const IncreaseAndDecrease(
+      {super.key,
+      this.padding,
+      required this.disminuir,
+      required this.aumentar,
+      required this.cantidad,
+      this.myWidget});
+
+  final EdgeInsets? padding;
+  final VoidCallback disminuir;
+  final VoidCallback aumentar;
+  final String cantidad;
+  final Widget? myWidget;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: padding ?? const EdgeInsets.all(0.0),
+      child: Row(
+        children: [
+          myWidget ?? const SizedBox.shrink(),
+          Spacer(),
+          createButtonPress(
+            () {
+              disminuir();
+            },
+            Icons.remove,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0),
+            child: Text(
+              cantidad,
+              style: const TextStyle(fontSize: 18),
+            ),
+          ),
+          createButtonPress(
+            () {
+              aumentar();
+            },
+            Icons.add,
+          ),
+        ],
+      ),
+    );
   }
 
   Widget createButtonPress(VoidCallback onTap, IconData icon) {
@@ -341,37 +381,32 @@ class StaticBottom extends StatefulWidget {
 }
 
 class _StaticBottomState extends State<StaticBottom> {
-  double total = 0.0;
   List<ShoppingCartProductTb> shoppingCartProducts = [];
-
-  void calcularTotal() {
-    double totalAux = 0.0;
-
-    for (var productCart in shoppingCartProducts) {
-      totalAux += productCart.precio * productCart.cantidad;
-    }
-    print('TotalAux: $totalAux');
-    setState(() {
-      total = totalAux;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     shoppingCartProducts = widget.shoppingCartProducts;
-
-    calcularTotal();
   }
 
   @override
   Widget build(BuildContext context) {
+    double total = context.watch<ShoppingCartProvider>().total;
     return Container(
       height: 57.0,
       color: Colors.white60,
       child: Row(
         children: [
-          Text('\$  ${total.toString()}'),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 0.0),
+            child: Text(
+              '\$ ${total.toString()}',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+              ),
+            ),
+          ),
         ],
       ),
     );

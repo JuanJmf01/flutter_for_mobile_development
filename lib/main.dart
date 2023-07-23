@@ -90,8 +90,6 @@ class _MenuState extends State<Menu> {
   }
 
   List<Widget> isUserLoggedIn(bool isUserSignedIn, {int? idUsuario}) {
-    print('IMPRIMIR: $isUserSignedIn');
-
     if (!isUserSignedIn) {
       _widgetOptions = <Widget>[
         const Home(),

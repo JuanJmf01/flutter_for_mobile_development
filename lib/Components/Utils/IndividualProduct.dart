@@ -6,6 +6,7 @@ import 'package:etfi_point/Components/Utils/Icons/cartIcons.dart';
 import 'package:etfi_point/Components/Utils/Icons/deletedIcons.dart';
 import 'package:etfi_point/Components/Utils/Icons/modifyIcons.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/productDetail.dart';
@@ -153,8 +154,15 @@ class _RowProductsState extends State<RowProducts> {
                                   idProducto: producto.idProducto,
                                   cantidad: 1,
                                 );
-                                await ShoppingCartDb.insertShoppingCartProduct(
-                                    shoppingCartProduct);
+                                bool result = await ShoppingCartDb
+                                    .insertShoppingCartProduct(
+                                        shoppingCartProduct);
+                                if (result && context.mounted) {
+                                  print('INIZIALIZAR VALORES');
+                                  context
+                                      .read<ShoppingCartProvider>()
+                                      .initializeValues();
+                                }
                               }
                             }),
                             ModifyPrincipalIcon(onpress: () async {

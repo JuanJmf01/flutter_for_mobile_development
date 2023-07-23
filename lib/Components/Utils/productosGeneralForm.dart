@@ -1,11 +1,12 @@
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
@@ -51,6 +52,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   CategoriaTb? categoriaSeleccionada;
   List<CategoriaTb> categoriasDisponibles = [];
   List<CategoriaTb> categoriasSeleccionadas = [];
+
+  List<SubCategoriaTb> subCategoriasDisponibles = [];
+  List<SubCategoriaTb> subCategoriasSeleccionadas = [];
+
   String? urlImage;
   Asset? imagenToUpload;
 
@@ -75,6 +80,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     estaEnOferta();
 
     obtenerCategoriasSeleccionadas();
+    obtenerSubCategoriasSeleccionadas();
 
     obtenerCategorias();
 
@@ -98,6 +104,15 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
 
     setState(() {});
+  }
+
+  void obtenerSubCategoriasSeleccionadas() async {
+    int? idProducto = widget.data?.idProducto;
+    if (idProducto != null) {
+      subCategoriasSeleccionadas =
+          await subCategoriasDb.getSubCategoriasSeleccionadas(idProducto);
+      print('subCategoriasSeleccionadas_: $subCategoriasSeleccionadas');
+    }
   }
 
   void obtenerCategorias() async {

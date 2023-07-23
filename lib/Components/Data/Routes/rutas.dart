@@ -1,5 +1,5 @@
 class MisRutas {
-  static String rutaPrincipal = 'http://192.168.68.102:3000/api';
+  static String rutaPrincipal = 'http://192.168.68.100:3000/api';
 
   // -- Demas rutas -- //
   static String rutaCategorias = '$rutaPrincipal/categorias';
@@ -34,4 +34,10 @@ class MisRutas {
   // -- Rutas para la tabla shoppingCart -- //
   static String rutaShoppingCart = '$rutaPrincipal/shoppingCart';
 
+  // -- Rutas para la tabla subCategorias -- //
+  static String rutaSubCategorias = '$rutaPrincipal/subCategorias';
+
+  // -- Rutas para la tabla productosSubCategorias -- //
+  static String rutaProductosSubCategorias =
+      '$rutaPrincipal/productosSubCategorias';
 }

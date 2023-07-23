@@ -17,17 +17,19 @@ class SubCategoriaTb {
     };
   }
 
-  factory SubCategoriaTb.fromMap(Map<String, dynamic> map) {
+  factory SubCategoriaTb.fromJson(Map<String, dynamic> json) {
     return SubCategoriaTb(
-      idSubCategoria: map['idSubCategoria'],
-      idCategoria: map['idCategoria'],
-      nombre: map['nombre'],
+      idSubCategoria: json['idSubCategoria'],
+      idCategoria: json['idCategoria'],
+      nombre: json['nombre'],
     );
   }
-
-
+  
+  @override
+  String toString() {
+    return 'ProductoTb{idSubCategoria: $idSubCategoria, idCategoria: $idCategoria, nombre: $nombre}';
+  }
 }
-
 
 class SubCategoriaCreacionTb {
   final int idCategoria;
@@ -45,12 +47,10 @@ class SubCategoriaCreacionTb {
     };
   }
 
-    factory SubCategoriaCreacionTb.fromMap(Map<String, dynamic> map) {
+  factory SubCategoriaCreacionTb.fromMap(Map<String, dynamic> map) {
     return SubCategoriaCreacionTb(
       idCategoria: map['idCategoria'],
       nombre: map['nombre'],
     );
   }
-
 }
-

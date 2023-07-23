@@ -76,7 +76,7 @@ class ProductosCategoriasDb {
 
         return idCategorias;
       } else if (response.statusCode == 404) {
-        return []; // Devuelve una lista vacía si no hay categorías encontradas
+        return []; 
       } else {
         throw Exception('Failed to fetch product categories');
       }
