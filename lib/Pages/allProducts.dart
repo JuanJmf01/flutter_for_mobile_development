@@ -1,13 +1,7 @@
 import 'dart:io';
 
-import 'package:etfi_point/Components/Auth/auth.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
-import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Utils/ButtonMenu.dart';
-import 'package:etfi_point/Components/Utils/roundedSearchBar.dart';
-import 'package:etfi_point/Pages/categorie.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -23,7 +17,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     return Scaffold(
         appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(115.0),
+          preferredSize: const Size.fromHeight(56),
           child: AppBar(
             backgroundColor: Colors.grey[200],
             actions: [
@@ -47,15 +41,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 ),
               ),
             ],
-            bottom: PreferredSize(
-              preferredSize: const Size.fromHeight(50.0),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 12.0),
-                child: RoundedSearchBar(
-                  controller: searchController,
-                ),
-              ),
-            ),
+            // bottom: PreferredSize(
+            //   preferredSize: const Size.fromHeight(50.0),
+            //   child: Padding(
+            //     padding: const EdgeInsets.only(bottom: 12.0),
+            //     child: RoundedSearchBar(
+            //       controller: searchController,
+            //     ),
+            //   ),
+            // ),
           ),
         ),
         body: Center(child: Text('TEXT')));

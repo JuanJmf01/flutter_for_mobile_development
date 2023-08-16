@@ -104,7 +104,7 @@ class ButtonMenu extends StatelessWidget {
                 ),
               ),
             ),
-          ),
+          ),  
           //Divider(color: Colors.grey[300], indent: 20.0, endIndent: 20.0,),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -135,7 +135,7 @@ class ButtonMenu extends StatelessWidget {
                     ),
                     SizedBox(width: 7.0),
                     Text(
-                      'Botón 2',
+                      '',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold, // Texto más grueso

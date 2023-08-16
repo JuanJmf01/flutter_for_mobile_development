@@ -61,7 +61,7 @@ class _ProductDetailState extends State<ProductDetail> {
   Future<bool> existeOrNotUserRatingByProducto(idUsuario) async {
     int idProducto = widget.id;
 
-    bool result = await RatingsDb.checkRatingExists(idUsuario, idProducto);
+    bool result = await RatingsDb.checkRatingExists(idProducto, idUsuario);
 
     return result;
   }
@@ -264,6 +264,7 @@ class _FastDescriptionState extends State<FastDescription> {
   @override
   void initState() {
     super.initState();
+    print("ifExist: ${widget.ifExistOrNotUserRatingByProducto}");
 
     ifExistOrNotUserRatingByProducto = widget.ifExistOrNotUserRatingByProducto;
 
@@ -643,7 +644,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                   imagesToUpdate.remove(image);
                 });
               } else if (image is ProductImageToUpload) {
-                 setState(() {
+                setState(() {
                   allProductImages.removeAt(imageIndex);
                   imagesToUpload.remove(image);
                 });

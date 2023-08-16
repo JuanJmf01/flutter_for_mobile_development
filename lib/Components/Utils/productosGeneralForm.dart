@@ -10,7 +10,9 @@ import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
+import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/Components/Utils/dropDownButtonFormField.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
@@ -80,9 +82,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     estaEnOferta();
 
     obtenerCategoriasSeleccionadas();
-    obtenerSubCategoriasSeleccionadas();
-
     obtenerCategorias();
+
+    //obtenerSubCategoriasSeleccionadas();
 
     if (widget.data != null) {
       _producto = widget.data;
@@ -98,27 +100,71 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   }
 
   void obtenerCategoriasSeleccionadas() async {
-    if (widget.data?.idProducto != null) {
-      categoriasSeleccionadas =
-          await CategoriaDb.getCategoriasSeleccionadas(widget.data!.idProducto);
-    }
-
-    setState(() {});
-  }
-
-  void obtenerSubCategoriasSeleccionadas() async {
     int? idProducto = widget.data?.idProducto;
     if (idProducto != null) {
-      subCategoriasSeleccionadas =
-          await subCategoriasDb.getSubCategoriasSeleccionadas(idProducto);
-      print('subCategoriasSeleccionadas_: $subCategoriasSeleccionadas');
+      List<CategoriaTb> categoriasSeleccionadasAux =
+          await CategoriaDb.getCategoriasSeleccionadas(idProducto);
+
+      List<SubCategoriaTb> subCategoriasSeleccionadasAux =
+          await SubCategoriasDb.getSubCategoriasSeleccionadas(idProducto);
+
+        List<SubCategoriaTb> subCategorias = [];
+
+      for (int i = 0; i < categoriasSeleccionadasAux.length; i++) {
+
+        for (var subCategoriaSeleccionada in subCategoriasSeleccionadasAux) {
+          if (subCategoriaSeleccionada.idCategoria ==
+              categoriasSeleccionadasAux[i].idCategoria) {
+            subCategorias.add(subCategoriaSeleccionada);
+          }
+        }
+        categoriasSeleccionadasAux[i] = categoriasSeleccionadasAux[i]
+            .copyWith(subCategoriasSeleccionadas: subCategorias);
+      }
+      setState(() {
+        categoriasSeleccionadas.addAll(categoriasSeleccionadasAux);
+        subCategoriasSeleccionadas.addAll(subCategorias);
+      });
+
+      print('IMPORTANTE ANTES_: $categoriasSeleccionadas');
     }
   }
 
+  
+  // void obtenerSubCategoriasSeleccionadas() {
+  //   List<SubCategoriaTb> subCategoriasSeleccionadasAux = [];
+  //   print('categoriasSeleccionadasInReturnCate_: $categoriasSeleccionadas');
+
+  //   for (var categoriaSeleccionada in categoriasSeleccionadas) {
+  //     if (categoriaSeleccionada.subCategoriasSeleccionadas != null) {
+  //       subCategoriasSeleccionadasAux
+  //           .addAll(categoriaSeleccionada.subCategoriasSeleccionadas!);
+  //     }
+  //   }
+
+  //   setState(() {
+  //     subCategoriasSeleccionadas.addAll(subCategoriasSeleccionadasAux);
+  //   });
+  // }
+
+
   void obtenerCategorias() async {
-    categoriasDisponibles = await CategoriaDb.getCategorias();
-    setState(() {});
+    List<CategoriaTb> categoriasDisponiblesAux =
+        await CategoriaDb.getCategorias();
+
+    setState(() {
+      categoriasDisponibles.addAll(categoriasDisponiblesAux);
+    });
   }
+
+  // void obtenerSubCategorias(int idCategoria) async {
+  //   List<SubCategoriaTb> subCatgoriasAux =
+  //       await subCategoriasDb.getSubCategorias(idCategoria);
+
+  //   setState(() {
+  //     subCategoriasDisponibles.addAll(subCatgoriasAux);
+  //   });
+  // }
 
   Future<int> crearNegocioSiNoExiste(idUsuario) async {
     int idNegocio = 0;
@@ -191,14 +237,18 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         return ConfirmationDialog(
           titulo: widget.exitoTitle,
           message: widget.exitoMessage,
-          onAccept: () {
-            Navigator.of(context).pop();
-            if (_producto?.idProducto != null) {
-              Navigator.pop(context, idProducto);
-            } else {
-              Navigator.pop(context, idProducto);
-            }
+          onAccept: (){
+            print('agregado');
+            Navigator.of(context).pop();  
           },
+          // onAccept: () {
+          //   Navigator.of(context).pop();
+          //   if (_producto?.idProducto != null) {
+          //     Navigator.pop(context, idProducto);
+          //   } else {
+          //     Navigator.pop(context, idProducto);
+          //   }
+          // },
           onAcceptMessage: 'Cerrar y volver',
         );
       },
@@ -284,94 +334,74 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             FilteringTextInputFormatter.digitsOnly
                           ],
                         ),
-                        Padding(
+                        DropDownButtonFormField(
                           padding: const EdgeInsets.symmetric(vertical: 15.0),
-                          child: DropdownButtonFormField<CategoriaTb>(
-                            decoration: InputDecoration(
-                              hintText: 'Selecciona una categoría',
-                              border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  borderSide: BorderSide.none),
-                              filled: true,
-                              fillColor: Colors.white,
-                            ),
-                            //value: categoriaSeleccionada,
-                            items: categoriasDisponibles
-                                .map(
-                                  (categoria) => DropdownMenuItem<CategoriaTb>(
-                                    value: categoria,
-                                    child: Text(
-                                      categoria.nombre,
-                                      style: const TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  ),
-                                )
-                                .toList(),
-                            onChanged: (CategoriaTb? newValue) {
+                          hintText: 'Selecciona las categorias',
+                          onChanged: (dynamic newValue) {
+                            setState(() {
+                              if (!categoriasSeleccionadas.contains(newValue)) {
+                                categoriasSeleccionadas.add(newValue!);
+                              }
+                            });
+                            //obtenerSubCategorias(newValue.idCategoria);
+                          },
+                          elementosDisponibles: categoriasDisponibles,
+                        ),
+
+                        //Categorias seleccionadas
+                        Padding(
+                            padding:
+                                const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                            child: CategoriesList(
+                              elementos: categoriasSeleccionadas,
+                              marginContainer: EdgeInsets.all(5.0),
+                              paddingContainer: EdgeInsets.all(12.0),
+                              // subCategoriasSeleccionadas:
+                              //     categoriasSeleccionadas,
+                            )),
+
+                        DropDownButtonFormField(
+                            padding: const EdgeInsets.symmetric(vertical: 15.0),
+                            hintText: 'Selecciona las subCategorias',
+                            onChanged: (dynamic newValue) {
                               setState(() {
-                                if (!categoriasSeleccionadas
+                                if (!subCategoriasSeleccionadas
                                     .contains(newValue)) {
-                                  categoriasSeleccionadas.add(newValue!);
+                                  subCategoriasSeleccionadas.add(newValue!);
                                 }
                               });
                             },
-                            dropdownColor: Colors.grey[200],
-                          ),
-                        ),
+                            elementosDisponibles: []),
+
+                        //Sub-Categorias seleccionadas
                         Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 35.0),
-                          child: Wrap(
-                            children: categoriasSeleccionadas.map((categoria) {
-                              return Container(
-                                margin: EdgeInsets.all(5.0),
-                                padding: EdgeInsets.all(12.0),
-                                decoration: BoxDecoration(
-                                    color: Colors.blue,
-                                    borderRadius: BorderRadius.circular(20)),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      categoria.nombre,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          categoriasSeleccionadas
-                                              .remove(categoria);
-                                        });
-                                      },
-                                      child: const Icon(
-                                        Icons.close,
-                                        color: Colors.white,
-                                        size: 19,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                        ),
+                            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                            child: CategoriesList(
+                              elementos: subCategoriasSeleccionadas,
+                              marginContainer: EdgeInsets.all(5.0),
+                              paddingContainer: EdgeInsets.all(12.0),
+                            )),
+
+                        // ElevatedButton(
+                        //     onPressed: () {
+                        //       obtenerSubCategoriasSeleccionadas();
+                        //     },
+                        //     child: Text('imprimir')),
+
                         if (imagenToUpload != null || urlImage != null)
-                          ShowImage(
-                            width: 350,
-                            height: 300,
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(20.0),
-                            widthAsset: 350,
-                            heightAsset: 300,
-                            imageAsset: imagenToUpload,
-                            networkImage: urlImage,
-                            fit: BoxFit.cover,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0),
+                            child: ShowImage(
+                              width: 350,
+                              height: 300,
+                              color: Colors.grey[300],
+                              borderRadius: BorderRadius.circular(20.0),
+                              widthAsset: 350,
+                              heightAsset: 300,
+                              imageAsset: imagenToUpload,
+                              networkImage: urlImage,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         Padding(
                           padding:
@@ -464,3 +494,43 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     );
   }
 }
+
+
+
+
+//  Padding(
+//                           padding: const EdgeInsets.symmetric(vertical: 15.0),
+//                           child: DropdownButtonFormField<CategoriaTb>(
+//                             decoration: InputDecoration(
+//                               hintText: 'Selecciona una categoría',
+//                               border: OutlineInputBorder(
+//                                   borderRadius: BorderRadius.circular(10.0),
+//                                   borderSide: BorderSide.none),
+//                               filled: true,
+//                               fillColor: Colors.white,
+//                             ),
+//                             //value: categoriaSeleccionada,
+//                             items: categoriasDisponibles
+//                                 .map(
+//                                   (categoria) => DropdownMenuItem<CategoriaTb>(
+//                                     value: categoria,
+//                                     child: Text(
+//                                       categoria.nombre,
+//                                       style: const TextStyle(
+//                                           fontSize: 16,
+//                                           fontWeight: FontWeight.w500),
+//                                     ),
+//                                   ),
+//                                 )
+//                                 .toList(),
+//                             onChanged: (CategoriaTb? newValue) {
+//                               setState(() {
+//                                 if (!categoriasSeleccionadas
+//                                     .contains(newValue)) {
+//                                   categoriasSeleccionadas.add(newValue!);
+//                                 }
+//                               });
+//                             },
+//                             dropdownColor: Colors.grey[200],
+//                           ),
+//                         ),

@@ -48,10 +48,7 @@ class CategoriaDb {
       Dio dio = Dio();
 
       Response response = await dio.get(MisRutas.rutaCategorias);
-      print('llega a getCate');
       if (response.statusCode == 200) {
-        print('llega al if getCate');
-
         List<CategoriaTb> categorias = List<CategoriaTb>.from(
           response.data
               .map((categoriaData) => CategoriaTb.fromJson(categoriaData)),

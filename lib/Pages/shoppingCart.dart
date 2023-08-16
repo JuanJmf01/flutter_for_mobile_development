@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/shoppingCartTb.dart';
 import 'package:etfi_point/Components/Data/Entities/shoppingCartDb.dart';
+import 'package:etfi_point/Components/Utils/CircularSelector.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
@@ -190,6 +191,7 @@ class _HorizontalProductState extends State<HorizontalProduct> {
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 5.0),
                               isSelected: isSelected,
+                              sizeIcon: 25.0,
                               onChanged: (value) {
                                 setState(() {
                                   isSelected = value;
@@ -328,48 +330,7 @@ class IncreaseAndDecrease extends StatelessWidget {
   }
 }
 
-class CircularSelector extends StatefulWidget {
-  const CircularSelector(
-      {super.key, required this.isSelected, this.onChanged, this.padding});
 
-  final bool isSelected;
-  final ValueChanged<bool>? onChanged;
-  final EdgeInsets? padding;
-
-  @override
-  State<CircularSelector> createState() => _CircularSelectorState();
-}
-
-class _CircularSelectorState extends State<CircularSelector> {
-  bool isSelected = false;
-
-  @override
-  void initState() {
-    super.initState();
-    isSelected = widget.isSelected;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () {
-        setState(() {
-          isSelected = !isSelected;
-        });
-        if (widget.onChanged != null) {
-          widget.onChanged!(isSelected);
-        }
-      },
-      child: Padding(
-        padding: widget.padding ?? EdgeInsets.zero,
-        child: Icon(
-          isSelected ? Icons.check_circle : Icons.panorama_fish_eye,
-          color: isSelected ? Colors.blue : Colors.grey,
-        ),
-      ),
-    );
-  }
-}
 
 class StaticBottom extends StatefulWidget {
   const StaticBottom({super.key, required this.shoppingCartProducts});

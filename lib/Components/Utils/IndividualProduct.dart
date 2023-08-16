@@ -98,7 +98,7 @@ class _RowProductsState extends State<RowProducts> {
                 borderRadius: BorderRadius.circular(
                   16.0,
                 ),
-                color: Colors.grey.shade200,
+                color: Colors.white,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

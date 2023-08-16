@@ -36,6 +36,9 @@ class MisRutas {
 
   // -- Rutas para la tabla subCategorias -- //
   static String rutaSubCategorias = '$rutaPrincipal/subCategorias';
+  static String rutaSubCategoriasByCategoria = '$rutaPrincipal/subCategoriasByCategoria';
+
+  
 
   // -- Rutas para la tabla productosSubCategorias -- //
   static String rutaProductosSubCategorias =

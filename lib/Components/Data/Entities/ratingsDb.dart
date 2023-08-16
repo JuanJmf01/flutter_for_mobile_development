@@ -269,6 +269,9 @@ class RatingsDb {
     Dio dio = Dio();
     String url = MisRutas.rutaRatingsIfExistRating;
 
+    print('idProducto $idProducto');
+    print('idUsuario $idUsuario');
+
     Map<String, dynamic> data = {
       'idUsuario': idUsuario,
       'idProducto': idProducto
@@ -283,6 +286,8 @@ class RatingsDb {
         ),
       );
 
+      print('responseData_: ${response.data}');
+
       if (response.statusCode == 200) {
         print('existe in checkRatingExists: ${response.data}');
         return response.data;
@@ -292,7 +297,7 @@ class RatingsDb {
       }
     } catch (error) {
       print('Error de conexión: $error');
-      return false;
+      throw Exception('Error: $error');
     }
   }
 }

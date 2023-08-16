@@ -27,7 +27,7 @@ class SubCategoriaTb {
   
   @override
   String toString() {
-    return 'ProductoTb{idSubCategoria: $idSubCategoria, idCategoria: $idCategoria, nombre: $nombre}';
+    return 'SubCategoriaTb{idCategoria: $idCategoria, nombre: $nombre}';
   }
 }
 

@@ -4,40 +4,42 @@ import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
-import 'package:etfi_point/Components/Utils/roundedSearchBar.dart';
 import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class MisProductos extends StatefulWidget {
-  MisProductos({Key? key}) : super(key: key);
+class ProfileNavigator extends StatefulWidget {
+  const ProfileNavigator({super.key});
 
   @override
-  State<MisProductos> createState() => _MisProductosState();
+  State<ProfileNavigator> createState() => _ProfileNavigatorState();
 }
 
-class _MisProductosState extends State<MisProductos> {
-  List<ProductoTb> productos = [];
+class _ProfileNavigatorState extends State<ProfileNavigator>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
   int? result;
 
-  ProductoTb? findProductById(int id) {
-    for (var producto in productos) {
-      if (producto.idProducto == id) {
-        return producto;
-      }
-    }
-    return null;
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
-    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
-
-    final TextEditingController searchController = TextEditingController();
     return Scaffold(
+      backgroundColor: Colors.grey.shade200,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(115.0),
+        preferredSize: const Size.fromHeight(58),
         child: AppBar(
           backgroundColor: Colors.grey[200],
           title: const Text(
@@ -86,41 +88,49 @@ class _MisProductosState extends State<MisProductos> {
               ),
             ),
           ],
-          bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(.0),
+        ),
+      ),
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) => [
+          const SliverToBoxAdapter(child: TopProfile()),
+          SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.only(bottom: 12.0),
-              child: RoundedSearchBar(
-                controller: searchController,
+              padding: const EdgeInsets.only(bottom: 10.0),
+              child: TabBar(
+                controller: _tabController,
+                tabs: const [
+                  Tab(
+                    icon: Icon(
+                      Icons.image,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Tab(
+                    icon: Icon(
+                      Icons.video_collection_rounded,
+                      color: Colors.black,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
+        ],
+        body: TabBarView(
+          controller:
+              _tabController, // Asignamos el TabController al TabBarView
+          children: [
+            SingleChildScrollView(
+              child: MisProductos(),
+            ),
+            SingleChildScrollView(
+              child: Center(
+                child: Text('Contenido de la pestaña 2 y otras imágenes'),
+              ),
+            ),
+          ],
         ),
       ),
-      body: idUsuario != null ? FutureBuilder<List<ProductoTb>>(
-        future: ProductoDb.getProductosByNegocio(idUsuario), 
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            productos = snapshot.data!;
-            if (result != null) {
-              print('result aqui $result');
-            }
-            return ListView(
-              children: [
-                const TopProfile(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                  child: RowProducts(productos: productos),
-                ), // Pasar la lista de productos al widget RowProducts
-              ],
-            );
-          } else if (snapshot.hasError) {
-            return Text('Error al cargar los productos');
-          }
-          // Mostrar un indicador de carga
-          return const Center(child: CircularProgressIndicator());
-        },
-      ): Center(child: CircularProgressIndicator())
     );
   }
 }
@@ -137,10 +147,9 @@ class _TopProfileState extends State<TopProfile> {
   Widget build(BuildContext context) {
     return Container(
       height: 200,
-      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 20.0, 30.0),
+      padding: const EdgeInsets.fromLTRB(0.0, 0.0, 20.0, 20.0),
       child: const Row(
-        mainAxisAlignment: MainAxisAlignment
-            .end, //crossAxisAlignment: CrossAxisAlignment.start, // Alineación vertical hacia arriba
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Row(
             crossAxisAlignment:
@@ -181,5 +190,48 @@ class _TopProfileState extends State<TopProfile> {
         ],
       ),
     );
+  }
+}
+
+class MisProductos extends StatefulWidget {
+  MisProductos({Key? key}) : super(key: key);
+
+  @override
+  State<MisProductos> createState() => _MisProductosState();
+}
+
+class _MisProductosState extends State<MisProductos> {
+  List<ProductoTb> productos = [];
+
+  @override
+  Widget build(BuildContext context) {
+    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
+
+    //final TextEditingController searchController = TextEditingController();
+    return idUsuario != null
+        ? FutureBuilder<List<ProductoTb>>(
+            future: ProductoDb.getProductosByNegocio(idUsuario),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Text('Error al cargar los productos');
+              } else if (snapshot.hasData) {
+                productos = snapshot.data!;
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: RowProducts(productos: productos),
+                    ), // Pasar la lista de productos al widget RowProducts
+                  ],
+                );
+              } else {
+                return Text('No se encontraron los productos');
+              }
+              // Mostrar un indicador de carga
+            },
+          )
+        : Center(child: CircularProgressIndicator());
   }
 }

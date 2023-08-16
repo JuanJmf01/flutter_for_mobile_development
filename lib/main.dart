@@ -101,7 +101,7 @@ class _MenuState extends State<Menu> {
     } else {
       _widgetOptions = <Widget>[
         const Home(),
-        MisProductos(),
+        ProfileNavigator(),
         ShoppingCart(
           idUsuario: idUsuario,
         ),

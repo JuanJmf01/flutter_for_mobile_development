@@ -1,9 +1,31 @@
+import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
+
 class CategoriaTb {
   final int? idCategoria;
   final String nombre;
+  final List<SubCategoriaTb>? subCategoriasSeleccionadas;
   final String? imagePath;
 
-  CategoriaTb({this.idCategoria, required this.nombre, this.imagePath});
+  CategoriaTb(
+      {this.idCategoria,
+      required this.nombre,
+      this.subCategoriasSeleccionadas,
+      this.imagePath});
+
+ CategoriaTb copyWith({
+    int? idCategoria,
+    String? nombre,
+    List<SubCategoriaTb>? subCategoriasSeleccionadas,
+    String? imagePath,
+  }) {
+    return CategoriaTb(
+      idCategoria: idCategoria ?? this.idCategoria,
+      nombre: nombre ?? this.nombre,
+      subCategoriasSeleccionadas:
+          subCategoriasSeleccionadas ?? this.subCategoriasSeleccionadas,
+      imagePath: imagePath ?? this.imagePath,
+    );
+  }
 
   factory CategoriaTb.fromJson(Map<String, dynamic> json) {
     return CategoriaTb(
@@ -32,9 +54,8 @@ class CategoriaTb {
 
   @override
   int get hashCode => idCategoria.hashCode ^ nombre.hashCode;
-
-  // @override
-  // String toString() {
-  //   return 'CategoriaTb{idCategoria: $idCategoria, nombre: $nombre}';
-  // }
+  @override
+  String toString() {
+    return 'CategoriaTb{nombre: $nombre, subCategoriasSeleccionadas: $subCategoriasSeleccionadas}';
+  }
 }
