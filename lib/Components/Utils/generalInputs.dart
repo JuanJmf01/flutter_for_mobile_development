@@ -7,6 +7,7 @@ class GeneralInputs extends StatelessWidget {
       required this.controller,
       required this.labelText,
       required this.color,
+      this.textLabelOutside,
       this.keyboardType,
       this.inputFormatters,
       this.minLines,
@@ -18,6 +19,7 @@ class GeneralInputs extends StatelessWidget {
   final String labelText;
   final Color color;
   final TextInputType? keyboardType;
+  final String? textLabelOutside;
   final List<TextInputFormatter>? inputFormatters;
   final int? minLines;
   final int? maxLines;
@@ -30,23 +32,38 @@ class GeneralInputs extends StatelessWidget {
       padding: EdgeInsets.symmetric(
           horizontal: horizontalPadding ?? 0.0,
           vertical: verticalPadding ?? 0.0),
-      child: Container(
-        decoration: BoxDecoration(
-          color: color, // Cuadro blanco
-          borderRadius: BorderRadius.circular(10.0),
-        ),
-        child: TextField(
-          controller: controller,
-          minLines: minLines ?? 1,
-          maxLines: maxLines,
-          decoration: InputDecoration(
-            labelText: labelText,
-            border: InputBorder.none, // Sin borde
-            contentPadding: const EdgeInsets.all(13.0), // Ajustar el padding
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 4.5),
+            child: Text(
+              textLabelOutside ?? '',
+              style: TextStyle(
+                  color: Colors.black54, fontSize: 17.2, letterSpacing: 0.6),
+            ),
           ),
-          keyboardType: keyboardType,
-          inputFormatters: inputFormatters,
-        ),
+          Container(
+            decoration: BoxDecoration(
+              color: color, // Cuadro blanco
+              borderRadius: BorderRadius.circular(25.0),
+              border: Border.all(width: 1.0, color: Colors.grey.shade400)
+            ),
+            child: TextField(
+              controller: controller,
+              minLines: minLines ?? 1,
+              maxLines: maxLines,
+              decoration: InputDecoration(
+                labelText: labelText,
+                border: InputBorder.none, // Sin borde
+                contentPadding: const EdgeInsets.fromLTRB(
+                    15.0, 8.0, 0.0, 8.0), // Ajustar el padding
+              ),
+              keyboardType: keyboardType,
+              inputFormatters: inputFormatters,
+            ),
+          ),
+        ],
       ),
     );
   }

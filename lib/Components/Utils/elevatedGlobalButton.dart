@@ -15,7 +15,9 @@ class ElevatedGlobalButton extends StatelessWidget {
       this.paddingTop,
       this.paddingRight,
       this.paddingBottom,
-      this.color});
+      this.color,
+      this.colorNameSaveButton, 
+      this.borderSideColor});
 
   final String nameSavebutton;
   final double? fontSize;
@@ -32,6 +34,8 @@ class ElevatedGlobalButton extends StatelessWidget {
   final double? paddingBottom;
 
   final Color? color;
+  final Color? colorNameSaveButton;
+  final Color? borderSideColor;
 
   @override
   Widget build(BuildContext context) {
@@ -44,10 +48,17 @@ class ElevatedGlobalButton extends StatelessWidget {
         child: ElevatedButton(
           onPressed: onPress,
           style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(color ?? Colors.blue),
+            backgroundColor:
+                MaterialStateProperty.all<Color>(color ?? Colors.blue),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
                 borderRadius: borderRadius ?? BorderRadius.circular(0.0),
+              ),
+            ),
+            side: MaterialStateProperty.all<BorderSide>(
+              BorderSide(
+                color: borderSideColor ?? Colors.white, // Color del borde
+                width: 1.0, // Grosor del borde en píxeles
               ),
             ),
           ),
@@ -57,7 +68,8 @@ class ElevatedGlobalButton extends StatelessWidget {
                 style: TextStyle(
                     fontSize: fontSize,
                     fontWeight: fontWeight,
-                    letterSpacing: letterSpacing)),
+                    letterSpacing: letterSpacing,
+                    color: colorNameSaveButton)),
           ),
         ),
       ),

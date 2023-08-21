@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:etfi_point/Components/Utils/ButtonMenu.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -11,61 +10,174 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final TextEditingController searchController = TextEditingController();
-
     return Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(56),
-          child: AppBar(
-            backgroundColor: Colors.grey[200],
-            actions: [
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: IconButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (BuildContext context) => ButtonMenu(),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10.0),
-                          topRight: Radius.circular(10.0),
-                        ),
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.menu, color: Colors.black, size: 35),
-                ),
+      appBar: AppBar(
+        actions: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
+            child: IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                // Lógica para el icono en la parte derecha del AppBar
+              },
+            ),
+          )
+        ],
+        bottom: PreferredSize(
+          preferredSize:
+              Size.fromHeight(30.0), // Ajusta la altura de la pestaña
+
+          child: TabBar(
+            controller: _tabController,
+            tabs: const [
+              Tab(
+                text: 'Tiendas que sigo',
               ),
+              Tab(text: 'Todas las tiendas'),
             ],
-            // bottom: PreferredSize(
-            //   preferredSize: const Size.fromHeight(50.0),
-            //   child: Padding(
-            //     padding: const EdgeInsets.only(bottom: 12.0),
-            //     child: RoundedSearchBar(
-            //       controller: searchController,
-            //     ),
-            //   ),
-            // ),
+            labelStyle: const TextStyle(
+                fontSize: 17,
+                fontWeight: FontWeight
+                    .w500), // Cambia el tamaño del texto de la pestaña activa
           ),
         ),
-        body: Center(child: Text('TEXT')));
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          TiendasQueSigo(),
+          Center(child: Text('Contenido del Tab 2')),
+        ],
+      ),
+    );
   }
 }
 
-// class Ofertas extends StatelessWidget {
-//   const Ofertas({super.key});
+class TiendasQueSigo extends StatelessWidget {
+  const TiendasQueSigo({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return ListView(
-//       children: [HorizontalList(), HorizontalCategories()],
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      children: [Historias(), PictureDescription()],
+    );
+  }
+}
+
+class Historias extends StatelessWidget {
+  Historias({super.key});
+
+  final List<String> UserStories = [
+    'Item 1',
+    'Item 2',
+    'Item 3',
+    'Item 4',
+    'Item 5',
+    'Item 6',
+    'Item 7',
+    'Item 8',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 200,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        itemCount: UserStories.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(2.0, 10.0, 0, 5.0),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20.0),
+                color: Colors.grey.shade300,
+              ),
+              width: 120,
+              child: Center(child: Text(UserStories[index])),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class PictureDescription extends StatelessWidget {
+  const PictureDescription({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    String urlImage =
+        "https://www.panoramaweb.com.mx/u/fotografias/fotosnoticias/2022/8/25/35305.jpg";
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Container(
+                    height: 45,
+                    width: 45,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50.0),
+                        color: Colors.grey.shade200),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+                    child: Text(
+                      'Bussines name',
+                      style: TextStyle(
+                          fontSize: 15.5, fontWeight: FontWeight.w500),
+                    ),
+                  )
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 0.0),
+                child: Text(
+                  'Lorem ipsum es el texto que se usa habitualmente en diseño gráfico en demostraciones de tipografías',
+                  style: TextStyle(fontSize: 16.3),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20.0, 10.0, 0.0, 0.0),
+                child: Container(
+                  width: 340,
+                  height: 320,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      color: Colors.grey.shade200),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class HorizontalList extends StatelessWidget {
   const HorizontalList({super.key});
@@ -119,66 +231,3 @@ class HorizontalList extends StatelessWidget {
         ),
       );
 }
-
-// class HorizontalCategories extends StatelessWidget {
-//   HorizontalCategories({super.key});
-
-//   List<CategoriaTb> categorias = [];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return FutureBuilder<List<CategoriaTb>>(
-//         future: CategoriaDb.getCategorias(),
-//         builder: (context, snapshot) {
-//           if (snapshot.hasData) {
-//             categorias = snapshot.data!;
-//             return SizedBox(
-//                 height: 95.0,
-//                 child: ListView.builder(
-//                     scrollDirection: Axis.horizontal,
-//                     itemCount: categorias.length,
-//                     itemBuilder: (BuildContext context, int index) {
-//                       final CategoriaTb categoria = categorias[index];
-//                       return Container(
-//                         padding: const EdgeInsets.all(10.0),
-//                         width: 100.0,
-//                         child: Column(
-//                           children: [
-//                             Container(
-//                               padding:
-//                                   const EdgeInsets.fromLTRB(0.0, 1.0, 0.0, 0.0),
-//                               child: InkWell(
-//                                   onTap: () {
-//                                     Navigator.push(
-//                                         context,
-//                                         MaterialPageRoute(
-//                                             builder: (context) => Categorie(
-//                                                 idCategoria:
-//                                                     categoria.idCategoria!)));
-//                                   },
-//                                   child: SizedBox(
-//                                     height: 48.0,
-//                                     child:
-//                                         Image.file(File(categoria.imagePath!)),
-//                                   )),
-//                             ),
-//                             Container(
-//                               padding: const EdgeInsets.only(top: 3.0),
-//                               child: Text(
-//                                 categoria.nombre,
-//                                 style: const TextStyle(
-//                                     fontSize: 14.5,
-//                                     fontWeight: FontWeight.w500),
-//                               ),
-//                             )
-//                           ],
-//                         ),
-//                       );
-//                     }));
-//           } else if (snapshot.hasError) {
-//             return Text('Error al cargas las categorias');
-//           }
-//           return const Center(child: CircularProgressIndicator());
-//         });
-//   }
-// }

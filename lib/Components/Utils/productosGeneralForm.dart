@@ -108,10 +108,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       List<SubCategoriaTb> subCategoriasSeleccionadasAux =
           await SubCategoriasDb.getSubCategoriasSeleccionadas(idProducto);
 
-        List<SubCategoriaTb> subCategorias = [];
+      List<SubCategoriaTb> subCategorias = [];
 
       for (int i = 0; i < categoriasSeleccionadasAux.length; i++) {
-
         for (var subCategoriaSeleccionada in subCategoriasSeleccionadasAux) {
           if (subCategoriaSeleccionada.idCategoria ==
               categoriasSeleccionadasAux[i].idCategoria) {
@@ -130,7 +129,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
   }
 
-  
   // void obtenerSubCategoriasSeleccionadas() {
   //   List<SubCategoriaTb> subCategoriasSeleccionadasAux = [];
   //   print('categoriasSeleccionadasInReturnCate_: $categoriasSeleccionadas');
@@ -146,7 +144,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   //     subCategoriasSeleccionadas.addAll(subCategoriasSeleccionadasAux);
   //   });
   // }
-
 
   void obtenerCategorias() async {
     List<CategoriaTb> categoriasDisponiblesAux =
@@ -237,9 +234,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         return ConfirmationDialog(
           titulo: widget.exitoTitle,
           message: widget.exitoMessage,
-          onAccept: (){
+          onAccept: () {
             print('agregado');
-            Navigator.of(context).pop();  
+            Navigator.of(context).pop();
           },
           // onAccept: () {
           //   Navigator.of(context).pop();
@@ -267,172 +264,184 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       },
       child: Scaffold(
         appBar: AppBar(
-            backgroundColor: Colors.white,
-            iconTheme: IconThemeData(color: Colors.black),
-            toolbarHeight: 70,
+            backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
+            iconTheme: IconThemeData(color: Colors.black, size: 30),
+            toolbarHeight: 60,
             title: Text(
               widget.titulo,
               style: TextStyle(color: Colors.black),
             )),
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
         body: Column(
           children: [
             Expanded(
               child: FocusScope(
                 node: _focusScopeNode,
                 child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        CheckboxListTile(
-                            title: const Text('¿Producto en oferta?'),
-                            value: isChecked,
-                            onChanged: (value) {
-                              setState(() {
-                                isChecked = value!;
-                                enOferta = isChecked ? 1 : 0;
-                              });
-                            }),
-                        GeneralInputs(
-                            verticalPadding: 15.0,
-                            controller: _nombreController,
-                            labelText: 'Agrega un nombre',
-                            color: colorTextField),
-                        GeneralInputs(
-                          controller: _precioController,
-                          labelText: 'Agrega un precio',
-                          color: colorTextField,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                          ],
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      ElevatedGlobalButton(
+                        nameSavebutton: '¿Producto en oferta?',
+                        onPress: () {
+                          setState(() {
+                            isChecked = !isChecked;
+                            enOferta = isChecked ? 1 : 0;
+                          });
+                        },
+                        color: isChecked ? Colors.blue : Colors.white,
+                        colorNameSaveButton:
+                            isChecked ? Colors.white : Colors.black,
+                        borderRadius: BorderRadius.circular(30.0),
+                        //borderSideColor: Colors.grey
+                        fontSize: 16,
+                      ),
+
+                      Container(
+                        width: double
+                            .infinity, // Para que el Container ocupe todo el ancho
+                        child: Divider(
+                          color: Colors.grey.shade300,
+                          thickness: 2, // Ancho de la línea en píxeles
                         ),
-                        GeneralInputs(
+                      ),
+                      GeneralInputs(
+                          controller: _nombreController,
+                          horizontalPadding: 16.0,
                           verticalPadding: 15.0,
-                          controller: _descripcionController,
-                          labelText: 'Agrega una descripción',
-                          color: colorTextField,
-                          keyboardType: TextInputType.multiline,
-                          minLines: 2,
-                        ),
-                        // GeneralInputs(
-                        //   verticalPadding: 15.0,
-                        //   controller: _descripcionController,
-                        //   labelText: 'Agrega una descripción',
-                        //   color: colorTextField,
-                        //   keyboardType: TextInputType.multiline,
-                        //   minLines: 3,
-                        //   maxLines: 10,
-                        // ),
-                        GeneralInputs(
-                          controller: _cantidadDisponibleController,
-                          labelText: 'Agrega una cantidad disponible',
-                          color: colorTextField,
-                          keyboardType: TextInputType.number,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly
-                          ],
-                        ),
-                        DropDownButtonFormField(
+                          textLabelOutside: 'Nombre',
+                          labelText: 'Agrega un nombre',
+                          color: colorTextField),
+                      GeneralInputs(
+                        controller: _precioController,
+                        horizontalPadding: 16.0,
+                        textLabelOutside: 'Precio',
+                        labelText: 'Agrega un precio',
+                        color: colorTextField,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
+                      ),
+                      GeneralInputs(
+                        controller: _descripcionController,
+                        verticalPadding: 15.0,
+                        horizontalPadding: 16.0,
+                        textLabelOutside: 'Descripcion',
+                        labelText: 'Agrega una descripción',
+                        color: colorTextField,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 3,
+                      ),
+                      GeneralInputs(
+                        controller: _cantidadDisponibleController,
+                        horizontalPadding: 16.0,
+                        textLabelOutside: 'Cantidad',
+                        labelText: 'Agrega una cantidad disponible',
+                        color: colorTextField,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
+                      DropDownButtonFormField(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        hintText: 'Selecciona las categorias',
+                        onChanged: (dynamic newValue) {
+                          setState(() {
+                            if (!categoriasSeleccionadas.contains(newValue)) {
+                              categoriasSeleccionadas.add(newValue!);
+                            }
+                          });
+                          //obtenerSubCategorias(newValue.idCategoria);
+                        },
+                        elementosDisponibles: categoriasDisponibles,
+                      ),
+
+                      //Categorias seleccionadas
+                      Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                          child: CategoriesList(
+                            elementos: categoriasSeleccionadas,
+                            marginContainer: EdgeInsets.all(5.0),
+                            paddingContainer: EdgeInsets.all(12.0),
+                            // subCategoriasSeleccionadas:
+                            //     categoriasSeleccionadas,
+                          )),
+
+                      DropDownButtonFormField(
                           padding: const EdgeInsets.symmetric(vertical: 15.0),
-                          hintText: 'Selecciona las categorias',
+                          hintText: 'Selecciona las subCategorias',
                           onChanged: (dynamic newValue) {
                             setState(() {
-                              if (!categoriasSeleccionadas.contains(newValue)) {
-                                categoriasSeleccionadas.add(newValue!);
+                              if (!subCategoriasSeleccionadas
+                                  .contains(newValue)) {
+                                subCategoriasSeleccionadas.add(newValue!);
                               }
                             });
-                            //obtenerSubCategorias(newValue.idCategoria);
                           },
-                          elementosDisponibles: categoriasDisponibles,
-                        ),
+                          elementosDisponibles: []),
 
-                        //Categorias seleccionadas
+                      //Sub-Categorias seleccionadas
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                          child: CategoriesList(
+                            elementos: subCategoriasSeleccionadas,
+                            marginContainer: EdgeInsets.all(5.0),
+                            paddingContainer: EdgeInsets.all(12.0),
+                          )),
+
+                      // ElevatedButton(
+                      //     onPressed: () {
+                      //       obtenerSubCategoriasSeleccionadas();
+                      //     },
+                      //     child: Text('imprimir')),
+
+                      if (imagenToUpload != null || urlImage != null)
                         Padding(
-                            padding:
-                                const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                            child: CategoriesList(
-                              elementos: categoriasSeleccionadas,
-                              marginContainer: EdgeInsets.all(5.0),
-                              paddingContainer: EdgeInsets.all(12.0),
-                              // subCategoriasSeleccionadas:
-                              //     categoriasSeleccionadas,
-                            )),
-
-                        DropDownButtonFormField(
-                            padding: const EdgeInsets.symmetric(vertical: 15.0),
-                            hintText: 'Selecciona las subCategorias',
-                            onChanged: (dynamic newValue) {
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: ShowImage(
+                            width: 350,
+                            height: 300,
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(20.0),
+                            widthAsset: 350,
+                            heightAsset: 300,
+                            imageAsset: imagenToUpload,
+                            networkImage: urlImage,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final asset = await getImageAsset();
+                            if (asset != null) {
                               setState(() {
-                                if (!subCategoriasSeleccionadas
-                                    .contains(newValue)) {
-                                  subCategoriasSeleccionadas.add(newValue!);
-                                }
+                                imagenToUpload = asset;
                               });
-                            },
-                            elementosDisponibles: []),
-
-                        //Sub-Categorias seleccionadas
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                            child: CategoriesList(
-                              elementos: subCategoriasSeleccionadas,
-                              marginContainer: EdgeInsets.all(5.0),
-                              paddingContainer: EdgeInsets.all(12.0),
-                            )),
-
-                        // ElevatedButton(
-                        //     onPressed: () {
-                        //       obtenerSubCategoriasSeleccionadas();
-                        //     },
-                        //     child: Text('imprimir')),
-
-                        if (imagenToUpload != null || urlImage != null)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 10.0),
-                            child: ShowImage(
-                              width: 350,
-                              height: 300,
-                              color: Colors.grey[300],
-                              borderRadius: BorderRadius.circular(20.0),
-                              widthAsset: 350,
-                              heightAsset: 300,
-                              imageAsset: imagenToUpload,
-                              networkImage: urlImage,
-                              fit: BoxFit.cover,
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(
+                                16.0), // Ajustar el padding del botón
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10.0), // Establecer bordes redondeados
                             ),
                           ),
-                        Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
-                          child: ElevatedButton.icon(
-                            onPressed: () async {
-                              final asset = await getImageAsset();
-                              if (asset != null) {
-                                setState(() {
-                                  imagenToUpload = asset;
-                                });
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.all(
-                                  16.0), // Ajustar el padding del botón
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(
-                                    10.0), // Establecer bordes redondeados
-                              ),
-                            ),
-                            icon: Icon(Icons.image),
-                            label: imagenToUpload != null
-                                ? Text('Cambiar imagen')
-                                : Text('Agrega una imagen'),
-                          ),
+                          icon: Icon(Icons.image),
+                          label: imagenToUpload != null
+                              ? Text('Cambiar imagen')
+                              : Text('Agrega una imagen'),
                         ),
-                        const SizedBox(height: 100.0)
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 100.0)
+                    ],
                   ),
+                  //fin padding
                 ),
               ),
             ),

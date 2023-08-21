@@ -1,7 +1,7 @@
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
-import 'package:etfi_point/Components/Utils/ButtonMenu.dart';
+import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Pages/crearProducto.dart';

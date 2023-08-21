@@ -56,13 +56,13 @@ class _ButtonLoginState extends State<ButtonLogin> {
         //context.read<UsuarioProvider>().obtenerIdUsuario();
 
         //Navigator.pop(context);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => Menu(
-                    index: 1,
-                  )),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => Menu(
+        //             index: 1,
+        //           )),
+        // );
       }
     } catch (error, stacktrace) {
       print('Error al iniciar sesion con google $stacktrace');
