@@ -57,7 +57,7 @@ class GeneralInputs extends StatelessWidget {
                 labelText: labelText,
                 border: InputBorder.none, // Sin borde
                 contentPadding: const EdgeInsets.fromLTRB(
-                    15.0, 8.0, 0.0, 8.0), // Ajustar el padding
+                    15.0, 7.0, 0.0, 7.0), // Ajustar el padding
               ),
               keyboardType: keyboardType,
               inputFormatters: inputFormatters,

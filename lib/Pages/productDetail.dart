@@ -967,7 +967,8 @@ class _ProductosRelacionadosState extends State<ProductosRelacionados> {
     return SliverToBoxAdapter(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
-        child: RowProducts(productos: widget.productos),
+        //child: RowProducts(productos: widget.productos),
+        child: Text('Llamar a los productos'),
       ),
     );
   }

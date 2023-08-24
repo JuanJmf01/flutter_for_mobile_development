@@ -203,6 +203,7 @@ class MisProductos extends StatefulWidget {
 class _MisProductosState extends State<MisProductos> {
   List<ProductoTb> productos = [];
 
+
   @override
   Widget build(BuildContext context) {
     int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
@@ -221,9 +222,30 @@ class _MisProductosState extends State<MisProductos> {
                 return Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                      child: RowProducts(productos: productos),
-                    ), // Pasar la lista de productos al widget RowProducts
+                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        child: productos.isNotEmpty
+                            ? GridView.builder(
+                                physics: const NeverScrollableScrollPhysics(),
+                                shrinkWrap: true,
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 8.0,
+                                  mainAxisSpacing: 20.0,
+                                  mainAxisExtent: 290,
+                                ),
+                                itemCount: productos.length,
+                                itemBuilder: (BuildContext context, index) {
+                                  final ProductoTb producto = productos[index];
+                                  return IndividualProduct(producto: producto);
+                                },
+                              )
+                            : Padding(
+                                padding: EdgeInsets.only(top: 40),
+                                child: Center(
+                                  child: Text('No hay productos que mostrar'),
+                                ),
+                              )),
                   ],
                 );
               } else {

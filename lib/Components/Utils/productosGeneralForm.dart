@@ -9,14 +9,17 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
+import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/dropDownButtonFormField.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
+import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,6 +71,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   ProductoTb? _producto;
 
   List<Asset?> selectedImages = [];
+  Asset? principalImage;
+
+  ProductSample? productSample;
 
   @override
   void initState() {
@@ -261,10 +267,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     if (imagesAsset.isNotEmpty) {
       setState(() {
         selectedImages = [...selectedImages, ...imagesAsset];
+        principalImage = imagesAsset[0];
       });
     }
 
-    print('Imagenes seleccionadas: $imagesAsset');
+    print('Imagenes seleccionadas3: $imagesAsset');
   }
 
   @override
@@ -278,351 +285,381 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         _focusScopeNode.unfocus();
       },
       child: Scaffold(
-          appBar: AppBar(
-              backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
-              iconTheme: IconThemeData(color: Colors.black, size: 30),
-              toolbarHeight: 60,
-              title: Text(
-                widget.titulo,
-                style: TextStyle(color: Colors.black),
-              )),
-          backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
-          body: Column(
-            children: [
-              selectedImages.isNotEmpty
-                  ? Container(
-                      constraints: BoxConstraints(
-                        maxHeight:
-                            260, // Altura máxima deseada para la lista de imágenes
+        appBar: AppBar(
+            backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
+            iconTheme: IconThemeData(color: Colors.black, size: 30),
+            toolbarHeight: 60,
+            title: Text(
+              widget.titulo,
+              style: TextStyle(color: Colors.black),
+            )),
+        backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
+        body: Column(
+          children: [
+            Expanded(
+              child: FocusScope(
+                node: _focusScopeNode,
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // Checked button
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 0.0),
+                          child: ElevatedGlobalButton(
+                            nameSavebutton: '¿Producto en oferta?',
+                            borderSideColor:
+                                !isChecked ? Colors.grey : Colors.transparent,
+                            onPress: () {
+                              setState(() {
+                                isChecked = !isChecked;
+                                enOferta = isChecked ? 1 : 0;
+                              });
+                            },
+                            color: isChecked ? Colors.blue : Colors.white,
+                            colorNameSaveButton:
+                                isChecked ? Colors.white : Colors.black,
+                            borderRadius: BorderRadius.circular(17.0),
+                            //borderSideColor: Colors.grey
+                            fontSize: 16,
+                          ),
+                        ),
                       ),
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: selectedImages.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final image = selectedImages[index];
-                          double originalWidth =
-                              selectedImages[index]!.originalWidth!.toDouble();
-                          double originalHeight =
-                              selectedImages[index]!.originalHeight!.toDouble();
+                      selectedImages.isNotEmpty
+                          ? Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  0.0, 30.0, 0.0, 0.0),
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                  maxHeight:
+                                      260, // Altura máxima para la lista de imágenes
+                                ),
+                                child: ListView.builder(
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: selectedImages.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    final image = selectedImages[index]!;
+                                    double originalWidth =
+                                        image.originalWidth!.toDouble();
+                                    double originalHeight =
+                                        image.originalHeight!.toDouble();
+                                    double desiredWidth = 600.0;
+                                    double desiredHeight = desiredWidth *
+                                        (originalHeight / originalWidth);
 
-                          // Establece un ancho fijo para las miniaturas
-                          double desiredWidth = 600.0;
+                                    bool isSelected = principalImage == image;
 
-                          // Calcula la altura proporcional
-                          double desiredHeight =
-                              desiredWidth * (originalHeight / originalWidth);
+                                    return Column(
+                                      children: [
+                                        Expanded(
+                                            child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              5.0, 0.0, 4.0, 8.0),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                principalImage = image;
+                                              });
+                                            },
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                          20.0),
+                                                  border: isSelected
+                                                      ? Border.all(
+                                                          color: Colors.blue,
+                                                          width: 4.5)
+                                                      : null),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(16.0),
+                                                child: AssetThumb(
+                                                  asset: image,
+                                                  width: desiredWidth.toInt(),
+                                                  height: desiredHeight.toInt(),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )),
+                                        if (isSelected)
+                                          Text(
+                                            'Imagen principal',
+                                            style: TextStyle(
+                                                color: Colors.grey.shade400,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.w500),
+                                          ),
+                                      ],
+                                    );
+                                  },
+                                ),
+                              ),
+                            )
+                          : SizedBox.shrink(),
 
-                          return Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(20.0),
-                              child: AssetThumb(
-                                asset: selectedImages[index]!,
-                                width: desiredWidth.toInt(),
-                                height: desiredHeight.toInt(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: GlobalTextButton(
+                          onPressed: agregarImagenes,
+                          padding: selectedImages.isNotEmpty
+                              ? EdgeInsets.only(right: 15.0)
+                              : const EdgeInsets.fromLTRB(0.0, 40.0, 20.0, 0.0),
+                          fontWeightTextButton: FontWeight.w700,
+                          fontSizeTextButton: 17.5,
+                          textButton: 'Agregar imagen(es)',
+                        ),
+                      ),
+
+                      GlobalDivider(),
+
+                      if (principalImage != null)
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.fromLTRB(
+                                  20.0, 25.0, 0.0, 10.0),
+                              child: Text(
+                                'La fotografia principal de tu producto lucira asi:',
+                                style: TextStyle(
+                                  fontSize: 17.3,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey.shade600,
+                                ),
                               ),
                             ),
-                          );
-                        },
+                            FutureBuilder<ByteData>(
+                              future: principalImage!.getByteData(),
+                              builder: (BuildContext context,
+                                  AsyncSnapshot<ByteData> snapshot) {
+                                if (snapshot.connectionState ==
+                                        ConnectionState.done &&
+                                    snapshot.data != null) {
+                                  return Padding(
+                                    padding: const EdgeInsets.fromLTRB(
+                                        45.0, 00.0, 0.0, 20.0),
+                                    child: Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: IndividualProductSample(
+                                          imageBytes: snapshot.data!.buffer
+                                              .asUint8List(),
+                                          widthImage: 195.0,
+                                          heightImage: 170.0),
+                                    ),
+                                  );
+                                } else {
+                                  return CircularProgressIndicator(); // Mostrar un indicador de carga mientras se obtienen los datos de la imagen
+                                }
+                              },
+                            ),
+                            ElevatedButton(
+                                onPressed: () {
+                                  
+                                }, child: Text('Editar'))
+                          ],
+                        ),
+
+                      const GlobalDivider(),
+
+                      GeneralInputs(
+                          controller: _nombreController,
+                          horizontalPadding: 16.0,
+                          verticalPadding: 15.0,
+                          textLabelOutside: 'Nombre',
+                          labelText: 'Agrega un nombre',
+                          color: colorTextField),
+                      GeneralInputs(
+                        controller: _precioController,
+                        horizontalPadding: 16.0,
+                        textLabelOutside: 'Precio',
+                        labelText: 'Agrega un precio',
+                        color: colorTextField,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                        ],
                       ),
-                    )
-                  : SizedBox.shrink(),
-              // selectedImages.isNotEmpty
-              //     ? Container(
-              //         constraints: BoxConstraints(
-              //             maxHeight:
-              //                 200),
-              //         child: ListView.builder(
-              //             scrollDirection: Axis.horizontal,
-              //             itemCount: selectedImages.length,
-              //             itemBuilder: (BuildContext context, int index) {
+                      GeneralInputs(
+                        controller: _descripcionController,
+                        verticalPadding: 15.0,
+                        horizontalPadding: 16.0,
+                        textLabelOutside: 'Descripcion',
+                        labelText: 'Agrega una descripción',
+                        color: colorTextField,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 3,
+                      ),
+                      GeneralInputs(
+                        controller: _cantidadDisponibleController,
+                        horizontalPadding: 16.0,
+                        textLabelOutside: 'Cantidad',
+                        labelText: 'Agrega una cantidad disponible',
+                        color: colorTextField,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
+                      ),
 
-              //               return Padding(
-              //                 padding: EdgeInsets.all(8.0),
-              //                 child: ClipRRect(
-              //                   borderRadius: BorderRadius.circular(20.0),
-              //                   child: AssetThumb(
-              //                     asset: selectedImages[index]!,
-              //                     width: 600,
-              //                     height: 300,
-              //                   ),
-              //                 ),
-              //               );
-              //             }),
-              //       )
-              //     : SizedBox.shrink(),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                    onPressed: () async {
-                      agregarImagenes();
-                    },
-                    child: Text(
-                      'Agregar imagen(es)',
-                      style: TextStyle(
-                          color: Colors.blue.shade400,
-                          fontSize: 17.5,
-                          fontWeight: FontWeight.w700),
-                    )),
+                      const GlobalDivider(),
+
+                      DropDownButtonFormField(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        hintText: 'Selecciona las categorias',
+                        onChanged: (dynamic newValue) {
+                          setState(() {
+                            if (!categoriasSeleccionadas.contains(newValue)) {
+                              categoriasSeleccionadas.add(newValue!);
+                            }
+                          });
+                          //obtenerSubCategorias(newValue.idCategoria);
+                        },
+                        elementosDisponibles: categoriasDisponibles,
+                      ),
+
+                      //Categorias seleccionadas
+                      Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                          child: CategoriesList(
+                            elementos: categoriasSeleccionadas,
+                            marginContainer: EdgeInsets.all(5.0),
+                            paddingContainer: EdgeInsets.all(12.0),
+                            // subCategoriasSeleccionadas:
+                            //     categoriasSeleccionadas,
+                          )),
+
+                      const GlobalDivider(),
+
+                      DropDownButtonFormField(
+                          padding: const EdgeInsets.symmetric(vertical: 15.0),
+                          hintText: 'Selecciona las subCategorias',
+                          onChanged: (dynamic newValue) {
+                            setState(() {
+                              if (!subCategoriasSeleccionadas
+                                  .contains(newValue)) {
+                                subCategoriasSeleccionadas.add(newValue!);
+                              }
+                            });
+                          },
+                          elementosDisponibles: []),
+
+                      //Sub-Categorias seleccionadas
+                      Padding(
+                          padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                          child: CategoriesList(
+                            elementos: subCategoriasSeleccionadas,
+                            marginContainer: EdgeInsets.all(5.0),
+                            paddingContainer: EdgeInsets.all(12.0),
+                          )),
+
+                      if (imagenToUpload != null || urlImage != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: ShowImage(
+                            width: 350,
+                            height: 300,
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(20.0),
+                            widthAsset: 350,
+                            heightAsset: 300,
+                            imageAsset: imagenToUpload,
+                            networkImage: urlImage,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            final asset = await getImageAsset();
+                            if (asset != null) {
+                              setState(() {
+                                imagenToUpload = asset;
+                              });
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(
+                                16.0), // Ajustar el padding del botón
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(
+                                  10.0), // Establecer bordes redondeados
+                            ),
+                          ),
+                          icon: Icon(Icons.image),
+                          label: imagenToUpload != null
+                              ? Text('Cambiar imagen')
+                              : Text('Agrega una imagen'),
+                        ),
+                      ),
+                      const SizedBox(height: 100.0)
+                    ],
+                  ),
+                  //fin padding
+                ),
               ),
-            ],
-          )
+            ),
+            if (isUserSignedIn)
+              ElevatedGlobalButton(
+                  nameSavebutton: widget.nameSavebutton,
+                  widthSizeBox: double.infinity,
+                  heightSizeBox: 50.0,
+                  fontSize: 21,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 1.0,
+                  onPress: () async {
+                    //--- Se asigna cada String de los campso de texto a una variable ---//
+                    final nombreProducto = _nombreController.text;
+                    double precio =
+                        double.tryParse(_precioController.text) ?? 0.0;
+                    final descripcion = _descripcionController.text;
+                    int cantidadDisponible =
+                        int.tryParse(_cantidadDisponibleController.text) ?? 0;
 
-          // body: Column(
-          //   children: [
-          //     Expanded(
-          //       child: FocusScope(
-          //         node: _focusScopeNode,
-          //         child: SingleChildScrollView(
-          //           child:
-          //           Column(
-          //             children: [
-          //               // Checked button
-          //               Align(
-          //                 alignment: Alignment.centerRight,
-          //                 child: Padding(
-          //                   padding:
-          //                       const EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 0.0),
-          //                   child: ElevatedGlobalButton(
-          //                     nameSavebutton: '¿Producto en oferta?',
-          //                     onPress: () {
-          //                       setState(() {
-          //                         isChecked = !isChecked;
-          //                         enOferta = isChecked ? 1 : 0;
-          //                       });
-          //                     },
-          //                     color: isChecked ? Colors.blue : Colors.white,
-          //                     colorNameSaveButton:
-          //                         isChecked ? Colors.white : Colors.black,
-          //                     borderRadius: BorderRadius.circular(17.0),
-          //                     //borderSideColor: Colors.grey
-          //                     fontSize: 16,
-          //                   ),
-          //                 ),
-          //               ),
+                    ProductoCreacionTb productoCreacion;
+                    int idNegocio = await crearNegocioSiNoExiste(idUsuario);
 
-          //               //List<String> urls = [
-          //               //   'lib/images/acrilyc1.jpg',
-          //               //   'lib/images/acrylic2.jpg',
-          //               //   'lib/images/acrylic3.jpg',
-          //               //   'lib/images/acrylic4.jpg',
-          //               //   'lib/images/abrigo 2.jpg',
-          //               //   'lib/images/manicure2.jpg',
-          //               // ];
+                    print('producto_:: ${widget.data?.idProducto}');
+                    if (widget.data?.idProducto == null) {
+                      //-- Creamos el producto --//
+                      productoCreacion = ProductoCreacionTb(
+                          idNegocio: idNegocio,
+                          nombreProducto: nombreProducto,
+                          precio: precio,
+                          descripcion: descripcion,
+                          cantidadDisponible: cantidadDisponible,
+                          oferta: enOferta);
 
-          //               Align(
-          //                 alignment: Alignment.centerLeft,
-          //                 child: TextButton(
-          //                     onPressed: () async {
-          //                       agregarImagenes();
-          //                     },
-          //                     child: Text(
-          //                       'Agregar imagen(es)',
-          //                       style: TextStyle(
-          //                           color: Colors.blue.shade400,
-          //                           fontSize: 17.5,
-          //                           fontWeight: FontWeight.w700),
-          //                     )),
-          //               ),
-          //               //Divider
-          //               Container(
-          //                 width: double
-          //                     .infinity, // Para que el Container ocupe todo el ancho
-          //                 child: Divider(
-          //                   color: Colors.grey.shade300,
-          //                   thickness: 2, // Ancho de la línea en píxeles
-          //                 ),
-          //               ),
+                      imagenToUpload != null && idUsuario != null
+                          ? crearProducto(productoCreacion, idUsuario)
+                          : print('imagenToUpload es null o idUsuario es null');
+                    } else {
+                      _producto = ProductoTb(
+                        idProducto: widget.data!.idProducto,
+                        idNegocio: widget.data!.idNegocio,
+                        nombreProducto: nombreProducto,
+                        precio: precio,
+                        descripcion: descripcion,
+                        cantidadDisponible: cantidadDisponible,
+                        oferta: enOferta,
+                        urlImage: urlImage!,
+                        nombreImage: widget.data!.nombreImage,
+                      );
 
-          //               GeneralInputs(
-          //                   controller: _nombreController,
-          //                   horizontalPadding: 16.0,
-          //                   verticalPadding: 15.0,
-          //                   textLabelOutside: 'Nombre',
-          //                   labelText: 'Agrega un nombre',
-          //                   color: colorTextField),
-          //               GeneralInputs(
-          //                 controller: _precioController,
-          //                 horizontalPadding: 16.0,
-          //                 textLabelOutside: 'Precio',
-          //                 labelText: 'Agrega un precio',
-          //                 color: colorTextField,
-          //                 keyboardType: TextInputType.number,
-          //                 inputFormatters: [
-          //                   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-          //                 ],
-          //               ),
-          //               GeneralInputs(
-          //                 controller: _descripcionController,
-          //                 verticalPadding: 15.0,
-          //                 horizontalPadding: 16.0,
-          //                 textLabelOutside: 'Descripcion',
-          //                 labelText: 'Agrega una descripción',
-          //                 color: colorTextField,
-          //                 keyboardType: TextInputType.multiline,
-          //                 minLines: 3,
-          //               ),
-          //               GeneralInputs(
-          //                 controller: _cantidadDisponibleController,
-          //                 horizontalPadding: 16.0,
-          //                 textLabelOutside: 'Cantidad',
-          //                 labelText: 'Agrega una cantidad disponible',
-          //                 color: colorTextField,
-          //                 keyboardType: TextInputType.number,
-          //                 inputFormatters: [
-          //                   FilteringTextInputFormatter.digitsOnly
-          //                 ],
-          //               ),
-          //               DropDownButtonFormField(
-          //                 padding: const EdgeInsets.symmetric(vertical: 15.0),
-          //                 hintText: 'Selecciona las categorias',
-          //                 onChanged: (dynamic newValue) {
-          //                   setState(() {
-          //                     if (!categoriasSeleccionadas.contains(newValue)) {
-          //                       categoriasSeleccionadas.add(newValue!);
-          //                     }
-          //                   });
-          //                   //obtenerSubCategorias(newValue.idCategoria);
-          //                 },
-          //                 elementosDisponibles: categoriasDisponibles,
-          //               ),
-
-          //               //Categorias seleccionadas
-          //               Padding(
-          //                   padding:
-          //                       const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-          //                   child: CategoriesList(
-          //                     elementos: categoriasSeleccionadas,
-          //                     marginContainer: EdgeInsets.all(5.0),
-          //                     paddingContainer: EdgeInsets.all(12.0),
-          //                     // subCategoriasSeleccionadas:
-          //                     //     categoriasSeleccionadas,
-          //                   )),
-
-          //               DropDownButtonFormField(
-          //                   padding: const EdgeInsets.symmetric(vertical: 15.0),
-          //                   hintText: 'Selecciona las subCategorias',
-          //                   onChanged: (dynamic newValue) {
-          //                     setState(() {
-          //                       if (!subCategoriasSeleccionadas
-          //                           .contains(newValue)) {
-          //                         subCategoriasSeleccionadas.add(newValue!);
-          //                       }
-          //                     });
-          //                   },
-          //                   elementosDisponibles: []),
-
-          //               //Sub-Categorias seleccionadas
-          //               Padding(
-          //                   padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-          //                   child: CategoriesList(
-          //                     elementos: subCategoriasSeleccionadas,
-          //                     marginContainer: EdgeInsets.all(5.0),
-          //                     paddingContainer: EdgeInsets.all(12.0),
-          //                   )),
-
-          //               if (imagenToUpload != null || urlImage != null)
-          //                 Padding(
-          //                   padding: const EdgeInsets.symmetric(vertical: 10.0),
-          //                   child: ShowImage(
-          //                     width: 350,
-          //                     height: 300,
-          //                     color: Colors.grey[300],
-          //                     borderRadius: BorderRadius.circular(20.0),
-          //                     widthAsset: 350,
-          //                     heightAsset: 300,
-          //                     imageAsset: imagenToUpload,
-          //                     networkImage: urlImage,
-          //                     fit: BoxFit.cover,
-          //                   ),
-          //                 ),
-          //               Padding(
-          //                 padding: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
-          //                 child: ElevatedButton.icon(
-          //                   onPressed: () async {
-          //                     final asset = await getImageAsset();
-          //                     if (asset != null) {
-          //                       setState(() {
-          //                         imagenToUpload = asset;
-          //                       });
-          //                     }
-          //                   },
-          //                   style: ElevatedButton.styleFrom(
-          //                     padding: const EdgeInsets.all(
-          //                         16.0), // Ajustar el padding del botón
-          //                     shape: RoundedRectangleBorder(
-          //                       borderRadius: BorderRadius.circular(
-          //                           10.0), // Establecer bordes redondeados
-          //                     ),
-          //                   ),
-          //                   icon: Icon(Icons.image),
-          //                   label: imagenToUpload != null
-          //                       ? Text('Cambiar imagen')
-          //                       : Text('Agrega una imagen'),
-          //                 ),
-          //               ),
-          //               const SizedBox(height: 100.0)
-          //             ],
-          //           ),
-          //           //fin padding
-          //         ),
-          //       ),
-          //     ),
-          //     if (isUserSignedIn)
-          //       ElevatedGlobalButton(
-          //           nameSavebutton: widget.nameSavebutton,
-          //           widthSizeBox: double.infinity,
-          //           heightSizeBox: 50.0,
-          //           fontSize: 21,
-          //           fontWeight: FontWeight.w700,
-          //           letterSpacing: 1.0,
-          //           onPress: () async {
-          //             //--- Se asigna cada String de los campso de texto a una variable ---//
-          //             final nombreProducto = _nombreController.text;
-          //             double precio =
-          //                 double.tryParse(_precioController.text) ?? 0.0;
-          //             final descripcion = _descripcionController.text;
-          //             int cantidadDisponible =
-          //                 int.tryParse(_cantidadDisponibleController.text) ?? 0;
-
-          //             ProductoCreacionTb productoCreacion;
-          //             int idNegocio = await crearNegocioSiNoExiste(idUsuario);
-
-          //             print('producto_:: ${widget.data?.idProducto}');
-          //             if (widget.data?.idProducto == null) {
-          //               //-- Creamos el producto --//
-          //               productoCreacion = ProductoCreacionTb(
-          //                   idNegocio: idNegocio,
-          //                   nombreProducto: nombreProducto,
-          //                   precio: precio,
-          //                   descripcion: descripcion,
-          //                   cantidadDisponible: cantidadDisponible,
-          //                   oferta: enOferta);
-
-          //               imagenToUpload != null && idUsuario != null
-          //                   ? crearProducto(productoCreacion, idUsuario)
-          //                   : print('imagenToUpload es null o idUsuario es null');
-          //             } else {
-          //               _producto = ProductoTb(
-          //                 idProducto: widget.data!.idProducto,
-          //                 idNegocio: widget.data!.idNegocio,
-          //                 nombreProducto: nombreProducto,
-          //                 precio: precio,
-          //                 descripcion: descripcion,
-          //                 cantidadDisponible: cantidadDisponible,
-          //                 oferta: enOferta,
-          //                 urlImage: urlImage!,
-          //                 nombreImage: widget.data!.nombreImage,
-          //               );
-
-          //               urlImage != null && idUsuario != null
-          //                   ? actualizarProducto(_producto!, idUsuario)
-          //                   : print('urlImage es null');
-          //             }
-          //           })
-          //   ],
-          // ),
-          ),
+                      urlImage != null && idUsuario != null
+                          ? actualizarProducto(_producto!, idUsuario)
+                          : print('urlImage es null');
+                    }
+                  })
+          ],
+        ),
+      ),
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'package:multi_image_picker/multi_image_picker.dart';
+
 class ProductoTb {
   final int idProducto; // PK
   final int idNegocio; // FK
@@ -105,4 +107,16 @@ class ProductoCreacionTb {
   String toString() {
     return 'ProductoCreacionTb{nombreProducto: $nombreProducto}';
   }
+}
+
+class ProductSample {
+  final String nombreSample;
+  final String precioSample;
+  final Asset? imageSample;
+
+  ProductSample({
+    required this.nombreSample,
+    required this.precioSample,
+    this.imageSample,
+  });
 }
