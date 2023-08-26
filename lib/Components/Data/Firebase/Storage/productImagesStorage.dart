@@ -6,7 +6,6 @@ import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProductImagesStorage {
   /// The function `cargarImage` uploads an image to a storage location and returns the inserted product
@@ -23,12 +22,9 @@ class ProductImagesStorage {
       ProductCreacionImagesStorageTb image) async {
     print('Ento a cargarImage');
 
-    Asset newImage = image.newImage;
+    final Uint8List bytes = image.newImageBytes;
 
-    final ByteData byteData = await newImage.getByteData();
-    final Uint8List bytes = byteData.buffer.asUint8List();
-
-    String finalNameImage = assingName(newImage);
+    String finalNameImage = assingName(image.imageName);
 
     String fileName = image.fileName;
     int idUsuario = image.idUsuario;

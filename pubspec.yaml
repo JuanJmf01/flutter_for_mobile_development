@@ -46,6 +46,8 @@ dependencies:
   firebase_storage: ^11.2.4
   intl: ^0.18.1
   multi_image_picker: ^4.8.01
+  image_cropper: ^5.0.0
+  flutter_image_compress: ^2.0.4
   #flutter_advanced_networkimage_2: ^2.0.1
 
 dev_dependencies:

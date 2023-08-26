@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
@@ -8,6 +10,7 @@ import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
@@ -23,7 +26,10 @@ import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProductosGeneralForm extends StatefulWidget {
@@ -72,6 +78,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   List<Asset?> selectedImages = [];
   Asset? principalImage;
+  Uint8List? principalImageBytes;
 
   ProductSample? productSample;
 
@@ -194,16 +201,34 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     try {
       idProducto =
           await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
-      if (imagenToUpload != null) {
-        ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
-            newImage: imagenToUpload!,
-            fileName: 'productos',
-            idUsuario: idUsuario,
-            idProducto: idProducto,
-            isPrincipalImage: 1);
 
-        await ProductImagesStorage.cargarImage(image);
+      if(principalImageBytes != null){
+        ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
+              newImageBytes: principalImageBytes!,
+              imageName: principalImage!.name!,
+              fileName: 'productos',
+              idUsuario: idUsuario,
+              idProducto: idProducto,
+              isPrincipalImage: 0);
+
+          await ProductImagesStorage.cargarImage(image);
       }
+
+      if (selectedImages.isNotEmpty) {
+        for (var imagen in selectedImages) {
+          Uint8List imageBytes = await assetToUint8List(imagen!);
+          ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
+              newImageBytes: imageBytes,
+              imageName: imagen.name!,
+              fileName: 'productos',
+              idUsuario: idUsuario,
+              idProducto: idProducto,
+              isPrincipalImage: 0);
+
+          await ProductImagesStorage.cargarImage(image);
+        }
+      }
+
       mostrarCuadroExito(idProducto);
     } catch (error) {
       print('Problemas al insertar el producto $error');
@@ -272,6 +297,56 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
 
     print('Imagenes seleccionadas3: $imagesAsset');
+  }
+
+  Future<void> editImage() async {
+    // 1. Convertir Asset a Archivo temporal
+    if (principalImage != null) {
+      final byteData = await principalImage!.getByteData();
+      final buffer = byteData.buffer.asUint8List();
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/temp_image.jpg');
+      await tempFile.writeAsBytes(buffer);
+
+      // 2. Editar Archivo temporal
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: tempFile.path,
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 100,
+        uiSettings: [
+          AndroidUiSettings(
+              toolbarTitle: 'Cropper',
+              toolbarColor: Colors.deepOrange,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false),
+          IOSUiSettings(
+            title: 'Cropper',
+          ),
+          WebUiSettings(
+            context: context,
+            presentStyle: CropperPresentStyle.dialog,
+            boundary: const CroppieBoundary(
+              width: 520,
+              height: 520,
+            ),
+            viewPort:
+                const CroppieViewPort(width: 480, height: 480, type: 'circle'),
+            enableExif: true,
+            enableZoom: true,
+            showZoomer: true,
+          ),
+        ],
+      );
+
+      if (croppedFile != null) {
+        final croppedBytes = await croppedFile.readAsBytes();
+
+        setState(() {
+          principalImageBytes = Uint8List.fromList(croppedBytes);
+        });
+      }
+    }
   }
 
   @override
@@ -433,34 +508,48 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                 ),
                               ),
                             ),
-                            FutureBuilder<ByteData>(
-                              future: principalImage!.getByteData(),
-                              builder: (BuildContext context,
-                                  AsyncSnapshot<ByteData> snapshot) {
-                                if (snapshot.connectionState ==
-                                        ConnectionState.done &&
-                                    snapshot.data != null) {
-                                  return Padding(
+                            principalImageBytes != null
+                                ? Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                         45.0, 00.0, 0.0, 20.0),
                                     child: Align(
                                       alignment: Alignment.bottomLeft,
                                       child: IndividualProductSample(
-                                          imageBytes: snapshot.data!.buffer
-                                              .asUint8List(),
+                                          imageBytes: principalImageBytes!,
                                           widthImage: 195.0,
                                           heightImage: 170.0),
                                     ),
-                                  );
-                                } else {
-                                  return CircularProgressIndicator(); // Mostrar un indicador de carga mientras se obtienen los datos de la imagen
-                                }
-                              },
-                            ),
+                                  )
+                                : FutureBuilder<ByteData>(
+                                    future: principalImage!.getByteData(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<ByteData> snapshot) {
+                                      if (snapshot.connectionState ==
+                                              ConnectionState.done &&
+                                          snapshot.data != null) {
+                                        return Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              45.0, 00.0, 0.0, 20.0),
+                                          child: Align(
+                                            alignment: Alignment.bottomLeft,
+                                            child: IndividualProductSample(
+                                                imageBytes: snapshot
+                                                    .data!.buffer
+                                                    .asUint8List(),
+                                                widthImage: 195.0,
+                                                heightImage: 170.0),
+                                          ),
+                                        );
+                                      } else {
+                                        return CircularProgressIndicator(); // Mostrar un indicador de carga mientras se obtienen los datos de la imagen
+                                      }
+                                    },
+                                  ),
                             ElevatedButton(
                                 onPressed: () {
-                                  
-                                }, child: Text('Editar'))
+                                  editImage();
+                                },
+                                child: Text('Editar'))
                           ],
                         ),
 

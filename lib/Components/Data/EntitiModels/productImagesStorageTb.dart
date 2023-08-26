@@ -1,15 +1,19 @@
+import 'dart:typed_data';
+
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProductCreacionImagesStorageTb {
-  final Asset newImage;
+  final Uint8List newImageBytes;
   final String fileName;
+  final String imageName;
   final int idUsuario;
   final int idProducto;
   final int isPrincipalImage;
 
   ProductCreacionImagesStorageTb(
-      {required this.newImage,
+      {required this.newImageBytes,
       required this.fileName,
+      required this.imageName,
       required this.idUsuario,
       required this.idProducto,
       required this.isPrincipalImage});

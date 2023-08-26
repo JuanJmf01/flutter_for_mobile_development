@@ -75,7 +75,6 @@ class ProductoCreacionTb {
   final String? descripcionDetallada;
   final int cantidadDisponible;
   final int? oferta; // bool (0 or 1)
-  final String? urlImage;
 
   ProductoCreacionTb({
     required this.idNegocio,
@@ -85,7 +84,6 @@ class ProductoCreacionTb {
     this.descripcionDetallada,
     required this.cantidadDisponible,
     this.oferta,
-    this.urlImage,
   });
 
   //FromJson
@@ -99,7 +97,6 @@ class ProductoCreacionTb {
       'descripcionDetallada': descripcionDetallada,
       'cantidadDisponible': cantidadDisponible,
       'oferta': oferta,
-      'urlImage': urlImage,
     };
   }
 

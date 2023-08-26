@@ -2,14 +2,13 @@ import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'dart:math';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
-String assingName(Asset image) {
+String assingName(String imageName) {
   String finalNameImage;
 
   String currentDateTime = obtenerFechaHoraActual();
   String aleatorio = generarTextoAleatorio();
-  String nameImageAux = image.name!;
-  String nameImage = nameImageAux.split('.').first;
-  String extension = nameImageAux.split('.').last;
+  String nameImage = imageName.split('.').first;
+  String extension = imageName.split('.').last;
 
   print('aleatorio: $aleatorio');
 

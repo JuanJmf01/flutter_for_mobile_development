@@ -8,9 +8,9 @@ import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Icons/switch.dart';
-import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
@@ -434,9 +434,11 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     if (imagesToUpload.isNotEmpty) {
       List<ProductImagesTb> productImagesAux = [];
       for (var imageToUpload in imagesToUpload) {
+        Uint8List imageBytes = await assetToUint8List(imageToUpload.newImage);
         ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
-            newImage: imageToUpload.newImage,
+            newImageBytes: imageBytes,
             fileName: 'productos',
+            imageName: imageToUpload.newImage.name!,
             idUsuario: idUsuario,
             idProducto: widget.idProducto,
             isPrincipalImage: 0);
@@ -534,7 +536,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     if (imagesAsset.isNotEmpty) {
       for (var image in imagesAsset) {
         ProductImageToUpload newImage = ProductImageToUpload(
-          nombreImage: assingName(image!),
+          nombreImage: assingName(image!.name!),
           newImage: image,
         );
         allProductImagesAux.add(newImage);
@@ -547,6 +549,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     }
   }
 
+ /// The function `editarImagenes` is used to edit images by replacing them with new images in a list.
+ /// 
+ /// Args:
+ ///   image: The parameter `image` is of type `dynamic` and represents an image object.
   void editarImagenes(final image) async {
     Asset? asset = await getImageAsset();
     if (asset != null) {
@@ -583,7 +589,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           int indiceToUpload = imagesToUpload.indexWhere(
               (element) => element.nombreImage == image.nombreImage);
           ProductImageToUpload newImage = ProductImageToUpload(
-              nombreImage: assingName(asset), newImage: asset);
+              nombreImage: assingName(asset.name!), newImage: asset);
 
           setState(() {
             allProductImages[imageIndex] = newImage;
