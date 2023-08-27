@@ -14,6 +14,7 @@ import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
@@ -76,7 +77,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   ProductoTb? _producto;
 
-  List<ProductImageToUpload> selectedImages = [];
+  //List<ProductImageToUpload> selectedImages = [];
+  ImageList? myImageList;
   Asset? principalImage;
   Uint8List? principalImageBytes;
 
@@ -108,7 +110,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
   }
 
-  
   //UTILIZAR
   List<ProductImagesTb> productSecondaryImages = [];
   List<dynamic> allProductImages = [];
@@ -236,20 +237,24 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         await ProductImagesStorage.cargarImage(image);
       }
 
-      if (selectedImages.isNotEmpty) {
-        for (var imagen in selectedImages) {
-          Uint8List imageBytes = await assetToUint8List(imagen.newImage);
-          ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
-              idUsuario: idUsuario,
-              idProducto: idProducto,
-              newImageBytes: imageBytes,
-              imageName: imagen.nombreImage,
-              fileName: 'productos',
-              width: imagen.width,
-              height: imagen.height,
-              isPrincipalImage: 0);
+      if (myImageList != null) {
+        for (var imagen in myImageList!.items) {
+          if (imagen is ProductImageToUpload) {
+            Uint8List imageBytes = await assetToUint8List(imagen.newImage);
 
-          await ProductImagesStorage.cargarImage(image);
+            ProductCreacionImagesStorageTb image =
+                ProductCreacionImagesStorageTb(
+                    idUsuario: idUsuario,
+                    idProducto: idProducto,
+                    newImageBytes: imageBytes,
+                    imageName: imagen.nombreImage,
+                    fileName: 'productos',
+                    width: imagen.width,
+                    height: imagen.height,
+                    isPrincipalImage: 0);
+
+            await ProductImagesStorage.cargarImage(image);
+          }
         }
       }
 
@@ -326,11 +331,15 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           height: image.originalHeight!.toDouble(),
         );
 
-        selectedImages.add(selectedImage);
+        selectedImagesAux.add(selectedImage);
       }
 
       setState(() {
-        selectedImages = [...selectedImages, ...selectedImagesAux];
+        if (myImageList == null) {
+          myImageList = ImageList(selectedImagesAux);
+        } else {
+          myImageList!.items.addAll(selectedImagesAux);
+        }
         principalImage = imagesAsset[0];
       });
     }
@@ -443,89 +452,100 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           ),
                         ),
                       ),
-                      selectedImages.isNotEmpty
-                          ? Padding(
-                              padding: const EdgeInsets.fromLTRB(
-                                  0.0, 30.0, 0.0, 0.0),
-                              child: Container(
-                                constraints: const BoxConstraints(
-                                  maxHeight:
-                                      260, // Altura máxima para la lista de imágenes
-                                ),
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: selectedImages.length,
-                                  itemBuilder:
-                                      (BuildContext context, int index) {
-                                    final image = selectedImages[index];
-                                    double originalWidth = image
-                                        .newImage.originalWidth!
-                                        .toDouble();
-                                    double originalHeight = image
-                                        .newImage.originalHeight!
-                                        .toDouble();
-                                    double desiredWidth = 600.0;
-                                    double desiredHeight = desiredWidth *
-                                        (originalHeight / originalWidth);
-
-                                    bool isSelected =
-                                        principalImage == image.newImage;
-
-                                    return Column(
-                                      children: [
-                                        Expanded(
-                                            child: Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              5.0, 0.0, 4.0, 8.0),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                principalImage = image.newImage;
-                                              });
-                                            },
-                                            child: Container(
-                                              decoration: BoxDecoration(
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                          20.0),
-                                                  border: isSelected
-                                                      ? Border.all(
-                                                          color: Colors.blue,
-                                                          width: 4.5)
-                                                      : null),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(16.0),
-                                                child: AssetThumb(
-                                                  asset: image.newImage,
-                                                  width: desiredWidth.toInt(),
-                                                  height: desiredHeight.toInt(),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        )),
-                                        if (isSelected)
-                                          Text(
-                                            'Imagen principal',
-                                            style: TextStyle(
-                                                color: Colors.grey.shade400,
-                                                fontSize: 18,
-                                                fontWeight: FontWeight.w500),
-                                          ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
+                      myImageList != null
+                          ? MyImageList(
+                              imageList: myImageList!,
+                              padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+                              maxHeight: 260,
+                              principalImage: principalImage,
+                              onImageSelected: (selectedImage) {
+                                setState(() {
+                                  principalImage = selectedImage;
+                                });
+                              },
                             )
+                          // ? Padding(
+                          //     padding: const EdgeInsets.fromLTRB(
+                          //         0.0, 30.0, 0.0, 0.0),
+                          //     child: Container(
+                          //       constraints: const BoxConstraints(
+                          //         maxHeight:
+                          //             260, // Altura máxima para la lista de imágenes
+                          //       ),
+                          //       child: ListView.builder(
+                          //         scrollDirection: Axis.horizontal,
+                          //         itemCount: selectedImages.length,
+                          //         itemBuilder:
+                          //             (BuildContext context, int index) {
+                          //           final image = selectedImages[index];
+                          //           double originalWidth = image
+                          //               .newImage.originalWidth!
+                          //               .toDouble();
+                          //           double originalHeight = image
+                          //               .newImage.originalHeight!
+                          //               .toDouble();
+                          //           double desiredWidth = 600.0;
+                          //           double desiredHeight = desiredWidth *
+                          //               (originalHeight / originalWidth);
+
+                          //           bool isSelected =
+                          //               principalImage == image.newImage;
+
+                          //           return Column(
+                          //             children: [
+                          //               Expanded(
+                          //                   child: Padding(
+                          //                 padding: const EdgeInsets.fromLTRB(
+                          //                     5.0, 0.0, 4.0, 8.0),
+                          //                 child: GestureDetector(
+                          //                   onTap: () {
+                          //                     setState(() {
+                          //                       principalImage = image.newImage;
+                          //                     });
+                          //                   },
+                          //                   child: Container(
+                          //                     decoration: BoxDecoration(
+                          //                         borderRadius:
+                          //                             BorderRadius.circular(
+                          //                                 20.0),
+                          //                         border: isSelected
+                          //                             ? Border.all(
+                          //                                 color: Colors.blue,
+                          //                                 width: 4.5)
+                          //                             : null),
+                          //                     child: ClipRRect(
+                          //                       borderRadius:
+                          //                           BorderRadius.circular(16.0),
+                          //                       child: AssetThumb(
+                          //                         asset: image.newImage,
+                          //                         width: desiredWidth.toInt(),
+                          //                         height: desiredHeight.toInt(),
+                          //                       ),
+                          //                     ),
+                          //                   ),
+                          //                 ),
+                          //               )),
+                          //               if (isSelected)
+                          //                 Text(
+                          //                   'Imagen principal',
+                          //                   style: TextStyle(
+                          //                       color: Colors.grey.shade400,
+                          //                       fontSize: 18,
+                          //                       fontWeight: FontWeight.w500),
+                          //                 ),
+                          //             ],
+                          //           );
+                          //         },
+                          //       ),
+                          //     ),
+                          //   )
                           : SizedBox.shrink(),
 
                       Align(
                         alignment: Alignment.centerLeft,
                         child: GlobalTextButton(
                           onPressed: agregarImagenes,
-                          padding: selectedImages.isNotEmpty
+                          padding: myImageList != null
                               ? const EdgeInsets.only(left: 5.0, top: 10.0)
                               : const EdgeInsets.fromLTRB(0.0, 40.0, 20.0, 0.0),
                           fontWeightTextButton: FontWeight.w700,
@@ -768,7 +788,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           cantidadDisponible: cantidadDisponible,
                           oferta: enOferta);
 
-                      selectedImages.isNotEmpty && idUsuario != null
+                      myImageList != null && idUsuario != null
                           ? crearProducto(productoCreacion, idUsuario)
                           : print('imagenToUpload es null o idUsuario es null');
                     } else {

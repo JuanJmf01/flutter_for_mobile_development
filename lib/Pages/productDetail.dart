@@ -11,6 +11,7 @@ import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Icons/switch.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
@@ -24,8 +25,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
-
-
 
 class ProductDetail extends StatefulWidget {
   const ProductDetail({super.key, required this.id, required this.producto});
@@ -186,16 +185,19 @@ class SliverAppBarDetail extends StatefulWidget {
 }
 
 class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
-  List<ProductImagesTb> productSecondaryImages = [];
-  List<dynamic> allProductImages = [];
+  //List<dynamic> allProductImages = [];
+  ImageList? myImageList;
 
   void getListSecondaryProductImages() async {
     List<ProductImagesTb> productSecondaryImagesAux =
         await ProductImageDb.getProductSecondaryImages(widget.idProducto);
 
     setState(() {
-      productSecondaryImages = productSecondaryImagesAux;
-      allProductImages.addAll(productSecondaryImagesAux);
+      if (myImageList == null) {
+        myImageList = ImageList(productSecondaryImagesAux);
+      } else {
+        myImageList!.items.addAll(productSecondaryImagesAux);
+      }
     });
   }
 
@@ -208,51 +210,57 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-        child: Container(
-          constraints: const BoxConstraints(
-            maxHeight: 260, // Altura máxima para la lista de imágenes
-          ),
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: allProductImages.length,
-            itemBuilder: (BuildContext context, int index) {
-              final image = allProductImages[index]!;
-              double originalWidth = image.width;
-              double originalHeight = image.height;
-              double desiredWidth = 600.0;
-              double desiredHeight =
-                  desiredWidth * (originalHeight / originalWidth);
+      child: myImageList != null ? 
+      MyImageList(
+          imageList: myImageList!,
+          onImageSelected: (selectedImage) {
+            print('mostrar la imagen grande');
+          }) : SizedBox.shrink() 
+      // child: Padding(
+      //   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+      //   child: Container(
+      //     constraints: const BoxConstraints(
+      //       maxHeight: 260, // Altura máxima para la lista de imágenes
+      //     ),
+      //     child: ListView.builder(
+      //       scrollDirection: Axis.horizontal,
+      //       itemCount: allProductImages.length,
+      //       itemBuilder: (BuildContext context, int index) {
+      //         final image = allProductImages[index]!;
+      //         double originalWidth = image.width;
+      //         double originalHeight = image.height;
+      //         double desiredWidth = 600.0;
+      //         double desiredHeight =
+      //             desiredWidth * (originalHeight / originalWidth);
 
-              return Column(
-                children: [
-                  Expanded(
-                    child: Padding(
-                      padding: index == 0
-                          ? const EdgeInsets.fromLTRB(40.0, 7.0, 10.0, 0.0)
-                          : const EdgeInsets.fromLTRB(0.0, 7.0, 7.0, 0.0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(16.0),
-                          child: Image.network(
-                            image.urlImage,
-                            fit: BoxFit.contain,
-                            //height: desiredHeight,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-      ),
+      //         return Column(
+      //           children: [
+      //             Expanded(
+      //               child: Padding(
+      //                 padding: index == 0
+      //                     ? const EdgeInsets.fromLTRB(40.0, 7.0, 10.0, 0.0)
+      //                     : const EdgeInsets.fromLTRB(0.0, 7.0, 7.0, 0.0),
+      //                 child: Container(
+      //                   decoration: BoxDecoration(
+      //                     borderRadius: BorderRadius.circular(20.0),
+      //                   ),
+      //                   child: ClipRRect(
+      //                     borderRadius: BorderRadius.circular(16.0),
+      //                     child: Image.network(
+      //                       image.urlImage,
+      //                       fit: BoxFit.contain,
+      //                       //height: desiredHeight,
+      //                     ),
+      //                   ),
+      //                 ),
+      //               ),
+      //             ),
+      //           ],
+      //         );
+      //       },
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

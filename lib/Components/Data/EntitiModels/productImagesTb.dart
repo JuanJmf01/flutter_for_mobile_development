@@ -1,6 +1,6 @@
 import 'package:multi_image_picker/multi_image_picker.dart';
 
-class ProductImagesTb {
+class ProductImagesTb extends ImageListItem{
   final int idProductImage;
   final int idProducto;
   final String nombreImage;
@@ -83,17 +83,16 @@ class ProductImageCreacionTb {
     );
   }
 
-Map<String, dynamic> toMap() {
-  return {
-    'idProducto': idProducto,
-    'nombreImage': nombreImage,
-    'urlImage': urlImage,
-    'width': width.toStringAsFixed(2),    // Convertir a cadena con 2 decimales
-    'height': height.toStringAsFixed(2),  // Convertir a cadena con 2 decimales
-    'isPrincipalImage': isPrincipalImage,
-  };
-}
-
+  Map<String, dynamic> toMap() {
+    return {
+      'idProducto': idProducto,
+      'nombreImage': nombreImage,
+      'urlImage': urlImage,
+      'width': width.toStringAsFixed(2), // Convertir a cadena con 2 decimales
+      'height': height.toStringAsFixed(2), // Convertir a cadena con 2 decimales
+      'isPrincipalImage': isPrincipalImage,
+    };
+  }
 
   @override
   String toString() {
@@ -101,7 +100,7 @@ Map<String, dynamic> toMap() {
   }
 }
 
-class ProductImageToUpdate {
+class ProductImageToUpdate extends ImageListItem{
   final String nombreImage;
   final Asset newImage;
 
@@ -116,7 +115,7 @@ class ProductImageToUpdate {
   }
 }
 
-class ProductImageToUpload {
+class ProductImageToUpload extends ImageListItem {
   final String nombreImage;
   final Asset newImage;
   final double width;
@@ -134,3 +133,11 @@ class ProductImageToUpload {
     return 'ProductImageToUpload{nombreImage: $nombreImage, newImage: $newImage}';
   }
 }
+
+class ImageList {
+  final List<ImageListItem> items;
+
+  ImageList(this.items);
+}
+
+abstract class ImageListItem {}
