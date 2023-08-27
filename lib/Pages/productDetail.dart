@@ -18,19 +18,20 @@ import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
+import 'package:etfi_point/Pages/editarProducto.dart';
 import 'package:etfi_point/Pages/reviewsAndOpinions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
+
+
 class ProductDetail extends StatefulWidget {
-  ProductDetail({
-    Key? key,
-    required this.id,
-  }) : super(key: key);
+  const ProductDetail({super.key, required this.id, required this.producto});
 
   final int id;
+  final ProductoTb producto;
 
   @override
   _ProductDetailState createState() => _ProductDetailState();
@@ -76,6 +77,29 @@ class _ProductDetailState extends State<ProductDetail> {
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Detalle del Producto'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () async {
+              await Navigator.push<int>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      EditarProducto(producto: widget.producto),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete),
+            onPressed: () {
+              // Acción cuando se presiona el icono de eliminar
+            },
+          ),
+        ],
+      ),
       backgroundColor: Colors.grey[300],
       body: FutureBuilder<ProductoTb>(
         future: producto(),
@@ -98,7 +122,9 @@ class _ProductDetailState extends State<ProductDetail> {
                                   child: CustomScrollView(
                                     slivers: [
                                       SliverAppBarDetail(
-                                          urlImage: producto.urlImage),
+                                        urlImage: producto.urlImage,
+                                        idProducto: widget.id,
+                                      ),
                                       FastDescription(
                                           producto: producto,
                                           ifExistOrNotUserRatingByProducto:
@@ -149,40 +175,123 @@ class _ProductDetailState extends State<ProductDetail> {
 }
 
 class SliverAppBarDetail extends StatefulWidget {
-  const SliverAppBarDetail({super.key, required this.urlImage});
+  const SliverAppBarDetail(
+      {super.key, required this.urlImage, required this.idProducto});
 
   final String urlImage;
+  final int idProducto;
 
   @override
   State<SliverAppBarDetail> createState() => _SliverAppBarDetailState();
 }
 
 class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
+  List<ProductImagesTb> productSecondaryImages = [];
+  List<dynamic> allProductImages = [];
+
+  void getListSecondaryProductImages() async {
+    List<ProductImagesTb> productSecondaryImagesAux =
+        await ProductImageDb.getProductSecondaryImages(widget.idProducto);
+
+    setState(() {
+      productSecondaryImages = productSecondaryImagesAux;
+      allProductImages.addAll(productSecondaryImagesAux);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getListSecondaryProductImages();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return SliverAppBar(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      elevation: 0,
-      pinned: true,
-      centerTitle: false,
-      stretch: true,
-      expandedHeight: 350.0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back),
-        color: Colors.black,
-        onPressed: () {
-          Navigator.pop(context);
-        },
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+        child: Container(
+          constraints: const BoxConstraints(
+            maxHeight: 260, // Altura máxima para la lista de imágenes
+          ),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: allProductImages.length,
+            itemBuilder: (BuildContext context, int index) {
+              final image = allProductImages[index]!;
+              double originalWidth = image.width;
+              double originalHeight = image.height;
+              double desiredWidth = 600.0;
+              double desiredHeight =
+                  desiredWidth * (originalHeight / originalWidth);
+
+              return Column(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: index == 0
+                          ? const EdgeInsets.fromLTRB(40.0, 7.0, 10.0, 0.0)
+                          : const EdgeInsets.fromLTRB(0.0, 7.0, 7.0, 0.0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20.0),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16.0),
+                          child: Image.network(
+                            image.urlImage,
+                            fit: BoxFit.contain,
+                            //height: desiredHeight,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ),
       ),
-      flexibleSpace: FlexibleSpaceBar(
-          stretchModes: const [StretchMode.zoomBackground],
-          background: ShowImage(
-            networkImage: widget.urlImage,
-            fit: BoxFit.cover,
-          )),
     );
   }
 }
+
+// class SliverAppBarDetail extends StatefulWidget {
+//   const SliverAppBarDetail({super.key, required this.urlImage});
+
+//   final String urlImage;
+
+//   @override
+//   State<SliverAppBarDetail> createState() => _SliverAppBarDetailState();
+// }
+
+// class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return SliverAppBar(
+//       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+//       elevation: 0,
+//       pinned: true,
+//       centerTitle: false,
+//       stretch: true,
+//       expandedHeight: 350.0,
+//       leading: IconButton(
+//         icon: const Icon(Icons.arrow_back),
+//         color: Colors.black,
+//         onPressed: () {
+//           Navigator.pop(context);
+//         },
+//       ),
+//       flexibleSpace: FlexibleSpaceBar(
+//           stretchModes: const [StretchMode.zoomBackground],
+//           background: ShowImage(
+//             networkImage: widget.urlImage,
+//             fit: BoxFit.cover,
+//           )),
+//     );
+//   }
+// }
 
 class FastDescription extends StatefulWidget {
   const FastDescription(
@@ -436,11 +545,13 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
       for (var imageToUpload in imagesToUpload) {
         Uint8List imageBytes = await assetToUint8List(imageToUpload.newImage);
         ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
+            idUsuario: idUsuario,
+            idProducto: widget.idProducto,
             newImageBytes: imageBytes,
             fileName: 'productos',
             imageName: imageToUpload.newImage.name!,
-            idUsuario: idUsuario,
-            idProducto: widget.idProducto,
+            width: imageToUpload.width,
+            height: imageToUpload.height,
             isPrincipalImage: 0);
 
         ProductImagesTb productImage =
@@ -468,11 +579,13 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         Asset imageToUpdate = newImage.newImage;
 
         ProductImageStorageTb image = ProductImageStorageTb(
+            idUsuario: idUsuario,
+            idProducto: widget.idProducto,
             newImage: imageToUpdate,
             fileName: 'productos',
-            idUsuario: idUsuario,
             nombreImagen: nombreImage,
-            idProducto: widget.idProducto,
+            width: imageToUpdate.originalWidth!.toDouble(),
+            height: imageToUpdate.originalHeight!.toDouble(),
             isPrincipalImage: 1);
 
         String url = await ProductImagesStorage.updateImage(image);
@@ -538,6 +651,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         ProductImageToUpload newImage = ProductImageToUpload(
           nombreImage: assingName(image!.name!),
           newImage: image,
+          width: image.originalWidth!.toDouble(),
+          height: image.originalHeight!.toDouble(),
         );
         allProductImagesAux.add(newImage);
       }
@@ -549,10 +664,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     }
   }
 
- /// The function `editarImagenes` is used to edit images by replacing them with new images in a list.
- /// 
- /// Args:
- ///   image: The parameter `image` is of type `dynamic` and represents an image object.
+  /// The function `editarImagenes` is used to edit images by replacing them with new images in a list.
+  ///
+  /// Args:
+  ///   image: The parameter `image` is of type `dynamic` and represents an image object.
   void editarImagenes(final image) async {
     Asset? asset = await getImageAsset();
     if (asset != null) {
@@ -589,7 +704,11 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           int indiceToUpload = imagesToUpload.indexWhere(
               (element) => element.nombreImage == image.nombreImage);
           ProductImageToUpload newImage = ProductImageToUpload(
-              nombreImage: assingName(asset.name!), newImage: asset);
+            nombreImage: assingName(asset.name!),
+            newImage: asset,
+            width: asset.originalWidth!.toDouble(),
+            height: asset.originalHeight!.toDouble(),
+          );
 
           setState(() {
             allProductImages[imageIndex] = newImage;

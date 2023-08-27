@@ -20,8 +20,6 @@ class ProductImagesStorage {
   ///   a Future of type ProductImagesTb.
   static Future<ProductImagesTb> cargarImage(
       ProductCreacionImagesStorageTb image) async {
-    print('Ento a cargarImage');
-
     final Uint8List bytes = image.newImageBytes;
 
     String finalNameImage = assingName(image.imageName);
@@ -51,6 +49,8 @@ class ProductImagesStorage {
             idProducto: idProducto,
             nombreImage: finalNameImage,
             urlImage: url,
+            width: image.width,
+            height: image.height,
             isPrincipalImage: image.isPrincipalImage);
 
         final ProductImagesTb productInsertImage =
@@ -99,6 +99,8 @@ class ProductImagesStorage {
             idProducto: idProducto,
             nombreImage: nombreImage,
             urlImage: url,
+            width: image.width,
+            height: image.height,
             isPrincipalImage: image.isPrincipalImage);
 
         //Actualizar url un base de datos

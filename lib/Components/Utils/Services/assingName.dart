@@ -1,6 +1,5 @@
 import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'dart:math';
-import 'package:multi_image_picker/multi_image_picker.dart';
 
 String assingName(String imageName) {
   String finalNameImage;

@@ -9,6 +9,7 @@ class GlobalTextButton extends StatelessWidget {
     this.color,
     this.fontSizeTextButton,
     this.fontWeightTextButton,
+    this.letterSpacing
   });
 
   final EdgeInsets? padding;
@@ -17,6 +18,7 @@ class GlobalTextButton extends StatelessWidget {
   final Color? color;
   final double? fontSizeTextButton;
   final FontWeight? fontWeightTextButton;
+  final double? letterSpacing;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +31,9 @@ class GlobalTextButton extends StatelessWidget {
           style: TextStyle(
               color: color,
               fontSize: fontSizeTextButton,
-              fontWeight: fontWeightTextButton),
+              fontWeight: fontWeightTextButton,
+              letterSpacing: letterSpacing
+              ),
         ),
       ),
     );

@@ -137,15 +137,15 @@ class _HorizontalProductState extends State<HorizontalProduct> {
         });
   }
 
-  void navigateToProductDetail(int idProducto) async {
-    if (context.mounted) {
-      await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductDetail(id: idProducto),
-          ));
-    }
-  }
+  // void navigateToProductDetail(int idProducto) async {
+  //   if (context.mounted) {
+  //     await Navigator.push(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => ProductDetail(id: idProducto),
+  //         ));
+  //   }
+  // }
 
   void calcularTotalProvider() {
     Future.delayed(Duration.zero, () {
@@ -200,10 +200,10 @@ class _HorizontalProductState extends State<HorizontalProduct> {
                               },
                             ),
                             GestureDetector(
-                              onTap: () {
-                                navigateToProductDetail(
-                                    shoppingCartProducts[index].idProducto);
-                              },
+                              // onTap: () {
+                              //   navigateToProductDetail(
+                              //       shoppingCartProducts[index].idProducto);
+                              // },
                               child: ShowImage(
                                 networkImage:
                                     shoppingCartProducts[index].urlImage,

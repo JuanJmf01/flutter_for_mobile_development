@@ -4,7 +4,6 @@ import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/productDetail.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 
 class IndividualProduct extends StatefulWidget {
   const IndividualProduct({super.key, required this.producto});
@@ -20,7 +19,8 @@ class _IndividualProductState extends State<IndividualProduct> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProductDetail(id: productId),
+        builder: (context) =>
+            ProductDetail(id: productId, producto: widget.producto),
       ),
     );
   }
@@ -191,7 +191,6 @@ class _IndividualProductState extends State<IndividualProduct> {
   }
 }
 
-
 class IndividualProductSample extends StatelessWidget {
   const IndividualProductSample({
     super.key,
@@ -219,10 +218,10 @@ class IndividualProductSample extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16.0),
-                  topRight: Radius.circular(16.0),
-                ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16.0),
+                topRight: Radius.circular(16.0),
+              ),
               child: Image.memory(
                 imageBytes,
                 width: widthImage,
@@ -230,7 +229,7 @@ class IndividualProductSample extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
             ),
-             Padding(
+            Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -267,4 +266,3 @@ class IndividualProductSample extends StatelessWidget {
     );
   }
 }
-

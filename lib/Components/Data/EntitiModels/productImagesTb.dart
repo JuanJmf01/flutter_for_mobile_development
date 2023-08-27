@@ -5,6 +5,8 @@ class ProductImagesTb {
   final int idProducto;
   final String nombreImage;
   final String urlImage;
+  final double width;
+  final double height;
   final int isPrincipalImage;
 
   ProductImagesTb(
@@ -12,6 +14,8 @@ class ProductImagesTb {
       required this.idProducto,
       required this.nombreImage,
       required this.urlImage,
+      required this.width,
+      required this.height,
       required this.isPrincipalImage});
 
   factory ProductImagesTb.fromJson(Map<String, dynamic> json) {
@@ -20,18 +24,10 @@ class ProductImagesTb {
       idProducto: json['idProducto'],
       nombreImage: json['nombreImage'],
       urlImage: json['urlImage'],
+      width: double.parse(json['width']),
+      height: double.parse(json['height']),
       isPrincipalImage: json['isPrincipalImage'],
     );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'idProductImage': idProductImage,
-      'idProducto': idProducto,
-      'nombreImage': nombreImage,
-      'urlImage': urlImage,
-      'isPrincipalImage': isPrincipalImage,
-    };
   }
 
   ProductImagesTb copyWith({
@@ -39,6 +35,8 @@ class ProductImagesTb {
     int? idProducto,
     String? nombreImage,
     String? urlImage,
+    double? width,
+    double? height,
     int? isPrincipalImage,
   }) {
     return ProductImagesTb(
@@ -46,6 +44,8 @@ class ProductImagesTb {
       idProducto: idProducto ?? this.idProducto,
       nombreImage: nombreImage ?? this.nombreImage,
       urlImage: urlImage ?? this.urlImage,
+      width: width ?? this.width,
+      height: height ?? this.height,
       isPrincipalImage: isPrincipalImage ?? this.isPrincipalImage,
     );
   }
@@ -60,12 +60,16 @@ class ProductImageCreacionTb {
   final int idProducto;
   final String nombreImage;
   final String urlImage;
+  final double width;
+  final double height;
   final int isPrincipalImage;
 
   ProductImageCreacionTb(
       {required this.idProducto,
       required this.nombreImage,
       required this.urlImage,
+      required this.width,
+      required this.height,
       required this.isPrincipalImage});
 
   factory ProductImageCreacionTb.fromJson(Map<String, dynamic> json) {
@@ -73,18 +77,23 @@ class ProductImageCreacionTb {
       idProducto: json['idProducto'],
       nombreImage: json['nombreImage'],
       urlImage: json['urlImage'],
+      width: json['width'],
+      height: json['height'],
       isPrincipalImage: json['isPrincipalImage'],
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'idProducto': idProducto,
-      'nombreImage': nombreImage,
-      'urlImage': urlImage,
-      'isPrincipalImage': isPrincipalImage,
-    };
-  }
+Map<String, dynamic> toMap() {
+  return {
+    'idProducto': idProducto,
+    'nombreImage': nombreImage,
+    'urlImage': urlImage,
+    'width': width.toStringAsFixed(2),    // Convertir a cadena con 2 decimales
+    'height': height.toStringAsFixed(2),  // Convertir a cadena con 2 decimales
+    'isPrincipalImage': isPrincipalImage,
+  };
+}
+
 
   @override
   String toString() {
@@ -110,10 +119,14 @@ class ProductImageToUpdate {
 class ProductImageToUpload {
   final String nombreImage;
   final Asset newImage;
+  final double width;
+  final double height;
 
   ProductImageToUpload({
     required this.nombreImage,
     required this.newImage,
+    required this.width,
+    required this.height,
   });
 
   @override

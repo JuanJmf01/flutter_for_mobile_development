@@ -3,28 +3,34 @@ import 'dart:typed_data';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProductCreacionImagesStorageTb {
+  final int idUsuario;
+  final int idProducto;
   final Uint8List newImageBytes;
   final String fileName;
   final String imageName;
-  final int idUsuario;
-  final int idProducto;
+  final double width;
+  final double height;
   final int isPrincipalImage;
 
   ProductCreacionImagesStorageTb(
-      {required this.newImageBytes,
+      {required this.idUsuario,
+      required this.idProducto,
+      required this.newImageBytes,
       required this.fileName,
       required this.imageName,
-      required this.idUsuario,
-      required this.idProducto,
+      required this.width,
+      required this.height,
       required this.isPrincipalImage});
 }
 
 class ProductImageStorageTb {
+  final int idUsuario;
+  final int idProducto;
   final Asset newImage;
   final String fileName;
-  final int idUsuario;
   final String nombreImagen;
-  final int idProducto;
+  final double width;
+  final double height;
   final int isPrincipalImage;
 
   ProductImageStorageTb(
@@ -33,6 +39,8 @@ class ProductImageStorageTb {
       required this.idUsuario,
       required this.nombreImagen,
       required this.idProducto,
+      required this.width,
+      required this.height,
       required this.isPrincipalImage});
 }
 

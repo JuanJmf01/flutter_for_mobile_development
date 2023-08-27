@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -14,6 +16,8 @@ class ShowImage extends StatelessWidget {
     this.fit,
     this.color,
     this.borderRadius,
+    this.heightNetwork,
+    this.widthNetWork
   });
 
   final EdgeInsets? padding;
@@ -26,6 +30,8 @@ class ShowImage extends StatelessWidget {
   final BoxFit? fit;
   final Color? color;
   final BorderRadius? borderRadius;
+  final double? widthNetWork;
+  final double? heightNetwork;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +54,8 @@ class ShowImage extends StatelessWidget {
                 )
               : Image.network(
                   networkImage!,
+                  width: widthNetWork ?? 0.0,
+                  height: heightNetwork ?? 0.0,
                   fit: fit,
                 ),
         ),

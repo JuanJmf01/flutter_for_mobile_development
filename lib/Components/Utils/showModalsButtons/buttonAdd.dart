@@ -1,4 +1,4 @@
-import 'package:etfi_point/Components/Utils/productosGeneralForm.dart';
+import 'package:etfi_point/Pages/productosGeneralForm.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

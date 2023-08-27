@@ -78,7 +78,7 @@ class ProductImageDb {
     }
   }
 
- /// The function `updateProductImage` sends a PATCH request to update a product image using the Dio
+ /// The function `updateProductImage` sends a PATCH request to update a product image by nameImage using the Dio
  /// package in Dart.
  /// 
  /// Args:

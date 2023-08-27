@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
@@ -23,11 +25,9 @@ import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
-import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -76,7 +76,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   ProductoTb? _producto;
 
-  List<Asset?> selectedImages = [];
+  List<ProductImageToUpload> selectedImages = [];
   Asset? principalImage;
   Uint8List? principalImageBytes;
 
@@ -99,11 +99,30 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
     obtenerCategoriasSeleccionadas();
     obtenerCategorias();
+    getListSecondaryProductImages();
 
     //obtenerSubCategoriasSeleccionadas();
 
     if (widget.data != null) {
       _producto = widget.data;
+    }
+  }
+
+  
+  //UTILIZAR
+  List<ProductImagesTb> productSecondaryImages = [];
+  List<dynamic> allProductImages = [];
+
+  void getListSecondaryProductImages() async {
+    int? idProducto = widget.data?.idProducto;
+    if (idProducto != null) {
+      List<ProductImagesTb> productSecondaryImagesAux =
+          await ProductImageDb.getProductSecondaryImages(idProducto);
+
+      setState(() {
+        productSecondaryImages = productSecondaryImagesAux;
+        allProductImages.addAll(productSecondaryImagesAux);
+      });
     }
   }
 
@@ -202,27 +221,32 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       idProducto =
           await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
 
-      if(principalImageBytes != null){
+      if (principalImageBytes != null || principalImage != null) {
         ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
-              newImageBytes: principalImageBytes!,
-              imageName: principalImage!.name!,
-              fileName: 'productos',
-              idUsuario: idUsuario,
-              idProducto: idProducto,
-              isPrincipalImage: 0);
+            idUsuario: idUsuario,
+            idProducto: idProducto,
+            newImageBytes:
+                principalImageBytes ?? await assetToUint8List(principalImage!),
+            imageName: principalImage!.name!,
+            fileName: 'productos',
+            width: principalImage!.originalWidth!.toDouble(),
+            height: principalImage!.originalHeight!.toDouble(),
+            isPrincipalImage: 1);
 
-          await ProductImagesStorage.cargarImage(image);
+        await ProductImagesStorage.cargarImage(image);
       }
 
       if (selectedImages.isNotEmpty) {
         for (var imagen in selectedImages) {
-          Uint8List imageBytes = await assetToUint8List(imagen!);
+          Uint8List imageBytes = await assetToUint8List(imagen.newImage);
           ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
-              newImageBytes: imageBytes,
-              imageName: imagen.name!,
-              fileName: 'productos',
               idUsuario: idUsuario,
               idProducto: idProducto,
+              newImageBytes: imageBytes,
+              imageName: imagen.nombreImage,
+              fileName: 'productos',
+              width: imagen.width,
+              height: imagen.height,
               isPrincipalImage: 0);
 
           await ProductImagesStorage.cargarImage(image);
@@ -241,11 +265,13 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     int idProducto = producto.idProducto;
     if (imagenToUpload != null) {
       ProductImageStorageTb image = ProductImageStorageTb(
+          idUsuario: idUsuario,
+          idProducto: idProducto,
           newImage: imagenToUpload!,
           fileName: 'productos',
-          idUsuario: idUsuario,
           nombreImagen: producto.nombreImage,
-          idProducto: idProducto,
+          width: imagenToUpload!.originalWidth!.toDouble(),
+          height: imagenToUpload!.originalHeight!.toDouble(),
           isPrincipalImage: 1);
 
       await ProductImagesStorage.updateImage(image);
@@ -289,15 +315,30 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void agregarImagenes() async {
     List<Asset?> imagesAsset = await getImagesAsset();
 
+    List<ProductImageToUpload> selectedImagesAux = [];
+
     if (imagesAsset.isNotEmpty) {
+      for (var image in imagesAsset) {
+        ProductImageToUpload selectedImage = ProductImageToUpload(
+          nombreImage: assingName(image!.name!),
+          newImage: image,
+          width: image.originalWidth!.toDouble(),
+          height: image.originalHeight!.toDouble(),
+        );
+
+        selectedImages.add(selectedImage);
+      }
+
       setState(() {
-        selectedImages = [...selectedImages, ...imagesAsset];
+        selectedImages = [...selectedImages, ...selectedImagesAux];
         principalImage = imagesAsset[0];
       });
     }
 
     print('Imagenes seleccionadas3: $imagesAsset');
   }
+
+  void takeOutImage() {}
 
   Future<void> editImage() async {
     // 1. Convertir Asset a Archivo temporal
@@ -416,16 +457,19 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                   itemCount: selectedImages.length,
                                   itemBuilder:
                                       (BuildContext context, int index) {
-                                    final image = selectedImages[index]!;
-                                    double originalWidth =
-                                        image.originalWidth!.toDouble();
-                                    double originalHeight =
-                                        image.originalHeight!.toDouble();
+                                    final image = selectedImages[index];
+                                    double originalWidth = image
+                                        .newImage.originalWidth!
+                                        .toDouble();
+                                    double originalHeight = image
+                                        .newImage.originalHeight!
+                                        .toDouble();
                                     double desiredWidth = 600.0;
                                     double desiredHeight = desiredWidth *
                                         (originalHeight / originalWidth);
 
-                                    bool isSelected = principalImage == image;
+                                    bool isSelected =
+                                        principalImage == image.newImage;
 
                                     return Column(
                                       children: [
@@ -436,7 +480,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                           child: GestureDetector(
                                             onTap: () {
                                               setState(() {
-                                                principalImage = image;
+                                                principalImage = image.newImage;
                                               });
                                             },
                                             child: Container(
@@ -453,7 +497,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                                 borderRadius:
                                                     BorderRadius.circular(16.0),
                                                 child: AssetThumb(
-                                                  asset: image,
+                                                  asset: image.newImage,
                                                   width: desiredWidth.toInt(),
                                                   height: desiredHeight.toInt(),
                                                 ),
@@ -478,24 +522,24 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           : SizedBox.shrink(),
 
                       Align(
-                        alignment: Alignment.centerRight,
+                        alignment: Alignment.centerLeft,
                         child: GlobalTextButton(
                           onPressed: agregarImagenes,
                           padding: selectedImages.isNotEmpty
-                              ? EdgeInsets.only(right: 15.0)
+                              ? const EdgeInsets.only(left: 5.0, top: 10.0)
                               : const EdgeInsets.fromLTRB(0.0, 40.0, 20.0, 0.0),
                           fontWeightTextButton: FontWeight.w700,
+                          letterSpacing: 0.7,
                           fontSizeTextButton: 17.5,
                           textButton: 'Agregar imagen(es)',
                         ),
                       ),
 
-                      GlobalDivider(),
-
                       if (principalImage != null)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
+                            GlobalDivider(),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   20.0, 25.0, 0.0, 10.0),
@@ -647,50 +691,49 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             paddingContainer: EdgeInsets.all(12.0),
                           )),
 
-                      if (imagenToUpload != null || urlImage != null)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: ShowImage(
-                            width: 350,
-                            height: 300,
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(20.0),
-                            widthAsset: 350,
-                            heightAsset: 300,
-                            imageAsset: imagenToUpload,
-                            networkImage: urlImage,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
-                        child: ElevatedButton.icon(
-                          onPressed: () async {
-                            final asset = await getImageAsset();
-                            if (asset != null) {
-                              setState(() {
-                                imagenToUpload = asset;
-                              });
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: const EdgeInsets.all(
-                                16.0), // Ajustar el padding del botón
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  10.0), // Establecer bordes redondeados
-                            ),
-                          ),
-                          icon: Icon(Icons.image),
-                          label: imagenToUpload != null
-                              ? Text('Cambiar imagen')
-                              : Text('Agrega una imagen'),
-                        ),
-                      ),
+                      //if (imagenToUpload != null || urlImage != null)
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      //   child: ShowImage(
+                      //     width: 350,
+                      //     height: 300,
+                      //     color: Colors.grey[300],
+                      //     borderRadius: BorderRadius.circular(20.0),
+                      //     widthAsset: 350,
+                      //     heightAsset: 300,
+                      //     imageAsset: imagenToUpload,
+                      //     networkImage: urlImage,
+                      //     fit: BoxFit.cover,
+                      //   ),
+                      // ),
+                      // Padding(
+                      //   padding: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+                      //   child: ElevatedButton.icon(
+                      //     onPressed: () async {
+                      //       final asset = await getImageAsset();
+                      //       if (asset != null) {
+                      //         setState(() {
+                      //           imagenToUpload = asset;
+                      //         });
+                      //       }
+                      //     },
+                      //     style: ElevatedButton.styleFrom(
+                      //       padding: const EdgeInsets.all(
+                      //           16.0), // Ajustar el padding del botón
+                      //       shape: RoundedRectangleBorder(
+                      //         borderRadius: BorderRadius.circular(
+                      //             10.0), // Establecer bordes redondeados
+                      //       ),
+                      //     ),
+                      //     icon: Icon(Icons.image),
+                      //     label: imagenToUpload != null
+                      //         ? Text('Cambiar imagen')
+                      //         : Text('Agrega una imagen'),
+                      //   ),
+                      // ),
                       const SizedBox(height: 100.0)
                     ],
                   ),
-                  //fin padding
                 ),
               ),
             ),
@@ -725,7 +768,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           cantidadDisponible: cantidadDisponible,
                           oferta: enOferta);
 
-                      imagenToUpload != null && idUsuario != null
+                      selectedImages.isNotEmpty && idUsuario != null
                           ? crearProducto(productoCreacion, idUsuario)
                           : print('imagenToUpload es null o idUsuario es null');
                     } else {
