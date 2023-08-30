@@ -11,6 +11,7 @@ import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Icons/switch.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
@@ -210,58 +211,59 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
-      child: myImageList != null ? 
-      MyImageList(
-          imageList: myImageList!,
-          onImageSelected: (selectedImage) {
-            print('mostrar la imagen grande');
-          }) : SizedBox.shrink() 
-      // child: Padding(
-      //   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-      //   child: Container(
-      //     constraints: const BoxConstraints(
-      //       maxHeight: 260, // Altura máxima para la lista de imágenes
-      //     ),
-      //     child: ListView.builder(
-      //       scrollDirection: Axis.horizontal,
-      //       itemCount: allProductImages.length,
-      //       itemBuilder: (BuildContext context, int index) {
-      //         final image = allProductImages[index]!;
-      //         double originalWidth = image.width;
-      //         double originalHeight = image.height;
-      //         double desiredWidth = 600.0;
-      //         double desiredHeight =
-      //             desiredWidth * (originalHeight / originalWidth);
+        child: myImageList != null
+            ? MyImageList(
+                imageList: myImageList!,
+                onImageSelected: (selectedImage) {
+                  print('mostrar la imagen grande');
+                })
+            : SizedBox.shrink()
+        // child: Padding(
+        //   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+        //   child: Container(
+        //     constraints: const BoxConstraints(
+        //       maxHeight: 260, // Altura máxima para la lista de imágenes
+        //     ),
+        //     child: ListView.builder(
+        //       scrollDirection: Axis.horizontal,
+        //       itemCount: allProductImages.length,
+        //       itemBuilder: (BuildContext context, int index) {
+        //         final image = allProductImages[index]!;
+        //         double originalWidth = image.width;
+        //         double originalHeight = image.height;
+        //         double desiredWidth = 600.0;
+        //         double desiredHeight =
+        //             desiredWidth * (originalHeight / originalWidth);
 
-      //         return Column(
-      //           children: [
-      //             Expanded(
-      //               child: Padding(
-      //                 padding: index == 0
-      //                     ? const EdgeInsets.fromLTRB(40.0, 7.0, 10.0, 0.0)
-      //                     : const EdgeInsets.fromLTRB(0.0, 7.0, 7.0, 0.0),
-      //                 child: Container(
-      //                   decoration: BoxDecoration(
-      //                     borderRadius: BorderRadius.circular(20.0),
-      //                   ),
-      //                   child: ClipRRect(
-      //                     borderRadius: BorderRadius.circular(16.0),
-      //                     child: Image.network(
-      //                       image.urlImage,
-      //                       fit: BoxFit.contain,
-      //                       //height: desiredHeight,
-      //                     ),
-      //                   ),
-      //                 ),
-      //               ),
-      //             ),
-      //           ],
-      //         );
-      //       },
-      //     ),
-      //   ),
-      // ),
-    );
+        //         return Column(
+        //           children: [
+        //             Expanded(
+        //               child: Padding(
+        //                 padding: index == 0
+        //                     ? const EdgeInsets.fromLTRB(40.0, 7.0, 10.0, 0.0)
+        //                     : const EdgeInsets.fromLTRB(0.0, 7.0, 7.0, 0.0),
+        //                 child: Container(
+        //                   decoration: BoxDecoration(
+        //                     borderRadius: BorderRadius.circular(20.0),
+        //                   ),
+        //                   child: ClipRRect(
+        //                     borderRadius: BorderRadius.circular(16.0),
+        //                     child: Image.network(
+        //                       image.urlImage,
+        //                       fit: BoxFit.contain,
+        //                       //height: desiredHeight,
+        //                     ),
+        //                   ),
+        //                 ),
+        //               ),
+        //             ),
+        //           ],
+        //         );
+        //       },
+        //     ),
+        //   ),
+        // ),
+        );
   }
 }
 
@@ -537,7 +539,7 @@ class AdvancedDescription extends StatefulWidget {
 
 class _AdvancedDescriptionState extends State<AdvancedDescription> {
   List<ProductImagesTb> productSecondaryImages = [];
-  List<dynamic> allProductImages = [];
+  ImageList? allProductImages;
   bool isChecked = true;
 
   List<ProductImageToUpload> imagesToUpload = [];
@@ -568,12 +570,18 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
       }
 
       setState(() {
-        allProductImages.clear();
+        if (allProductImages != null) {
+          allProductImages!.items.clear();
+        }
         productSecondaryImages = [
           ...productSecondaryImages,
           ...productImagesAux
         ];
-        allProductImages.addAll(productSecondaryImages);
+        if (allProductImages == null) {
+          allProductImages = ImageList(productSecondaryImages);
+        } else {
+          allProductImages!.items.addAll(productSecondaryImages);
+        }
 
         imagesToUpload.clear();
       });
@@ -606,8 +614,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
               productSecondaryImages[i] =
                   productSecondaryImages[i].copyWith(urlImage: url);
 
-              allProductImages.clear();
-              allProductImages.addAll(productSecondaryImages);
+              if (allProductImages != null) {
+                allProductImages!.items.clear();
+              }
+              allProductImages = ImageList(productSecondaryImages);
             });
           } else {
             print('No encontrado en updateSecondaryImage');
@@ -629,7 +639,11 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
     setState(() {
       productSecondaryImages = productSecondaryImagesAux;
-      allProductImages.addAll(productSecondaryImagesAux);
+      if (allProductImages == null) {
+        allProductImages = ImageList(productSecondaryImagesAux);
+      } else {
+        allProductImages!.items.addAll(productSecondaryImagesAux);
+      }
     });
   }
 
@@ -664,12 +678,17 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         );
         allProductImagesAux.add(newImage);
       }
-
-      setState(() {
-        allProductImages = [...allProductImages, ...allProductImagesAux];
-        imagesToUpload = [...imagesToUpload, ...allProductImagesAux];
-      });
     }
+
+    setState(() {
+      if (allProductImages == null) {
+        allProductImages = ImageList(allProductImagesAux);
+      } else {
+        allProductImages!.items.addAll(allProductImagesAux);
+      }
+
+      imagesToUpload = [...imagesToUpload, ...allProductImagesAux];
+    });
   }
 
   /// The function `editarImagenes` is used to edit images by replacing them with new images in a list.
@@ -679,7 +698,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
   void editarImagenes(final image) async {
     Asset? asset = await getImageAsset();
     if (asset != null) {
-      int imageIndex = allProductImages.indexOf(image);
+      int imageIndex = allProductImages!.items.indexOf(image);
 
       int indice = imagesToUpdate
           .indexWhere((element) => element.nombreImage == image.nombreImage);
@@ -694,7 +713,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           newImage: asset,
         );
         setState(() {
-          allProductImages[imageIndex] = newImage;
+          allProductImages!.items[imageIndex] = newImage;
           imagesToUpdate[indice] = newImage;
         });
       } else {
@@ -706,7 +725,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           setState(() {
             imagesToUpdate.add(newImage);
 
-            allProductImages[imageIndex] = newImage;
+            allProductImages!.items[imageIndex] = newImage;
           });
         } else if (image is ProductImageToUpload) {
           int indiceToUpload = imagesToUpload.indexWhere(
@@ -719,7 +738,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           );
 
           setState(() {
-            allProductImages[imageIndex] = newImage;
+            allProductImages!.items[imageIndex] = newImage;
             imagesToUpload[indiceToUpload] = newImage;
           });
         }
@@ -734,21 +753,16 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         if (image is ProductImagesTb) {
           return DeletedDialog(
               onPress: () async {
-                ProductImageStorageDeleteTb infoImageToDelete =
-                    ProductImageStorageDeleteTb(
-                        fileName: 'productos',
-                        idUsuario: idUsuario,
-                        nombreImagen: image.nombreImage,
-                        idProducto: image.idProducto,
-                        idProductImage: image.idProductImage);
-
-                bool result =
-                    await ProductImagesStorage.deleteImage(infoImageToDelete);
+                bool result = await CrudImages.eliminarImagen(image, idUsuario);
 
                 if (result) {
                   setState(() {
-                    allProductImages.removeWhere(
-                        (element) => element.nombreImage == image.nombreImage);
+                    allProductImages!.items.removeWhere((element) {
+                      if (element is ProductImagesTb) {
+                        return element.nombreImage == image.nombreImage;
+                      }
+                      return false;
+                    });
                     productSecondaryImages.removeWhere(
                         (element) => element.nombreImage == image.nombreImage);
                   });
@@ -766,19 +780,19 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
             image is ProductImageToUpload) {
           return RuleOut(
             onPress: () {
-              int imageIndex = allProductImages.indexOf(image);
+              int imageIndex = allProductImages!.items.indexOf(image);
               /**De la lista de imagenes originales, sacamos la imagen base o imagen que inicialmente habia */
 
               if (image is ProductImageToUpdate) {
                 ProductImagesTb oldImage = productSecondaryImages[imageIndex];
 
                 setState(() {
-                  allProductImages[imageIndex] = oldImage;
+                  allProductImages?.items[imageIndex] = oldImage;
                   imagesToUpdate.remove(image);
                 });
               } else if (image is ProductImageToUpload) {
                 setState(() {
-                  allProductImages.removeAt(imageIndex);
+                  allProductImages?.items.removeAt(imageIndex);
                   imagesToUpload.remove(image);
                 });
               }
@@ -869,23 +883,41 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                           fontSize: 16,
                         ),
                       )),
-            allProductImages.isNotEmpty
+            allProductImages != null && allProductImages?.items != null
                 ? Column(
                     children: [
-                      for (var image in allProductImages)
+                      for (var image in allProductImages!.items)
                         Column(
                           children: [
                             Container(
                                 child: image is ProductImagesTb
-                                    ? ShowImage(
+                                    ?
+                                    //  Image.network(
+                                    //   image.urlImage,
+                                    //   width: double.infinity,
+                                    //   fit: BoxFit.cover
+                                    // )
+
+                                    ShowImage(
+                                        networkImage: image.urlImage,
+                                        //height: 200,
                                         width: double.infinity,
                                         fit: BoxFit.cover,
-                                        networkImage: image.urlImage)
+                                      )
                                     : image is ProductImageToUpload ||
                                             image is ProductImageToUpdate
                                         ? FutureBuilder<ByteData>(
-                                            future:
-                                                image.newImage.getByteData(),
+                                            future: (() {
+                                              if (image
+                                                  is ProductImageToUpload) {
+                                                return image.newImage
+                                                    .getByteData();
+                                              } else if (image
+                                                  is ProductImageToUpdate) {
+                                                return image.newImage
+                                                    .getByteData();
+                                              }
+                                            })(),
                                             builder: (BuildContext context,
                                                 AsyncSnapshot<ByteData>
                                                     snapshot) {

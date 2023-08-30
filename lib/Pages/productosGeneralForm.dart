@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
@@ -69,7 +70,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   List<SubCategoriaTb> subCategoriasDisponibles = [];
   List<SubCategoriaTb> subCategoriasSeleccionadas = [];
 
-  String? urlImage;
+  String? urlPrincipalImage;
   Asset? imagenToUpload;
 
   int? enOferta = 0;
@@ -95,7 +96,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     _descripcionController.text = widget.data?.descripcion ?? '';
     _cantidadDisponibleController.text =
         widget.data?.cantidadDisponible.toString() ?? '';
-    urlImage = widget.data?.urlImage;
+    urlPrincipalImage = widget.data?.urlImage;
+    print('Mi url imagen: $urlPrincipalImage');
+    //print('IsPrincipalImage ${widget.data.}');
+
     enOferta = widget.data?.oferta;
     estaEnOferta();
 
@@ -110,9 +114,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
   }
 
-  //UTILIZAR
-  List<ProductImagesTb> productSecondaryImages = [];
-  List<dynamic> allProductImages = [];
+  //List<ProductImagesTb> productSecondaryImages = [];
 
   void getListSecondaryProductImages() async {
     int? idProducto = widget.data?.idProducto;
@@ -121,8 +123,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           await ProductImageDb.getProductSecondaryImages(idProducto);
 
       setState(() {
-        productSecondaryImages = productSecondaryImagesAux;
-        allProductImages.addAll(productSecondaryImagesAux);
+        //productSecondaryImages = productSecondaryImagesAux;
+        myImageList = ImageList(productSecondaryImagesAux);
+        print('Mi lista de imagenes: $myImageList');
       });
     }
   }
@@ -347,17 +350,29 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     print('Imagenes seleccionadas3: $imagesAsset');
   }
 
-  void takeOutImage() {}
+  //  Convertir Asset o URLimage (image.network) a Archivo temporal
 
-  Future<void> editImage() async {
-    // 1. Convertir Asset a Archivo temporal
-    if (principalImage != null) {
+  Future<void> sendImageToEdit() async {
+    final tempDir = await getTemporaryDirectory();
+    final tempFile = File('${tempDir.path}/temp_image.jpg');
+
+    if (urlPrincipalImage != null) {
+      // Descargar la imagen de la URL y guardarla en el archivo temporal
+      final response = await Dio().get(urlPrincipalImage!,
+          options: Options(responseType: ResponseType.bytes));
+      await tempFile.writeAsBytes(response.data);
+    } else if (principalImage != null) {
       final byteData = await principalImage!.getByteData();
       final buffer = byteData.buffer.asUint8List();
-      final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/temp_image.jpg');
       await tempFile.writeAsBytes(buffer);
+    }
 
+    print('Temporal $tempFile');
+    editImage(tempFile);
+  }
+
+  Future<void> editImage(File tempFile) async {
+    if (principalImage != null || urlPrincipalImage != null) {
       // 2. Editar Archivo temporal
       final croppedFile = await ImageCropper().cropImage(
         sourcePath: tempFile.path,
@@ -458,87 +473,22 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                               padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
                               maxHeight: 260,
                               principalImage: principalImage,
+                              urlPrincipalImage: urlPrincipalImage,
                               onImageSelected: (selectedImage) {
                                 setState(() {
-                                  principalImage = selectedImage;
+                                  if (principalImageBytes != null) {
+                                    principalImageBytes = null;
+                                  }
+                                  if (selectedImage is Asset) {
+                                    principalImage = selectedImage;
+                                    urlPrincipalImage = null;
+                                  } else if (selectedImage is String) {
+                                    urlPrincipalImage = selectedImage;
+                                    principalImage = null;
+                                  }
                                 });
                               },
                             )
-                          // ? Padding(
-                          //     padding: const EdgeInsets.fromLTRB(
-                          //         0.0, 30.0, 0.0, 0.0),
-                          //     child: Container(
-                          //       constraints: const BoxConstraints(
-                          //         maxHeight:
-                          //             260, // Altura máxima para la lista de imágenes
-                          //       ),
-                          //       child: ListView.builder(
-                          //         scrollDirection: Axis.horizontal,
-                          //         itemCount: selectedImages.length,
-                          //         itemBuilder:
-                          //             (BuildContext context, int index) {
-                          //           final image = selectedImages[index];
-                          //           double originalWidth = image
-                          //               .newImage.originalWidth!
-                          //               .toDouble();
-                          //           double originalHeight = image
-                          //               .newImage.originalHeight!
-                          //               .toDouble();
-                          //           double desiredWidth = 600.0;
-                          //           double desiredHeight = desiredWidth *
-                          //               (originalHeight / originalWidth);
-
-                          //           bool isSelected =
-                          //               principalImage == image.newImage;
-
-                          //           return Column(
-                          //             children: [
-                          //               Expanded(
-                          //                   child: Padding(
-                          //                 padding: const EdgeInsets.fromLTRB(
-                          //                     5.0, 0.0, 4.0, 8.0),
-                          //                 child: GestureDetector(
-                          //                   onTap: () {
-                          //                     setState(() {
-                          //                       principalImage = image.newImage;
-                          //                     });
-                          //                   },
-                          //                   child: Container(
-                          //                     decoration: BoxDecoration(
-                          //                         borderRadius:
-                          //                             BorderRadius.circular(
-                          //                                 20.0),
-                          //                         border: isSelected
-                          //                             ? Border.all(
-                          //                                 color: Colors.blue,
-                          //                                 width: 4.5)
-                          //                             : null),
-                          //                     child: ClipRRect(
-                          //                       borderRadius:
-                          //                           BorderRadius.circular(16.0),
-                          //                       child: AssetThumb(
-                          //                         asset: image.newImage,
-                          //                         width: desiredWidth.toInt(),
-                          //                         height: desiredHeight.toInt(),
-                          //                       ),
-                          //                     ),
-                          //                   ),
-                          //                 ),
-                          //               )),
-                          //               if (isSelected)
-                          //                 Text(
-                          //                   'Imagen principal',
-                          //                   style: TextStyle(
-                          //                       color: Colors.grey.shade400,
-                          //                       fontSize: 18,
-                          //                       fontWeight: FontWeight.w500),
-                          //                 ),
-                          //             ],
-                          //           );
-                          //         },
-                          //       ),
-                          //     ),
-                          //   )
                           : SizedBox.shrink(),
 
                       Align(
@@ -555,7 +505,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         ),
                       ),
 
-                      if (principalImage != null)
+                      if (principalImage != null || urlPrincipalImage != null)
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -572,46 +522,59 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                 ),
                               ),
                             ),
-                            principalImageBytes != null
+                            urlPrincipalImage != null && principalImageBytes == null
                                 ? Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                         45.0, 00.0, 0.0, 20.0),
                                     child: Align(
                                       alignment: Alignment.bottomLeft,
                                       child: IndividualProductSample(
-                                          imageBytes: principalImageBytes!,
+                                          urlImage: urlPrincipalImage,
                                           widthImage: 195.0,
                                           heightImage: 170.0),
                                     ),
                                   )
-                                : FutureBuilder<ByteData>(
-                                    future: principalImage!.getByteData(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<ByteData> snapshot) {
-                                      if (snapshot.connectionState ==
-                                              ConnectionState.done &&
-                                          snapshot.data != null) {
-                                        return Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              45.0, 00.0, 0.0, 20.0),
-                                          child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: IndividualProductSample(
-                                                imageBytes: snapshot
-                                                    .data!.buffer
-                                                    .asUint8List(),
-                                                widthImage: 195.0,
-                                                heightImage: 170.0),
-                                          ),
-                                        );
-                                      } else {
-                                        return CircularProgressIndicator(); // Mostrar un indicador de carga mientras se obtienen los datos de la imagen
-                                      }
-                                    },
-                                  ),
+                                : principalImageBytes != null
+                                    ? Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            45.0, 00.0, 0.0, 20.0),
+                                        child: Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: IndividualProductSample(
+                                              imageBytes: principalImageBytes!,
+                                              widthImage: 195.0,
+                                              heightImage: 170.0),
+                                        ),
+                                      )
+                                    : FutureBuilder<ByteData>(
+                                        future: principalImage!.getByteData(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<ByteData> snapshot) {
+                                          if (snapshot.connectionState ==
+                                                  ConnectionState.done &&
+                                              snapshot.data != null) {
+                                            return Padding(
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                      45.0, 00.0, 0.0, 20.0),
+                                              child: Align(
+                                                alignment: Alignment.bottomLeft,
+                                                child: IndividualProductSample(
+                                                    imageBytes: snapshot
+                                                        .data!.buffer
+                                                        .asUint8List(),
+                                                    widthImage: 195.0,
+                                                    heightImage: 170.0),
+                                              ),
+                                            );
+                                          } else {
+                                            return CircularProgressIndicator(); // Mostrar un indicador de carga mientras se obtienen los datos de la imagen
+                                          }
+                                        },
+                                      ),
                             ElevatedButton(
                                 onPressed: () {
-                                  editImage();
+                                  sendImageToEdit();
                                 },
                                 child: Text('Editar'))
                           ],
@@ -792,6 +755,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           ? crearProducto(productoCreacion, idUsuario)
                           : print('imagenToUpload es null o idUsuario es null');
                     } else {
+                      //Actualizar ya que idProducto != null
                       _producto = ProductoTb(
                         idProducto: widget.data!.idProducto,
                         idNegocio: widget.data!.idNegocio,
@@ -800,11 +764,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         descripcion: descripcion,
                         cantidadDisponible: cantidadDisponible,
                         oferta: enOferta,
-                        urlImage: urlImage!,
+                        urlImage: urlPrincipalImage!,
                         nombreImage: widget.data!.nombreImage,
                       );
 
-                      urlImage != null && idUsuario != null
+                      urlPrincipalImage != null && idUsuario != null
                           ? actualizarProducto(_producto!, idUsuario)
                           : print('urlImage es null');
                     }

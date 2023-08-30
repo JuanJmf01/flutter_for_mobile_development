@@ -9,6 +9,7 @@ class ProductoTb {
   final String? descripcionDetallada;
   final int cantidadDisponible;
   final int? oferta; // bool (0 or 1)
+  
   final String urlImage;
   final String nombreImage;
   //String? fechaDeCreacion;

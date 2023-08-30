@@ -54,8 +54,8 @@ class ShowImage extends StatelessWidget {
                 )
               : Image.network(
                   networkImage!,
-                  width: widthNetWork ?? 0.0,
-                  height: heightNetwork ?? 0.0,
+                  width: widthNetWork,
+                  height: heightNetwork,
                   fit: fit,
                 ),
         ),

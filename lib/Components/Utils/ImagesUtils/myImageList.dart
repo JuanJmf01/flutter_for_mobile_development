@@ -2,7 +2,7 @@ import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
-typedef ImageSelectedCallback = void Function(Asset? selectedImage);
+typedef ImageSelectedCallback = void Function(dynamic selectedImage);
 
 class MyImageList extends StatefulWidget {
   const MyImageList({
@@ -11,6 +11,7 @@ class MyImageList extends StatefulWidget {
     this.padding,
     this.maxHeight,
     this.principalImage,
+    this.urlPrincipalImage,
     this.fit,
     required this.onImageSelected,
   });
@@ -19,6 +20,7 @@ class MyImageList extends StatefulWidget {
   final EdgeInsets? padding;
   final double? maxHeight;
   final Asset? principalImage;
+  final String? urlPrincipalImage;
   final BoxFit? fit;
   final ImageSelectedCallback onImageSelected; // Nueva línea
 
@@ -55,7 +57,10 @@ class _MyImageListState extends State<MyImageList> {
               desiredHeight = desiredWidth * (originalHeight / originalWidth);
 
               isSelected = widget.principalImage == image.newImage;
+            } else if (image is ProductImagesTb && isSelected == false) {
+              isSelected = widget.urlPrincipalImage == image.urlImage;
             }
+
 
             return Column(
               children: [
@@ -68,6 +73,8 @@ class _MyImageListState extends State<MyImageList> {
                         setState(() {
                           widget.onImageSelected(image.newImage);
                         });
+                      } else if (image is ProductImagesTb) {
+                        widget.onImageSelected(image.urlImage);
                       }
                     },
                     child: Container(
@@ -85,9 +92,10 @@ class _MyImageListState extends State<MyImageList> {
                                   height: desiredHeight!.toInt(),
                                 )
                               : image is ProductImagesTb
-                                  ? Image.network(image.urlImage,
+                                  ? Image.network(
+                                      image.urlImage,
                                       fit: widget.fit ?? BoxFit.contain,
-                                      )
+                                    )
                                   : SizedBox.shrink()),
                     ),
                   ),

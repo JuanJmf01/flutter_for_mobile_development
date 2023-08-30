@@ -194,12 +194,14 @@ class _IndividualProductState extends State<IndividualProduct> {
 class IndividualProductSample extends StatelessWidget {
   const IndividualProductSample({
     super.key,
-    required this.imageBytes,
+    this.imageBytes,
+    this.urlImage,
     required this.widthImage,
     required this.heightImage,
   });
 
-  final Uint8List imageBytes;
+  final String? urlImage;
+  final Uint8List? imageBytes;
   final double widthImage;
   final double heightImage;
 
@@ -218,17 +220,23 @@ class IndividualProductSample extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(16.0),
-                topRight: Radius.circular(16.0),
-              ),
-              child: Image.memory(
-                imageBytes,
-                width: widthImage,
-                height: heightImage,
-                fit: BoxFit.cover,
-              ),
-            ),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16.0),
+                  topRight: Radius.circular(16.0),
+                ),
+                child: imageBytes != null
+                    ? Image.memory(
+                        imageBytes!,
+                        width: widthImage,
+                        height: heightImage,
+                        fit: BoxFit.cover,
+                      )
+                    : Image.network(
+                        urlImage!,
+                        width: 195,
+                        height: 170,
+                        fit: BoxFit.cover,
+                      )),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(

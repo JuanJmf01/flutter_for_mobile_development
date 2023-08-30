@@ -52,7 +52,7 @@ class ProductImagesTb extends ImageListItem{
 
   @override
   String toString() {
-    return 'ProductImagesTb{idProducto: $idProducto, nombreImage: $nombreImage, isPrincipalImage: $isPrincipalImage}';
+    return 'ProductImagesTb{idProducto: $idProducto, nombreImage: $nombreImage, urlImage: $urlImage}';
   }
 }
 
