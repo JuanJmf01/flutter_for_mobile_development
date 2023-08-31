@@ -79,7 +79,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   ProductoTb? _producto;
 
   //List<ProductImageToUpload> selectedImages = [];
-  ImageList? myImageList;
+  ImageList myImageList = ImageList([]);
   Asset? principalImage;
   Uint8List? principalImageBytes;
 
@@ -124,7 +124,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
       setState(() {
         //productSecondaryImages = productSecondaryImagesAux;
-        myImageList = ImageList(productSecondaryImagesAux);
+        myImageList.items.addAll(productSecondaryImagesAux);
+
         print('Mi lista de imagenes: $myImageList');
       });
     }
@@ -240,7 +241,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         await ProductImagesStorage.cargarImage(image);
       }
 
-      if (myImageList != null) {
+      if (myImageList.items.isNotEmpty) {
         for (var imagen in myImageList!.items) {
           if (imagen is ProductImageToUpload) {
             Uint8List imageBytes = await assetToUint8List(imagen.newImage);
@@ -338,16 +339,40 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       }
 
       setState(() {
-        if (myImageList == null) {
-          myImageList = ImageList(selectedImagesAux);
-        } else {
-          myImageList!.items.addAll(selectedImagesAux);
-        }
+        myImageList.items.addAll(selectedImagesAux);
         principalImage = imagesAsset[0];
       });
     }
 
     print('Imagenes seleccionadas3: $imagesAsset');
+  }
+
+  void metodoDePrueba() async {
+    ProductImagesTb prueba = ProductImagesTb(
+        idProductImage: 1,
+        idProducto: 1,
+        nombreImage: 'nombre',
+        urlImage:
+            'https://firebasestorage.googleapis.com/v0/b/marketpointappi.appspot.com/o/imagenes%2Fproductos%2F1%2F39%2F20230827_022143_c1bfi1s_Bolso1.jpg?alt=media&token=7e8716b0-b452-4eef-865a-964cdc5fc5a4',
+        width: 150,
+        height: 160,
+        isPrincipalImage: 0);
+
+    //Asset? imagesAsset = await getImageAsset();
+
+    //ProductImageToUpload prueba2 = ProductImageToUpload(
+    // nombreImage: 'nombreImage',
+    // newImage: imagesAsset!,
+    // width: 300,
+    // height: 340);
+
+    setState(() {
+      if (myImageList == null) {
+        //myImageList = ImageList(prueba);
+      } else {
+        myImageList.items.add(prueba);
+      }
+    });
   }
 
   //  Convertir Asset o URLimage (image.network) a Archivo temporal
@@ -522,7 +547,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                 ),
                               ),
                             ),
-                            urlPrincipalImage != null && principalImageBytes == null
+                            urlPrincipalImage != null &&
+                                    principalImageBytes == null
                                 ? Padding(
                                     padding: const EdgeInsets.fromLTRB(
                                         45.0, 00.0, 0.0, 20.0),
@@ -574,7 +600,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                       ),
                             ElevatedButton(
                                 onPressed: () {
-                                  sendImageToEdit();
+                                  //sendImageToEdit();
+                                  metodoDePrueba();
                                 },
                                 child: Text('Editar'))
                           ],
