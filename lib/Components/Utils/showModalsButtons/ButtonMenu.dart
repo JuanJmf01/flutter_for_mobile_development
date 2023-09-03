@@ -1,8 +1,7 @@
-import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
+import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonLogin.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
-import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,26 +14,12 @@ class ButtonMenu extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[800], // Gris tirando a oscuro
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(10.0),
-          topRight: Radius.circular(10.0),
-        ),
       ),
       padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            alignment: Alignment.center,
-            child: Container(
-              width: 35.0,
-              height: 5.0,
-              decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2.5),
-              ),
-            ),
-          ),
+          const LineForDropdownButton(),
           const SizedBox(height: 10.0),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4.0),

@@ -5,6 +5,8 @@ import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
+
+// En estado de purebas para su utilizacion en productsGeneralForm.dart
 class CrudImages {
   static Future<List<ProductImageToUpload>> agregarImagenes() async {
     List<Asset?> imagesAsset = await getImagesAsset();
@@ -83,8 +85,8 @@ class CrudImages {
   static Future<bool> eliminarImagen(dynamic image, int idUsuario) async {
     bool band = false;
     if (image is ProductImagesTb) {
-      ProductImageStorageDeleteTb infoImageToDelete =
-          ProductImageStorageDeleteTb(
+      ImageStorageDeleteTb infoImageToDelete =
+          ImageStorageDeleteTb(
         fileName: 'productos',
         idUsuario: idUsuario,
         nombreImagen: image.nombreImage,

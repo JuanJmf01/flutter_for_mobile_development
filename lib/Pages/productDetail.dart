@@ -539,7 +539,7 @@ class AdvancedDescription extends StatefulWidget {
 
 class _AdvancedDescriptionState extends State<AdvancedDescription> {
   List<ProductImagesTb> productSecondaryImages = [];
-  ImageList? allProductImages;
+  ImageList allProductImages = ImageList([]);
   bool isChecked = true;
 
   List<ProductImageToUpload> imagesToUpload = [];
@@ -554,9 +554,9 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
       List<ProductImagesTb> productImagesAux = [];
       for (var imageToUpload in imagesToUpload) {
         Uint8List imageBytes = await assetToUint8List(imageToUpload.newImage);
-        ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
+        ImageStorageTb image = ImageStorageTb(
             idUsuario: idUsuario,
-            idProducto: widget.idProducto,
+            idFile: widget.idProducto,
             newImageBytes: imageBytes,
             fileName: 'productos',
             imageName: imageToUpload.newImage.name!,
@@ -570,17 +570,17 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
       }
 
       setState(() {
-        if (allProductImages != null) {
-          allProductImages!.items.clear();
+        if (allProductImages.items.isNotEmpty) {
+          allProductImages.items.clear();
         }
         productSecondaryImages = [
           ...productSecondaryImages,
           ...productImagesAux
         ];
-        if (allProductImages == null) {
+        if (allProductImages.items.isEmpty) {
           allProductImages = ImageList(productSecondaryImages);
         } else {
-          allProductImages!.items.addAll(productSecondaryImages);
+          allProductImages.items.addAll(productSecondaryImages);
         }
 
         imagesToUpload.clear();
@@ -594,12 +594,12 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         String nombreImage = newImage.nombreImage;
         Asset imageToUpdate = newImage.newImage;
 
-        ProductImageStorageTb image = ProductImageStorageTb(
+        ImageStorageTb image = ImageStorageTb(
             idUsuario: idUsuario,
-            idProducto: widget.idProducto,
-            newImage: imageToUpdate,
+            idFile: widget.idProducto,
+            newImageBytes: await assetToUint8List(imageToUpdate),
             fileName: 'productos',
-            nombreImagen: nombreImage,
+            imageName: nombreImage,
             width: imageToUpdate.originalWidth!.toDouble(),
             height: imageToUpdate.originalHeight!.toDouble(),
             isPrincipalImage: 1);
@@ -614,10 +614,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
               productSecondaryImages[i] =
                   productSecondaryImages[i].copyWith(urlImage: url);
 
-              if (allProductImages != null) {
-                allProductImages!.items.clear();
+              if (allProductImages.items.isNotEmpty) {
+                allProductImages.items.clear();
               }
-              allProductImages = ImageList(productSecondaryImages);
+              allProductImages.items.addAll(productSecondaryImages);
             });
           } else {
             print('No encontrado en updateSecondaryImage');
@@ -639,11 +639,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
     setState(() {
       productSecondaryImages = productSecondaryImagesAux;
-      if (allProductImages == null) {
-        allProductImages = ImageList(productSecondaryImagesAux);
-      } else {
-        allProductImages!.items.addAll(productSecondaryImagesAux);
-      }
+      allProductImages.items.addAll(productSecondaryImagesAux);
     });
   }
 
@@ -681,11 +677,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     }
 
     setState(() {
-      if (allProductImages == null) {
-        allProductImages = ImageList(allProductImagesAux);
-      } else {
-        allProductImages!.items.addAll(allProductImagesAux);
-      }
+      allProductImages.items.addAll(allProductImagesAux);
 
       imagesToUpload = [...imagesToUpload, ...allProductImagesAux];
     });
@@ -698,7 +690,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
   void editarImagenes(final image) async {
     Asset? asset = await getImageAsset();
     if (asset != null) {
-      int imageIndex = allProductImages!.items.indexOf(image);
+      int imageIndex = allProductImages.items.indexOf(image);
 
       int indice = imagesToUpdate
           .indexWhere((element) => element.nombreImage == image.nombreImage);
@@ -713,7 +705,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           newImage: asset,
         );
         setState(() {
-          allProductImages!.items[imageIndex] = newImage;
+          allProductImages.items[imageIndex] = newImage;
           imagesToUpdate[indice] = newImage;
         });
       } else {
@@ -725,7 +717,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           setState(() {
             imagesToUpdate.add(newImage);
 
-            allProductImages!.items[imageIndex] = newImage;
+            allProductImages.items[imageIndex] = newImage;
           });
         } else if (image is ProductImageToUpload) {
           int indiceToUpload = imagesToUpload.indexWhere(
@@ -738,7 +730,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           );
 
           setState(() {
-            allProductImages!.items[imageIndex] = newImage;
+            allProductImages.items[imageIndex] = newImage;
             imagesToUpload[indiceToUpload] = newImage;
           });
         }
@@ -757,7 +749,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
                 if (result) {
                   setState(() {
-                    allProductImages!.items.removeWhere((element) {
+                    allProductImages.items.removeWhere((element) {
                       if (element is ProductImagesTb) {
                         return element.nombreImage == image.nombreImage;
                       }
@@ -780,19 +772,19 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
             image is ProductImageToUpload) {
           return RuleOut(
             onPress: () {
-              int imageIndex = allProductImages!.items.indexOf(image);
+              int imageIndex = allProductImages.items.indexOf(image);
               /**De la lista de imagenes originales, sacamos la imagen base o imagen que inicialmente habia */
 
               if (image is ProductImageToUpdate) {
                 ProductImagesTb oldImage = productSecondaryImages[imageIndex];
 
                 setState(() {
-                  allProductImages?.items[imageIndex] = oldImage;
+                  allProductImages.items[imageIndex] = oldImage;
                   imagesToUpdate.remove(image);
                 });
               } else if (image is ProductImageToUpload) {
                 setState(() {
-                  allProductImages?.items.removeAt(imageIndex);
+                  allProductImages.items.removeAt(imageIndex);
                   imagesToUpload.remove(image);
                 });
               }
@@ -883,10 +875,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                           fontSize: 16,
                         ),
                       )),
-            allProductImages != null && allProductImages?.items != null
+            allProductImages.items.isNotEmpty
                 ? Column(
                     children: [
-                      for (var image in allProductImages!.items)
+                      for (var image in allProductImages.items)
                         Column(
                           children: [
                             Container(
@@ -1021,7 +1013,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           nameSavebutton: placeholder,
           heightSizeBox: 48.0,
           fontSize: 19,
-          color: color,
+          backgroundColor: color,
           fontWeight: FontWeight.w700,
           borderRadius: BorderRadius.circular(5.0),
           letterSpacing: 0.5,

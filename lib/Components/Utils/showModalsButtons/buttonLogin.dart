@@ -1,10 +1,9 @@
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
-import 'package:etfi_point/main.dart';
+import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
 import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -95,17 +94,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            alignment: Alignment.center,
-            child: Container(
-              width: 35.0,
-              height: 5.0,
-              decoration: BoxDecoration(
-                color: Colors.grey,
-                borderRadius: BorderRadius.circular(2.5),
-              ),
-            ),
-          ),
+         LineForDropdownButton(),
           //const SizedBox(height: 10.0),
           Padding(
             padding: const EdgeInsets.only(top: 40.0),

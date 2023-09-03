@@ -12,9 +12,8 @@ class CategoriesList extends StatefulWidget {
       this.color,
       this.sizeTextCategoria,
       this.colorTextCategoria,
-      //this.subCategoriasSeleccionadas,
+      required this.onlyShow,
       this.onTap});
-
   final EdgeInsets? padding;
   final List<dynamic> elementos;
   final EdgeInsets marginContainer;
@@ -22,7 +21,7 @@ class CategoriesList extends StatefulWidget {
   final Color? color;
   final double? sizeTextCategoria;
   final Color? colorTextCategoria;
-  //final List<SubCategoriaTb>? subCategoriasSeleccionadas;
+  final bool onlyShow;
   final VoidCallback? onTap;
 
   @override
@@ -30,57 +29,96 @@ class CategoriesList extends StatefulWidget {
 }
 
 class _CategoriesListState extends State<CategoriesList> {
+  List<CategoriaTb> categoriasSelecciondas = [];
+  List<bool> isBlue = [];
+
+  void toggleColor(int index) {
+    setState(() {
+      isBlue[index] = !isBlue[index];
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    isBlue = List.generate(widget.elementos.length, (index) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: widget.padding ?? const EdgeInsets.all(0.0),
-      child: Wrap(
+      child: Align(
+        alignment: Alignment.centerLeft, // Alinea los elementos a la izquierda.
+        child: Wrap(
           children: widget.elementos.map((elemento) {
-        String nombreElemento = '';
-        int idCategoria = 0;
-        if (elemento is CategoriaTb || elemento is SubCategoriaTb) {
-          nombreElemento = elemento.nombre;
-          idCategoria = elemento.idCategoria;
-        }
-        return Container(
-          margin: widget.marginContainer,
-          padding: widget.paddingContainer,
-          decoration: BoxDecoration(
-              color: widget.color ?? Colors.blue,
-              borderRadius: BorderRadius.circular(20)),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                nombreElemento,
-                style: TextStyle(
-                  fontSize: widget.sizeTextCategoria ?? 16,
-                  fontWeight: FontWeight.w600,
-                  color: widget.colorTextCategoria ?? Colors.white,
+            int index = widget.elementos.indexOf(elemento);
+            String nombreElemento = '';
+            int idCategoria = 0;
+            if (elemento is CategoriaTb || elemento is SubCategoriaTb) {
+              nombreElemento = elemento.nombre;
+              idCategoria = elemento.idCategoria;
+            }
+            return GestureDetector(
+              onTap: () {
+                if (widget.onlyShow) {
+                  toggleColor(index);
+                }
+              },
+              child: Container(
+                margin: widget.marginContainer,
+                padding: widget.paddingContainer,
+                decoration: BoxDecoration(
+                  color: widget.onlyShow
+                      ? isBlue[index]
+                          ? Colors.blue
+                          : Colors.white
+                      : widget.color ?? Colors.blue,
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    color: Colors.grey.shade300,
+                    width: 2.0,
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      nombreElemento,
+                      style: TextStyle(
+                          fontSize: widget.sizeTextCategoria ?? 16,
+                          fontWeight: FontWeight.w600,
+                          color: widget.onlyShow
+                              ? isBlue[index]
+                                  ? Colors.white
+                                  : Colors.black
+                              : widget.colorTextCategoria ?? Colors.white),
+                    ),
+                    GestureDetector(
+                        onTap: () {
+                          if (elemento is CategoriaTb) {
+                            print('Estás seguro que deseas eliminar');
+                            setState(() {
+                              widget.elementos.remove(elemento);
+                            });
+                          } else {
+                            print('Borrar automáticamente');
+                          }
+                        },
+                        child: !widget.onlyShow
+                            ? Icon(
+                                Icons.close,
+                                color: Colors.white,
+                                size: 19,
+                              )
+                            : SizedBox.shrink())
+                  ],
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  if (elemento is CategoriaTb &&
-                      elemento.subCategoriasSeleccionadas != null) {
-                    print('Estas seguto que deseas eliminar');
-                    setState(() {
-                      widget.elementos.remove(elemento);
-                    });
-                  } else {
-                    print('Borrar automaticamente');
-                  }
-                },
-                child: const Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 19,
-                ),
-              )
-            ],
-          ),
-        );
-      }).toList()),
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }

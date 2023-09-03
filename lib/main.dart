@@ -57,17 +57,17 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-          appBarTheme: AppBarTheme(
-              color: Colors.grey.shade200 // Cambia el color de fondo del AppBar
-              ),
-          tabBarTheme: const TabBarTheme(
-            labelColor:
-                Colors.black, // Cambia el color del texto de la pestaña activa
-            unselectedLabelColor: Colors
-                .grey, // Cambia el color del texto de las pestañas inactivas
-          ),
-        ),
+        // theme: ThemeData(
+        //   appBarTheme: AppBarTheme(
+        //       color: Colors.grey.shade200 // Cambia el color de fondo del AppBar
+        //       ),
+        //   tabBarTheme: const TabBarTheme(
+        //     labelColor:
+        //         Colors.black, // Cambia el color del texto de la pestaña activa
+        //     unselectedLabelColor: Colors
+        //         .grey, // Cambia el color del texto de las pestañas inactivas
+        //   ),
+        // ),
         title: "Mi app",
         home: Menu(
           index: 0,

@@ -19,6 +19,7 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
+import 'package:etfi_point/Components/Utils/buttonSeleccionarCategorias.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
@@ -27,6 +28,7 @@ import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
+import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -71,7 +73,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   List<SubCategoriaTb> subCategoriasSeleccionadas = [];
 
   String? urlPrincipalImage;
-  Asset? imagenToUpload;
 
   int? enOferta = 0;
   bool isChecked = false;
@@ -89,23 +90,26 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void initState() {
     super.initState();
 
-    print('dataUpdat_: ${widget.data}');
+    ProductoTb? producto = widget.data;
+    if (producto?.idProducto != null) {
+      print('dataUpdat_: ${widget.data}');
 
-    _nombreController.text = widget.data?.nombreProducto ?? '';
-    _precioController.text = (widget.data?.precio ?? 0).toStringAsFixed(0);
-    _descripcionController.text = widget.data?.descripcion ?? '';
-    _cantidadDisponibleController.text =
-        widget.data?.cantidadDisponible.toString() ?? '';
-    urlPrincipalImage = widget.data?.urlImage;
-    print('Mi url imagen: $urlPrincipalImage');
-    //print('IsPrincipalImage ${widget.data.}');
+      _nombreController.text = producto!.nombreProducto;
+      _precioController.text = (producto.precio).toStringAsFixed(0);
+      _descripcionController.text = producto.descripcion ?? '';
+      _cantidadDisponibleController.text =
+          producto.cantidadDisponible.toString();
 
-    enOferta = widget.data?.oferta;
-    estaEnOferta();
+      urlPrincipalImage = producto.urlImage;
 
-    obtenerCategoriasSeleccionadas();
+      enOferta = producto.oferta;
+
+      getListSecondaryProductImages();
+      estaEnOferta();
+      obtenerCategoriasSeleccionadas();
+    }
+
     obtenerCategorias();
-    getListSecondaryProductImages();
 
     //obtenerSubCategoriasSeleccionadas();
 
@@ -227,35 +231,35 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
 
       if (principalImageBytes != null || principalImage != null) {
-        ProductCreacionImagesStorageTb image = ProductCreacionImagesStorageTb(
-            idUsuario: idUsuario,
-            idProducto: idProducto,
-            newImageBytes:
-                principalImageBytes ?? await assetToUint8List(principalImage!),
-            imageName: principalImage!.name!,
-            fileName: 'productos',
-            width: principalImage!.originalWidth!.toDouble(),
-            height: principalImage!.originalHeight!.toDouble(),
-            isPrincipalImage: 1);
+        ImageStorageTb image = ImageStorageTb(
+          idUsuario: idUsuario,
+          idFile: idProducto,
+          newImageBytes:
+              principalImageBytes ?? await assetToUint8List(principalImage!),
+          imageName: principalImage!.name!,
+          fileName: 'productos',
+          width: principalImage!.originalWidth!.toDouble(),
+          height: principalImage!.originalHeight!.toDouble(),
+          isPrincipalImage: 1,
+        );
 
         await ProductImagesStorage.cargarImage(image);
       }
 
       if (myImageList.items.isNotEmpty) {
-        for (var imagen in myImageList!.items) {
+        for (var imagen in myImageList.items) {
           if (imagen is ProductImageToUpload) {
             Uint8List imageBytes = await assetToUint8List(imagen.newImage);
 
-            ProductCreacionImagesStorageTb image =
-                ProductCreacionImagesStorageTb(
-                    idUsuario: idUsuario,
-                    idProducto: idProducto,
-                    newImageBytes: imageBytes,
-                    imageName: imagen.nombreImage,
-                    fileName: 'productos',
-                    width: imagen.width,
-                    height: imagen.height,
-                    isPrincipalImage: 0);
+            ImageStorageTb image = ImageStorageTb(
+                idUsuario: idUsuario,
+                idFile: idProducto,
+                newImageBytes: imageBytes,
+                imageName: imagen.nombreImage,
+                fileName: 'productos',
+                width: imagen.width,
+                height: imagen.height,
+                isPrincipalImage: 0);
 
             await ProductImagesStorage.cargarImage(image);
           }
@@ -272,15 +276,25 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   void actualizarProducto(ProductoTb producto, int idUsuario) async {
     int idProducto = producto.idProducto;
-    if (imagenToUpload != null) {
-      ProductImageStorageTb image = ProductImageStorageTb(
+
+    if (urlPrincipalImage != null) {
+      File urlImageInFile = await convertToTempFile();
+      Uint8List principalImageBytesAux = await urlImageInFile.readAsBytes();
+      setState(() {
+        principalImageBytes = principalImageBytesAux;
+      });
+    }
+
+    if (principalImageBytes != null || principalImage != null) {
+      ImageStorageTb image = ImageStorageTb(
           idUsuario: idUsuario,
-          idProducto: idProducto,
-          newImage: imagenToUpload!,
+          idFile: idProducto,
+          newImageBytes:
+              principalImageBytes ?? await assetToUint8List(principalImage!),
           fileName: 'productos',
-          nombreImagen: producto.nombreImage,
-          width: imagenToUpload!.originalWidth!.toDouble(),
-          height: imagenToUpload!.originalHeight!.toDouble(),
+          imageName: producto.nombreImage,
+          width: 195.0,
+          height: 170.0,
           isPrincipalImage: 1);
 
       await ProductImagesStorage.updateImage(image);
@@ -340,44 +354,28 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
       setState(() {
         myImageList.items.addAll(selectedImagesAux);
-        principalImage = imagesAsset[0];
+        if (principalImage == null && widget.data?.idProducto == null) {
+          principalImage ??= imagesAsset[0];
+        }
       });
     }
 
     print('Imagenes seleccionadas3: $imagesAsset');
   }
 
-  void metodoDePrueba() async {
-    ProductImagesTb prueba = ProductImagesTb(
-        idProductImage: 1,
-        idProducto: 1,
-        nombreImage: 'nombre',
-        urlImage:
-            'https://firebasestorage.googleapis.com/v0/b/marketpointappi.appspot.com/o/imagenes%2Fproductos%2F1%2F39%2F20230827_022143_c1bfi1s_Bolso1.jpg?alt=media&token=7e8716b0-b452-4eef-865a-964cdc5fc5a4',
-        width: 150,
-        height: 160,
-        isPrincipalImage: 0);
+  void agregarDesdeGaleria() async {
+    Asset? imagesAsset = await getImageAsset();
 
-    //Asset? imagesAsset = await getImageAsset();
-
-    //ProductImageToUpload prueba2 = ProductImageToUpload(
-    // nombreImage: 'nombreImage',
-    // newImage: imagesAsset!,
-    // width: 300,
-    // height: 340);
-
-    setState(() {
-      if (myImageList == null) {
-        //myImageList = ImageList(prueba);
-      } else {
-        myImageList.items.add(prueba);
-      }
-    });
+    if (imagesAsset != null) {
+      setState(() {
+        principalImage = imagesAsset;
+        urlPrincipalImage = null;
+      });
+    }
   }
 
   //  Convertir Asset o URLimage (image.network) a Archivo temporal
-
-  Future<void> sendImageToEdit() async {
+  Future<File> convertToTempFile() async {
     final tempDir = await getTemporaryDirectory();
     final tempFile = File('${tempDir.path}/temp_image.jpg');
 
@@ -394,6 +392,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
     print('Temporal $tempFile');
     editImage(tempFile);
+
+    return tempFile;
   }
 
   Future<void> editImage(File tempFile) async {
@@ -483,7 +483,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                 enOferta = isChecked ? 1 : 0;
                               });
                             },
-                            color: isChecked ? Colors.blue : Colors.white,
+                            backgroundColor:
+                                isChecked ? Colors.blue : Colors.white,
                             colorNameSaveButton:
                                 isChecked ? Colors.white : Colors.black,
                             borderRadius: BorderRadius.circular(17.0),
@@ -492,10 +493,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           ),
                         ),
                       ),
-                      myImageList != null
+                      myImageList.items.isNotEmpty
                           ? MyImageList(
-                              imageList: myImageList!,
-                              padding: EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+                              imageList: myImageList,
+                              padding: const EdgeInsets.fromLTRB(
+                                  0.0, 30.0, 0.0, 0.0),
                               maxHeight: 260,
                               principalImage: principalImage,
                               urlPrincipalImage: urlPrincipalImage,
@@ -516,19 +518,24 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             )
                           : SizedBox.shrink(),
 
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: GlobalTextButton(
-                          onPressed: agregarImagenes,
-                          padding: myImageList != null
-                              ? const EdgeInsets.only(left: 5.0, top: 10.0)
-                              : const EdgeInsets.fromLTRB(0.0, 40.0, 20.0, 0.0),
-                          fontWeightTextButton: FontWeight.w700,
-                          letterSpacing: 0.7,
-                          fontSizeTextButton: 17.5,
-                          textButton: 'Agregar imagen(es)',
-                        ),
-                      ),
+                      widget.data?.idProducto == null
+                          ? Align(
+                              alignment: Alignment.centerLeft,
+                              child: GlobalTextButton(
+                                onPressed: agregarImagenes,
+                                padding: myImageList.items.isNotEmpty
+                                    ? const EdgeInsets.only(
+                                        left: 5.0, top: 10.0)
+                                    : const EdgeInsets.fromLTRB(
+                                        0.0, 40.0, 20.0, 0.0),
+                                fontWeightTextButton: FontWeight.w700,
+                                letterSpacing: 0.7,
+                                fontSizeTextButton: 17.5,
+                                textButton: 'Agregar imagen(es)',
+                              ),
+                            )
+                          : const Padding(
+                              padding: EdgeInsets.only(bottom: 20.0)),
 
                       if (principalImage != null || urlPrincipalImage != null)
                         Column(
@@ -598,12 +605,20 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                           }
                                         },
                                       ),
-                            ElevatedButton(
-                                onPressed: () {
-                                  //sendImageToEdit();
-                                  metodoDePrueba();
-                                },
-                                child: Text('Editar'))
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                    onPressed: () {
+                                      convertToTempFile();
+                                    },
+                                    child: Text('Editar')),
+                                ElevatedButton(
+                                    onPressed: () {
+                                      agregarDesdeGaleria();
+                                    },
+                                    child: Text('Agregar dede galeria')),
+                              ],
+                            )
                           ],
                         ),
 
@@ -637,6 +652,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         keyboardType: TextInputType.multiline,
                         minLines: 3,
                       ),
+
                       GeneralInputs(
                         controller: _cantidadDisponibleController,
                         horizontalPadding: 16.0,
@@ -649,57 +665,108 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         ],
                       ),
 
-                      const GlobalDivider(),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 20.0),
+                        child: GlobalDivider(),
+                      ),
 
-                      DropDownButtonFormField(
-                        padding: const EdgeInsets.symmetric(vertical: 15.0),
-                        hintText: 'Selecciona las categorias',
-                        onChanged: (dynamic newValue) {
-                          setState(() {
-                            if (!categoriasSeleccionadas.contains(newValue)) {
-                              categoriasSeleccionadas.add(newValue!);
-                            }
-                          });
-                          //obtenerSubCategorias(newValue.idCategoria);
-                        },
-                        elementosDisponibles: categoriasDisponibles,
+                      const Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(0.0, 12.0, 25.0, 0.0),
+                            child: Text(
+                              'Categorias',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
 
                       //Categorias seleccionadas
                       Padding(
                           padding:
-                              const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                              const EdgeInsets.fromLTRB(35.0, 20.0, 20.0, 25.0),
                           child: CategoriesList(
+                            onlyShow: false,
                             elementos: categoriasSeleccionadas,
-                            marginContainer: EdgeInsets.all(5.0),
-                            paddingContainer: EdgeInsets.all(12.0),
-                            // subCategoriasSeleccionadas:
-                            //     categoriasSeleccionadas,
+                            marginContainer: const EdgeInsets.all(5.0),
+                            paddingContainer: const EdgeInsets.all(12.0),
                           )),
 
-                      const GlobalDivider(),
+                      ElevatedGlobalButton(
+                        nameSavebutton: 'Seleccionar categorias',
+                        onPress: () {
+                          showModalBottomSheet(
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (BuildContext context) =>
+                                  ButtonSeleccionarCategorias(
+                                    categoriasSeleccionadas:
+                                        categoriasSeleccionadas,
+                                    categoriasDisponibles:
+                                        categoriasDisponibles,
+                                  ),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(10.0),
+                                  topRight: Radius.circular(10.0),
+                                ),
+                              ));
+                        },
+                        heightSizeBox: 52,
+                        widthSizeBox: double.infinity,
+                        borderRadius: BorderRadius.circular(30.0),
+                        backgroundColor: Colors.blue.withOpacity(0.06),
+                        paddingRight: 20.0,
+                        paddingLeft: 20.0,
+                        borderSideColor: Colors.blue,
+                        colorNameSaveButton: Colors.blue,
+                        widthBorderSide: 3.0,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        //color: Colors.blue.withOpacity(0.2),
+                      ),
 
-                      DropDownButtonFormField(
-                          padding: const EdgeInsets.symmetric(vertical: 15.0),
-                          hintText: 'Selecciona las subCategorias',
-                          onChanged: (dynamic newValue) {
-                            setState(() {
-                              if (!subCategoriasSeleccionadas
-                                  .contains(newValue)) {
-                                subCategoriasSeleccionadas.add(newValue!);
-                              }
-                            });
-                          },
-                          elementosDisponibles: []),
+                      //border, background, border,
+                      // DropDownButtonFormField(
+                      //   padding: const EdgeInsets.symmetric(vertical: 15.0),
+                      //   hintText: 'Selecciona las categorias',
+                      //   onChanged: (dynamic newValue) {
+                      //     setState(() {
+                      //       if (!categoriasSeleccionadas.contains(newValue)) {
+                      //         categoriasSeleccionadas.add(newValue!);
+                      //       }
+                      //     });
+                      //     //obtenerSubCategorias(newValue.idCategoria);
+                      //   },
+                      //   elementosDisponibles: categoriasDisponibles,
+                      // ),
+
+                      // DropDownButtonFormField(
+                      //     padding: const EdgeInsets.symmetric(vertical: 15.0),
+                      //     hintText: 'Selecciona las subCategorias',
+                      //     onChanged: (dynamic newValue) {
+                      //       setState(() {
+                      //         if (!subCategoriasSeleccionadas
+                      //             .contains(newValue)) {
+                      //           subCategoriasSeleccionadas.add(newValue!);
+                      //         }
+                      //       });
+                      //     },
+                      //     elementosDisponibles: []),
 
                       //Sub-Categorias seleccionadas
-                      Padding(
-                          padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                          child: CategoriesList(
-                            elementos: subCategoriasSeleccionadas,
-                            marginContainer: EdgeInsets.all(5.0),
-                            paddingContainer: EdgeInsets.all(12.0),
-                          )),
+                      // Padding(
+                      //     padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                      //     child: CategoriesList(
+                      //       elementos: subCategoriasSeleccionadas,
+                      //       marginContainer: EdgeInsets.all(5.0),
+                      //       paddingContainer: EdgeInsets.all(12.0),
+                      //     )),
 
                       //if (imagenToUpload != null || urlImage != null)
                       // Padding(
@@ -778,7 +845,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           cantidadDisponible: cantidadDisponible,
                           oferta: enOferta);
 
-                      myImageList != null && idUsuario != null
+                      myImageList.items.isNotEmpty && idUsuario != null
                           ? crearProducto(productoCreacion, idUsuario)
                           : print('imagenToUpload es null o idUsuario es null');
                     } else {
@@ -791,11 +858,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         descripcion: descripcion,
                         cantidadDisponible: cantidadDisponible,
                         oferta: enOferta,
-                        urlImage: urlPrincipalImage!,
+                        urlImage: widget.data!.urlImage,
                         nombreImage: widget.data!.nombreImage,
                       );
 
-                      urlPrincipalImage != null && idUsuario != null
+                      idUsuario != null
                           ? actualizarProducto(_producto!, idUsuario)
                           : print('urlImage es null');
                     }

@@ -1,23 +1,25 @@
 import 'package:flutter/material.dart';
 
 class ElevatedGlobalButton extends StatelessWidget {
-  const ElevatedGlobalButton(
-      {super.key,
-      required this.nameSavebutton,
-      this.fontSize,
-      this.fontWeight,
-      this.letterSpacing,
-      this.widthSizeBox,
-      this.heightSizeBox,
-      required this.onPress,
-      this.borderRadius,
-      this.paddingLeft,
-      this.paddingTop,
-      this.paddingRight,
-      this.paddingBottom,
-      this.color,
-      this.colorNameSaveButton, 
-      this.borderSideColor});
+  const ElevatedGlobalButton({
+    super.key,
+    required this.nameSavebutton,
+    this.fontSize,
+    this.fontWeight,
+    this.letterSpacing,
+    this.widthSizeBox,
+    this.heightSizeBox,
+    required this.onPress,
+    this.borderRadius,
+    this.paddingLeft,
+    this.paddingTop,
+    this.paddingRight,
+    this.paddingBottom,
+    this.backgroundColor,
+    this.colorNameSaveButton,
+    this.borderSideColor,
+    this.widthBorderSide,
+  });
 
   final String nameSavebutton;
   final double? fontSize;
@@ -33,9 +35,10 @@ class ElevatedGlobalButton extends StatelessWidget {
   final double? paddingRight;
   final double? paddingBottom;
 
-  final Color? color;
+  final Color? backgroundColor;
   final Color? colorNameSaveButton;
   final Color? borderSideColor;
+  final double? widthBorderSide;
 
   @override
   Widget build(BuildContext context) {
@@ -47,21 +50,15 @@ class ElevatedGlobalButton extends StatelessWidget {
         height: heightSizeBox,
         child: ElevatedButton(
           onPressed: onPress,
-          style: ButtonStyle(
-            backgroundColor:
-                MaterialStateProperty.all<Color>(color ?? Colors.blue),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: borderRadius ?? BorderRadius.circular(0.0),
-              ),
-            ),
-            side: MaterialStateProperty.all<BorderSide>(
-              BorderSide(
-                color: borderSideColor ?? Colors.white, // Color del borde
-                width: 1.0, // Grosor del borde en píxeles
-              ),
-            ),
-          ),
+          style: ElevatedButton.styleFrom(
+              elevation: 0,
+              backgroundColor: backgroundColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: borderRadius ?? BorderRadius.zero),
+              side: BorderSide(
+                width: widthBorderSide ?? 0.0,
+                color: borderSideColor ?? Colors.transparent,
+              )),
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Text(nameSavebutton,

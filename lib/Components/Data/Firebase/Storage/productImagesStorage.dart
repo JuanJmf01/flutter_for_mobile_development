@@ -19,18 +19,20 @@ class ProductImagesStorage {
   /// Returns:
   ///   a Future of type ProductImagesTb.
   static Future<ProductImagesTb> cargarImage(
-      ProductCreacionImagesStorageTb image) async {
+      ImageStorageTb image) async {
     final Uint8List bytes = image.newImageBytes;
+
+    //String ruta = 'imagenes/"idUsuario"/"fileName/idProducto, servicio, etc"';
 
     String finalNameImage = assingName(image.imageName);
 
     String fileName = image.fileName;
     int idUsuario = image.idUsuario;
-    int idProducto = image.idProducto;
+    int idFile = image.idFile;
 
     final Reference ref = storage
         .ref()
-        .child('imagenes/$fileName/$idUsuario/$idProducto')
+        .child('imagenes/$idUsuario/$fileName/$idFile')
         .child(finalNameImage);
 
     print('REF_: ${ref.fullPath}');
@@ -46,7 +48,7 @@ class ProductImagesStorage {
 
       if (snapshot.state == TaskState.success) {
         final ProductImageCreacionTb productImage = ProductImageCreacionTb(
-            idProducto: idProducto,
+            idProducto: idFile,
             nombreImage: finalNameImage,
             urlImage: url,
             width: image.width,
@@ -76,27 +78,27 @@ class ProductImagesStorage {
   ///
   /// Returns:
   ///   a Future<String>.
-  static Future<String> updateImage(ProductImageStorageTb image) async {
-    final ByteData byteData = await image.newImage.getByteData();
-    final Uint8List imageData = byteData.buffer.asUint8List();
-
+  static Future<String> updateImage(ImageStorageTb image) async {
+    final Uint8List bytes = image.newImageBytes;
+    //String ruta = 'imagenes/"idUsuario"/"fileName/idProducto, servicio, etc"';
+    print('nomnbrimagenPrinciapl ${image.imageName}');
     try {
       String fileName = image.fileName;
       int idUsuario = image.idUsuario;
-      int idProducto = image.idProducto;
-      String nombreImage = image.nombreImagen;
+      int idFile = image.idFile;
+      String nombreImage = image.imageName;
 
       final Reference ref = FirebaseStorage.instance
           .ref()
-          .child('imagenes/$fileName/$idUsuario/$idProducto/$nombreImage');
-      final UploadTask uploadTask = ref.putData(imageData);
+          .child('imagenes/$idUsuario/$fileName/$idFile/$nombreImage');
+      final UploadTask uploadTask = ref.putData(bytes);
 
       final TaskSnapshot snapshot = await uploadTask;
       if (snapshot.state == TaskState.success) {
         final String url = await snapshot.ref.getDownloadURL();
 
         ProductImageCreacionTb productImage = ProductImageCreacionTb(
-            idProducto: idProducto,
+            idProducto: idFile,
             nombreImage: nombreImage,
             urlImage: url,
             width: image.width,
@@ -115,7 +117,7 @@ class ProductImagesStorage {
     }
   }
 
-  static Future<bool> deleteImage(ProductImageStorageDeleteTb imageInfo) async {
+  static Future<bool> deleteImage(ImageStorageDeleteTb imageInfo) async {
     String fileName = imageInfo.fileName;
     int idUsuario = imageInfo.idUsuario;
     int idProducto = imageInfo.idProducto;
@@ -125,7 +127,7 @@ class ProductImagesStorage {
     try {
       final Reference ref = FirebaseStorage.instance
           .ref()
-          .child('imagenes/$fileName/$idUsuario/$idProducto/$imageName');
+          .child('imagenes/$idUsuario/$fileName/$idProducto/$imageName');
 
       await ref.delete();
       // Actualizar base de datos
