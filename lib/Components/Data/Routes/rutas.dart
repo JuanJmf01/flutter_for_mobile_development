@@ -3,6 +3,9 @@ class MisRutas {
 
   // -- Demas rutas -- //
   static String rutaCategorias = '$rutaPrincipal/categorias';
+  static String rutaCategoriasByProducto = '$rutaPrincipal/categoriasByProducto';
+
+
   static String rutaProductosCategorias = '$rutaPrincipal/productosCategorias';
   static String rutaUsuarios = '$rutaPrincipal/usuarios';
 

@@ -4,31 +4,29 @@ class CategoriaTb {
   final int? idCategoria;
   final String nombre;
   final String? imagePath;
+  final List<SubCategoriaTb>? subCategorias;
 
-  CategoriaTb(
-      {this.idCategoria,
-      required this.nombre,
-      this.imagePath});
-
- CategoriaTb copyWith({
-    int? idCategoria,
-    String? nombre,
-    List<SubCategoriaTb>? subCategoriasSeleccionadas,
-    String? imagePath,
-  }) {
-    return CategoriaTb(
-      idCategoria: idCategoria ?? this.idCategoria,
-      nombre: nombre ?? this.nombre,
-
-      imagePath: imagePath ?? this.imagePath,
-    );
-  }
+  CategoriaTb({
+    this.idCategoria,
+    required this.nombre,
+    this.imagePath,
+    this.subCategorias,
+  });
 
   factory CategoriaTb.fromJson(Map<String, dynamic> json) {
+    List<SubCategoriaTb> subCategoriasList = [];
+    if (json['subCategorias'] != null) {
+      var subCategoriasJson = json['subCategorias'] as List;
+      subCategoriasList = subCategoriasJson
+          .map((subCategoria) => SubCategoriaTb.fromJson(subCategoria))
+          .toList();
+    }
+
     return CategoriaTb(
       idCategoria: json['idCategoria'],
       nombre: json['nombre'],
       imagePath: json['imagePath'],
+      subCategorias: subCategoriasList,
     );
   }
 
@@ -38,6 +36,20 @@ class CategoriaTb {
       'nombre': nombre,
       'imagePath': imagePath,
     };
+  }
+
+  CategoriaTb copyWith({
+    int? idCategoria,
+    String? nombre,
+    String? imagePath,
+    List<SubCategoriaTb>? subCategorias,
+  }) {
+    return CategoriaTb(
+      idCategoria: idCategoria ?? this.idCategoria,
+      nombre: nombre ?? this.nombre,
+      imagePath: imagePath ?? this.imagePath,
+      subCategorias: subCategorias ?? this.subCategorias,
+    );
   }
 
   @override
@@ -53,6 +65,19 @@ class CategoriaTb {
   int get hashCode => idCategoria.hashCode ^ nombre.hashCode;
   @override
   String toString() {
-    return 'CategoriaTb{nombre: $nombre}';
+    return 'CategoriaTb{idCategoria: $idCategoria, nombre: $nombre, subCategorias: $subCategorias}';
   }
 }
+
+
+// class ListaCategorias{
+//   final CategoriaTb categorias;
+//   final List<SubCategoriaTb> subCategorias;
+
+
+//   ListaCategorias({
+//     required this.categorias,
+//     required this.subCategorias
+//   });
+
+// }

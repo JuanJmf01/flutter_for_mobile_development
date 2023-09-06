@@ -3,19 +3,23 @@ import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:flutter/material.dart';
 
 class CategoriesList extends StatefulWidget {
-  const CategoriesList(
-      {super.key,
-      this.padding,
-      required this.elementos,
-      required this.marginContainer,
-      required this.paddingContainer,
-      this.color,
-      this.sizeTextCategoria,
-      this.colorTextCategoria,
-      required this.onlyShow,
-      this.onTap});
+  const CategoriesList({
+    super.key,
+    this.padding,
+    required this.elementos,
+    this.categoriasSeleccionadas,
+    required this.marginContainer,
+    required this.paddingContainer,
+    this.color,
+    this.sizeTextCategoria,
+    this.colorTextCategoria,
+    required this.onlyShow,
+    this.onTap,
+  });
+
   final EdgeInsets? padding;
   final List<dynamic> elementos;
+  final List<dynamic>? categoriasSeleccionadas;
   final EdgeInsets marginContainer;
   final EdgeInsets paddingContainer;
   final Color? color;
@@ -29,7 +33,6 @@ class CategoriesList extends StatefulWidget {
 }
 
 class _CategoriesListState extends State<CategoriesList> {
-  List<CategoriaTb> categoriasSelecciondas = [];
   List<bool> isBlue = [];
 
   void toggleColor(int index) {
@@ -38,10 +41,24 @@ class _CategoriesListState extends State<CategoriesList> {
     });
   }
 
+  void generarSeleccionados() {
+    bool isSelected = false;
+    isBlue = List.generate(widget.elementos.length, (index) => isSelected);
+
+    if (widget.categoriasSeleccionadas != null) {
+      final categoria = widget.elementos;
+      for (int i = 0; i < categoria.length; i++) {
+        isSelected = widget.categoriasSeleccionadas!.contains(categoria[i]);
+        print(isSelected);
+        isBlue[i] = isSelected;
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    isBlue = List.generate(widget.elementos.length, (index) => false);
+    generarSeleccionados();
   }
 
   @override

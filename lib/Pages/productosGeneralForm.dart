@@ -147,26 +147,26 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     int? idProducto = widget.data?.idProducto;
     if (idProducto != null) {
       List<CategoriaTb> categoriasSeleccionadasAux =
-          await CategoriaDb.getCategoriasSeleccionadas(idProducto);
+          await CategoriaDb.getCategoriasByProducto(idProducto);
 
-      List<SubCategoriaTb> subCategoriasSeleccionadasAux =
-          await SubCategoriasDb.getSubCategoriasSeleccionadas(idProducto);
+      // List<SubCategoriaTb> subCategoriasSeleccionadasAux =
+      //     await SubCategoriasDb.getSubCategoriasSeleccionadas(idProducto);
 
-      List<SubCategoriaTb> subCategorias = [];
+      // List<SubCategoriaTb> subCategorias = [];
 
-      for (int i = 0; i < categoriasSeleccionadasAux.length; i++) {
-        for (var subCategoriaSeleccionada in subCategoriasSeleccionadasAux) {
-          if (subCategoriaSeleccionada.idCategoria ==
-              categoriasSeleccionadasAux[i].idCategoria) {
-            subCategorias.add(subCategoriaSeleccionada);
-          }
-        }
-        categoriasSeleccionadasAux[i] = categoriasSeleccionadasAux[i]
-            .copyWith(subCategoriasSeleccionadas: subCategorias);
-      }
+      // for (int i = 0; i < categoriasSeleccionadasAux.length; i++) {
+      //   for (var subCategoriaSeleccionada in subCategoriasSeleccionadasAux) {
+      //     if (subCategoriaSeleccionada.idCategoria ==
+      //         categoriasSeleccionadasAux[i].idCategoria) {
+      //       subCategorias.add(subCategoriaSeleccionada);
+      //     }
+      //   }
+      //   categoriasSeleccionadasAux[i] = categoriasSeleccionadasAux[i]
+      //       .copyWith(subCategoriasSeleccionadas: subCategorias);
+      // }
       setState(() {
         categoriasSeleccionadas.addAll(categoriasSeleccionadasAux);
-        subCategoriasSeleccionadas.addAll(subCategorias);
+        //subCategoriasSeleccionadas.addAll(subCategorias);
       });
 
       print('IMPORTANTE ANTES_: $categoriasSeleccionadas');

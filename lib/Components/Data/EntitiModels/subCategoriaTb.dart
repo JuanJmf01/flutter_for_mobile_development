@@ -9,13 +9,6 @@ class SubCategoriaTb {
     required this.nombre,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'idSubCategoria': idSubCategoria,
-      'idCategoria': idCategoria,
-      'nombre': nombre,
-    };
-  }
 
   factory SubCategoriaTb.fromJson(Map<String, dynamic> json) {
     return SubCategoriaTb(
@@ -23,6 +16,15 @@ class SubCategoriaTb {
       idCategoria: json['idCategoria'],
       nombre: json['nombre'],
     );
+  }
+
+  
+  Map<String, dynamic> toMap() {
+    return {
+      'idSubCategoria': idSubCategoria,
+      'idCategoria': idCategoria,
+      'nombre': nombre,
+    };
   }
   
   @override
