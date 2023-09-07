@@ -11,7 +11,6 @@ import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
@@ -23,12 +22,10 @@ import 'package:etfi_point/Components/Utils/buttonSeleccionarCategorias.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
-import 'package:etfi_point/Components/Utils/dropDownButtonFormField.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
-import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -69,8 +66,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   List<CategoriaTb> categoriasDisponibles = [];
   List<CategoriaTb> categoriasSeleccionadas = [];
 
-  List<SubCategoriaTb> subCategoriasDisponibles = [];
-  List<SubCategoriaTb> subCategoriasSeleccionadas = [];
 
   String? urlPrincipalImage;
 
@@ -149,63 +144,23 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       List<CategoriaTb> categoriasSeleccionadasAux =
           await CategoriaDb.getCategoriasByProducto(idProducto);
 
-      // List<SubCategoriaTb> subCategoriasSeleccionadasAux =
-      //     await SubCategoriasDb.getSubCategoriasSeleccionadas(idProducto);
-
-      // List<SubCategoriaTb> subCategorias = [];
-
-      // for (int i = 0; i < categoriasSeleccionadasAux.length; i++) {
-      //   for (var subCategoriaSeleccionada in subCategoriasSeleccionadasAux) {
-      //     if (subCategoriaSeleccionada.idCategoria ==
-      //         categoriasSeleccionadasAux[i].idCategoria) {
-      //       subCategorias.add(subCategoriaSeleccionada);
-      //     }
-      //   }
-      //   categoriasSeleccionadasAux[i] = categoriasSeleccionadasAux[i]
-      //       .copyWith(subCategoriasSeleccionadas: subCategorias);
-      // }
       setState(() {
         categoriasSeleccionadas.addAll(categoriasSeleccionadasAux);
-        //subCategoriasSeleccionadas.addAll(subCategorias);
       });
 
       print('IMPORTANTE ANTES_: $categoriasSeleccionadas');
     }
   }
 
-  // void obtenerSubCategoriasSeleccionadas() {
-  //   List<SubCategoriaTb> subCategoriasSeleccionadasAux = [];
-  //   print('categoriasSeleccionadasInReturnCate_: $categoriasSeleccionadas');
-
-  //   for (var categoriaSeleccionada in categoriasSeleccionadas) {
-  //     if (categoriaSeleccionada.subCategoriasSeleccionadas != null) {
-  //       subCategoriasSeleccionadasAux
-  //           .addAll(categoriaSeleccionada.subCategoriasSeleccionadas!);
-  //     }
-  //   }
-
-  //   setState(() {
-  //     subCategoriasSeleccionadas.addAll(subCategoriasSeleccionadasAux);
-  //   });
-  // }
 
   void obtenerCategorias() async {
     List<CategoriaTb> categoriasDisponiblesAux =
-        await CategoriaDb.getCategorias();
+        await CategoriaDb.getAllCategorias();
 
     setState(() {
       categoriasDisponibles.addAll(categoriasDisponiblesAux);
     });
   }
-
-  // void obtenerSubCategorias(int idCategoria) async {
-  //   List<SubCategoriaTb> subCatgoriasAux =
-  //       await subCategoriasDb.getSubCategorias(idCategoria);
-
-  //   setState(() {
-  //     subCategoriasDisponibles.addAll(subCatgoriasAux);
-  //   });
-  // }
 
   Future<int> crearNegocioSiNoExiste(idUsuario) async {
     int idNegocio = 0;
