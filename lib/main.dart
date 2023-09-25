@@ -1,6 +1,7 @@
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonAdd.dart';
 import 'package:etfi_point/Pages/allProducts.dart';
 import 'package:etfi_point/Pages/filtros.dart';
@@ -28,7 +29,9 @@ void main() async {
           create: (_) => UsuarioProvider(),
         ),
         ChangeNotifierProvider<ShoppingCartProvider>(
-            create: (_) => ShoppingCartProvider())
+            create: (_) => ShoppingCartProvider()),
+        ChangeNotifierProvider<SubCategoriaSeleccionadaProvider>(
+            create: (_) => SubCategoriaSeleccionadaProvider())
       ],
       child: const MyApp(),
     ),
@@ -167,7 +170,10 @@ class _MenuState extends State<Menu> {
                 label: '',
               ),
             BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.add, size: 30,),
+              icon: Icon(
+                CupertinoIcons.add,
+                size: 30,
+              ),
               label: '',
             ),
             BottomNavigationBarItem(
@@ -201,4 +207,3 @@ class CleanClass extends StatelessWidget {
     return const Placeholder();
   }
 }
-

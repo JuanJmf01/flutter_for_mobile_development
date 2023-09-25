@@ -41,6 +41,8 @@ class CategoriaDb {
   ///
   /// Returns:
   ///   a Future object that resolves to a List of CategoriaTb objects.
+  
+  // NO ESTA EN USO
   static Future<List<CategoriaTb>> getCategoriasSeleccionadas(
       int idProducto) async {
     try {
@@ -89,6 +91,7 @@ class CategoriaDb {
     }
   }
 
+  
   static Future<List<CategoriaTb>> getCategoriasByProducto(
       int idProducto) async {
     String url = '${MisRutas.rutaCategorias2}/$idProducto';
@@ -104,7 +107,7 @@ class CategoriaDb {
         List<CategoriaTb> categorias = (response.data as List<dynamic>)
             .map((data) => CategoriaTb.fromJson(data))
             .toList();
-        print('MisCategorias y subCateogirias: $categorias');
+        //print('MisCategorias y subCateogirias: $categorias');
         return categorias;
       } else {
         throw Exception('Failed to fetch category');
@@ -128,7 +131,7 @@ class CategoriaDb {
         List<CategoriaTb> categorias = (response.data as List<dynamic>)
             .map((data) => CategoriaTb.fromJson(data))
             .toList();
-        print('MisCategorias y subCateogirias: $categorias');
+         print('MisCategorias y subCateogirias: $categorias');
         return categorias;
       } else {
         throw Exception('Failed to fetch category');

@@ -1,6 +1,8 @@
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
+import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class CategoriesList extends StatefulWidget {
   const CategoriesList({
@@ -34,6 +36,7 @@ class CategoriesList extends StatefulWidget {
 
 class _CategoriesListState extends State<CategoriesList> {
   List<bool> isBlue = [];
+  List<dynamic> categoriasSeleccionadas = [];
 
   void toggleColor(int index) {
     setState(() {
@@ -41,28 +44,33 @@ class _CategoriesListState extends State<CategoriesList> {
     });
   }
 
-  void generarSeleccionados() {
-    bool isSelected = false;
-    isBlue = List.generate(widget.elementos.length, (index) => isSelected);
-
-    if (widget.categoriasSeleccionadas != null) {
-      final categoria = widget.elementos;
-      for (int i = 0; i < categoria.length; i++) {
-        isSelected = widget.categoriasSeleccionadas!.contains(categoria[i]);
-        print(isSelected);
-        isBlue[i] = isSelected;
-      }
-    }
+  void generarSeleccionados() async{
+    await context.read<SubCategoriaSeleccionadaProvider>().generarSeleccionados(widget.elementos);
   }
+
+  //   void generarSeleccionados() {
+  //   isBlue = List.generate(widget.elementos.length, (index) {
+  //     final elemento = widget.elementos[index];
+  //     return widget.categoriasSeleccionadas?.any((categoria) =>
+  //             categoria.idCategoria == elemento.idCategoria &&
+  //             categoria.nombre == elemento.nombre) ?? false;
+  //   });
+  //   print("SELEECTED P: $isBlue");
+  // }
 
   @override
   void initState() {
     super.initState();
+    categoriasSeleccionadas = widget.categoriasSeleccionadas ?? [];
     generarSeleccionados();
+
+    print("Elementos: ${widget.elementos}");
+    print("ElementosSeleccionados: ${widget.categoriasSeleccionadas}");
   }
 
   @override
   Widget build(BuildContext context) {
+    isBlue = Provider.of<SubCategoriaSeleccionadaProvider>(context).isBlue;
     return Padding(
       padding: widget.padding ?? const EdgeInsets.all(0.0),
       child: Align(
@@ -118,8 +126,15 @@ class _CategoriesListState extends State<CategoriesList> {
                             setState(() {
                               widget.elementos.remove(elemento);
                             });
-                          } else {
+                          } else if(elemento is SubCategoriaTb){
                             print('Borrar automáticamente');
+                            setState(() {
+                              widget.elementos.remove(elemento);
+                              print("ABAJO: $categoriasSeleccionadas");
+                              context.read<SubCategoriaSeleccionadaProvider>().eliminarSubCategoria(elemento, widget.elementos);
+
+                            });
+
                           }
                         },
                         child: !widget.onlyShow

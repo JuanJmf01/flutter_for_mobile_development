@@ -11,11 +11,13 @@ import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
+import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/buttonSeleccionarCategorias.dart';
@@ -64,7 +66,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   CategoriaTb? categoriaSeleccionada;
   List<CategoriaTb> categoriasDisponibles = [];
-  List<CategoriaTb> categoriasSeleccionadas = [];
+  List<SubCategoriaTb> categoriasSeleccionadas = [];
 
 
   String? urlPrincipalImage;
@@ -104,7 +106,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       obtenerCategoriasSeleccionadas();
     }
 
-    obtenerCategorias();
+    //obtenerCategorias();
 
     //obtenerSubCategoriasSeleccionadas();
 
@@ -138,29 +140,38 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
             : isChecked = false;
   }
 
-  void obtenerCategoriasSeleccionadas() async {
+  // void obtenerCategoriasSeleccionadas() async {
+  //   int? idProducto = widget.data?.idProducto;
+  //   if (idProducto != null) {
+  //     List<SubCategoriaTb> categoriasSeleccionadasAux =
+  //         await SubCategoriasDb.getSubCategoriasByProducto(idProducto);
+
+  //     setState(() { 
+  //       categoriasSeleccionadas.addAll(categoriasSeleccionadasAux);
+  //     });
+
+  //     print('IMPORTANTE ANTES_: $categoriasSeleccionadas');
+  //   }
+  // }
+
+  void obtenerCategoriasSeleccionadas() async{
     int? idProducto = widget.data?.idProducto;
-    if (idProducto != null) {
-      List<CategoriaTb> categoriasSeleccionadasAux =
-          await CategoriaDb.getCategoriasByProducto(idProducto);
 
-      setState(() {
-        categoriasSeleccionadas.addAll(categoriasSeleccionadasAux);
-      });
-
-      print('IMPORTANTE ANTES_: $categoriasSeleccionadas');
+    await context.read<SubCategoriaSeleccionadaProvider>().obtenerAllSubCategorias();
+    if(idProducto != null){
+      await context.read<SubCategoriaSeleccionadaProvider>().obtenerSubCategoriasSeleccionadas(idProducto);
     }
   }
 
 
-  void obtenerCategorias() async {
-    List<CategoriaTb> categoriasDisponiblesAux =
-        await CategoriaDb.getAllCategorias();
+  // void obtenerCategorias() async {
+  //   List<CategoriaTb> categoriasDisponiblesAux =
+  //       await CategoriaDb.getAllCategorias();
 
-    setState(() {
-      categoriasDisponibles.addAll(categoriasDisponiblesAux);
-    });
-  }
+  //   setState(() {
+  //     categoriasDisponibles.addAll(categoriasDisponiblesAux);
+  //   });
+  // }
 
   Future<int> crearNegocioSiNoExiste(idUsuario) async {
     int idNegocio = 0;
@@ -398,6 +409,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   Widget build(BuildContext context) {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+
+    categoriasSeleccionadas = Provider.of<SubCategoriaSeleccionadaProvider>(context).subCategoriasSeleccionadas;
+    categoriasDisponibles = Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
 
     Color colorTextField = Colors.white;
     return GestureDetector(
@@ -660,13 +674,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                               context: context,
                               builder: (BuildContext context) =>
                                   ButtonSeleccionarCategorias(
-                                    categoriasSeleccionadas:
-                                        categoriasSeleccionadas,
                                     categoriasDisponibles:
                                         categoriasDisponibles,
                                   ),
                               shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
+                                borderRadius: BorderRadius.only(  
                                   topLeft: Radius.circular(10.0),
                                   topRight: Radius.circular(10.0),
                                 ),
@@ -685,84 +697,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         fontWeight: FontWeight.w500,
                         //color: Colors.blue.withOpacity(0.2),
                       ),
-
-                      //border, background, border,
-                      // DropDownButtonFormField(
-                      //   padding: const EdgeInsets.symmetric(vertical: 15.0),
-                      //   hintText: 'Selecciona las categorias',
-                      //   onChanged: (dynamic newValue) {
-                      //     setState(() {
-                      //       if (!categoriasSeleccionadas.contains(newValue)) {
-                      //         categoriasSeleccionadas.add(newValue!);
-                      //       }
-                      //     });
-                      //     //obtenerSubCategorias(newValue.idCategoria);
-                      //   },
-                      //   elementosDisponibles: categoriasDisponibles,
-                      // ),
-
-                      // DropDownButtonFormField(
-                      //     padding: const EdgeInsets.symmetric(vertical: 15.0),
-                      //     hintText: 'Selecciona las subCategorias',
-                      //     onChanged: (dynamic newValue) {
-                      //       setState(() {
-                      //         if (!subCategoriasSeleccionadas
-                      //             .contains(newValue)) {
-                      //           subCategoriasSeleccionadas.add(newValue!);
-                      //         }
-                      //       });
-                      //     },
-                      //     elementosDisponibles: []),
-
-                      //Sub-Categorias seleccionadas
-                      // Padding(
-                      //     padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                      //     child: CategoriesList(
-                      //       elementos: subCategoriasSeleccionadas,
-                      //       marginContainer: EdgeInsets.all(5.0),
-                      //       paddingContainer: EdgeInsets.all(12.0),
-                      //     )),
-
-                      //if (imagenToUpload != null || urlImage != null)
-                      // Padding(
-                      //   padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      //   child: ShowImage(
-                      //     width: 350,
-                      //     height: 300,
-                      //     color: Colors.grey[300],
-                      //     borderRadius: BorderRadius.circular(20.0),
-                      //     widthAsset: 350,
-                      //     heightAsset: 300,
-                      //     imageAsset: imagenToUpload,
-                      //     networkImage: urlImage,
-                      //     fit: BoxFit.cover,
-                      //   ),
-                      // ),
-                      // Padding(
-                      //   padding: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
-                      //   child: ElevatedButton.icon(
-                      //     onPressed: () async {
-                      //       final asset = await getImageAsset();
-                      //       if (asset != null) {
-                      //         setState(() {
-                      //           imagenToUpload = asset;
-                      //         });
-                      //       }
-                      //     },
-                      //     style: ElevatedButton.styleFrom(
-                      //       padding: const EdgeInsets.all(
-                      //           16.0), // Ajustar el padding del botón
-                      //       shape: RoundedRectangleBorder(
-                      //         borderRadius: BorderRadius.circular(
-                      //             10.0), // Establecer bordes redondeados
-                      //       ),
-                      //     ),
-                      //     icon: Icon(Icons.image),
-                      //     label: imagenToUpload != null
-                      //         ? Text('Cambiar imagen')
-                      //         : Text('Agrega una imagen'),
-                      //   ),
-                      // ),
                       const SizedBox(height: 100.0)
                     ],
                   ),
@@ -828,40 +762,3 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     );
   }
 }
-
-//  Padding(
-//                           padding: const EdgeInsets.symmetric(vertical: 15.0),
-//                           child: DropdownButtonFormField<CategoriaTb>(
-//                             decoration: InputDecoration(
-//                               hintText: 'Selecciona una categoría',
-//                               border: OutlineInputBorder(
-//                                   borderRadius: BorderRadius.circular(10.0),
-//                                   borderSide: BorderSide.none),
-//                               filled: true,
-//                               fillColor: Colors.white,
-//                             ),
-//                             //value: categoriaSeleccionada,
-//                             items: categoriasDisponibles
-//                                 .map(
-//                                   (categoria) => DropdownMenuItem<CategoriaTb>(
-//                                     value: categoria,
-//                                     child: Text(
-//                                       categoria.nombre,
-//                                       style: const TextStyle(
-//                                           fontSize: 16,
-//                                           fontWeight: FontWeight.w500),
-//                                     ),
-//                                   ),
-//                                 )
-//                                 .toList(),
-//                             onChanged: (CategoriaTb? newValue) {
-//                               setState(() {
-//                                 if (!categoriasSeleccionadas
-//                                     .contains(newValue)) {
-//                                   categoriasSeleccionadas.add(newValue!);
-//                                 }
-//                               });
-//                             },
-//                             dropdownColor: Colors.grey[200],
-//                           ),
-//                         ),

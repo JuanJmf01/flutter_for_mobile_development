@@ -50,7 +50,8 @@ class SubCategoriasDb {
     }
   }
 
-  static Future<List<SubCategoriaTb>> getSubCategoriasSeleccionadas(
+
+  static Future<List<SubCategoriaTb>> getSubCategoriasByProducto(
       int idProducto) async {
     try {
       List<int> idSubCategoriesByProduct =
