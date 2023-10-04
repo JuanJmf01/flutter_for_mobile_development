@@ -37,8 +37,8 @@ class CategoriesList extends StatefulWidget {
 class _CategoriesListState extends State<CategoriesList> {
   List<bool> isBlue = [];
 
-  List<SubCategoriaTb> elementos = [];
-  List<SubCategoriaTb> subCateSelected = [];
+  List<dynamic> elementos = [];
+  List<dynamic> subCateSelected = [];
 
   void toggleColor(int index) {
     setState(() {
@@ -46,61 +46,28 @@ class _CategoriesListState extends State<CategoriesList> {
     });
   }
 
-  void generarSeleccionados() {
-    if (widget.categoriasSeleccionadas != null) {
-      print("ALLSUBCAT : $elementos");
-      print("MISSUBCATE : ${widget.categoriasSeleccionadas}");
-
-      isBlue = List.generate(elementos.length, (index) {
-        final elemento = elementos[index];
-        return widget.categoriasSeleccionadas?.any((categoria) =>
-                categoria.idCategoria == elemento.idCategoria &&
-                categoria.nombre == elemento.nombre) ??
-            false;
-      });
-      print("AZUL : $isBlue");
-    } else {
-      print("ALLSUBCAT : $elementos");
-      print("MISSUBCATE : $subCateSelected");
-
-      isBlue = List.generate(elementos.length, (index) {
-        final elemento = elementos[index];
-        return subCateSelected?.any((categoria) =>
-                categoria.idCategoria == elemento.idCategoria &&
-                categoria.nombre == elemento.nombre) ??
-            false;
-      });
-      print("AZUL : $isBlue");
-    }
-  }
-
-  void inicializarElementos() {
-    List<SubCategoriaTb> auxElementos = [
-      SubCategoriaTb(idSubCategoria: 1, idCategoria: 1, nombre: "SubCate1"),
-      SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
-      SubCategoriaTb(idSubCategoria: 4, idCategoria: 2, nombre: "SubCate4"),
-      SubCategoriaTb(idSubCategoria: 5, idCategoria: 2, nombre: "SubCate5"),
-      SubCategoriaTb(idSubCategoria: 6, idCategoria: 3, nombre: "SubCate6"),
-    ];
-
-    List<SubCategoriaTb> auxSubCateSelected = [
-      SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
-      SubCategoriaTb(idSubCategoria: 3, idCategoria: 2, nombre: "SubCate3"),
-    ];
-
-    elementos = auxElementos;
-    subCateSelected = auxSubCateSelected;
+  void generarSeleccionadas() async {
+    await context
+        .read<SubCategoriaSeleccionadaProvider>()
+        .generarSeleccionados();
   }
 
   @override
   void initState() {
     super.initState();
-    inicializarElementos();
-    generarSeleccionados();
+    //inicializarElementos();
+    elementos = widget.elementos;
+    if (widget.categoriasSeleccionadas != null) {
+      subCateSelected = widget.categoriasSeleccionadas!;
+    }
+
+    generarSeleccionadas();
   }
 
   @override
   Widget build(BuildContext context) {
+    isBlue = context.watch<SubCategoriaSeleccionadaProvider>().isBlue;
+
     return Padding(
       padding: widget.padding ?? const EdgeInsets.all(0.0),
       child: Align(
@@ -117,7 +84,23 @@ class _CategoriesListState extends State<CategoriesList> {
             return GestureDetector(
               onTap: () {
                 if (widget.onlyShow) {
+                
                   toggleColor(index);
+                  if (isBlue[index] == false) {
+                    print("VERDADERO: ${widget.elementos}");
+                    setState(() {
+                      context
+                          .read<SubCategoriaSeleccionadaProvider>()
+                          .eliminarSelectedSubCate(elemento);
+                    });
+                  } else {
+                    print("falso");
+                     setState(() {
+                      context
+                          .read<SubCategoriaSeleccionadaProvider>()
+                          .agregarSubCategoria(elemento);
+                    });
+                  }
                 }
               },
               child: Container(
@@ -162,7 +145,6 @@ class _CategoriesListState extends State<CategoriesList> {
                               context
                                   .read<SubCategoriaSeleccionadaProvider>()
                                   .eliminarSelectedSubCate(elemento);
-                              generarSeleccionados();
                             });
                           }
                         },

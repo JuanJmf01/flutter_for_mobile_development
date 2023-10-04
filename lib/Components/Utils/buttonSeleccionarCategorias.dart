@@ -52,19 +52,21 @@ class _ButtonSeleccionarCategoriasState
 
   @override
   Widget build(BuildContext context) {
-    //categoriasSeleccionadas = Provider.of<SubCategoriaSeleccionadaProvider>(context).subCategoriasSeleccionadas;
-
-    subCate = Provider.of<SubCategoriaSeleccionadaProvider>(context).subCate;
+    subCate =
+        Provider.of<SubCategoriaSeleccionadaProvider>(context).subCate;
     allSubCate =
         Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCat;
+
+    //subCate = context.watch<SubCategoriaSeleccionadaProvider>().subCate;
+    //allSubCate = context.watch<SubCategoriaSeleccionadaProvider>().allSubCat;
     return Column(
       children: [
         SizedBox(
           height: 100.0,
         ),
+        // Llamamos a 'CategoriesList' para mostrar solo las categorias seleccionadas = 'elementos'
         CategoriesList(
           elementos: subCate,
-          //   categoriasSeleccionadas: allSubCate,
           marginContainer: EdgeInsets.all(10.0),
           paddingContainer: EdgeInsets.all(5.0),
           onlyShow: false,
@@ -72,6 +74,10 @@ class _ButtonSeleccionarCategoriasState
         SizedBox(
           height: 130.0,
         ),
+
+        // En este caso llamamos a 'CategoriesList' para mostrar todas las categorias
+        // En este caso le pasamos todas las subCategorias disponibles en 'elementos y tambien le pasamos las categorias seleccionadas en 'categoriasSeleccionadas'
+        // de esta manera podemos mostrar con un fondo azul las categorias seleccionadas y con un fondo blando las no seleccionadas
         CategoriesList(
           elementos: allSubCate,
           categoriasSeleccionadas: subCate,

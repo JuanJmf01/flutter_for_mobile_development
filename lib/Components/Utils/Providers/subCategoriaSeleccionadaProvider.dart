@@ -7,11 +7,14 @@ import 'package:flutter/cupertino.dart';
 class SubCategoriaSeleccionadaProvider extends ChangeNotifier {
   List<SubCategoriaTb> _subCate = [];
   List<SubCategoriaTb> _allSubCat = [];
+  List<bool> _isBlue = [];
 
   List<SubCategoriaTb> get subCate => _subCate;
   List<SubCategoriaTb> get allSubCat => _allSubCat;
+  List<bool> get isBlue => _isBlue;
 
   Future<void> obtenerSubCategorias() async {
+    print("ENTRA DE NUEVO ACA");
     List<SubCategoriaTb> auxSubCate = [
       SubCategoriaTb(idSubCategoria: 1, idCategoria: 1, nombre: "SubCate1"),
       SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
@@ -34,13 +37,37 @@ class SubCategoriaSeleccionadaProvider extends ChangeNotifier {
     });
   }
 
-   void eliminarSelectedSubCate(SubCategoriaTb subCategoria) {
+  void eliminarSelectedSubCate(SubCategoriaTb subCategoria) {
     print("LLEGA A ELIMINAR: $subCategoria");
-      _subCate.remove(subCategoria);
-      print("MOSTRAR ELIMINACION: $_subCate");
+    _subCate.removeWhere((element) => element.idSubCategoria == subCategoria.idSubCategoria);
+    print("MOSTRAR ELIMINACION: $_subCate");
 
-      notifyListeners();
-    }
+    generarSeleccionados();
+
+    notifyListeners();
+  }
+
+  void agregarSubCategoria(SubCategoriaTb subCategoria){
+    print("LLEGA A AGREGACION: $subCategoria");
+    _subCate.add(subCategoria);
+    print("MOSTRAR AGREGACION: $_subCate");
+
+    notifyListeners();
+
+  }
+
+  Future<void> generarSeleccionados() async {
+    print("ALLSUBCAT : $_allSubCat");
+    print("MISSUBCATE : $_subCate");
+
+    _isBlue = List.generate(_allSubCat.length, (index) {
+      final elemento = _allSubCat[index];
+      return _subCate.any((categoria) =>
+          categoria.idCategoria == elemento.idCategoria &&
+          categoria.nombre == elemento.nombre);
+    });
+    print("AZUL : $isBlue");
+  }
 
   // List<SubCategoriaTb> _subCategoriasSeleccionadas = [];
   // List<CategoriaTb> _allSubCategorias = [];
