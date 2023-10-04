@@ -5,63 +5,68 @@ import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:flutter/cupertino.dart';
 
 class SubCategoriaSeleccionadaProvider extends ChangeNotifier {
-  List<SubCategoriaTb> _subCategoriasSeleccionadas = [];
-  List<CategoriaTb> _allSubCategorias = [];
-  List<bool> _isBlue = [];
+  List<SubCategoriaTb> _subCate = [];
+  List<SubCategoriaTb> _allSubCat = [];
 
-  List<SubCategoriaTb> get subCategoriasSeleccionadas =>
-      _subCategoriasSeleccionadas;
+  List<SubCategoriaTb> get subCate => _subCate;
+  List<SubCategoriaTb> get allSubCat => _allSubCat;
 
-  List<CategoriaTb> get allSubCategorias => _allSubCategorias;
+  Future<void> obtenerSubCategorias() async {
+    List<SubCategoriaTb> auxSubCate = [
+      SubCategoriaTb(idSubCategoria: 1, idCategoria: 1, nombre: "SubCate1"),
+      SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
+      SubCategoriaTb(idSubCategoria: 3, idCategoria: 2, nombre: "SubCate3"),
+    ];
 
-  List<bool> get isBlue => _isBlue;
+    List<SubCategoriaTb> auxAllsubCate = [
+      SubCategoriaTb(idSubCategoria: 1, idCategoria: 1, nombre: "SubCate1"),
+      SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
+      SubCategoriaTb(idSubCategoria: 4, idCategoria: 2, nombre: "SubCate4"),
+      SubCategoriaTb(idSubCategoria: 5, idCategoria: 2, nombre: "SubCate5"),
+      SubCategoriaTb(idSubCategoria: 6, idCategoria: 3, nombre: "SubCate6"),
+    ];
 
-  Future<void> obtenerSubCategoriasSeleccionadas(int idProducto) async {
-    print("SE LLAMA A NEW PROVIDER");
+    _subCate = auxSubCate;
+    _allSubCat = auxAllsubCate;
 
-    _subCategoriasSeleccionadas =
-        await SubCategoriasDb.getSubCategoriasByProducto(idProducto);
-
-    notifyListeners();
-  }
-
-  Future<void> obtenerAllSubCategorias() async {
-    print("SE LLAMA A NEW PROVIDER");
-
-    _allSubCategorias = await CategoriaDb.getAllCategorias();
-
-    print("DISPONIBLESSS : $_allSubCategorias");
-
-    notifyListeners();
-  }
-
-  void eliminarSubCategoria(
-      SubCategoriaTb subCategoria, List<dynamic> subCategorias) {
-    print("ANTES: $_subCategoriasSeleccionadas");
-    _subCategoriasSeleccionadas.remove(subCategoria);
-
-    notifyListeners();
-
-    //generarSeleccionados(subCategorias);
-
-    print("DESPUES: $_subCategoriasSeleccionadas");
-  }
-
-  Future<void> generarSeleccionados(List<dynamic> elementos) async {
-    await Future.delayed(
-        Duration.zero); // Esperar hasta que la construcción se complete
-    print("ELEMENTOS PP : $elementos");
-    print("SELECCCIONADOS PP: $_subCategoriasSeleccionadas");
-
-    _isBlue = List.generate(elementos.length, (index) {
-      final subCategoria = elementos[index];
-      return _subCategoriasSeleccionadas.any((categoria) =>
-          categoria.idCategoria == subCategoria.idCategoria &&
-          categoria.nombre == subCategoria.nombre);
+    Future.delayed(Duration.zero, () {
+      notifyListeners();
     });
-
-    notifyListeners();
-
-    print("SELEECTED P: $isBlue");
   }
+
+   void eliminarSelectedSubCate(SubCategoriaTb subCategoria) {
+    print("LLEGA A ELIMINAR: $subCategoria");
+      _subCate.remove(subCategoria);
+      print("MOSTRAR ELIMINACION: $_subCate");
+
+      notifyListeners();
+    }
+
+  // List<SubCategoriaTb> _subCategoriasSeleccionadas = [];
+  // List<CategoriaTb> _allSubCategorias = [];
+
+  // List<SubCategoriaTb> get subCategoriasSeleccionadas =>
+  //     _subCategoriasSeleccionadas;
+
+  // List<CategoriaTb> get allSubCategorias => _allSubCategorias;
+
+  // Future<void> obtenerSubCategoriasSeleccionadas(int idProducto) async {
+  //   _subCategoriasSeleccionadas =
+  //       await SubCategoriasDb.getSubCategoriasByProducto(idProducto);
+
+  //   notifyListeners();
+  // }
+
+  // Future<void> obtenerAllSubCategorias() async {
+  //   _allSubCategorias = await CategoriaDb.getAllCategorias();
+  //   notifyListeners();
+  // }
+
+  // void eliminarSubCategoria(
+  //     SubCategoriaTb subCategoria) {
+  //   _subCategoriasSeleccionadas.remove(subCategoria);
+
+  //   notifyListeners();
+
+  // }
 }

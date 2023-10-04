@@ -36,7 +36,9 @@ class CategoriesList extends StatefulWidget {
 
 class _CategoriesListState extends State<CategoriesList> {
   List<bool> isBlue = [];
-  List<dynamic> categoriasSeleccionadas = [];
+
+  List<SubCategoriaTb> elementos = [];
+  List<SubCategoriaTb> subCateSelected = [];
 
   void toggleColor(int index) {
     setState(() {
@@ -44,33 +46,61 @@ class _CategoriesListState extends State<CategoriesList> {
     });
   }
 
-  void generarSeleccionados() async{
-    await context.read<SubCategoriaSeleccionadaProvider>().generarSeleccionados(widget.elementos);
+  void generarSeleccionados() {
+    if (widget.categoriasSeleccionadas != null) {
+      print("ALLSUBCAT : $elementos");
+      print("MISSUBCATE : ${widget.categoriasSeleccionadas}");
+
+      isBlue = List.generate(elementos.length, (index) {
+        final elemento = elementos[index];
+        return widget.categoriasSeleccionadas?.any((categoria) =>
+                categoria.idCategoria == elemento.idCategoria &&
+                categoria.nombre == elemento.nombre) ??
+            false;
+      });
+      print("AZUL : $isBlue");
+    } else {
+      print("ALLSUBCAT : $elementos");
+      print("MISSUBCATE : $subCateSelected");
+
+      isBlue = List.generate(elementos.length, (index) {
+        final elemento = elementos[index];
+        return subCateSelected?.any((categoria) =>
+                categoria.idCategoria == elemento.idCategoria &&
+                categoria.nombre == elemento.nombre) ??
+            false;
+      });
+      print("AZUL : $isBlue");
+    }
   }
 
-  //   void generarSeleccionados() {
-  //   isBlue = List.generate(widget.elementos.length, (index) {
-  //     final elemento = widget.elementos[index];
-  //     return widget.categoriasSeleccionadas?.any((categoria) =>
-  //             categoria.idCategoria == elemento.idCategoria &&
-  //             categoria.nombre == elemento.nombre) ?? false;
-  //   });
-  //   print("SELEECTED P: $isBlue");
-  // }
+  void inicializarElementos() {
+    List<SubCategoriaTb> auxElementos = [
+      SubCategoriaTb(idSubCategoria: 1, idCategoria: 1, nombre: "SubCate1"),
+      SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
+      SubCategoriaTb(idSubCategoria: 4, idCategoria: 2, nombre: "SubCate4"),
+      SubCategoriaTb(idSubCategoria: 5, idCategoria: 2, nombre: "SubCate5"),
+      SubCategoriaTb(idSubCategoria: 6, idCategoria: 3, nombre: "SubCate6"),
+    ];
+
+    List<SubCategoriaTb> auxSubCateSelected = [
+      SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
+      SubCategoriaTb(idSubCategoria: 3, idCategoria: 2, nombre: "SubCate3"),
+    ];
+
+    elementos = auxElementos;
+    subCateSelected = auxSubCateSelected;
+  }
 
   @override
   void initState() {
     super.initState();
-    categoriasSeleccionadas = widget.categoriasSeleccionadas ?? [];
+    inicializarElementos();
     generarSeleccionados();
-
-    print("Elementos: ${widget.elementos}");
-    print("ElementosSeleccionados: ${widget.categoriasSeleccionadas}");
   }
 
   @override
   Widget build(BuildContext context) {
-    isBlue = Provider.of<SubCategoriaSeleccionadaProvider>(context).isBlue;
     return Padding(
       padding: widget.padding ?? const EdgeInsets.all(0.0),
       child: Align(
@@ -122,19 +152,18 @@ class _CategoriesListState extends State<CategoriesList> {
                     GestureDetector(
                         onTap: () {
                           if (elemento is CategoriaTb) {
-                            print('Estás seguro que deseas eliminar');
                             setState(() {
                               widget.elementos.remove(elemento);
                             });
-                          } else if(elemento is SubCategoriaTb){
-                            print('Borrar automáticamente');
+                          } else if (elemento is SubCategoriaTb) {
                             setState(() {
                               widget.elementos.remove(elemento);
-                              print("ABAJO: $categoriasSeleccionadas");
-                              context.read<SubCategoriaSeleccionadaProvider>().eliminarSubCategoria(elemento, widget.elementos);
-
+                              subCateSelected.remove(elemento);
+                              context
+                                  .read<SubCategoriaSeleccionadaProvider>()
+                                  .eliminarSelectedSubCate(elemento);
+                              generarSeleccionados();
                             });
-
                           }
                         },
                         child: !widget.onlyShow

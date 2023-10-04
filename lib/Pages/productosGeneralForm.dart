@@ -157,10 +157,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void obtenerCategoriasSeleccionadas() async{
     int? idProducto = widget.data?.idProducto;
 
-    await context.read<SubCategoriaSeleccionadaProvider>().obtenerAllSubCategorias();
-    if(idProducto != null){
-      await context.read<SubCategoriaSeleccionadaProvider>().obtenerSubCategoriasSeleccionadas(idProducto);
-    }
+    //await context.read<SubCategoriaSeleccionadaProvider>().obtenerAllSubCategorias();
+    //if(idProducto != null){
+      //await context.read<SubCategoriaSeleccionadaProvider>().obtenerSubCategoriasSeleccionadas(idProducto);
+    //}
   }
 
 
@@ -410,8 +410,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
 
-    categoriasSeleccionadas = Provider.of<SubCategoriaSeleccionadaProvider>(context).subCategoriasSeleccionadas;
-    categoriasDisponibles = Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
+    //categoriasSeleccionadas = Provider.of<SubCategoriaSeleccionadaProvider>(context).subCategoriasSeleccionadas;
+    //categoriasDisponibles = Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
 
     Color colorTextField = Colors.white;
     return GestureDetector(
