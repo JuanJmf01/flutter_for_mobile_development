@@ -16,7 +16,7 @@ class CategoriesList extends StatefulWidget {
     this.sizeTextCategoria,
     this.colorTextCategoria,
     required this.onlyShow,
-    this.onTap,
+    this.seleccionSubCategorias,
   });
 
   final EdgeInsets? padding;
@@ -28,7 +28,7 @@ class CategoriesList extends StatefulWidget {
   final double? sizeTextCategoria;
   final Color? colorTextCategoria;
   final bool onlyShow;
-  final VoidCallback? onTap;
+  final bool? seleccionSubCategorias;
 
   @override
   State<CategoriesList> createState() => _CategoriesListState();
@@ -36,9 +36,11 @@ class CategoriesList extends StatefulWidget {
 
 class _CategoriesListState extends State<CategoriesList> {
   List<bool> isBlue = [];
-
   List<dynamic> elementos = [];
   List<dynamic> subCateSelected = [];
+  List<dynamic> subCategoriasActuales= [];
+
+
 
   void toggleColor(int index) {
     setState(() {
@@ -49,8 +51,9 @@ class _CategoriesListState extends State<CategoriesList> {
   void generarSeleccionadas() async {
     await context
         .read<SubCategoriaSeleccionadaProvider>()
-        .generarSeleccionados();
+        .generarSeleccionados(widget.elementos);
   }
+
 
   @override
   void initState() {
@@ -60,8 +63,13 @@ class _CategoriesListState extends State<CategoriesList> {
     if (widget.categoriasSeleccionadas != null) {
       subCateSelected = widget.categoriasSeleccionadas!;
     }
-
     generarSeleccionadas();
+
+    if(widget.elementos.isNotEmpty && widget.categoriasSeleccionadas != null){
+      context
+        .read<SubCategoriaSeleccionadaProvider>()
+        .definirSubCategoriasActuales(widget.elementos);
+    }
   }
 
   @override
@@ -71,20 +79,13 @@ class _CategoriesListState extends State<CategoriesList> {
     return Padding(
       padding: widget.padding ?? const EdgeInsets.all(0.0),
       child: Align(
-        alignment: Alignment.centerLeft, // Alinea los elementos a la izquierda.
+        alignment: Alignment.centerLeft,
         child: Wrap(
           children: widget.elementos.map((elemento) {
             int index = widget.elementos.indexOf(elemento);
-            String nombreElemento = '';
-            int idCategoria = 0;
-            if (elemento is CategoriaTb || elemento is SubCategoriaTb) {
-              nombreElemento = elemento.nombre;
-              idCategoria = elemento.idCategoria;
-            }
             return GestureDetector(
               onTap: () {
                 if (widget.onlyShow) {
-                
                   toggleColor(index);
                   if (isBlue[index] == false) {
                     print("VERDADERO: ${widget.elementos}");
@@ -95,7 +96,7 @@ class _CategoriesListState extends State<CategoriesList> {
                     });
                   } else {
                     print("falso");
-                     setState(() {
+                    setState(() {
                       context
                           .read<SubCategoriaSeleccionadaProvider>()
                           .agregarSubCategoria(elemento);
@@ -122,7 +123,7 @@ class _CategoriesListState extends State<CategoriesList> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      nombreElemento,
+                      elemento.nombre,
                       style: TextStyle(
                           fontSize: widget.sizeTextCategoria ?? 16,
                           fontWeight: FontWeight.w600,
@@ -144,12 +145,13 @@ class _CategoriesListState extends State<CategoriesList> {
                               subCateSelected.remove(elemento);
                               context
                                   .read<SubCategoriaSeleccionadaProvider>()
-                                  .eliminarSelectedSubCate(elemento);
+                                  .eliminarSelectedSubCate(
+                                      elemento);
                             });
                           }
                         },
                         child: !widget.onlyShow
-                            ? Icon(
+                            ? const Icon(
                                 Icons.close,
                                 color: Colors.white,
                                 size: 19,

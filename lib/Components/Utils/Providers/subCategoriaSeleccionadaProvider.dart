@@ -5,95 +5,93 @@ import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:flutter/cupertino.dart';
 
 class SubCategoriaSeleccionadaProvider extends ChangeNotifier {
-  List<SubCategoriaTb> _subCate = [];
-  List<SubCategoriaTb> _allSubCat = [];
+  List<SubCategoriaTb> _subCategoriasSeleccionadas = [];
+  List<CategoriaTb> _allSubCategorias = [];
   List<bool> _isBlue = [];
+  List<dynamic> _subCategoriasActuales = [];
 
-  List<SubCategoriaTb> get subCate => _subCate;
-  List<SubCategoriaTb> get allSubCat => _allSubCat;
+  List<SubCategoriaTb> get subCategoriasSeleccionadas =>
+      _subCategoriasSeleccionadas;
+
+  List<CategoriaTb> get allSubCategorias => _allSubCategorias;
+
   List<bool> get isBlue => _isBlue;
 
-  Future<void> obtenerSubCategorias() async {
-    print("ENTRA DE NUEVO ACA");
-    List<SubCategoriaTb> auxSubCate = [
-      SubCategoriaTb(idSubCategoria: 1, idCategoria: 1, nombre: "SubCate1"),
-      SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
-      SubCategoriaTb(idSubCategoria: 3, idCategoria: 2, nombre: "SubCate3"),
-    ];
+  List<dynamic> get subCategoriasActuales => _subCategoriasActuales;
 
-    List<SubCategoriaTb> auxAllsubCate = [
-      SubCategoriaTb(idSubCategoria: 1, idCategoria: 1, nombre: "SubCate1"),
-      SubCategoriaTb(idSubCategoria: 2, idCategoria: 1, nombre: "SubCate2"),
-      SubCategoriaTb(idSubCategoria: 4, idCategoria: 2, nombre: "SubCate4"),
-      SubCategoriaTb(idSubCategoria: 5, idCategoria: 2, nombre: "SubCate5"),
-      SubCategoriaTb(idSubCategoria: 6, idCategoria: 3, nombre: "SubCate6"),
-    ];
+  Future<void> obtenerSubCategoriasSeleccionadas(int idProducto) async {
+    _subCategoriasSeleccionadas =
+        await SubCategoriasDb.getSubCategoriasByProducto(idProducto);
 
-    _subCate = auxSubCate;
-    _allSubCat = auxAllsubCate;
+    notifyListeners();
+  }
 
-    Future.delayed(Duration.zero, () {
-      notifyListeners();
+  Future<void> obtenerAllSubCategorias() async {
+    _allSubCategorias = await CategoriaDb.getAllCategorias();
+    notifyListeners();
+  }
+
+  Future<void> generarSeleccionados(List<dynamic> elementos) async {
+    print("ALLSUBCAT : $_allSubCategorias");
+    print("MISSUBCATE : $_subCategoriasSeleccionadas");
+
+    _isBlue = List.generate(elementos.length, (index) {
+      final elemento = elementos[index];
+      return _subCategoriasSeleccionadas.any((categoria) =>
+          categoria.idCategoria == elemento.idCategoria &&
+          categoria.nombre == elemento.nombre);
     });
+    print("MIS ACTUALES AZUL : $isBlue");
   }
 
   void eliminarSelectedSubCate(SubCategoriaTb subCategoria) {
     print("LLEGA A ELIMINAR: $subCategoria");
-    _subCate.removeWhere((element) => element.idSubCategoria == subCategoria.idSubCategoria);
-    print("MOSTRAR ELIMINACION: $_subCate");
+    _subCategoriasSeleccionadas.removeWhere(
+        (element) => element.idSubCategoria == subCategoria.idSubCategoria);
+    print("MOSTRAR ELIMINACION: $_subCategoriasSeleccionadas");
 
-    generarSeleccionados();
+    generarSeleccionados(_subCategoriasActuales);
+
+    // List<dynamic> elementosActuales = [];
+    // print("MIS ACTUALES ELEMENTOS : $elementos");
+
+    // if (elementos == null) {
+    //   if (!_subCategoriasActuales.contains(subCategoria)) {
+    //     generarSeleccionados(_subCategoriasActuales);
+
+    //     print("MIS ACTUALES RENDERIZAR");
+    //   } else {
+    //     print("MIS ACTUALES NULL");
+    //     for (var categoria in _allSubCategorias) {
+    //       for (var subCate in categoria.subCategorias) {
+    //         if (subCate.idCategoria == subCategoria.idCategoria) {
+    //           if (subCate.nombre == subCategoria.nombre) {
+    //             elementosActuales.addAll(categoria.subCategorias);
+    //           }
+    //         }
+    //       }
+    //     }
+    //   }
+    // } else {
+    //   print("MIS ACTUALES NO NULL");
+    //   elementosActuales = elementos;
+    // }
+
+    // print("MIS ACTUALES BEACH : $elementosActuales");
 
     notifyListeners();
   }
 
-  void agregarSubCategoria(SubCategoriaTb subCategoria){
+  void agregarSubCategoria(SubCategoriaTb subCategoria) {
     print("LLEGA A AGREGACION: $subCategoria");
-    _subCate.add(subCategoria);
-    print("MOSTRAR AGREGACION: $_subCate");
+    _subCategoriasSeleccionadas.add(subCategoria);
+    print("MOSTRAR AGREGACION: $_subCategoriasSeleccionadas");
 
     notifyListeners();
-
   }
 
-  Future<void> generarSeleccionados() async {
-    print("ALLSUBCAT : $_allSubCat");
-    print("MISSUBCATE : $_subCate");
-
-    _isBlue = List.generate(_allSubCat.length, (index) {
-      final elemento = _allSubCat[index];
-      return _subCate.any((categoria) =>
-          categoria.idCategoria == elemento.idCategoria &&
-          categoria.nombre == elemento.nombre);
-    });
-    print("AZUL : $isBlue");
+  void definirSubCategoriasActuales(subCategoriasPorIndice) {
+    _subCategoriasActuales = subCategoriasPorIndice;
+    print("MIS ACTUALES ELEMENTS : $_subCategoriasActuales");
   }
-
-  // List<SubCategoriaTb> _subCategoriasSeleccionadas = [];
-  // List<CategoriaTb> _allSubCategorias = [];
-
-  // List<SubCategoriaTb> get subCategoriasSeleccionadas =>
-  //     _subCategoriasSeleccionadas;
-
-  // List<CategoriaTb> get allSubCategorias => _allSubCategorias;
-
-  // Future<void> obtenerSubCategoriasSeleccionadas(int idProducto) async {
-  //   _subCategoriasSeleccionadas =
-  //       await SubCategoriasDb.getSubCategoriasByProducto(idProducto);
-
-  //   notifyListeners();
-  // }
-
-  // Future<void> obtenerAllSubCategorias() async {
-  //   _allSubCategorias = await CategoriaDb.getAllCategorias();
-  //   notifyListeners();
-  // }
-
-  // void eliminarSubCategoria(
-  //     SubCategoriaTb subCategoria) {
-  //   _subCategoriasSeleccionadas.remove(subCategoria);
-
-  //   notifyListeners();
-
-  // }
 }

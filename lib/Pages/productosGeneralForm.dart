@@ -7,11 +7,9 @@ import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.d
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
@@ -68,7 +66,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   List<CategoriaTb> categoriasDisponibles = [];
   List<SubCategoriaTb> categoriasSeleccionadas = [];
 
-
   String? urlPrincipalImage;
 
   int? enOferta = 0;
@@ -76,7 +73,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   ProductoTb? _producto;
 
-  //List<ProductImageToUpload> selectedImages = [];
   ImageList myImageList = ImageList([]);
   Asset? principalImage;
   Uint8List? principalImageBytes;
@@ -103,7 +99,9 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
       getListSecondaryProductImages();
       estaEnOferta();
-      obtenerCategoriasSeleccionadas();
+      obtenerCategorias();
+
+      //print('MisCategorias y subCateogirias: $categoriasSeleccionadas');
     }
 
     //obtenerCategorias();
@@ -140,38 +138,20 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
             : isChecked = false;
   }
 
-  // void obtenerCategoriasSeleccionadas() async {
-  //   int? idProducto = widget.data?.idProducto;
-  //   if (idProducto != null) {
-  //     List<SubCategoriaTb> categoriasSeleccionadasAux =
-  //         await SubCategoriasDb.getSubCategoriasByProducto(idProducto);
-
-  //     setState(() { 
-  //       categoriasSeleccionadas.addAll(categoriasSeleccionadasAux);
-  //     });
-
-  //     print('IMPORTANTE ANTES_: $categoriasSeleccionadas');
-  //   }
-  // }
-
-  void obtenerCategoriasSeleccionadas() async{
+  void obtenerCategorias() async {
     int? idProducto = widget.data?.idProducto;
 
-    //await context.read<SubCategoriaSeleccionadaProvider>().obtenerAllSubCategorias();
-    //if(idProducto != null){
-      //await context.read<SubCategoriaSeleccionadaProvider>().obtenerSubCategoriasSeleccionadas(idProducto);
-    //}
+    await context
+        .read<SubCategoriaSeleccionadaProvider>()
+        .obtenerAllSubCategorias();
+
+    if (idProducto != null) {
+      await context
+          .read<SubCategoriaSeleccionadaProvider>()
+          .obtenerSubCategoriasSeleccionadas(idProducto);
+    }
   }
 
-
-  // void obtenerCategorias() async {
-  //   List<CategoriaTb> categoriasDisponiblesAux =
-  //       await CategoriaDb.getAllCategorias();
-
-  //   setState(() {
-  //     categoriasDisponibles.addAll(categoriasDisponiblesAux);
-  //   });
-  // }
 
   Future<int> crearNegocioSiNoExiste(idUsuario) async {
     int idNegocio = 0;
@@ -410,8 +390,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
 
-    //categoriasSeleccionadas = Provider.of<SubCategoriaSeleccionadaProvider>(context).subCategoriasSeleccionadas;
-    //categoriasDisponibles = Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
+    categoriasSeleccionadas =
+        Provider.of<SubCategoriaSeleccionadaProvider>(context)
+            .subCategoriasSeleccionadas;
+    categoriasDisponibles =
+        Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
 
     Color colorTextField = Colors.white;
     return GestureDetector(
@@ -678,7 +661,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                         categoriasDisponibles,
                                   ),
                               shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(  
+                                borderRadius: BorderRadius.only(
                                   topLeft: Radius.circular(10.0),
                                   topRight: Radius.circular(10.0),
                                 ),

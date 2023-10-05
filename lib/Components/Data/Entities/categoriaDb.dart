@@ -131,7 +131,7 @@ class CategoriaDb {
         List<CategoriaTb> categorias = (response.data as List<dynamic>)
             .map((data) => CategoriaTb.fromJson(data))
             .toList();
-         print('MisCategorias y subCateogirias: $categorias');
+         //print('MisCategorias y subCateogirias: $categorias');
         return categorias;
       } else {
         throw Exception('Failed to fetch category');

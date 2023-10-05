@@ -4,13 +4,13 @@ class CategoriaTb {
   final int? idCategoria;
   final String nombre;
   final String? imagePath;
-  final List<SubCategoriaTb>? subCategorias;
+  final List<SubCategoriaTb> subCategorias;
 
   CategoriaTb({
     this.idCategoria,
     required this.nombre,
     this.imagePath,
-    this.subCategorias,
+    required this.subCategorias,
   });
 
   factory CategoriaTb.fromJson(Map<String, dynamic> json) {
