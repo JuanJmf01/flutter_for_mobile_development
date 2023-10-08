@@ -107,7 +107,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
   }
 
-  //List<ProductImagesTb> productSecondaryImages = [];
 
   void getListSecondaryProductImages() async {
     int? idProducto = widget.data?.idProducto;
