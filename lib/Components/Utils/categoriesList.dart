@@ -16,18 +16,20 @@ class CategoriesList extends StatefulWidget {
     this.sizeTextCategoria,
     this.colorTextCategoria,
     required this.onlyShow,
+    this.delete,
     this.seleccionSubCategorias,
   });
 
   final EdgeInsets? padding;
-  final List<dynamic> elementos;
-  final List<dynamic>? categoriasSeleccionadas;
+  final List<SubCategoriaTb> elementos;
+  final List<SubCategoriaTb>? categoriasSeleccionadas;
   final EdgeInsets marginContainer;
   final EdgeInsets paddingContainer;
   final Color? color;
   final double? sizeTextCategoria;
   final Color? colorTextCategoria;
   final bool onlyShow;
+  final bool? delete;
   final bool? seleccionSubCategorias;
 
   @override
@@ -36,11 +38,11 @@ class CategoriesList extends StatefulWidget {
 
 class _CategoriesListState extends State<CategoriesList> {
   List<bool> isBlue = [];
-  List<dynamic> elementos = [];
-  List<dynamic> subCateSelected = [];
-  List<dynamic> subCategoriasActuales= [];
+  List<SubCategoriaTb> elementos = [];
+  List<SubCategoriaTb> subCateSelected = [];
+  List<SubCategoriaTb> subCategoriasActuales = [];
 
-
+  bool delete = false;
 
   void toggleColor(int index) {
     setState(() {
@@ -54,6 +56,13 @@ class _CategoriesListState extends State<CategoriesList> {
         .generarSeleccionados(widget.elementos);
   }
 
+  void defSubCategoriasActuales(){
+     if (widget.elementos.isNotEmpty && widget.categoriasSeleccionadas != null) {
+      context
+          .read<SubCategoriaSeleccionadaProvider>()
+          .definirSubCategoriasActuales(widget.elementos);
+    }
+  }
 
   @override
   void initState() {
@@ -64,12 +73,10 @@ class _CategoriesListState extends State<CategoriesList> {
       subCateSelected = widget.categoriasSeleccionadas!;
     }
     generarSeleccionadas();
+    defSubCategoriasActuales();
 
-    if(widget.elementos.isNotEmpty && widget.categoriasSeleccionadas != null){
-      context
-        .read<SubCategoriaSeleccionadaProvider>()
-        .definirSubCategoriasActuales(widget.elementos);
-    }
+    delete = widget.delete ?? false;
+
   }
 
   @override
@@ -88,14 +95,12 @@ class _CategoriesListState extends State<CategoriesList> {
                 if (widget.onlyShow) {
                   toggleColor(index);
                   if (isBlue[index] == false) {
-                    print("VERDADERO: ${widget.elementos}");
                     setState(() {
                       context
                           .read<SubCategoriaSeleccionadaProvider>()
                           .eliminarSelectedSubCate(elemento);
                     });
                   } else {
-                    print("falso");
                     setState(() {
                       context
                           .read<SubCategoriaSeleccionadaProvider>()
@@ -135,22 +140,15 @@ class _CategoriesListState extends State<CategoriesList> {
                     ),
                     GestureDetector(
                         onTap: () {
-                          if (elemento is CategoriaTb) {
-                            setState(() {
-                              widget.elementos.remove(elemento);
-                            });
-                          } else if (elemento is SubCategoriaTb) {
-                            setState(() {
-                              widget.elementos.remove(elemento);
-                              subCateSelected.remove(elemento);
-                              context
-                                  .read<SubCategoriaSeleccionadaProvider>()
-                                  .eliminarSelectedSubCate(
-                                      elemento);
-                            });
-                          }
+                          setState(() {
+                            widget.elementos.remove(elemento);
+                            subCateSelected.remove(elemento);
+                            context
+                                .read<SubCategoriaSeleccionadaProvider>()
+                                .eliminarSelectedSubCate(elemento);
+                          });
                         },
-                        child: !widget.onlyShow
+                        child: delete
                             ? const Icon(
                                 Icons.close,
                                 color: Colors.white,

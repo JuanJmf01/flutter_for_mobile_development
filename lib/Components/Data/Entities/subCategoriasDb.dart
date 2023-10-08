@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosSubCategorias.dart';
+import 'package:etfi_point/Components/Data/Entities/productosSubCategoriasDb.dart';
+
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class SubCategoriasDb {
@@ -55,7 +56,7 @@ class SubCategoriasDb {
       int idProducto) async {
     try {
       List<int> idSubCategoriesByProduct =
-          await ProductosSubCategorias.getProductSelectedSubCategoies(
+          await ProductosSubCategoriasDb.getProductSelectedSubCategoies(
               idProducto);
 
       List<SubCategoriaTb> subCategorias = [];

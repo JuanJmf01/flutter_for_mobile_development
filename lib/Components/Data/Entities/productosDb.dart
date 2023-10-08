@@ -1,11 +1,12 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productoCategoriaTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoSubCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosCategoriasDb.dart';
+import 'package:etfi_point/Components/Data/Entities/productosSubCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
@@ -30,8 +31,8 @@ class ProductoDb {
   ///
   /// Returns:
   ///   a Future<int>.
-  static Future<int> insertProducto(
-      ProductoCreacionTb producto, categoriasSeleccionadas) async {
+  static Future<int> insertProducto(ProductoCreacionTb producto,
+      List<SubCategoriaTb> categoriasSeleccionadas) async {
     print('Producto: $producto');
     print('categorias: $categoriasSeleccionadas');
 
@@ -50,15 +51,15 @@ class ProductoDb {
         print(response.data);
         int idProducto = response.data;
 
-        // Insert selected categories
-        for (var i = 0; i < categoriasSeleccionadas.length; i++) {
-          ProductoCategoriaTb productoCategoria = ProductoCategoriaTb(
-            idProducto: idProducto,
-            idCategoria: categoriasSeleccionadas[i].idCategoria,
-          );
+        // Insert categorias seleccionadas
+        for (var subCategoria in categoriasSeleccionadas) {
+          ProductoSubCategoriaTb productoSubCategoria = ProductoSubCategoriaTb(
+              idProducto: idProducto,
+              idCategoria: subCategoria.idCategoria,
+              idSubCategoria: subCategoria.idSubCategoria);
 
-          await ProductosCategoriasDb.insertCategoriasSeleccionadas(
-              productoCategoria);
+          await ProductosSubCategoriasDb.insertSubCategoriasSeleccionadas(
+              productoSubCategoria);
         }
         return idProducto;
       } else {
@@ -149,20 +150,23 @@ class ProductoDb {
   /// represented by an object with an idCategoria property.
 
   static Future<void> updateProducto(
-      ProductoTb producto, categoriasSeleccionadas) async {
+      ProductoTb producto, List<SubCategoriaTb> categoriasSeleccionadas) async {
+    print("CATEGORIAS SELECCIONADAS : $categoriasSeleccionadas");
+
     int idProducto = producto.idProducto;
     Dio dio = Dio();
     String url = '${MisRutas.rutaProductos}/$idProducto';
 
     try {
-      await ProductosCategoriasDb.deleteProductCategories(idProducto);
-      for (var i = 0; i < categoriasSeleccionadas.length; i++) {
-        ProductoCategoriaTb productoCategoria = ProductoCategoriaTb(
+      await ProductosSubCategoriasDb.deleteProductSubCategories(idProducto);
+      for (var subCategoria in categoriasSeleccionadas) {
+        ProductoSubCategoriaTb productoCategoria = ProductoSubCategoriaTb(
+          idSubCategoria: subCategoria.idSubCategoria,
           idProducto: idProducto,
-          idCategoria: categoriasSeleccionadas[i].idCategoria,
+          idCategoria: subCategoria.idCategoria,
         );
 
-        await ProductosCategoriasDb.insertCategoriasSeleccionadas(
+        await ProductosSubCategoriasDb.insertSubCategoriasSeleccionadas(
             productoCategoria);
       }
 
@@ -198,7 +202,7 @@ class ProductoDb {
 
     try {
       bool result =
-          await ProductosCategoriasDb.deleteProductCategories(idProducto);
+          await ProductosSubCategoriasDb.deleteProductSubCategories(idProducto);
       if (result) {
         result = await ProductImageDb.deleteProductImages(idProducto);
       } else {

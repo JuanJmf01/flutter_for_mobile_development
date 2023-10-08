@@ -99,14 +99,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
       getListSecondaryProductImages();
       estaEnOferta();
-      obtenerCategorias();
-
-      //print('MisCategorias y subCateogirias: $categoriasSeleccionadas');
     }
-
-    //obtenerCategorias();
-
-    //obtenerSubCategoriasSeleccionadas();
+    obtenerCategorias();
 
     if (widget.data != null) {
       _producto = widget.data;
@@ -139,6 +133,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   }
 
   void obtenerCategorias() async {
+    print("ENTRA PRIMERO AQUI");
     int? idProducto = widget.data?.idProducto;
 
     await context
@@ -151,7 +146,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           .obtenerSubCategoriasSeleccionadas(idProducto);
     }
   }
-
 
   Future<int> crearNegocioSiNoExiste(idUsuario) async {
     int idNegocio = 0;
@@ -652,20 +646,21 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                       ElevatedGlobalButton(
                         nameSavebutton: 'Seleccionar categorias',
                         onPress: () {
+                          print("ALLCATEGORIES_: $categoriasDisponibles");
                           showModalBottomSheet(
-                              isScrollControlled: true,
-                              context: context,
-                              builder: (BuildContext context) =>
-                                  ButtonSeleccionarCategorias(
-                                    categoriasDisponibles:
-                                        categoriasDisponibles,
-                                  ),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.only(
-                                  topLeft: Radius.circular(10.0),
-                                  topRight: Radius.circular(10.0),
-                                ),
-                              ));
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (BuildContext context) =>
+                                ButtonSeleccionarCategorias(
+                              categoriasDisponibles: categoriasDisponibles,
+                            ),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10.0),
+                                topRight: Radius.circular(10.0),
+                              ),
+                            ),
+                          );
                         },
                         heightSizeBox: 52,
                         widthSizeBox: double.infinity,

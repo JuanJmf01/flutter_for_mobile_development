@@ -1,13 +1,13 @@
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 
 class CategoriaTb {
-  final int? idCategoria;
+  final int idCategoria;
   final String nombre;
   final String? imagePath;
   final List<SubCategoriaTb> subCategorias;
 
   CategoriaTb({
-    this.idCategoria,
+    required this.idCategoria,
     required this.nombre,
     this.imagePath,
     required this.subCategorias,
