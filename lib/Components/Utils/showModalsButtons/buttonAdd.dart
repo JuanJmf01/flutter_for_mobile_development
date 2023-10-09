@@ -1,5 +1,6 @@
 import 'package:etfi_point/Pages/productosGeneralForm.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
+import 'package:etfi_point/Pages/servicios/agregarServicio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -47,7 +48,10 @@ class ButtonAdd extends StatelessWidget {
           textItem: 'Nuevo producto',
         ),
         ItemForModalButtons(
-          onPress: () {},
+          onPress: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => AgregarServicio()));
+          },
           padding: padding,
           icon: CupertinoIcons.heart_circle,
           colorIcon: colorIcons,

@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
@@ -18,7 +18,7 @@ class ProductImagesStorage {
   ///
   /// Returns:
   ///   a Future of type ProductImagesTb.
-  static Future<ProductImagesTb> cargarImage(
+  static Future<ProservicioImagesTb> cargarImage(
       ImageStorageTb image) async {
     final Uint8List bytes = image.newImageBytes;
 
@@ -47,15 +47,15 @@ class ProductImagesStorage {
       print('url: $url');
 
       if (snapshot.state == TaskState.success) {
-        final ProductImageCreacionTb productImage = ProductImageCreacionTb(
-            idProducto: idFile,
+        final ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
+            idProServicio: idFile,
             nombreImage: finalNameImage,
             urlImage: url,
             width: image.width,
             height: image.height,
             isPrincipalImage: image.isPrincipalImage);
 
-        final ProductImagesTb productInsertImage =
+        final ProservicioImagesTb productInsertImage =
             await ProductImageDb.insertProductImages(productImage);
 
         return productInsertImage;
@@ -97,16 +97,18 @@ class ProductImagesStorage {
       if (snapshot.state == TaskState.success) {
         final String url = await snapshot.ref.getDownloadURL();
 
-        ProductImageCreacionTb productImage = ProductImageCreacionTb(
-            idProducto: idFile,
-            nombreImage: nombreImage,
-            urlImage: url,
-            width: image.width,
-            height: image.height,
-            isPrincipalImage: image.isPrincipalImage);
+
+        //Por ahora no utilizaremos la actualizacion de la iamgen en base de datos ya que no es necesario por ahora
+        // ProductImageCreacionTb productImage = ProductImageCreacionTb(
+        //     idProducto: idFile,
+        //     nombreImage: nombreImage,
+        //     urlImage: url,
+        //     width: image.width,
+        //     height: image.height,
+        //     isPrincipalImage: image.isPrincipalImage);
 
         //Actualizar url un base de datos
-        await ProductImageDb.updateProductImage(productImage);
+        // await ProductImageDb.updateProductImage(productImage);
         return url;
       } else {
         throw Exception('Error actualizando image');

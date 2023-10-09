@@ -1,10 +1,9 @@
 import 'dart:io';
 
-import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
@@ -13,10 +12,11 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/editarImagen.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
-import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/buttonSeleccionarCategorias.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
@@ -26,11 +26,10 @@ import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
+import 'package:etfi_point/Components/Utils/showSampletAnyImage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:image_cropper/image_cropper.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class ProductosGeneralForm extends StatefulWidget {
@@ -77,8 +76,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   Asset? principalImage;
   Uint8List? principalImageBytes;
 
-  ProductSample? productSample;
-
   @override
   void initState() {
     super.initState();
@@ -107,11 +104,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
   }
 
-
   void getListSecondaryProductImages() async {
     int? idProducto = widget.data?.idProducto;
     if (idProducto != null) {
-      List<ProductImagesTb> productSecondaryImagesAux =
+      List<ProservicioImagesTb> productSecondaryImagesAux =
           await ProductImageDb.getProductSecondaryImages(idProducto);
 
       setState(() {
@@ -217,7 +213,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     int idProducto = producto.idProducto;
 
     if (urlPrincipalImage != null) {
-      File urlImageInFile = await convertToTempFile();
+      File urlImageInFile = await FileTemporal.convertToTempFile(
+          urlImage: urlPrincipalImage, image: principalImage);
       Uint8List principalImageBytesAux = await urlImageInFile.readAsBytes();
       setState(() {
         principalImageBytes = principalImageBytesAux;
@@ -274,34 +271,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     );
   }
 
-  void agregarImagenes() async {
-    List<Asset?> imagesAsset = await getImagesAsset();
-
-    List<ProductImageToUpload> selectedImagesAux = [];
-
-    if (imagesAsset.isNotEmpty) {
-      for (var image in imagesAsset) {
-        ProductImageToUpload selectedImage = ProductImageToUpload(
-          nombreImage: assingName(image!.name!),
-          newImage: image,
-          width: image.originalWidth!.toDouble(),
-          height: image.originalHeight!.toDouble(),
-        );
-
-        selectedImagesAux.add(selectedImage);
-      }
-
-      setState(() {
-        myImageList.items.addAll(selectedImagesAux);
-        if (principalImage == null && widget.data?.idProducto == null) {
-          principalImage ??= imagesAsset[0];
-        }
-      });
-    }
-
-    print('Imagenes seleccionadas3: $imagesAsset');
-  }
-
   void agregarDesdeGaleria() async {
     Asset? imagesAsset = await getImageAsset();
 
@@ -310,71 +279,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         principalImage = imagesAsset;
         urlPrincipalImage = null;
       });
-    }
-  }
-
-  //  Convertir Asset o URLimage (image.network) a Archivo temporal
-  Future<File> convertToTempFile() async {
-    final tempDir = await getTemporaryDirectory();
-    final tempFile = File('${tempDir.path}/temp_image.jpg');
-
-    if (urlPrincipalImage != null) {
-      // Descargar la imagen de la URL y guardarla en el archivo temporal
-      final response = await Dio().get(urlPrincipalImage!,
-          options: Options(responseType: ResponseType.bytes));
-      await tempFile.writeAsBytes(response.data);
-    } else if (principalImage != null) {
-      final byteData = await principalImage!.getByteData();
-      final buffer = byteData.buffer.asUint8List();
-      await tempFile.writeAsBytes(buffer);
-    }
-
-    print('Temporal $tempFile');
-    editImage(tempFile);
-
-    return tempFile;
-  }
-
-  Future<void> editImage(File tempFile) async {
-    if (principalImage != null || urlPrincipalImage != null) {
-      // 2. Editar Archivo temporal
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: tempFile.path,
-        compressFormat: ImageCompressFormat.jpg,
-        compressQuality: 100,
-        uiSettings: [
-          AndroidUiSettings(
-              toolbarTitle: 'Cropper',
-              toolbarColor: Colors.deepOrange,
-              toolbarWidgetColor: Colors.white,
-              initAspectRatio: CropAspectRatioPreset.original,
-              lockAspectRatio: false),
-          IOSUiSettings(
-            title: 'Cropper',
-          ),
-          WebUiSettings(
-            context: context,
-            presentStyle: CropperPresentStyle.dialog,
-            boundary: const CroppieBoundary(
-              width: 520,
-              height: 520,
-            ),
-            viewPort:
-                const CroppieViewPort(width: 480, height: 480, type: 'circle'),
-            enableExif: true,
-            enableZoom: true,
-            showZoomer: true,
-          ),
-        ],
-      );
-
-      if (croppedFile != null) {
-        final croppedBytes = await croppedFile.readAsBytes();
-
-        setState(() {
-          principalImageBytes = Uint8List.fromList(croppedBytes);
-        });
-      }
     }
   }
 
@@ -467,7 +371,17 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           ? Align(
                               alignment: Alignment.centerLeft,
                               child: GlobalTextButton(
-                                onPressed: agregarImagenes,
+                                onPressed: () async {
+                                  List<ProductImageToUpload> selectedImagesAux =
+                                      await CrudImages.agregarImagenes();
+                                  setState(() {
+                                    myImageList.items.addAll(selectedImagesAux);
+                                    if (widget.data?.idProducto == null) {
+                                      principalImage ??= selectedImagesAux[0]
+                                          .newImage; //Si 'principalImage' es null, asignar selectedImagesAux[0].newImage
+                                    }
+                                  });
+                                },
                                 padding: myImageList.items.isNotEmpty
                                     ? const EdgeInsets.only(
                                         left: 5.0, top: 10.0)
@@ -499,62 +413,30 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                 ),
                               ),
                             ),
-                            urlPrincipalImage != null &&
-                                    principalImageBytes == null
-                                ? Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        45.0, 00.0, 0.0, 20.0),
-                                    child: Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: IndividualProductSample(
-                                          urlImage: urlPrincipalImage,
-                                          widthImage: 195.0,
-                                          heightImage: 170.0),
-                                    ),
-                                  )
-                                : principalImageBytes != null
-                                    ? Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            45.0, 00.0, 0.0, 20.0),
-                                        child: Align(
-                                          alignment: Alignment.bottomLeft,
-                                          child: IndividualProductSample(
-                                              imageBytes: principalImageBytes!,
-                                              widthImage: 195.0,
-                                              heightImage: 170.0),
-                                        ),
-                                      )
-                                    : FutureBuilder<ByteData>(
-                                        future: principalImage!.getByteData(),
-                                        builder: (BuildContext context,
-                                            AsyncSnapshot<ByteData> snapshot) {
-                                          if (snapshot.connectionState ==
-                                                  ConnectionState.done &&
-                                              snapshot.data != null) {
-                                            return Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      45.0, 00.0, 0.0, 20.0),
-                                              child: Align(
-                                                alignment: Alignment.bottomLeft,
-                                                child: IndividualProductSample(
-                                                    imageBytes: snapshot
-                                                        .data!.buffer
-                                                        .asUint8List(),
-                                                    widthImage: 195.0,
-                                                    heightImage: 170.0),
-                                              ),
-                                            );
-                                          } else {
-                                            return CircularProgressIndicator(); // Mostrar un indicador de carga mientras se obtienen los datos de la imagen
-                                          }
-                                        },
-                                      ),
+                            ShowSampleAnyImage(
+                              urlImage: urlPrincipalImage,
+                              imageBytes: principalImageBytes,
+                              imageAsset: principalImage,
+                            ),
                             Row(
                               children: [
                                 ElevatedButton(
-                                    onPressed: () {
-                                      convertToTempFile();
+                                    onPressed: () async {
+                                      File tempFile =
+                                          await FileTemporal.convertToTempFile(
+                                              urlImage: urlPrincipalImage,
+                                              image: principalImage);
+                                      Uint8List? croppedBytes =
+                                          await EditarImagen.editImage(tempFile,
+                                              urlImage: urlPrincipalImage,
+                                              imageAset: principalImage);
+
+                                      setState(() {
+                                        if (croppedBytes != null) {
+                                          principalImageBytes =
+                                              Uint8List.fromList(croppedBytes);
+                                        }
+                                      });
                                     },
                                     child: Text('Editar')),
                                 ElevatedButton(

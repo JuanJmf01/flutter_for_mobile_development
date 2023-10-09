@@ -4,7 +4,8 @@ import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
-import 'package:etfi_point/Pages/crearProducto.dart';
+import 'package:etfi_point/Pages/servicios.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -24,7 +25,13 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
+
+    // Oyente para cada cambio de pestaña en el tabBar
+    // _tabController.addListener(() {
+    //   final currentIndex = _tabController.index;
+    //   print("INDEX: $currentIndex");
+    // });
   }
 
   @override
@@ -48,45 +55,29 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
           ),
           actions: [
             if (isUserSignedIn)
-              IconButton(
-                onPressed: () async {
-                  result = await Navigator.push<int>(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CrearProducto()));
-                  if (result != null) {
-                    print(' $result');
-                  }
-                },
-                icon: const Icon(
-                  Icons.add_circle_outline,
-                  color: Colors.black,
-                  size: 33,
-                ),
-              ),
-            Padding(
-              padding: const EdgeInsets.only(right: 10.0),
-              child: IconButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (BuildContext context) => ButtonMenu(),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10.0),
-                        topRight: Radius.circular(10.0),
+              Padding(
+                padding: const EdgeInsets.only(right: 10.0),
+                child: IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (BuildContext context) => ButtonMenu(),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10.0),
+                          topRight: Radius.circular(10.0),
+                        ),
                       ),
-                    ),
-                  );
-                },
-                icon: const Icon(
-                  Icons.menu,
-                  color: Colors.black,
-                  size: 35,
+                    );
+                  },
+                  icon: const Icon(
+                    Icons.menu,
+                    color: Colors.black,
+                    size: 35,
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -98,16 +89,28 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
               padding: const EdgeInsets.only(bottom: 10.0),
               child: TabBar(
                 controller: _tabController,
-                tabs: const [
+                tabs: [
                   Tab(
                     icon: Icon(
-                      Icons.image,
+                      _tabController.index == 0
+                          ? CupertinoIcons.cube_box_fill
+                          : CupertinoIcons.cube_box,
                       color: Colors.black,
                     ),
                   ),
                   Tab(
                     icon: Icon(
-                      Icons.video_collection_rounded,
+                      _tabController.index == 1
+                          ? CupertinoIcons.heart_circle_fill
+                          : CupertinoIcons.heart_circle,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Tab(
+                    icon: Icon(
+                      _tabController.index == 2
+                          ? CupertinoIcons.rectangle_3_offgrid_fill
+                          : CupertinoIcons.rectangle_3_offgrid,
                       color: Colors.black,
                     ),
                   ),
@@ -123,9 +126,12 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
             SingleChildScrollView(
               child: MisProductos(),
             ),
-            SingleChildScrollView(
+            const SingleChildScrollView(
+              child: Servicios(),
+            ),
+            const SingleChildScrollView(
               child: Center(
-                child: Text('Contenido de la pestaña 2 y otras imágenes'),
+                child: Text('Contenido de la pestaña 3 y otras imágenes'),
               ),
             ),
           ],
@@ -203,7 +209,6 @@ class MisProductos extends StatefulWidget {
 class _MisProductosState extends State<MisProductos> {
   List<ProductoTb> productos = [];
 
-
   @override
   Widget build(BuildContext context) {
     int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
@@ -240,7 +245,7 @@ class _MisProductosState extends State<MisProductos> {
                                   return IndividualProduct(producto: producto);
                                 },
                               )
-                            : Padding(
+                            : const Padding(
                                 padding: EdgeInsets.only(top: 40),
                                 child: Center(
                                   child: Text('No hay productos que mostrar'),

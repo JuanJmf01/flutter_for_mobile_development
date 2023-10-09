@@ -34,14 +34,14 @@ class _ButtonSeleccionarCategoriasState
         TabController(length: widget.categoriasDisponibles.length, vsync: this);
 
 
-    // Oyente para cada cambio de pestaña en el tabBar
-    _tabController.addListener(() {
-      final currentIndex = _tabController.index;
-      final currentCategoria = widget.categoriasDisponibles[currentIndex];
-      print("Pestaña seleccionada: ${currentCategoria.nombre}");
-      print("ID de la pestaña: ${currentCategoria.idCategoria}");
-      // Realiza cualquier acción de impresión que necesites aquí
-    });
+    // // Oyente para cada cambio de pestaña en el tabBar
+    // _tabController.addListener(() {
+    //   final currentIndex = _tabController.index;
+    //   final currentCategoria = widget.categoriasDisponibles[currentIndex];
+    //   print("Pestaña seleccionada: ${currentCategoria.nombre}");
+    //   print("ID de la pestaña: ${currentCategoria.idCategoria}");
+    //   // Realiza cualquier acción de impresión que necesites aquí
+    // });
   }
 
   @override

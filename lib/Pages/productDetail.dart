@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
@@ -190,7 +190,7 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
   ImageList? myImageList;
 
   void getListSecondaryProductImages() async {
-    List<ProductImagesTb> productSecondaryImagesAux =
+    List<ProservicioImagesTb> productSecondaryImagesAux =
         await ProductImageDb.getProductSecondaryImages(widget.idProducto);
 
     setState(() {
@@ -538,7 +538,7 @@ class AdvancedDescription extends StatefulWidget {
 }
 
 class _AdvancedDescriptionState extends State<AdvancedDescription> {
-  List<ProductImagesTb> productSecondaryImages = [];
+  List<ProservicioImagesTb> productSecondaryImages = [];
   ImageList allProductImages = ImageList([]);
   bool isChecked = true;
 
@@ -551,7 +551,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
   void insertProductImage(int idUsuario) async {
     if (imagesToUpload.isNotEmpty) {
-      List<ProductImagesTb> productImagesAux = [];
+      List<ProservicioImagesTb> productImagesAux = [];
       for (var imageToUpload in imagesToUpload) {
         Uint8List imageBytes = await assetToUint8List(imageToUpload.newImage);
         ImageStorageTb image = ImageStorageTb(
@@ -564,7 +564,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
             height: imageToUpload.height,
             isPrincipalImage: 0);
 
-        ProductImagesTb productImage =
+        ProservicioImagesTb productImage =
             await ProductImagesStorage.cargarImage(image);
         productImagesAux.add(productImage);
       }
@@ -594,6 +594,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         String nombreImage = newImage.nombreImage;
         Asset imageToUpdate = newImage.newImage;
 
+        print("LONG IMAGE_: ${imageToUpdate.originalHeight!.toDouble()}");
+
         ImageStorageTb image = ImageStorageTb(
             idUsuario: idUsuario,
             idFile: widget.idProducto,
@@ -602,7 +604,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
             imageName: nombreImage,
             width: imageToUpdate.originalWidth!.toDouble(),
             height: imageToUpdate.originalHeight!.toDouble(),
-            isPrincipalImage: 1);
+            isPrincipalImage: 0);
 
         String url = await ProductImagesStorage.updateImage(image);
 
@@ -634,7 +636,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
   }
 
   void getListSecondaryProductImages() async {
-    List<ProductImagesTb> productSecondaryImagesAux =
+    List<ProservicioImagesTb> productSecondaryImagesAux =
         await ProductImageDb.getProductSecondaryImages(widget.idProducto);
 
     setState(() {
@@ -656,7 +658,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         });
       }
     } else {
-      print('es la mismas');
+      print('es la misma descripcion detallada');
     }
   }
 
@@ -709,7 +711,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           imagesToUpdate[indice] = newImage;
         });
       } else {
-        if (image is ProductImagesTb) {
+        if (image is ProservicioImagesTb) {
           ProductImageToUpdate newImage = ProductImageToUpdate(
             nombreImage: image.nombreImage,
             newImage: asset,
@@ -742,7 +744,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        if (image is ProductImagesTb) {
+        if (image is ProservicioImagesTb) {
           return DeletedDialog(
               onPress: () async {
                 bool result = await CrudImages.eliminarImagen(image, idUsuario);
@@ -750,7 +752,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 if (result) {
                   setState(() {
                     allProductImages.items.removeWhere((element) {
-                      if (element is ProductImagesTb) {
+                      if (element is ProservicioImagesTb) {
                         return element.nombreImage == image.nombreImage;
                       }
                       return false;
@@ -776,7 +778,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
               /**De la lista de imagenes originales, sacamos la imagen base o imagen que inicialmente habia */
 
               if (image is ProductImageToUpdate) {
-                ProductImagesTb oldImage = productSecondaryImages[imageIndex];
+                ProservicioImagesTb oldImage = productSecondaryImages[imageIndex];
 
                 setState(() {
                   allProductImages.items[imageIndex] = oldImage;
@@ -882,7 +884,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                         Column(
                           children: [
                             Container(
-                                child: image is ProductImagesTb
+                                child: image is ProservicioImagesTb
                                     ?
                                     //  Image.network(
                                     //   image.urlImage,
@@ -945,10 +947,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                                             eliminarImagen(image, idUsuario);
                                           }
                                         },
-                                        image is ProductImagesTb
+                                        image is ProservicioImagesTb
                                             ? 'Eliminar'
                                             : 'Descartar',
-                                        color: image is ProductImagesTb
+                                        color: image is ProservicioImagesTb
                                             ? Colors.red.shade700
                                             : Colors.lightGreen.shade500,
                                       ),

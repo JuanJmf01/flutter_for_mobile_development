@@ -1,5 +1,5 @@
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
@@ -10,7 +10,7 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 class CrudImages {
   static Future<List<ProductImageToUpload>> agregarImagenes() async {
     List<Asset?> imagesAsset = await getImagesAsset();
-    List<ProductImageToUpload> allProductImagesAux = [];
+    List<ProductImageToUpload> allProServiciosImagesAux = [];
 
     if (imagesAsset.isNotEmpty) {
       for (var image in imagesAsset) {
@@ -20,11 +20,11 @@ class CrudImages {
           width: image.originalWidth!.toDouble(),
           height: image.originalHeight!.toDouble(),
         );
-        allProductImagesAux.add(newImage);
+        allProServiciosImagesAux.add(newImage);
       }
     }
 
-    return allProductImagesAux;
+    return allProServiciosImagesAux;
   }
 
 //   /// The function `editarImagenes` is used to edit images by replacing them with new images in a list.
@@ -84,14 +84,14 @@ class CrudImages {
 
   static Future<bool> eliminarImagen(dynamic image, int idUsuario) async {
     bool band = false;
-    if (image is ProductImagesTb) {
+    if (image is ProservicioImagesTb) {
       ImageStorageDeleteTb infoImageToDelete =
           ImageStorageDeleteTb(
         fileName: 'productos',
         idUsuario: idUsuario,
         nombreImagen: image.nombreImage,
-        idProducto: image.idProducto,
-        idProductImage: image.idProductImage,
+        idProducto: image.idProServicio,
+        idProductImage: image.idProServicioImage,
       );
 
       bool deleteResult =

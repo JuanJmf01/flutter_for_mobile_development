@@ -1,4 +1,4 @@
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -57,7 +57,7 @@ class _MyImageListState extends State<MyImageList> {
               desiredHeight = desiredWidth * (originalHeight / originalWidth);
 
               isSelected = widget.principalImage == image.newImage;
-            } else if (image is ProductImagesTb && isSelected == false) {
+            } else if (image is ProservicioImagesTb && isSelected == false) {
               isSelected = widget.urlPrincipalImage == image.urlImage;
             }
 
@@ -73,7 +73,7 @@ class _MyImageListState extends State<MyImageList> {
                         setState(() {
                           widget.onImageSelected(image.newImage);
                         });
-                      } else if (image is ProductImagesTb) {
+                      } else if (image is ProservicioImagesTb) {
                         widget.onImageSelected(image.urlImage);
                       }
                     },
@@ -91,7 +91,7 @@ class _MyImageListState extends State<MyImageList> {
                                   width: desiredWidth.toInt(),
                                   height: desiredHeight!.toInt(),
                                 )
-                              : image is ProductImagesTb
+                              : image is ProservicioImagesTb
                                   ? Image.network(
                                       image.urlImage,
                                       fit: widget.fit ?? BoxFit.contain,

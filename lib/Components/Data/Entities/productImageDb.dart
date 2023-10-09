@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 /// The `ProductImageDb` class contains static methods for inserting, retrieving, updating, and deleting
@@ -16,11 +16,11 @@ class ProductImageDb {
   ///
   /// Returns:
   ///   a Future object of type ProductImagesTb.
-  static Future<ProductImagesTb> insertProductImages(
-      ProductImageCreacionTb productImage) async {
+  static Future<ProservicioImagesTb> insertProductImages(
+      ProServicioImageCreacionTb productImage) async {
     Dio dio = Dio();
     String url = MisRutas.rutaProductImages;
-    Map<String, dynamic> data = productImage.toMap();
+    Map<String, dynamic> data = productImage.toMapProductos();
 
     try {
       Response response = await dio.post(
@@ -33,7 +33,7 @@ class ProductImageDb {
 
       if (response.statusCode == 200) {
         print('productImage insertado correctamente (print)');
-        ProductImagesTb productImage = ProductImagesTb.fromJson(response.data);
+        ProservicioImagesTb productImage = ProservicioImagesTb.fromJsonProductos(response.data);
 
         return productImage;
       } else {
@@ -54,7 +54,7 @@ class ProductImageDb {
  /// 
  /// Returns:
  ///   a Future object that resolves to a List of ProductImagesTb objects.
-  static Future<List<ProductImagesTb>> getProductSecondaryImages(
+  static Future<List<ProservicioImagesTb>> getProductSecondaryImages(
       int idProducto) async {
     Dio dio = Dio();
 
@@ -63,9 +63,9 @@ class ProductImageDb {
           await dio.get('${MisRutas.rutaProductImages}/$idProducto');
 
       if (response.statusCode == 200) {
-        List<ProductImagesTb> productSecondaryImages =
-            List<ProductImagesTb>.from(response.data
-                .map((productoData) => ProductImagesTb.fromJson(productoData)));
+        List<ProservicioImagesTb> productSecondaryImages =
+            List<ProservicioImagesTb>.from(response.data
+                .map((productoData) => ProservicioImagesTb.fromJsonProductos(productoData)));
         print('productoImageingetSecond: $productSecondaryImages');
         return productSecondaryImages;
       } else {
@@ -84,15 +84,18 @@ class ProductImageDb {
  /// Args:
  ///   productImage (ProductImageCreacionTb): The parameter `productImage` is an instance of the class
  /// `ProductImageCreacionTb`. It represents the product image that needs to be updated.
+ // POR AHORA NO UTILIZAREMOS LA ACTUALIZACION DE LA IMAGEN EN LA BASE DE
+ // DATOS YA QUE NO ES NECESARIO. NOTA: NO HAY METODO DE CONSULTA PARA 
+ //ACTUALIZACION DE LA IMANGE EN LA API
   static Future<void> updateProductImage(
-      ProductImageCreacionTb productImage) async {
+      ProServicioImageCreacionTb productImage) async {
     Dio dio = Dio();
     String url = MisRutas.rutaProductImages;
 
     try {
       Response response = await dio.patch(
         url,
-        data: productImage.toMap(),
+        data: productImage.toMapProductos(),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
