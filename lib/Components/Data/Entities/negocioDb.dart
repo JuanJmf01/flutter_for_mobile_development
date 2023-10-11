@@ -95,4 +95,22 @@ class NegocioDb {
       return null;
     }
   }
+
+
+    static Future<int> crearNegocioSiNoExiste(idUsuario) async {
+    int idNegocio = 0;
+    //-- Se crea un negocio en caso de que no exista. Si existe, se asigna el valor idNegocio en _producto a ser creado
+    // En caso de que no exista 'idNegocioIfExists' sera igual a null por lo tanto se creara un nuevo negocio con 'idUsuario';
+    NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
+    if (negocio?.idNegocio == null) {
+      NegocioCreacionTb negocio = NegocioCreacionTb(
+        idUsuario: idUsuario,
+      );
+      idNegocio = await NegocioDb.insertNegocio(negocio);
+    } else {
+      idNegocio = negocio!.idNegocio;
+    }
+
+    return idNegocio;
+  }
 }

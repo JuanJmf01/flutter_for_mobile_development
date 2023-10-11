@@ -1,6 +1,6 @@
 import 'package:etfi_point/Pages/productosGeneralForm.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
-import 'package:etfi_point/Pages/servicios/agregarServicio.dart';
+import 'package:etfi_point/Pages/proServicios/servicios/agregarServicio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 

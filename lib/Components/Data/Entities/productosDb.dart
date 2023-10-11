@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productoSubCategoriaTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioSubCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
@@ -53,8 +53,8 @@ class ProductoDb {
 
         // Insert categorias seleccionadas
         for (var subCategoria in categoriasSeleccionadas) {
-          ProductoSubCategoriaTb productoSubCategoria = ProductoSubCategoriaTb(
-              idProducto: idProducto,
+          ProServicioSubCategoriaTb productoSubCategoria = ProServicioSubCategoriaTb(
+              idProServicio: idProducto,
               idCategoria: subCategoria.idCategoria,
               idSubCategoria: subCategoria.idSubCategoria);
 
@@ -160,9 +160,9 @@ class ProductoDb {
     try {
       await ProductosSubCategoriasDb.deleteProductSubCategories(idProducto);
       for (var subCategoria in categoriasSeleccionadas) {
-        ProductoSubCategoriaTb productoCategoria = ProductoSubCategoriaTb(
+        ProServicioSubCategoriaTb productoCategoria = ProServicioSubCategoriaTb(
           idSubCategoria: subCategoria.idSubCategoria,
-          idProducto: idProducto,
+          idProServicio: idProducto,
           idCategoria: subCategoria.idCategoria,
         );
 

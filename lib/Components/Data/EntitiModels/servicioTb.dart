@@ -59,43 +59,32 @@ class ServicioTb {
 }
 
 class ServicioCreacionTb {
-  final int idProducto;
   final int idNegocio;
   final String nombre;
   final String? descripcion;
-  final String? descripcionDetallada;
   final double precio;
   final int oferta;
-  final String urlImage;
-  final String nombreImage;
 
-  ServicioCreacionTb(
-      {required this.idProducto,
-      required this.idNegocio,
-      required this.nombre,
-      this.descripcion,
-      this.descripcionDetallada,
-      required this.precio,
-      required this.oferta,
-      required this.urlImage,
-      required this.nombreImage});
+  ServicioCreacionTb({
+    required this.idNegocio,
+    required this.nombre,
+    this.descripcion,
+    required this.precio,
+    required this.oferta,
+  });
 
   Map<String, dynamic> toMap() {
     return {
-      'idProducto': idProducto,
       'idNegocio': idNegocio,
       'nombre': nombre,
       'descripcion': descripcion,
-      'descripcionDetallada': descripcionDetallada,
       'precio': precio,
       'oferta': oferta,
-      'urlImage': urlImage,
-      'nombreImage': nombreImage,
     };
   }
 
   @override
   String toString() {
-    return 'ServicioCreacionTb{nombreServicio: $nombre, nombreImage: $nombreImage}';
+    return 'ServicioCreacionTb{nombreServicio: $nombre}';
   }
 }

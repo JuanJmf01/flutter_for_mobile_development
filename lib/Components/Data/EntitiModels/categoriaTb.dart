@@ -3,13 +3,11 @@ import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 class CategoriaTb {
   final int idCategoria;
   final String nombre;
-  final String? imagePath;
   final List<SubCategoriaTb> subCategorias;
 
   CategoriaTb({
     required this.idCategoria,
     required this.nombre,
-    this.imagePath,
     required this.subCategorias,
   });
 
@@ -25,29 +23,19 @@ class CategoriaTb {
     return CategoriaTb(
       idCategoria: json['idCategoria'],
       nombre: json['nombre'],
-      imagePath: json['imagePath'],
       subCategorias: subCategoriasList,
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {
-      'idCategoria': idCategoria,
-      'nombre': nombre,
-      'imagePath': imagePath,
-    };
-  }
 
   CategoriaTb copyWith({
     int? idCategoria,
     String? nombre,
-    String? imagePath,
     List<SubCategoriaTb>? subCategorias,
   }) {
     return CategoriaTb(
       idCategoria: idCategoria ?? this.idCategoria,
       nombre: nombre ?? this.nombre,
-      imagePath: imagePath ?? this.imagePath,
       subCategorias: subCategorias ?? this.subCategorias,
     );
   }

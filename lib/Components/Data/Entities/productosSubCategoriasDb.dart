@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productoSubCategoriaTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioSubCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class ProductosSubCategoriasDb {
@@ -36,10 +36,10 @@ class ProductosSubCategoriasDb {
   }
 
    static Future<void> insertSubCategoriasSeleccionadas(
-      ProductoSubCategoriaTb productoSubCategoria) async {
+      ProServicioSubCategoriaTb productoSubCategoria) async {
 
     Dio dio = Dio();
-    Map<String, dynamic> data = productoSubCategoria.toMap();
+    Map<String, dynamic> data = productoSubCategoria.toMapProducto();
     String url = MisRutas.rutaProductosSubCategorias;
 
     try {

@@ -1,15 +1,16 @@
 import 'dart:io';
 
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/negocioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
+import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
@@ -18,7 +19,6 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
-import 'package:etfi_point/Components/Utils/buttonSeleccionarCategorias.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
@@ -27,6 +27,8 @@ import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showSampletAnyImage.dart';
+import 'package:etfi_point/Pages/proServicios/buttonSeleccionarCategorias.dart';
+import 'package:etfi_point/Pages/proServicios/sectionTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -97,7 +99,10 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       getListSecondaryProductImages();
       estaEnOferta();
     }
-    obtenerCategorias();
+    String url = MisRutas.rutaCategorias2;
+
+    CategoriaDb.obtenerCategorias(
+        idProducto: producto?.idProducto, context: context, url: url);
 
     if (widget.data != null) {
       _producto = widget.data;
@@ -125,38 +130,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         : enOferta == 0
             ? isChecked = false
             : isChecked = false;
-  }
-
-  void obtenerCategorias() async {
-    print("ENTRA PRIMERO AQUI");
-    int? idProducto = widget.data?.idProducto;
-
-    await context
-        .read<SubCategoriaSeleccionadaProvider>()
-        .obtenerAllSubCategorias();
-
-    if (idProducto != null) {
-      await context
-          .read<SubCategoriaSeleccionadaProvider>()
-          .obtenerSubCategoriasSeleccionadas(idProducto);
-    }
-  }
-
-  Future<int> crearNegocioSiNoExiste(idUsuario) async {
-    int idNegocio = 0;
-    //-- Se crea un negocio en caso de que no exista. Si existe, se asigna el valor idNegocio en _producto a ser creado
-    // En caso de que no exista 'idNegocioIfExists' sera igual a null por lo tanto se creara un nuevo negocio con 'idUsuario';
-    NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
-    if (negocio?.idNegocio == null) {
-      NegocioCreacionTb negocio = NegocioCreacionTb(
-        idUsuario: idUsuario,
-      );
-      idNegocio = await NegocioDb.insertNegocio(negocio);
-    } else {
-      idNegocio = negocio!.idNegocio;
-    }
-
-    return idNegocio;
   }
 
   Future<int> crearProducto(ProductoCreacionTb producto, int idUsuario) async {
@@ -376,7 +349,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                       await CrudImages.agregarImagenes();
                                   setState(() {
                                     myImageList.items.addAll(selectedImagesAux);
-                                    if (widget.data?.idProducto == null) {
+                                    if (widget.data?.idProducto == null &&
+                                        selectedImagesAux.isNotEmpty) {
                                       principalImage ??= selectedImagesAux[0]
                                           .newImage; //Si 'principalImage' es null, asignar selectedImagesAux[0].newImage
                                     }
@@ -492,25 +466,13 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         ],
                       ),
 
-                      const Padding(
+                      const GlobalDivider(
                         padding: EdgeInsets.only(top: 20.0),
-                        child: GlobalDivider(),
                       ),
 
-                      const Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0.0, 12.0, 25.0, 0.0),
-                            child: Text(
-                              'Categorias',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ],
+                      const SectionTitle(
+                        title: "Categorias",
+                        padding: EdgeInsets.fromLTRB(0.0, 12.0, 25.0, 0.0),
                       ),
 
                       //Categorias seleccionadas
@@ -524,37 +486,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                             paddingContainer: const EdgeInsets.all(12.0),
                           )),
 
-                      ElevatedGlobalButton(
-                        nameSavebutton: 'Seleccionar categorias',
-                        onPress: () {
-                          print("ALLCATEGORIES_: $categoriasDisponibles");
-                          showModalBottomSheet(
-                            isScrollControlled: true,
-                            context: context,
-                            builder: (BuildContext context) =>
-                                ButtonSeleccionarCategorias(
-                              categoriasDisponibles: categoriasDisponibles,
-                            ),
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(10.0),
-                                topRight: Radius.circular(10.0),
-                              ),
-                            ),
-                          );
-                        },
-                        heightSizeBox: 52,
-                        widthSizeBox: double.infinity,
-                        borderRadius: BorderRadius.circular(30.0),
-                        backgroundColor: Colors.blue.withOpacity(0.06),
-                        paddingRight: 20.0,
-                        paddingLeft: 20.0,
-                        borderSideColor: Colors.blue,
-                        colorNameSaveButton: Colors.blue,
-                        widthBorderSide: 3.0,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w500,
-                        //color: Colors.blue.withOpacity(0.2),
+                      ButtonSeleccionarCategoriasProServicios(
+                        categoriasDisponibles: categoriasDisponibles,
                       ),
                       const SizedBox(height: 100.0)
                     ],
@@ -580,7 +513,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         int.tryParse(_cantidadDisponibleController.text) ?? 0;
 
                     ProductoCreacionTb productoCreacion;
-                    int idNegocio = await crearNegocioSiNoExiste(idUsuario);
+                    int idNegocio =
+                        await NegocioDb.crearNegocioSiNoExiste(idUsuario);
 
                     print('producto_:: ${widget.data?.idProducto}');
                     if (widget.data?.idProducto == null) {

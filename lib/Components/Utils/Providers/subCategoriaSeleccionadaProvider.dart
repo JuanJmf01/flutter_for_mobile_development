@@ -24,10 +24,12 @@ class SubCategoriaSeleccionadaProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> obtenerAllSubCategorias() async {
-    _allSubCategorias = await CategoriaDb.getAllCategorias();
+  Future<void> obtenerAllSubCategorias(String url) async {
+
+    _allSubCategorias = await CategoriaDb.getAllCategorias(url);
     notifyListeners();
   }
+  
 
   Future<void> generarSeleccionados(List<SubCategoriaTb> elementos) async {
     _isBlue = List.generate(elementos.length, (index) {
