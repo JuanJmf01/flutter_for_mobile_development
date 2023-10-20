@@ -8,6 +8,8 @@ import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
+import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
@@ -18,6 +20,7 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
+import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
@@ -71,42 +74,62 @@ class _AgregarServicioState extends State<AgregarServicio> {
     try {
       idServicio =
           await ServicioDb.insertServicio(servicio, categoriasSeleccionadas);
+      String finalNameImage = assingName(principalImage!.name!);
 
       if (principalImageBytes != null || principalImage != null) {
-        ImageStorageTb image = ImageStorageTb(
+        ImageStorageCreacionTb image = ImageStorageCreacionTb(
           idUsuario: idUsuario,
-          idFile: idServicio,
+          idProServicio: idServicio,
           newImageBytes:
               principalImageBytes ?? await assetToUint8List(principalImage!),
           fileName: 'servicios',
-          imageName: principalImage!.name!,
+          finalNameImage: finalNameImage,
+        );
+        String url = await ProductImagesStorage.cargarImage(image);
+
+        ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
+          idProServicio: idServicio,
+          nombreImage: finalNameImage,
+          urlImage: url,
           width: principalImage!.originalWidth!.toDouble(),
           height: principalImage!.originalHeight!.toDouble(),
           isPrincipalImage: 1,
         );
-        await ProductImagesStorage.cargarImage(image);
+
+        await ServiceImageDb.insertServiceImage(productImage);
       }
+
       if (myImageList.items.isNotEmpty) {
         for (var imagen in myImageList.items) {
+          String finalNameImage = assingName(principalImage!.name!);
           if (imagen is ProductImageToUpload) {
             Uint8List imageBytes = await assetToUint8List(imagen.newImage);
 
-            ImageStorageTb image = ImageStorageTb(
-                idUsuario: idUsuario,
-                idFile: idServicio,
-                newImageBytes: imageBytes,
-                imageName: imagen.nombreImage,
-                fileName: 'servicios',
-                width: imagen.width,
-                height: imagen.height,
-                isPrincipalImage: 0);
+            ImageStorageCreacionTb image = ImageStorageCreacionTb(
+              idUsuario: idUsuario,
+              idProServicio: idServicio,
+              newImageBytes: imageBytes,
+              finalNameImage: finalNameImage,
+              fileName: 'servicios',
+            );
 
-            await ProductImagesStorage.cargarImage(image);
+            String url = await ProductImagesStorage.cargarImage(image);
+
+            ProServicioImageCreacionTb serviceImage =
+                ProServicioImageCreacionTb(
+              idProServicio: idServicio,
+              nombreImage: finalNameImage,
+              urlImage: url,
+              width: principalImage!.originalWidth!.toDouble(),
+              height: principalImage!.originalHeight!.toDouble(),
+              isPrincipalImage: 0,
+            );
+            await ServiceImageDb.insertServiceImage(serviceImage);
           }
         }
       }
     } catch (error) {
-      print('Problemas al insertar el producto $error');
+      print('Problemas al insertar el servicio $error');
     }
   }
 

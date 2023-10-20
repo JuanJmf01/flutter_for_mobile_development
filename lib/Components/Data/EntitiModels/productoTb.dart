@@ -1,7 +1,7 @@
 class ProductoTb {
-  final int idProducto; // PK
-  final int idNegocio; // FK
-  final String nombreProducto;
+  final int idProducto;
+  final int idNegocio;
+  final String nombre;
   final double precio;
   final String? descripcion;
   final String? descripcionDetallada;
@@ -16,7 +16,7 @@ class ProductoTb {
   ProductoTb(
       {required this.idProducto,
       required this.idNegocio,
-      required this.nombreProducto,
+      required this.nombre,
       required this.precio,
       this.descripcion,
       this.descripcionDetallada,
@@ -32,7 +32,7 @@ class ProductoTb {
     return ProductoTb(
       idProducto: json['idProducto'],
       idNegocio: json['idNegocio'],
-      nombreProducto: json['nombreProducto'],
+      nombre: json['nombreProducto'],
       precio: json['precio'].toDouble(),
       descripcion: json['descripcion'],
       descripcionDetallada: json['descripcionDetallada'],
@@ -47,7 +47,7 @@ class ProductoTb {
     return {
       'idProducto': idProducto,
       'idNegocio': idNegocio,
-      'nombreProducto': nombreProducto,
+      'nombreProducto': nombre,
       'precio': precio,
       'descripcion': descripcion,
       'descripcionDetallada': descripcionDetallada,
@@ -62,7 +62,7 @@ class ProductoTb {
 
   @override
   String toString() {
-    return 'ProductoTb{idProducto: $idProducto, nombreProducto: $nombreProducto, nombreImage: $nombreImage}';
+    return 'ProductoTb{idProducto: $idProducto, nombreProducto: $nombre, nombreImage: $nombreImage}';
   }
 }
 

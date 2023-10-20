@@ -86,7 +86,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     if (producto?.idProducto != null) {
       print('dataUpdat_: ${widget.data}');
 
-      _nombreController.text = producto!.nombreProducto;
+      _nombreController.text = producto!.nombre;
       _precioController.text = (producto.precio).toStringAsFixed(0);
       _descripcionController.text = producto.descripcion ?? '';
       _cantidadDisponibleController.text =
@@ -132,26 +132,34 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
             : isChecked = false;
   }
 
-  Future<int> crearProducto(ProductoCreacionTb producto, int idUsuario) async {
-    int idProducto = 0;
+  Future<void> crearProducto(ProductoCreacionTb producto, int idUsuario) async {
+    int idProducto;
+
     try {
       idProducto =
           await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
 
       if (principalImageBytes != null || principalImage != null) {
-        ImageStorageTb image = ImageStorageTb(
+        ImageStorageCreacionTb image = ImageStorageCreacionTb(
           idUsuario: idUsuario,
-          idFile: idProducto,
+          idProServicio: idProducto,
           newImageBytes:
               principalImageBytes ?? await assetToUint8List(principalImage!),
-          imageName: principalImage!.name!,
+          finalNameImage: principalImage!.name!,
           fileName: 'productos',
+        );
+
+        String url = await ProductImagesStorage.cargarImage(image);
+        ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
+          idProServicio: idProducto,
+          nombreImage: principalImage!.name!,
+          urlImage: url,
           width: principalImage!.originalWidth!.toDouble(),
           height: principalImage!.originalHeight!.toDouble(),
           isPrincipalImage: 1,
         );
 
-        await ProductImagesStorage.cargarImage(image);
+        await ProductImageDb.insertProductImages(productImage);
       }
 
       if (myImageList.items.isNotEmpty) {
@@ -159,17 +167,27 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           if (imagen is ProductImageToUpload) {
             Uint8List imageBytes = await assetToUint8List(imagen.newImage);
 
-            ImageStorageTb image = ImageStorageTb(
-                idUsuario: idUsuario,
-                idFile: idProducto,
-                newImageBytes: imageBytes,
-                imageName: imagen.nombreImage,
-                fileName: 'productos',
-                width: imagen.width,
-                height: imagen.height,
-                isPrincipalImage: 0);
+            ImageStorageCreacionTb image = ImageStorageCreacionTb(
+              idUsuario: idUsuario,
+              idProServicio: idProducto,
+              newImageBytes: imageBytes,
+              finalNameImage: imagen.nombreImage,
+              fileName: 'productos',
+            );
 
-            await ProductImagesStorage.cargarImage(image);
+            String url = await ProductImagesStorage.cargarImage(image);
+
+            ProServicioImageCreacionTb productImage =
+                ProServicioImageCreacionTb(
+              idProServicio: idProducto,
+              nombreImage: principalImage!.name!,
+              urlImage: url,
+              width: principalImage!.originalWidth!.toDouble(),
+              height: principalImage!.originalHeight!.toDouble(),
+              isPrincipalImage: 1,
+            );
+
+            await ProductImageDb.insertProductImages(productImage);
           }
         }
       }
@@ -178,8 +196,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     } catch (error) {
       print('Problemas al insertar el producto $error');
     }
-
-    return idProducto;
   }
 
   void actualizarProducto(ProductoTb producto, int idUsuario) async {
@@ -535,7 +551,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                       _producto = ProductoTb(
                         idProducto: widget.data!.idProducto,
                         idNegocio: widget.data!.idNegocio,
-                        nombreProducto: nombreProducto,
+                        nombre: nombreProducto,
                         precio: precio,
                         descripcion: descripcion,
                         cantidadDisponible: cantidadDisponible,

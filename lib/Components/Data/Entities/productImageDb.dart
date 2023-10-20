@@ -69,11 +69,11 @@ class ProductImageDb {
         print('productoImageingetSecond: $productSecondaryImages');
         return productSecondaryImages;
       } else {
-        print('Error: ${response.statusCode}');
+        print('Error en getProductSecondaryImages: ${response.statusCode}');
         return [];
       }
     } catch (error) {
-      print('Error: $error');
+      print('Error en getProductSecondaryImages: $error');
       return [];
     }
   }

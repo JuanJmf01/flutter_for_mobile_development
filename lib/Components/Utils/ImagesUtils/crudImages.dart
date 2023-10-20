@@ -1,6 +1,4 @@
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
-import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
@@ -81,28 +79,4 @@ class CrudImages {
 //       }
 //     }
 //   }
-
-  static Future<bool> eliminarImagen(dynamic image, int idUsuario) async {
-    bool band = false;
-    if (image is ProservicioImagesTb) {
-      ImageStorageDeleteTb infoImageToDelete =
-          ImageStorageDeleteTb(
-        fileName: 'productos',
-        idUsuario: idUsuario,
-        nombreImagen: image.nombreImage,
-        idProducto: image.idProServicio,
-        idProductImage: image.idProServicioImage,
-      );
-
-      bool deleteResult =
-          await ProductImagesStorage.deleteImage(infoImageToDelete);
-
-      if (deleteResult) {
-        band = true;
-      } else {
-        band = false;
-      }
-    }
-    return band;
-  }
 }

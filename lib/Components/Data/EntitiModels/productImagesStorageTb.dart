@@ -21,17 +21,32 @@ class ImageStorageTb {
       required this.isPrincipalImage});
 }
 
+class ImageStorageCreacionTb {
+  final int idUsuario;
+  final int idProServicio;
+  final Uint8List newImageBytes;
+  final String fileName;
+  final String finalNameImage;
+
+  ImageStorageCreacionTb({
+    required this.idUsuario,
+    required this.idProServicio,
+    required this.newImageBytes,
+    required this.fileName,
+    required this.finalNameImage,
+  });
+}
+
 class ImageStorageDeleteTb {
   final String fileName;
   final int idUsuario;
   final String nombreImagen;
-  final int idProducto;
-  final int idProductImage;
+  final int idProServicio;
 
-  ImageStorageDeleteTb(
-      {required this.fileName,
-      required this.idUsuario,
-      required this.nombreImagen,
-      required this.idProducto,
-      required this.idProductImage});
+  ImageStorageDeleteTb({
+    required this.fileName,
+    required this.idUsuario,
+    required this.nombreImagen,
+    required this.idProServicio,
+  });
 }

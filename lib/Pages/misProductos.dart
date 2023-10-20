@@ -4,7 +4,7 @@ import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
-import 'package:etfi_point/Pages/servicios.dart';
+import 'package:etfi_point/Pages/proServicios/misServicios.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -127,7 +127,7 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
               child: MisProductos(),
             ),
             const SingleChildScrollView(
-              child: Servicios(),
+              child: MisServicios(),
             ),
             const SingleChildScrollView(
               child: Center(
@@ -199,6 +199,8 @@ class _TopProfileState extends State<TopProfile> {
   }
 }
 
+
+//DEBERIA ESTAR EN UNA CLASE DIFERENTE
 class MisProductos extends StatefulWidget {
   MisProductos({Key? key}) : super(key: key);
 
@@ -262,3 +264,4 @@ class _MisProductosState extends State<MisProductos> {
         : Center(child: CircularProgressIndicator());
   }
 }
+

@@ -4,10 +4,13 @@ import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.d
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
+import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Icons/switch.dart';
@@ -20,166 +23,23 @@ import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
-import 'package:etfi_point/Pages/editarProducto.dart';
 import 'package:etfi_point/Pages/reviewsAndOpinions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
-class ProductDetail extends StatefulWidget {
-  const ProductDetail({super.key, required this.id, required this.producto});
-
-  final int id;
-  final ProductoTb producto;
-
-  @override
-  _ProductDetailState createState() => _ProductDetailState();
-}
-
-class _ProductDetailState extends State<ProductDetail> {
-  Future<ProductoTb> producto() async {
-    final ProductoTb producto = await ProductoDb.getProducto(widget.id);
-    //print('PRODUCTO: $producto');
-
-    return producto;
-  }
-
-//Modificar para retornar productos relacionados
-  Future<List<ProductoTb>> obtenerProductosRelacionados() async {
-    List<ProductoTb> productosRelacionados = [];
-    // if (widget.id != null) {
-    //   productosRelacionados =
-    //       await ProductoDb.getProductosByCategoria(widget.id);
-    //   print('Relacionados_: $productosRelacionados');
-    // } else {
-    //   print('idProducto es nulo');
-    // }
-
-    return productosRelacionados;
-  }
-
-  Future<bool> existeOrNotUserRatingByProducto(idUsuario) async {
-    int idProducto = widget.id;
-
-    bool result = await RatingsDb.checkRatingExists(idProducto, idUsuario);
-
-    return result;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Detalle del Producto'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: () async {
-              await Navigator.push<int>(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      EditarProducto(producto: widget.producto),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              // Acción cuando se presiona el icono de eliminar
-            },
-          ),
-        ],
-      ),
-      backgroundColor: Colors.grey[300],
-      body: FutureBuilder<ProductoTb>(
-        future: producto(),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final producto = snapshot.data!;
-            return FutureBuilder<List<ProductoTb>>(
-                future: obtenerProductosRelacionados(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    final productosRelacionados = snapshot.data!;
-                    return FutureBuilder<bool>(
-                        future: existeOrNotUserRatingByProducto(idUsuario),
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            bool result = snapshot.data!;
-                            return Column(
-                              children: [
-                                Expanded(
-                                  child: CustomScrollView(
-                                    slivers: [
-                                      SliverAppBarDetail(
-                                        urlImage: producto.urlImage,
-                                        idProducto: widget.id,
-                                      ),
-                                      FastDescription(
-                                          producto: producto,
-                                          ifExistOrNotUserRatingByProducto:
-                                              result,
-                                          idUsuario: idUsuario!),
-                                      AdvancedDescription(
-                                        descripcionDetallada:
-                                            producto.descripcionDetallada,
-                                        idProducto: widget.id,
-                                      ),
-                                      SummaryReviews(
-                                          idProducto: producto.idProducto),
-                                      ProductosRelacionados(
-                                          productos: productosRelacionados)
-                                    ],
-                                  ),
-                                ),
-                                const StaticBottomNavigator()
-                              ],
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Text('Error al obtener los datos');
-                          } else {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          }
-                        });
-                  } else if (snapshot.hasError) {
-                    return const Text('Error al obtener los datos');
-                  } else {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-                });
-          } else if (snapshot.hasError) {
-            return const Text('Error al obtener los datos');
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
-    );
-  }
-}
-
 class SliverAppBarDetail extends StatefulWidget {
-  const SliverAppBarDetail(
-      {super.key, required this.urlImage, required this.idProducto});
+  const SliverAppBarDetail({
+    super.key,
+    required this.urlImage,
+    required this.idProducto,
+    required this.productSecondaryImagesAux,
+  });
 
   final String urlImage;
   final int idProducto;
+  final List<ProservicioImagesTb> productSecondaryImagesAux;
 
   @override
   State<SliverAppBarDetail> createState() => _SliverAppBarDetailState();
@@ -189,23 +49,15 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
   //List<dynamic> allProductImages = [];
   ImageList? myImageList;
 
-  void getListSecondaryProductImages() async {
-    List<ProservicioImagesTb> productSecondaryImagesAux =
-        await ProductImageDb.getProductSecondaryImages(widget.idProducto);
-
-    setState(() {
-      if (myImageList == null) {
-        myImageList = ImageList(productSecondaryImagesAux);
-      } else {
-        myImageList!.items.addAll(productSecondaryImagesAux);
-      }
-    });
-  }
-
   @override
   void initState() {
     super.initState();
-    getListSecondaryProductImages();
+
+    if (myImageList == null) {
+      myImageList = ImageList(widget.productSecondaryImagesAux);
+    } else {
+      myImageList!.items.addAll(widget.productSecondaryImagesAux);
+    }
   }
 
   @override
@@ -306,12 +158,12 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
 class FastDescription extends StatefulWidget {
   const FastDescription(
       {super.key,
-      required this.producto,
-      required this.ifExistOrNotUserRatingByProducto,
+      required this.proServicio,
+      required this.ifExistOrNotUserRatingByProServicio,
       required this.idUsuario});
 
-  final ProductoTb producto;
-  final bool ifExistOrNotUserRatingByProducto;
+  final dynamic proServicio;
+  final bool ifExistOrNotUserRatingByProServicio;
   final int idUsuario;
 
   @override
@@ -322,7 +174,7 @@ class _FastDescriptionState extends State<FastDescription> {
   RatingsCreacionTb? ratingsAndOthers;
   bool pressHearIndex = false;
   int? rating = 0;
-  bool ifExistOrNotUserRatingByProducto = false;
+  bool ifExistOrNotUserRatingByProServicio = false;
 
   void _selectedHeard() {
     setState(() {
@@ -347,24 +199,32 @@ class _FastDescriptionState extends State<FastDescription> {
 
   void _updateRatingAndOthers() async {
     int idUsuario = widget.idUsuario;
-    int? idProducto = widget.producto.idProducto;
+    int? idProServicio;
+
     int like = pressHearIndex ? 1 : 0;
 
-    RatingsCreacionTb ratingsAndothers = RatingsCreacionTb(
-        idUsuario: idUsuario,
-        idProducto: idProducto,
-        likes: like,
-        ratings: rating ?? 0);
+    if (widget.proServicio is ProductoTb) {
+      idProServicio = widget.proServicio.idProducto;
+      if (idProServicio != null) {
+        RatingsCreacionTb ratingsAndothers = RatingsCreacionTb(
+            idUsuario: idUsuario,
+            idProducto: idProServicio,
+            likes: like,
+            ratings: rating ?? 0);
 
-    await RatingsDb.saveRating(
-        ratingsAndothers, ifExistOrNotUserRatingByProducto);
+        await RatingsDb.saveRating(
+            ratingsAndothers, ifExistOrNotUserRatingByProServicio);
+      } else if (widget.proServicio is ServicioTb) {
+        idProServicio = widget.proServicio.idServicio;
+      }
 
-    ifExistOrNotUserRatingByProducto = true;
+      ifExistOrNotUserRatingByProServicio = true;
+    }
   }
 
   void obtenerRatingsAndOther() async {
     ratingsAndOthers = await RatingsDb.getRatingByProductoAndUsuario(
-        widget.idUsuario, widget.producto.idProducto);
+        widget.idUsuario, widget.proServicio.idProducto);
     print(ratingsAndOthers);
 
     if (ratingsAndOthers?.likes == 1) {
@@ -383,21 +243,22 @@ class _FastDescriptionState extends State<FastDescription> {
   @override
   void initState() {
     super.initState();
-    print("ifExist: ${widget.ifExistOrNotUserRatingByProducto}");
+    print("ifExist: ${widget.ifExistOrNotUserRatingByProServicio}");
 
-    ifExistOrNotUserRatingByProducto = widget.ifExistOrNotUserRatingByProducto;
+    ifExistOrNotUserRatingByProServicio =
+        widget.ifExistOrNotUserRatingByProServicio;
 
-    bool result = widget.ifExistOrNotUserRatingByProducto;
-    if (result) {
+    bool result = widget.ifExistOrNotUserRatingByProServicio;
+    if (result && widget.proServicio is ProductoTb) {
       obtenerRatingsAndOther();
-    }
+    } else if (result && widget.proServicio is ServicioTb) {}
 
-    print('existe :  ${widget.ifExistOrNotUserRatingByProducto}');
+    print('existe :  ${widget.ifExistOrNotUserRatingByProServicio}');
   }
 
   @override
   Widget build(BuildContext context) {
-    final producto = widget.producto;
+    final proServicio = widget.proServicio;
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.only(bottom: 10.0),
@@ -475,7 +336,7 @@ class _FastDescriptionState extends State<FastDescription> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ReviewsAndOpinions(
-                                    idProducto: widget.producto.idProducto,
+                                    idProducto: widget.proServicio.idProducto,
                                   ),
                                 ),
                               );
@@ -501,7 +362,7 @@ class _FastDescriptionState extends State<FastDescription> {
                   Padding(
                     padding: const EdgeInsets.fromLTRB(8.0, 8.0, 0.0, 0.0),
                     child: Text(
-                      'COP ${producto.precio}',
+                      'COP ${proServicio.precio}',
                       style: const TextStyle(
                           fontSize: 22, fontWeight: FontWeight.bold),
                     ),
@@ -527,11 +388,18 @@ class _FastDescriptionState extends State<FastDescription> {
 }
 
 class AdvancedDescription extends StatefulWidget {
-  const AdvancedDescription(
-      {super.key, this.descripcionDetallada, required this.idProducto});
+  const AdvancedDescription({
+    super.key,
+    this.descripcionDetallada,
+    required this.idProServicio,
+    required this.fileName,
+    required this.productSecondaryImagesAux,
+  });
 
   final String? descripcionDetallada;
-  final int idProducto;
+  final int idProServicio;
+  final String fileName;
+  final List<ProservicioImagesTb> productSecondaryImagesAux;
 
   @override
   State<AdvancedDescription> createState() => _AdvancedDescriptionState();
@@ -548,25 +416,44 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
   final TextEditingController _descripcionDetalldaController =
       TextEditingController();
   String? descripcionDetalladaAux;
+  String fileName = '';
 
   void insertProductImage(int idUsuario) async {
     if (imagesToUpload.isNotEmpty) {
       List<ProservicioImagesTb> productImagesAux = [];
       for (var imageToUpload in imagesToUpload) {
         Uint8List imageBytes = await assetToUint8List(imageToUpload.newImage);
-        ImageStorageTb image = ImageStorageTb(
-            idUsuario: idUsuario,
-            idFile: widget.idProducto,
-            newImageBytes: imageBytes,
-            fileName: 'productos',
-            imageName: imageToUpload.newImage.name!,
-            width: imageToUpload.width,
-            height: imageToUpload.height,
-            isPrincipalImage: 0);
 
-        ProservicioImagesTb productImage =
-            await ProductImagesStorage.cargarImage(image);
-        productImagesAux.add(productImage);
+        ImageStorageCreacionTb image = ImageStorageCreacionTb(
+          idUsuario: idUsuario,
+          idProServicio: widget.idProServicio,
+          newImageBytes: imageBytes,
+          fileName: fileName,
+          finalNameImage: imageToUpload.newImage.name!,
+        );
+
+        String url = await ProductImagesStorage.cargarImage(image);
+
+        ProServicioImageCreacionTb proServicioCreacionImage =
+            ProServicioImageCreacionTb(
+          idProServicio: widget.idProServicio,
+          nombreImage: imageToUpload.newImage.name!,
+          urlImage: url,
+          width: imageToUpload.width, 
+          height: imageToUpload.height,
+          isPrincipalImage: 1,
+        );
+
+        if (fileName == MisRutasFirebase.forProducts) {
+          ProservicioImagesTb proServicioImage =
+              await ProductImageDb.insertProductImages(
+                  proServicioCreacionImage);
+          productImagesAux.add(proServicioImage);
+        } else if (fileName == MisRutasFirebase.forServicios) {
+          ProservicioImagesTb proservicioImage =
+              await ServiceImageDb.insertServiceImage(proServicioCreacionImage);
+          productImagesAux.add(proservicioImage);
+        }
       }
 
       setState(() {
@@ -598,16 +485,15 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
         ImageStorageTb image = ImageStorageTb(
             idUsuario: idUsuario,
-            idFile: widget.idProducto,
+            idFile: widget.idProServicio,
             newImageBytes: await assetToUint8List(imageToUpdate),
-            fileName: 'productos',
+            fileName: fileName,
             imageName: nombreImage,
             width: imageToUpdate.originalWidth!.toDouble(),
             height: imageToUpdate.originalHeight!.toDouble(),
             isPrincipalImage: 0);
 
         String url = await ProductImagesStorage.updateImage(image);
-
         print('URL image_: $url');
         for (int i = 0; i < productSecondaryImages.length; i++) {
           //Solo entra al if en una ocacion por lo que no hay problema con el setState dentro del ciclo for
@@ -621,6 +507,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
               }
               allProductImages.items.addAll(productSecondaryImages);
             });
+            break;
           } else {
             print('No encontrado en updateSecondaryImage');
           }
@@ -635,23 +522,13 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     }
   }
 
-  void getListSecondaryProductImages() async {
-    List<ProservicioImagesTb> productSecondaryImagesAux =
-        await ProductImageDb.getProductSecondaryImages(widget.idProducto);
-
-    setState(() {
-      productSecondaryImages = productSecondaryImagesAux;
-      allProductImages.items.addAll(productSecondaryImagesAux);
-    });
-  }
-
   //Actualizar descripcion detallada
   void updateDescripcionDetallada() async {
     final descripcionDetallada = _descripcionDetalldaController.text;
 
     if (descripcionDetalladaAux != descripcionDetallada) {
       bool result = await ProductoDb.updateProductDescripcionDetallada(
-          descripcionDetallada, widget.idProducto);
+          descripcionDetallada, widget.idProServicio);
       if (result) {
         setState(() {
           descripcionDetalladaAux = descripcionDetallada;
@@ -718,7 +595,6 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
           );
           setState(() {
             imagesToUpdate.add(newImage);
-
             allProductImages.items[imageIndex] = newImage;
           });
         } else if (image is ProductImageToUpload) {
@@ -747,9 +623,27 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         if (image is ProservicioImagesTb) {
           return DeletedDialog(
               onPress: () async {
-                bool result = await CrudImages.eliminarImagen(image, idUsuario);
+                ImageStorageDeleteTb infoImageToDelete = ImageStorageDeleteTb(
+                  fileName: fileName,
+                  idUsuario: idUsuario,
+                  nombreImagen: image.nombreImage,
+                  idProServicio: image.idProServicio,
+                );
 
-                if (result) {
+                bool deleteResult =
+                    await ProductImagesStorage.deleteImage(infoImageToDelete);
+
+                if (fileName == MisRutasFirebase.forProducts) {
+                  await ProductImageDb.deleteProuctImage(
+                      image.idProServicioImage);
+                } else if (fileName == MisRutasFirebase.forServicios) {
+                  print(
+                      "ENTRA A PROSERVICIO IMAGE: ${image.idProServicioImage}");
+                  await ServiceImageDb.deleteServiceImage(
+                      image.idProServicioImage);
+                }
+
+                if (deleteResult) {
                   setState(() {
                     allProductImages.items.removeWhere((element) {
                       if (element is ProservicioImagesTb) {
@@ -762,7 +656,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                   });
                 } else {
                   print(
-                      'No fue posible eliminar ProductImagesStorage: $result');
+                      'No fue posible eliminar ProductImagesStorage: $deleteResult');
                 }
 
                 if (context.mounted) {
@@ -778,7 +672,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
               /**De la lista de imagenes originales, sacamos la imagen base o imagen que inicialmente habia */
 
               if (image is ProductImageToUpdate) {
-                ProservicioImagesTb oldImage = productSecondaryImages[imageIndex];
+                ProservicioImagesTb oldImage =
+                    productSecondaryImages[imageIndex];
 
                 setState(() {
                   allProductImages.items[imageIndex] = oldImage;
@@ -808,8 +703,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
     _descripcionDetalldaController.text = widget.descripcionDetallada ?? '';
     descripcionDetalladaAux = widget.descripcionDetallada;
+    fileName = widget.fileName;
 
-    getListSecondaryProductImages();
+    productSecondaryImages = widget.productSecondaryImagesAux;
+    allProductImages.items.addAll(widget.productSecondaryImagesAux);
   }
 
   @override
@@ -885,14 +782,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                           children: [
                             Container(
                                 child: image is ProservicioImagesTb
-                                    ?
-                                    //  Image.network(
-                                    //   image.urlImage,
-                                    //   width: double.infinity,
-                                    //   fit: BoxFit.cover
-                                    // )
-
-                                    ShowImage(
+                                    ? ShowImage(
                                         networkImage: image.urlImage,
                                         //height: 200,
                                         width: double.infinity,
@@ -1025,9 +915,9 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 }
 
 class SummaryReviews extends StatefulWidget {
-  const SummaryReviews({super.key, required this.idProducto});
+  const SummaryReviews({super.key, required this.idProServicio});
 
-  final int idProducto;
+  final int idProServicio;
 
   @override
   State<SummaryReviews> createState() => _SummaryReviewsState();
@@ -1039,7 +929,7 @@ class _SummaryReviewsState extends State<SummaryReviews> {
       context,
       MaterialPageRoute(
         builder: (context) => ReviewsAndOpinions(
-          idProducto: widget.idProducto,
+          idProducto: widget.idProServicio,
         ),
       ),
     );
@@ -1077,7 +967,7 @@ class _SummaryReviewsState extends State<SummaryReviews> {
               ),
             ),
             Comments(
-              idProducto: widget.idProducto,
+              idProducto: widget.idProServicio,
               selectIndex: 0,
               maxCommentsToShow: 3,
               paddingOutsideHorizontal: 5.0,
@@ -1105,9 +995,9 @@ class _SummaryReviewsState extends State<SummaryReviews> {
 }
 
 class ProductosRelacionados extends StatefulWidget {
-  const ProductosRelacionados({super.key, required this.productos});
+  const ProductosRelacionados({super.key, required this.proServicios});
 
-  final List<ProductoTb> productos;
+  final List<dynamic> proServicios;
 
   @override
   State<ProductosRelacionados> createState() => _ProductosRelacionadosState();

@@ -1,10 +1,8 @@
 class ServicioTb {
   final int idServicio;
-  final int idProducto;
   final int idNegocio;
   final String nombre;
   final String? descripcion;
-  final String? descripcionDetallada;
   final double precio;
   final int oferta;
   final String urlImage;
@@ -12,11 +10,9 @@ class ServicioTb {
 
   ServicioTb(
       {required this.idServicio,
-      required this.idProducto,
       required this.idNegocio,
       required this.nombre,
       this.descripcion,
-      this.descripcionDetallada,
       required this.precio,
       required this.oferta,
       required this.urlImage,
@@ -25,11 +21,9 @@ class ServicioTb {
   factory ServicioTb.fromJson(Map<String, dynamic> json) {
     return ServicioTb(
       idServicio: json['idServicio'],
-      idProducto: json['idProducto'],
       idNegocio: json['idNegocio'],
       nombre: json['nombre'],
       descripcion: json['descripcion'],
-      descripcionDetallada: json['descripcionDetallada'],
       precio: json['precio'].toDouble(),
       oferta: json['oferta'],
       urlImage: json['urlImage'],
@@ -40,11 +34,9 @@ class ServicioTb {
   Map<String, dynamic> toMap() {
     return {
       'idServicio': idServicio,
-      'idProducto': idProducto,
       'idNegocio': idNegocio,
       'nombre': nombre,
       'descripcion': descripcion,
-      'descripcionDetallada': descripcionDetallada,
       'precio': precio,
       'oferta': oferta,
       'urlImage': urlImage,
@@ -54,7 +46,7 @@ class ServicioTb {
 
   @override
   String toString() {
-    return 'ProductoTb{idServicio: $idServicio, nombreServicio: $nombre, nombreImage: $nombreImage}';
+    return 'ServicioTb{idServicio: $idServicio, nombreServicio: $nombre, nombreImage: $nombreImage, urlImage: $urlImage}';
   }
 }
 

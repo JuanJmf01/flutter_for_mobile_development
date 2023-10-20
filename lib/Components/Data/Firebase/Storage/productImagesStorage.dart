@@ -18,22 +18,17 @@ class ProductImagesStorage {
   ///
   /// Returns:
   ///   a Future of type ProductImagesTb.
-  static Future<ProservicioImagesTb> cargarImage(
-      ImageStorageTb image) async {
+  static Future<String> cargarImage(ImageStorageCreacionTb image) async {
     final Uint8List bytes = image.newImageBytes;
-
-    //String ruta = 'imagenes/"idUsuario"/"fileName/idProducto, servicio, etc"';
-
-    String finalNameImage = assingName(image.imageName);
 
     String fileName = image.fileName;
     int idUsuario = image.idUsuario;
-    int idFile = image.idFile;
+    int idFile = image.idProServicio;
 
     final Reference ref = storage
         .ref()
         .child('imagenes/$idUsuario/$fileName/$idFile')
-        .child(finalNameImage);
+        .child(image.finalNameImage);
 
     print('REF_: ${ref.fullPath}');
 
@@ -47,18 +42,7 @@ class ProductImagesStorage {
       print('url: $url');
 
       if (snapshot.state == TaskState.success) {
-        final ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
-            idProServicio: idFile,
-            nombreImage: finalNameImage,
-            urlImage: url,
-            width: image.width,
-            height: image.height,
-            isPrincipalImage: image.isPrincipalImage);
-
-        final ProservicioImagesTb productInsertImage =
-            await ProductImageDb.insertProductImages(productImage);
-
-        return productInsertImage;
+        return url;
       } else {
         throw Exception('Error uploading image');
       }
@@ -97,18 +81,6 @@ class ProductImagesStorage {
       if (snapshot.state == TaskState.success) {
         final String url = await snapshot.ref.getDownloadURL();
 
-
-        //Por ahora no utilizaremos la actualizacion de la iamgen en base de datos ya que no es necesario por ahora
-        // ProductImageCreacionTb productImage = ProductImageCreacionTb(
-        //     idProducto: idFile,
-        //     nombreImage: nombreImage,
-        //     urlImage: url,
-        //     width: image.width,
-        //     height: image.height,
-        //     isPrincipalImage: image.isPrincipalImage);
-
-        //Actualizar url un base de datos
-        // await ProductImageDb.updateProductImage(productImage);
         return url;
       } else {
         throw Exception('Error actualizando image');
@@ -122,23 +94,22 @@ class ProductImagesStorage {
   static Future<bool> deleteImage(ImageStorageDeleteTb imageInfo) async {
     String fileName = imageInfo.fileName;
     int idUsuario = imageInfo.idUsuario;
-    int idProducto = imageInfo.idProducto;
+    int idProducto = imageInfo.idProServicio;
     String imageName = imageInfo.nombreImagen;
-    int idProductImage = imageInfo.idProductImage;
 
     try {
       final Reference ref = FirebaseStorage.instance
           .ref()
           .child('imagenes/$idUsuario/$fileName/$idProducto/$imageName');
 
-      await ref.delete();
-      // Actualizar base de datos
-      bool result = await ProductImageDb.deleteProuctImage(idProductImage);
+      await ref.delete(); // Elimina la imagen
 
-      return result;
+      // Si la eliminación se realiza sin errores, retornamos true
+      return true;
     } catch (error) {
       print('Error eliminando image: $error');
-      throw Exception('Error eliminando image');
+      // Si hay un error, retornamos false
+      return false;
     }
   }
 }

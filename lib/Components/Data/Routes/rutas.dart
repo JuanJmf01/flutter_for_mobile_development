@@ -1,5 +1,5 @@
 class MisRutas {
-  static String rutaPrincipal = 'http://192.168.56.1:3000/api';
+  static String rutaPrincipal = 'http://192.168.68.107:3000/api';
 
   // -- Demas rutas -- //
   static String rutaCategorias2 = '$rutaPrincipal/categorias';
@@ -27,10 +27,15 @@ class MisRutas {
   static String rutaIsShoppingCartProduct =
       '$rutaPrincipal/producto/shoppingCart';
 
-  // -- Rutas para la tabla productos -- //
+  // -- Rutas para la tabla productImages -- //
   static String rutaProductImages = '$rutaPrincipal/productImages';
   static String rutaProductImage = '$rutaPrincipal/productImage';
 
+  // -- Rutas para la tabla serviciosImagenes -- //
+  static String rutaServiceImages = '$rutaPrincipal/serviceImages';
+  static String rutaServiceImage = '$rutaPrincipal/serviceImage';
+
+  
   // -- Rutas para la tabla shoppingCart -- //
   static String rutaShoppingCart = '$rutaPrincipal/shoppingCart';
 
@@ -45,7 +50,8 @@ class MisRutas {
 
   // -- Rutas para la tabla servicios -- //
   static String rutaServicios = '$rutaPrincipal/servicio';
-
+  static String rutaServiciosByNegocio = '$rutaPrincipal/servicioByNegocio';
+  static String rutaServicio = '$rutaPrincipal/servicio';
 
   // -- Rutas para la tabla categoriasServicios -- //
   static String rutaCategoriasServicios = '$rutaPrincipal/categoriasServicios';

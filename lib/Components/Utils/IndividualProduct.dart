@@ -2,7 +2,7 @@ import 'dart:typed_data';
 
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
-import 'package:etfi_point/Pages/productDetail.dart';
+import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 
 class IndividualProduct extends StatefulWidget {
@@ -19,8 +19,7 @@ class _IndividualProductState extends State<IndividualProduct> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ProductDetail(id: productId, producto: widget.producto),
+        builder: (context) => ProServicioDetail(proServicio: widget.producto),
       ),
     );
   }
@@ -61,31 +60,29 @@ class _IndividualProductState extends State<IndividualProduct> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-                borderRadius: const BorderRadius.only(
+            InkWell(
+              onTap: () {
+                _navigateToProductDetail(widget.producto.idProducto);
+              },
+              child: ShowImage(
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(16.0),
                   topRight: Radius.circular(16.0),
                 ),
-                child: InkWell(
-                  onTap: () {
-                    _navigateToProductDetail(widget.producto.idProducto);
-                  },
-                  child: ShowImage(
-                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-                    borderRadius: BorderRadius.circular(0.0),
-                    height: 170.0,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    networkImage: widget.producto.urlImage,
-                  ),
-                )),
+                height: 170.0,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                networkImage: widget.producto.urlImage,
+              ),
+            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.producto.nombreProducto,
+                    widget.producto.nombre,
                     style: Theme.of(context).textTheme.titleMedium!.merge(
                           const TextStyle(
                             fontWeight: FontWeight.w700,

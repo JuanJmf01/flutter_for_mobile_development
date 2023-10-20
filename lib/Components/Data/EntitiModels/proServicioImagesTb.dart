@@ -3,8 +3,8 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 class ProservicioImagesTb extends ImageListItem {
   final int idProServicioImage;
   final int idProServicio;
-  final String nombreImage;
-  final String urlImage;
+  final String nombreImage; //
+  final String urlImage; //
   final double width;
   final double height;
   final int isPrincipalImage;
@@ -32,8 +32,8 @@ class ProservicioImagesTb extends ImageListItem {
 
   factory ProservicioImagesTb.fromJsonServicios(Map<String, dynamic> json) {
     return ProservicioImagesTb(
-      idProServicioImage: json['idProductImage'],
-      idProServicio: json['idProducto'],
+      idProServicioImage: json['idServicioImagen'],
+      idProServicio: json['idServicio'],
       nombreImage: json['nombreImage'],
       urlImage: json['urlImage'],
       width: double.parse(json['width']),
@@ -120,7 +120,7 @@ class ProServicioImageCreacionTb {
 
     Map<String, dynamic> toMapServicios() {
     return {
-      'idProducto': idProServicio,
+      'idServicio': idProServicio,
       'nombreImage': nombreImage,
       'urlImage': urlImage,
       'width': width.toStringAsFixed(2), // Convertir a cadena con 2 decimales
