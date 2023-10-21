@@ -34,6 +34,7 @@ class ServiceImageDb {
     }
   }
 
+  // Verificar la posibilidad de eliminar este metodo y hacerlo uno solo junto con 'getProductSecondaryImages'
   static Future<List<ProservicioImagesTb>> getServiceSecondaryImages(
       int idServicio) async {
     Dio dio = Dio();

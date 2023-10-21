@@ -1,4 +1,4 @@
-import 'package:etfi_point/Pages/productosGeneralForm.dart';
+import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/agregarServicio.dart';
 import 'package:flutter/cupertino.dart';
@@ -34,13 +34,8 @@ class ButtonAdd extends StatelessWidget {
         ),
         ItemForModalButtons(
           onPress: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ProductosGeneralForm(
-                        titulo: 'Nuevo producto',
-                        nameSavebutton: 'Publicar',
-                        exitoMessage: 'Producto agregado correctamente')));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => CrearProducto()));
           },
           padding: padding,
           icon: CupertinoIcons.cube_box,

@@ -19,6 +19,16 @@ class MisRutas {
       '$rutaPrincipal/ratingCountByProducto';
   static String rutaRatingsIfExistRating = '$rutaPrincipal/checkRatingExists';
 
+  // -- Rutas para la tabla serviceRatings -- //
+  static String rutaServiceRatings = '$rutaPrincipal/serviceRating';
+  static String rutaRatingsByServiceAndUser =
+      '$rutaPrincipal/ratingByServiceAndUser';
+  static String rutaServiceRatingsIfExistRating =
+      '$rutaPrincipal/checkServiceRatingExists';
+  static String rutaRatingsByServicio = '$rutaPrincipal/ratingByServicio';
+  static String rutaServerRatingsCountByServicio =
+      '$rutaPrincipal/ratingCountByServicio';
+
   // -- Rutas para la tabla productos -- //
   static String rutaProductos = '$rutaPrincipal/producto';
   static String rutaProductosByNegocio = '$rutaPrincipal/productoByNegocio';
@@ -35,7 +45,6 @@ class MisRutas {
   static String rutaServiceImages = '$rutaPrincipal/serviceImages';
   static String rutaServiceImage = '$rutaPrincipal/serviceImage';
 
-  
   // -- Rutas para la tabla shoppingCart -- //
   static String rutaShoppingCart = '$rutaPrincipal/shoppingCart';
 
@@ -59,4 +68,9 @@ class MisRutas {
   // -- Rutas para la tabla serviciosSubCategorias -- //
   static String rutaServiciosSubCategorias =
       '$rutaPrincipal/serviciosSubCategorias';
+
+  // -- Rutas para la tabla serviciosSubCategorias -- //
+  // Esta tabla contiene los nombres de las sub-categorias de servicios
+  static String rutaSubCategoriaServicios =
+      '$rutaPrincipal/subCategoriasServicios';
 }

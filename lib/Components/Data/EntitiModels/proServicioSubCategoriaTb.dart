@@ -27,7 +27,7 @@ class ProServicioSubCategoriaTb {
 
   factory ProServicioSubCategoriaTb.fromJsonServicio(Map<String, dynamic> json) {
     return ProServicioSubCategoriaTb(
-      idProServicio: json['idProducto'],
+      idProServicio: json['idServicio'],
       idCategoria: json['idCategoria'],
       idSubCategoria: json['idSubCategoria'],
     );

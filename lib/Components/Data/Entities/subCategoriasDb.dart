@@ -1,13 +1,22 @@
 import 'package:dio/dio.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosSubCategoriasDb.dart';
+import 'package:etfi_point/Components/Data/Entities/proServiceSubCategoriasDb.dart';
 
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class SubCategoriasDb {
-  static Future<SubCategoriaTb> getSubCategoria(int idSubCategoria) async {
+  static Future<SubCategoriaTb> getSubCategoria(
+      int idSubCategoria, Type objectType) async {
     Dio dio = Dio();
-    String url = '${MisRutas.rutaSubCategorias}/$idSubCategoria';
+    String url = '';
+    if (objectType == ProductoTb) {
+      url = '${MisRutas.rutaSubCategorias}/$idSubCategoria';
+    } else if (objectType == ServicioTb) {
+      print("id subcategorias_: $idSubCategoria");
+      url = '${MisRutas.rutaSubCategoriaServicios}/$idSubCategoria';
+    }
 
     try {
       Response response = await dio.get(url,
@@ -52,16 +61,19 @@ class SubCategoriasDb {
   }
 
   static Future<List<SubCategoriaTb>> getSubCategoriasByProducto(
-      int idProducto) async {
+      int idProServicio, Type objectType) async {
     try {
       List<int> idSubCategoriesByProduct =
-          await ProductosSubCategoriasDb.getProductSelectedSubCategoies(
-              idProducto);
+          await ProServiceSubCategoriasDb.getProServiceSelectedSubCategoies(
+              idProServicio, objectType);
+
+      print("subcategorias: $idSubCategoriesByProduct");
 
       List<SubCategoriaTb> subCategorias = [];
 
       for (int idSubCategoria in idSubCategoriesByProduct) {
-        SubCategoriaTb subCategoria = await getSubCategoria(idSubCategoria);
+        SubCategoriaTb subCategoria =
+            await getSubCategoria(idSubCategoria, objectType);
         subCategorias.add(subCategoria);
       }
 

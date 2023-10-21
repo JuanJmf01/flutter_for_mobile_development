@@ -4,9 +4,11 @@ import 'package:etfi_point/Components/Utils/stars.dart';
 import 'package:flutter/material.dart';
 
 class ReviewsAndOpinions extends StatefulWidget {
-  const ReviewsAndOpinions({super.key, required this.idProducto});
+  const ReviewsAndOpinions(
+      {super.key, required this.idProServicio, required this.objectType});
 
-  final int idProducto;
+  final int idProServicio;
+  final Type objectType;
 
   @override
   State<ReviewsAndOpinions> createState() => _ReviewsAndOpinionsState();
@@ -16,18 +18,13 @@ class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
   int selectIndex = 0;
 
   Future<List<int>> obtenerStarCounts() async {
-    return await RatingsDb.getStarCounts(widget.idProducto);
+    return await RatingsDb.getStarCounts(widget.idProServicio, widget.objectType);
   }
 
   void onRatingSelected(int index) {
     setState(() {
       selectIndex = index;
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
@@ -53,10 +50,11 @@ class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
                     SliverToBoxAdapter(
                       child: Comments(
                         selectIndex: selectIndex,
-                        idProducto: widget.idProducto,
+                        idProServicio: widget.idProServicio,
                         paddingOutsideHorizontal: 8.0,
                         paddingOutsideVertical: 2.0,
                         containerPadding: 12.0,
+                        objectType: widget.objectType,
                       ),
                     ),
                   ],
@@ -82,7 +80,7 @@ class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
 //       StarsOptions(onRatingSelected: onRatingSelected),
 //       Comments(
 //         selectIndex: selectIndex,
-//         idProducto: widget.idProducto,
+//         idProServicio: widget.idProServicio,
 //       ),
 //     ],
 //   ),
@@ -346,7 +344,7 @@ class Comments extends StatefulWidget {
   Comments({
     Key? key,
     required this.selectIndex,
-    required this.idProducto,
+    required this.idProServicio,
     this.maxCommentsToShow,
     required this.paddingOutsideHorizontal,
     required this.paddingOutsideVertical,
@@ -356,10 +354,11 @@ class Comments extends StatefulWidget {
     this.color,
     this.fontSizeDescription,
     this.minLines,
+    required this.objectType,
   }) : super(key: key);
 
   final int selectIndex;
-  final int idProducto;
+  final int idProServicio;
   final int? maxCommentsToShow;
   final double paddingOutsideHorizontal;
   final double paddingOutsideVertical;
@@ -369,6 +368,7 @@ class Comments extends StatefulWidget {
   final double? fontSizeStarts;
   final double? fontSizeDescription;
   final int? minLines;
+  final Type objectType;
 
   @override
   State<Comments> createState() => _CommentsState();
@@ -412,7 +412,8 @@ class _CommentsState extends State<Comments> {
 
   Future<List<Map<String, dynamic>>> obtenerRatingsAndOthersbyProduct() async {
     final List<Map<String, dynamic>> ratings =
-        await RatingsDb.getReviewsByProducto(widget.idProducto);
+        await RatingsDb.getReviewsByProducto(
+            widget.idProServicio, widget.objectType);
 
     return ratings;
   }

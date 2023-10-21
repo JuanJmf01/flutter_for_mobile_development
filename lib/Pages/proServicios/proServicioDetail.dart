@@ -6,9 +6,12 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioGeneralDetail.dart';
+import 'package:etfi_point/Pages/proServicios/servicios/agregarServicio.dart';
+import 'package:etfi_point/Pages/productosGeneralForm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -25,6 +28,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
   int? idProServicio;
   String fileName = "";
   List<ProservicioImagesTb> productSecondaryImages = [];
+  Type? objectType;
 
   Future<dynamic> proServicioDynamic() async {
     dynamic proServicio;
@@ -54,10 +58,14 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
 
   Future<bool> existeOrNotUserRatingByProServicio(idUsuario) async {
     bool result = false;
-    if (widget.proServicio == ProductoTb && idProServicio != null) {
-      result = await RatingsDb.checkRatingExists(idProServicio!, idUsuario);
-    } else if (widget.proServicio == ServicioTb && idProServicio != null) {
-      result = false;
+    if (widget.proServicio is ProductoTb && idProServicio != null) {
+      String url = MisRutas.rutaRatingsIfExistRating;
+      result =
+          await RatingsDb.checkRatingExists(idProServicio!, idUsuario, url);
+    } else if (widget.proServicio is ServicioTb && idProServicio != null) {
+      String url = MisRutas.rutaServiceRatingsIfExistRating;
+      result =
+          await RatingsDb.checkRatingExists(idProServicio!, idUsuario, url);
     }
 
     return result;
@@ -76,6 +84,8 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
           await ServiceImageDb.getServiceSecondaryImages(idProServicio!);
     }
 
+    print("IMAGENES: $productSecondaryImagesAux");
+
     setState(() {
       productSecondaryImages = productSecondaryImagesAux;
     });
@@ -88,9 +98,11 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
     if (widget.proServicio is ProductoTb) {
       fileName = MisRutasFirebase.forProducts;
       idProServicio = widget.proServicio.idProducto;
+      objectType = ProductoTb;
     } else if (widget.proServicio is ServicioTb) {
       fileName = MisRutasFirebase.forServicios;
       idProServicio = widget.proServicio.idServicio;
+      objectType = ServicioTb;
     }
 
     getListSecondaryProServiciosImages();
@@ -103,18 +115,27 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
       appBar: AppBar(
         title: Text('Detalle del servicio'),
         actions: [
-          // IconButton(
-          //   icon: Icon(Icons.edit),
-          //   onPressed: () async {
-          //     await Navigator.push<int>(
-          //       context,
-          //       MaterialPageRoute(
-          //         builder: (context) =>
-          //             EditarProducto(servicio: widget.servicio),
-          //       ),
-          //     );
-          //   },
-          // ),
+          IconButton(
+            icon: Icon(Icons.edit),
+            onPressed: () async {
+              await Navigator.push<int>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => objectType == ServicioTb
+                      ? AgregarServicio(
+                          servicio: widget.proServicio,
+                        )
+                      : objectType == ProductoTb
+                          ? ProductosGeneralForm(
+                              producto: widget.proServicio,
+                              titulo: "EditarProducto",
+                              nameSavebutton: "Actualizar ",
+                              exitoMessage: "Actualizado correctamente")
+                          : SizedBox.shrink(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: Icon(Icons.delete),
             onPressed: () {
@@ -147,15 +168,17 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                                           slivers: [
                                             SliverAppBarDetail(
                                               urlImage: proServicio.urlImage,
-                                              idProducto: idProServicio!,
+                                              idProServicio: idProServicio!,
                                               productSecondaryImagesAux:
                                                   productSecondaryImages,
                                             ),
                                             FastDescription(
-                                                proServicio: proServicio,
-                                                ifExistOrNotUserRatingByProServicio:
-                                                    result,
-                                                idUsuario: idUsuario!),
+                                              proServicio: proServicio,
+                                              ifExistOrNotUserRatingByProServicio:
+                                                  result,
+                                              idUsuario: idUsuario!,
+                                              objectType: objectType!,
+                                            ),
                                             AdvancedDescription(
                                               descripcionDetallada: "detallada",
                                               idProServicio: idProServicio!,
@@ -163,9 +186,14 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                                               productSecondaryImagesAux:
                                                   productSecondaryImages,
                                             ),
-                                            SummaryReviews(
-                                                idProServicio: idProServicio!),
-                                            ProductosRelacionados(
+                                            objectType != null
+                                                ? SummaryReviews(
+                                                    idProServicio:
+                                                        idProServicio!,
+                                                    objectType: objectType!,
+                                                  )
+                                                : const SizedBox.shrink(),
+                                            const ProductosRelacionados(
                                                 proServicios: [])
                                           ],
                                         ),

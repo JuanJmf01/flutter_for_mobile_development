@@ -10,11 +10,11 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Icons/switch.dart';
-import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
@@ -33,12 +33,12 @@ class SliverAppBarDetail extends StatefulWidget {
   const SliverAppBarDetail({
     super.key,
     required this.urlImage,
-    required this.idProducto,
+    required this.idProServicio,
     required this.productSecondaryImagesAux,
   });
 
   final String urlImage;
-  final int idProducto;
+  final int idProServicio;
   final List<ProservicioImagesTb> productSecondaryImagesAux;
 
   @override
@@ -156,15 +156,18 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
 // }
 
 class FastDescription extends StatefulWidget {
-  const FastDescription(
-      {super.key,
-      required this.proServicio,
-      required this.ifExistOrNotUserRatingByProServicio,
-      required this.idUsuario});
+  const FastDescription({
+    super.key,
+    required this.proServicio,
+    required this.ifExistOrNotUserRatingByProServicio,
+    required this.idUsuario,
+    required this.objectType,
+  });
 
   final dynamic proServicio;
   final bool ifExistOrNotUserRatingByProServicio;
   final int idUsuario;
+  final Type objectType;
 
   @override
   State<FastDescription> createState() => _FastDescriptionState();
@@ -175,6 +178,8 @@ class _FastDescriptionState extends State<FastDescription> {
   bool pressHearIndex = false;
   int? rating = 0;
   bool ifExistOrNotUserRatingByProServicio = false;
+  int? idProServicio;
+  Type? objectType;
 
   void _selectedHeard() {
     setState(() {
@@ -199,32 +204,42 @@ class _FastDescriptionState extends State<FastDescription> {
 
   void _updateRatingAndOthers() async {
     int idUsuario = widget.idUsuario;
-    int? idProServicio;
 
     int like = pressHearIndex ? 1 : 0;
+    String urlRating = '';
+    if (objectType == ProductoTb) {
+      urlRating = MisRutas.rutaRatings;
+    } else if (objectType == ServicioTb) {
+      urlRating = MisRutas.rutaServiceRatings;
+    }
+    if (idProServicio != null) {
+      RatingsCreacionTb ratingsAndothers = RatingsCreacionTb(
+          idUsuario: idUsuario,
+          idProServicio: idProServicio!,
+          likes: like,
+          ratings: rating ?? 0);
 
-    if (widget.proServicio is ProductoTb) {
-      idProServicio = widget.proServicio.idProducto;
-      if (idProServicio != null) {
-        RatingsCreacionTb ratingsAndothers = RatingsCreacionTb(
-            idUsuario: idUsuario,
-            idProducto: idProServicio,
-            likes: like,
-            ratings: rating ?? 0);
-
-        await RatingsDb.saveRating(
-            ratingsAndothers, ifExistOrNotUserRatingByProServicio);
-      } else if (widget.proServicio is ServicioTb) {
-        idProServicio = widget.proServicio.idServicio;
-      }
+      await RatingsDb.saveRating(
+          ratingsAndothers, ifExistOrNotUserRatingByProServicio, urlRating);
 
       ifExistOrNotUserRatingByProServicio = true;
     }
   }
 
   void obtenerRatingsAndOther() async {
-    ratingsAndOthers = await RatingsDb.getRatingByProductoAndUsuario(
-        widget.idUsuario, widget.proServicio.idProducto);
+    String urlRating = '';
+
+    if (objectType == ProductoTb) {
+      urlRating = MisRutas.rutaRatingsByProductoAndUser;
+    } else if (objectType == ServicioTb) {
+      urlRating = MisRutas.rutaRatingsByServiceAndUser;
+    }
+
+    if (idProServicio != null) {
+      ratingsAndOthers = await RatingsDb.getRatingByProServicioAndUsuario(
+          widget.idUsuario, idProServicio!, urlRating);
+    }
+
     print(ratingsAndOthers);
 
     if (ratingsAndOthers?.likes == 1) {
@@ -243,15 +258,22 @@ class _FastDescriptionState extends State<FastDescription> {
   @override
   void initState() {
     super.initState();
-    print("ifExist: ${widget.ifExistOrNotUserRatingByProServicio}");
 
     ifExistOrNotUserRatingByProServicio =
         widget.ifExistOrNotUserRatingByProServicio;
 
+    if (widget.objectType == ProductoTb) {
+      idProServicio = widget.proServicio.idProducto;
+      objectType = ProductoTb;
+    } else if (widget.objectType == ServicioTb) {
+      idProServicio = widget.proServicio.idServicio;
+      objectType = ServicioTb;
+    }
+
     bool result = widget.ifExistOrNotUserRatingByProServicio;
-    if (result && widget.proServicio is ProductoTb) {
+    if (result) {
       obtenerRatingsAndOther();
-    } else if (result && widget.proServicio is ServicioTb) {}
+    }
 
     print('existe :  ${widget.ifExistOrNotUserRatingByProServicio}');
   }
@@ -332,14 +354,17 @@ class _FastDescriptionState extends State<FastDescription> {
                               const EdgeInsets.fromLTRB(4.5, 8.0, 3.0, 0.0),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ReviewsAndOpinions(
-                                    idProducto: widget.proServicio.idProducto,
+                              if (idProServicio != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ReviewsAndOpinions(
+                                      idProServicio: idProServicio!,
+                                      objectType: widget.objectType,
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              }
                             },
                             child: Padding(
                               padding: const EdgeInsets.only(left: 10.0),
@@ -418,18 +443,19 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
   String? descripcionDetalladaAux;
   String fileName = '';
 
-  void insertProductImage(int idUsuario) async {
+  void insertProServicioImage(int idUsuario) async {
     if (imagesToUpload.isNotEmpty) {
       List<ProservicioImagesTb> productImagesAux = [];
       for (var imageToUpload in imagesToUpload) {
         Uint8List imageBytes = await assetToUint8List(imageToUpload.newImage);
+        String fileName = assingName(imageToUpload.newImage.name!);
 
         ImageStorageCreacionTb image = ImageStorageCreacionTb(
           idUsuario: idUsuario,
           idProServicio: widget.idProServicio,
           newImageBytes: imageBytes,
           fileName: fileName,
-          finalNameImage: imageToUpload.newImage.name!,
+          finalNameImage: fileName,
         );
 
         String url = await ProductImagesStorage.cargarImage(image);
@@ -437,11 +463,11 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         ProServicioImageCreacionTb proServicioCreacionImage =
             ProServicioImageCreacionTb(
           idProServicio: widget.idProServicio,
-          nombreImage: imageToUpload.newImage.name!,
+          nombreImage: fileName,
           urlImage: url,
-          width: imageToUpload.width, 
+          width: imageToUpload.width,
           height: imageToUpload.height,
-          isPrincipalImage: 1,
+          isPrincipalImage: 0,
         );
 
         if (fileName == MisRutasFirebase.forProducts) {
@@ -884,7 +910,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 heightSizeBox: 50,
                 widthSizeBox: double.infinity,
                 onPress: () {
-                  if (idUsuario != null) insertProductImage(idUsuario);
+                  if (idUsuario != null) insertProServicioImage(idUsuario);
                   if (idUsuario != null) {
                     updateSecondaryImage(idUsuario);
                   }
@@ -915,9 +941,14 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 }
 
 class SummaryReviews extends StatefulWidget {
-  const SummaryReviews({super.key, required this.idProServicio});
+  const SummaryReviews({
+    super.key,
+    required this.idProServicio,
+    required this.objectType,
+  });
 
   final int idProServicio;
+  final Type objectType;
 
   @override
   State<SummaryReviews> createState() => _SummaryReviewsState();
@@ -929,7 +960,8 @@ class _SummaryReviewsState extends State<SummaryReviews> {
       context,
       MaterialPageRoute(
         builder: (context) => ReviewsAndOpinions(
-          idProducto: widget.idProServicio,
+          idProServicio: widget.idProServicio,
+          objectType: widget.objectType,
         ),
       ),
     );
@@ -967,7 +999,7 @@ class _SummaryReviewsState extends State<SummaryReviews> {
               ),
             ),
             Comments(
-              idProducto: widget.idProServicio,
+              idProServicio: widget.idProServicio,
               selectIndex: 0,
               maxCommentsToShow: 3,
               paddingOutsideHorizontal: 5.0,
@@ -978,6 +1010,7 @@ class _SummaryReviewsState extends State<SummaryReviews> {
               fontSizeDescription: 16,
               fontSizeName: 17,
               fontSizeStarts: 21,
+              objectType: widget.objectType,
             ),
             Center(
               child: GlobalTextButton(

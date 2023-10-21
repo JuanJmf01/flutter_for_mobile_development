@@ -17,19 +17,19 @@ class SubCategoriaSeleccionadaProvider extends ChangeNotifier {
   List<bool> get isBlue => _isBlue;
   List<SubCategoriaTb> get subCategoriasActuales => _subCategoriasActuales;
 
-  Future<void> obtenerSubCategoriasSeleccionadas(int idProducto) async {
+  Future<void> obtenerSubCategoriasSeleccionadas(
+      int idProducto, Type objectType) async {
     _subCategoriasSeleccionadas =
-        await SubCategoriasDb.getSubCategoriasByProducto(idProducto);
+        await SubCategoriasDb.getSubCategoriasByProducto(
+            idProducto, objectType);
 
     notifyListeners();
   }
 
   Future<void> obtenerAllSubCategorias(String url) async {
-
     _allSubCategorias = await CategoriaDb.getAllCategorias(url);
     notifyListeners();
   }
-  
 
   Future<void> generarSeleccionados(List<SubCategoriaTb> elementos) async {
     _isBlue = List.generate(elementos.length, (index) {

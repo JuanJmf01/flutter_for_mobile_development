@@ -6,7 +6,7 @@ import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosSubCategoriasDb.dart';
+import 'package:etfi_point/Components/Data/Entities/proServiceSubCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
@@ -53,13 +53,14 @@ class ProductoDb {
 
         // Insert categorias seleccionadas
         for (var subCategoria in categoriasSeleccionadas) {
-          ProServicioSubCategoriaTb productoSubCategoria = ProServicioSubCategoriaTb(
-              idProServicio: idProducto,
-              idCategoria: subCategoria.idCategoria,
-              idSubCategoria: subCategoria.idSubCategoria);
+          ProServicioSubCategoriaTb productoSubCategoria =
+              ProServicioSubCategoriaTb(
+                  idProServicio: idProducto,
+                  idCategoria: subCategoria.idCategoria,
+                  idSubCategoria: subCategoria.idSubCategoria);
 
-          await ProductosSubCategoriasDb.insertSubCategoriasSeleccionadas(
-              productoSubCategoria);
+          await ProServiceSubCategoriasDb.insertSubCategoriasSeleccionadas(
+              productoSubCategoria, ProductoTb);
         }
         return idProducto;
       } else {
@@ -158,7 +159,7 @@ class ProductoDb {
     String url = '${MisRutas.rutaProductos}/$idProducto';
 
     try {
-      await ProductosSubCategoriasDb.deleteProductSubCategories(idProducto);
+      await ProServiceSubCategoriasDb.deleteProductSubCategories(idProducto);
       for (var subCategoria in categoriasSeleccionadas) {
         ProServicioSubCategoriaTb productoCategoria = ProServicioSubCategoriaTb(
           idSubCategoria: subCategoria.idSubCategoria,
@@ -166,8 +167,8 @@ class ProductoDb {
           idCategoria: subCategoria.idCategoria,
         );
 
-        await ProductosSubCategoriasDb.insertSubCategoriasSeleccionadas(
-            productoCategoria);
+        await ProServiceSubCategoriasDb.insertSubCategoriasSeleccionadas(
+            productoCategoria, ProductoTb);
       }
 
       Response response = await dio.patch(
@@ -202,7 +203,7 @@ class ProductoDb {
 
     try {
       bool result =
-          await ProductosSubCategoriasDb.deleteProductSubCategories(idProducto);
+          await ProServiceSubCategoriasDb.deleteProductSubCategories(idProducto);
       if (result) {
         result = await ProductImageDb.deleteProductImages(idProducto);
       } else {

@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 /// The `RatingsDb` class provides methods for saving, retrieving, updating, and deleting ratings data
 /// from a MySQL database.
 
 class RatingsDb {
-  // -------- Consultas despues de la migracion a mySQL --------- //
-
   /// The function `saveRating` checks if a rating already exists and either updates it or inserts a new
   /// rating accordingly.
   ///
@@ -16,13 +16,13 @@ class RatingsDb {
   ///   rating (RatingsCreacionTb): The rating object that needs to be saved.
   ///   existeRating (bool): A boolean value indicating whether a rating already exists or not.
   static Future<void> saveRating(
-      RatingsCreacionTb rating, bool existeRating) async {
+      RatingsCreacionTb rating, bool existeRating, String url) async {
     if (existeRating) {
       print('existe in save2');
-      await updateRatign(rating);
+      await updateRatign(rating, url);
     } else {
       print('no existe in save2');
-      await insertRating(rating);
+      await insertRating(rating, url);
     }
   }
 
@@ -30,11 +30,15 @@ class RatingsDb {
   ///
   /// Args:
   ///   rating (RatingsCreacionTb): The parameter "rating" is an object of type "RatingsCreacionTb".
-  static Future<void> insertRating(RatingsCreacionTb rating) async {
+  static Future<void> insertRating(RatingsCreacionTb rating, String url) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaRatings;
+    Map<String, dynamic> data = {};
 
-    Map<String, dynamic> data = rating.toMap();
+    if (url == MisRutas.rutaRatings) {
+      data = rating.toMapProductRatings();
+    } else if (url == MisRutas.rutaServiceRatings) {
+      data = rating.toMapServiceRatings();
+    }
 
     try {
       Response response = await dio.post(
@@ -57,15 +61,20 @@ class RatingsDb {
   /// package in Dart.
   ///
   /// Args:
-  ///   idProducto (int): The parameter `idProducto` is an integer that represents the ID of a product. It
+  ///   idProServicio (int): The parameter `idProServicio` is an integer that represents the ID of a product. It
   /// is used to fetch the reviews for a specific product.
   ///
   /// Returns:
   ///   a Future that resolves to a List of Map<String, dynamic> objects.
   static Future<List<Map<String, dynamic>>> getReviewsByProducto(
-      int idProducto) async {
+      int idProServicio, Type objectType) async {
     Dio dio = Dio();
-    String url = '${MisRutas.rutaRatingsByProducto}/$idProducto';
+    String url = '';
+    if (objectType == ProductoTb) {
+      url = '${MisRutas.rutaRatingsByProducto}/$idProServicio';
+    } else if (objectType == ServicioTb) {
+      url = '${MisRutas.rutaRatingsByServicio}/$idProServicio';
+    }
 
     try {
       final response = await dio.get(
@@ -86,10 +95,11 @@ class RatingsDb {
       } else if (response.statusCode == 404) {
         return [];
       } else {
-        throw Exception('Error en la respuesta: ${response.statusCode}');
+        throw Exception(
+            'Error en la respuesta getReviewsByProducto: ${response.statusCode}');
       }
     } catch (error) {
-      print('No hay reviews que mostrar');
+      print('No hay reviews que mostrar getReviewsByProducto');
       return [];
     }
   }
@@ -99,10 +109,17 @@ class RatingsDb {
   ///
   /// Args:
   ///   rating (RatingsCreacionTb): The parameter "rating" is an object of type "RatingsCreacionTb".
-  static Future<void> updateRatign(RatingsCreacionTb rating) async {
+  static Future<void> updateRatign(RatingsCreacionTb rating, String url) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaRatings;
-    Map<String, dynamic> data = rating.toMap();
+    Map<String, dynamic> data = {};
+
+    if (url == MisRutas.rutaRatings) {
+      data = rating.toMapProductRatings();
+    } else if (url == MisRutas.rutaServiceRatings) {
+      print("SI ENTROO : $url");
+      print("RATING : $rating");
+      data = rating.toMapServiceRatings();
+    }
 
     try {
       Response response = await dio.patch(
@@ -120,7 +137,7 @@ class RatingsDb {
         print('Error en la solicitud: ${response.statusCode}');
       }
     } catch (error) {
-      print('Error de conexión: $error');
+      print('Error de conexioon: $error');
     }
   }
 
@@ -133,19 +150,22 @@ class RatingsDb {
   ///
   /// Returns:
   ///   a Future object that resolves to a RatingsCreacionTb object.
-  static Future<RatingsCreacionTb?> getRatingByProductoAndUsuario(
-      int idUsuario, int idProducto) async {
+  static Future<RatingsCreacionTb?> getRatingByProServicioAndUsuario(
+      int idUsuario, int idProducto, String url) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaRatingsByProductoAndUser;
+    Map<String, dynamic> data = {};
     print('idUsuario: $idUsuario');
     print('idProducto: $idProducto');
+    print('URL: $url');
+
+    if (url == MisRutas.rutaRatingsByProductoAndUser) {
+      data = {'idUsuario': idUsuario, 'idProducto': idProducto};
+    } else if (url == MisRutas.rutaRatingsByServiceAndUser) {
+      print("ENTRA 2: $idUsuario ; $idProducto");
+      data = {'idUsuario': idUsuario, 'idServicio': idProducto};
+    }
 
     try {
-      Map<String, dynamic> data = {
-        'idUsuario': idUsuario,
-        'idProducto': idProducto
-      };
-
       Response response = await dio.get(
         url,
         data: data,
@@ -158,7 +178,12 @@ class RatingsDb {
       );
 
       if (response.statusCode == 200) {
-        RatingsCreacionTb rating = RatingsCreacionTb.fromJson(response.data);
+        RatingsCreacionTb? rating;
+        if (url == MisRutas.rutaRatingsByProductoAndUser) {
+          rating = RatingsCreacionTb.fromJsonProductRatings(response.data);
+        } else if (url == MisRutas.rutaRatingsByServiceAndUser) {
+          rating = RatingsCreacionTb.fromJsonServiceRatings(response.data);
+        }
         print(rating);
         return rating;
       } else if (response.statusCode == 404) {
@@ -204,9 +229,16 @@ class RatingsDb {
   /// Returns:
   ///   a Future object that resolves to a List of integers
 
-  static Future<List<int>> getStarCounts(int idProducto) async {
+  static Future<List<int>> getStarCounts(
+      int idProServicio, Type objectType) async {
     Dio dio = Dio();
-    String url = '${MisRutas.rutaRatingsCountByProducto}/$idProducto';
+    String url = '';
+
+    if (objectType == ProductoTb) {
+      url = '${MisRutas.rutaRatingsCountByProducto}/$idProServicio';
+    } else if (objectType == ServicioTb) {
+      url = '${MisRutas.rutaServerRatingsCountByServicio}/$idProServicio';
+    }
 
     List<int> starCounts = List.filled(5, 0);
 
@@ -265,17 +297,16 @@ class RatingsDb {
     }
   }
 
-  static Future<bool> checkRatingExists(int idProducto, int idUsuario) async {
+  static Future<bool> checkRatingExists(
+      int idProservicio, int idUsuario, String url) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaRatingsIfExistRating;
+    Map<String, dynamic> data = {};
 
-    print('idProducto $idProducto');
-    print('idUsuario $idUsuario');
-
-    Map<String, dynamic> data = {
-      'idUsuario': idUsuario,
-      'idProducto': idProducto
-    };
+    if (url == MisRutas.rutaRatingsIfExistRating) {
+      data = {'idUsuario': idUsuario, 'idProducto': idProservicio};
+    } else if (url == MisRutas.rutaServiceRatingsIfExistRating) {
+      data = {'idUsuario': idUsuario, 'idServicio': idProservicio};
+    }
 
     try {
       Response response = await dio.get(

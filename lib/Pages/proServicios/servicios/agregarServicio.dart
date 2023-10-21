@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
@@ -8,7 +7,6 @@ import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
@@ -36,7 +34,12 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
 class AgregarServicio extends StatefulWidget {
-  const AgregarServicio({super.key});
+  const AgregarServicio({
+    super.key,
+    this.servicio,
+  });
+
+  final ServicioTb? servicio;
 
   @override
   State<AgregarServicio> createState() => _AgregarServicioState();
@@ -50,11 +53,13 @@ class _AgregarServicioState extends State<AgregarServicio> {
 
   final TextEditingController _descripcionController = TextEditingController();
 
+  ServicioTb? _servicio;
   bool isChecked = false;
 
   ImageList myImageList = ImageList([]);
   Asset? principalImage;
   Uint8List? principalImageBytes;
+  String? urlPrincipalImage;
 
   List<CategoriaTb> categoriasDisponibles = [];
   List<SubCategoriaTb> categoriasSeleccionadas = [];
@@ -133,12 +138,54 @@ class _AgregarServicioState extends State<AgregarServicio> {
     }
   }
 
+  void getListSecondaryProductImages() async {
+    int? idServicio = _servicio?.idServicio;
+    if (idServicio != null) {
+      List<ProservicioImagesTb> ServiceSecondaryImagesAux =
+          await ServiceImageDb.getServiceSecondaryImages(idServicio);
+
+      setState(() {
+        //productSecondaryImages = productSecondaryImagesAux;
+        myImageList.items.addAll(ServiceSecondaryImagesAux);
+
+        print('Mi lista de imagenes: $myImageList');
+      });
+    }
+  }
+
+  ServicioTb? assingValuesToInputs() {
+    ServicioTb? servicio = _servicio;
+    if (servicio != null) {
+      _nombreController.text = servicio!.nombre;
+      _precioController.text = (servicio.precio).toStringAsFixed(0);
+      _descripcionController.text = servicio.descripcion ?? '';
+
+      urlPrincipalImage = servicio.urlImage;
+
+      getListSecondaryProductImages();
+
+      return servicio;
+    }
+    return null;
+  }
+
   @override
   void initState() {
     super.initState();
-    String url = MisRutas.rutaCategoriasServicios;
 
-    CategoriaDb.obtenerCategorias(context: context, url: url);
+    if (widget.servicio != null) {
+      _servicio = widget.servicio;
+    }
+
+    ServicioTb? servicio = assingValuesToInputs();
+
+    CategoriaDb.obtenerCategorias(context, MisRutas.rutaCategoriasServicios);
+
+    if (widget.servicio != null) {
+      context
+          .read<SubCategoriaSeleccionadaProvider>()
+          .obtenerSubCategoriasSeleccionadas(servicio!.idServicio, ServicioTb);
+    }
   }
 
   @override
@@ -354,9 +401,6 @@ class _AgregarServicioState extends State<AgregarServicio> {
               fontWeight: FontWeight.w700,
               letterSpacing: 1.0,
               onPress: () async {
-                print("IMAGENES: $myImageList");
-                print("PRINCIPAL IMAGE: $principalImage");
-                print("CATEGORIAS: $categoriasSeleccionadas");
                 final nombreServicio = _nombreController.text;
                 double precio = double.tryParse(_precioController.text) ?? 0.0;
                 final descripcion = _descripcionController.text;

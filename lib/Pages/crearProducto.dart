@@ -1,4 +1,3 @@
-
 import 'package:etfi_point/Pages/productosGeneralForm.dart';
 import 'package:flutter/material.dart';
 
@@ -10,11 +9,11 @@ class CrearProducto extends StatefulWidget {
 }
 
 class _CrearProductoState extends State<CrearProducto> {
-  
+
   @override
   Widget build(BuildContext context) {
-    return ProductosGeneralForm(
-      titulo: 'Agregar producto',  
+    return const ProductosGeneralForm(
+      titulo: 'Agregar producto',
       nameSavebutton: 'Crear',
       exitoMessage: 'Producto creado exitosamente',
     );

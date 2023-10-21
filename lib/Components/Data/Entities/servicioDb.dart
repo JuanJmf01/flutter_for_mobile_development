@@ -5,7 +5,7 @@ import 'package:etfi_point/Components/Data/EntitiModels/proServicioSubCategoriaT
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/serviciosSubCategoriasDb.dart';
+import 'package:etfi_point/Components/Data/Entities/proServiceSubCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class ServicioDb {
@@ -37,8 +37,8 @@ class ServicioDb {
                   idCategoria: subCategoria.idCategoria,
                   idSubCategoria: subCategoria.idSubCategoria);
 
-          await ServiciosSubCategoriasDb.insertSubCategoriasSeleccionadas(
-              servicioSubCategoria);
+          await ProServiceSubCategoriasDb.insertSubCategoriasSeleccionadas(
+              servicioSubCategoria, ServicioTb);
         }
         return idServicio;
       } else {

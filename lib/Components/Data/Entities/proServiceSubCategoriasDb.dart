@@ -2,13 +2,20 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioSubCategoriaTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
-class ProductosSubCategoriasDb {
-  static Future<List<int>> getProductSelectedSubCategoies(
-      int idProducto) async {
+class ProServiceSubCategoriasDb {
+  static Future<List<int>> getProServiceSelectedSubCategoies(
+      int idProServicio, Type objectType) async {
     Dio dio = Dio();
-    String url = '${MisRutas.rutaProductosSubCategorias}/$idProducto';
+    String url = '';
+    if (objectType == ProductoTb) {
+      url = '${MisRutas.rutaProductosSubCategorias}/$idProServicio';
+    } else if (objectType == ServicioTb) {
+      url = '${MisRutas.rutaServiciosSubCategorias}/$idProServicio';
+    }
 
     try {
       Response response = await dio.get(
@@ -35,12 +42,18 @@ class ProductosSubCategoriasDb {
     }
   }
 
-   static Future<void> insertSubCategoriasSeleccionadas(
-      ProServicioSubCategoriaTb productoSubCategoria) async {
-
+  static Future<void> insertSubCategoriasSeleccionadas(
+      ProServicioSubCategoriaTb productoSubCategoria, Type objectType) async {
     Dio dio = Dio();
-    Map<String, dynamic> data = productoSubCategoria.toMapProducto();
-    String url = MisRutas.rutaProductosSubCategorias;
+    Map<String, dynamic> data = {};
+    String url = '';
+    if (objectType == ProductoTb) {
+      url = MisRutas.rutaProductosSubCategorias;
+      data = productoSubCategoria.toMapProducto();
+    } else if (objectType == ServicioTb) {
+      url = MisRutas.rutaServiciosSubCategorias;
+      data = productoSubCategoria.toMapServicio();
+    }
 
     try {
       Response response = await dio.post(
@@ -52,7 +65,7 @@ class ProductosSubCategoriasDb {
       );
 
       if (response.statusCode == 200) {
-        print('productoSubCategoria insertado correctamente (print)');
+        print('proServiceSubCategoria insertado correctamente (print)');
         print(response.data);
         // Realiza las operaciones necesarias con la respuesta
       } else {

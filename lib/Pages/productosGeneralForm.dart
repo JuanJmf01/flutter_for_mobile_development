@@ -37,14 +37,14 @@ import 'package:provider/provider.dart';
 class ProductosGeneralForm extends StatefulWidget {
   const ProductosGeneralForm({
     super.key,
-    this.data,
+    this.producto,
     this.exitoTitle,
     required this.titulo,
     required this.nameSavebutton,
     required this.exitoMessage,
   });
 
-  final ProductoTb? data;
+  final ProductoTb? producto;
   final String titulo;
   final String nameSavebutton;
   final String? exitoTitle;
@@ -56,7 +56,6 @@ class ProductosGeneralForm extends StatefulWidget {
 
 class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
-
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
@@ -82,10 +81,26 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   void initState() {
     super.initState();
 
-    ProductoTb? producto = widget.data;
-    if (producto?.idProducto != null) {
-      print('dataUpdat_: ${widget.data}');
+    if (widget.producto != null) {
+      _producto = widget.producto;
+    }
+    ProductoTb? producto = assingValuesToInputs();
 
+    CategoriaDb.obtenerCategorias(
+      context,
+      MisRutas.rutaCategorias2,
+    );
+
+    if (widget.producto != null) {
+      context
+          .read<SubCategoriaSeleccionadaProvider>()
+          .obtenerSubCategoriasSeleccionadas(producto!.idProducto, ProductoTb);
+    }
+  }
+
+  ProductoTb? assingValuesToInputs() {
+    ProductoTb? producto = _producto;
+    if (producto?.idProducto != null) {
       _nombreController.text = producto!.nombre;
       _precioController.text = (producto.precio).toStringAsFixed(0);
       _descripcionController.text = producto.descripcion ?? '';
@@ -98,19 +113,14 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
       getListSecondaryProductImages();
       estaEnOferta();
-    }
-    String url = MisRutas.rutaCategorias2;
 
-    CategoriaDb.obtenerCategorias(
-        idProducto: producto?.idProducto, context: context, url: url);
-
-    if (widget.data != null) {
-      _producto = widget.data;
+      return producto;
     }
+    return null;
   }
 
   void getListSecondaryProductImages() async {
-    int? idProducto = widget.data?.idProducto;
+    int? idProducto = _producto?.idProducto;
     if (idProducto != null) {
       List<ProservicioImagesTb> productSecondaryImagesAux =
           await ProductImageDb.getProductSecondaryImages(idProducto);
@@ -184,14 +194,13 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
               urlImage: url,
               width: principalImage!.originalWidth!.toDouble(),
               height: principalImage!.originalHeight!.toDouble(),
-              isPrincipalImage: 1,
+              isPrincipalImage: 0,
             );
 
             await ProductImageDb.insertProductImages(productImage);
           }
         }
       }
-
       mostrarCuadroExito(idProducto);
     } catch (error) {
       print('Problemas al insertar el producto $error');
@@ -220,7 +229,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           imageName: producto.nombreImage,
           width: 195.0,
           height: 170.0,
-          isPrincipalImage: 1);
+          isPrincipalImage: 0);
 
       await ProductImagesStorage.updateImage(image);
     } else {
@@ -231,6 +240,17 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       mostrarCuadroExito(idProducto);
     } catch (error) {
       print('Problemas al actualizar el producto $error');
+    }
+  }
+
+  void agregarDesdeGaleria() async {
+    Asset? imagesAsset = await getImageAsset();
+
+    if (imagesAsset != null) {
+      setState(() {
+        principalImage = imagesAsset;
+        urlPrincipalImage = null;
+      });
     }
   }
 
@@ -258,17 +278,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
         );
       },
     );
-  }
-
-  void agregarDesdeGaleria() async {
-    Asset? imagesAsset = await getImageAsset();
-
-    if (imagesAsset != null) {
-      setState(() {
-        principalImage = imagesAsset;
-        urlPrincipalImage = null;
-      });
-    }
   }
 
   @override
@@ -355,8 +364,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                               },
                             )
                           : SizedBox.shrink(),
-
-                      widget.data?.idProducto == null
+                      _producto?.idProducto == null
                           ? Align(
                               alignment: Alignment.centerLeft,
                               child: GlobalTextButton(
@@ -365,7 +373,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                       await CrudImages.agregarImagenes();
                                   setState(() {
                                     myImageList.items.addAll(selectedImagesAux);
-                                    if (widget.data?.idProducto == null &&
+                                    if (_producto?.idProducto == null &&
                                         selectedImagesAux.isNotEmpty) {
                                       principalImage ??= selectedImagesAux[0]
                                           .newImage; //Si 'principalImage' es null, asignar selectedImagesAux[0].newImage
@@ -513,58 +521,58 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
             ),
             if (isUserSignedIn)
               ElevatedGlobalButton(
-                  nameSavebutton: widget.nameSavebutton,
-                  widthSizeBox: double.infinity,
-                  heightSizeBox: 50.0,
-                  fontSize: 21,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.0,
-                  onPress: () async {
-                    //--- Se asigna cada String de los campso de texto a una variable ---//
-                    final nombreProducto = _nombreController.text;
-                    double precio =
-                        double.tryParse(_precioController.text) ?? 0.0;
-                    final descripcion = _descripcionController.text;
-                    int cantidadDisponible =
-                        int.tryParse(_cantidadDisponibleController.text) ?? 0;
+                nameSavebutton: widget.nameSavebutton,
+                widthSizeBox: double.infinity,
+                heightSizeBox: 50.0,
+                fontSize: 21,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 1.0,
+                onPress: () async {
+                  //--- Se asigna cada String de los campso de texto a una variable ---//
+                  final nombreProducto = _nombreController.text;
+                  double precio =
+                      double.tryParse(_precioController.text) ?? 0.0;
+                  final descripcion = _descripcionController.text;
+                  int cantidadDisponible =
+                      int.tryParse(_cantidadDisponibleController.text) ?? 0;
 
-                    ProductoCreacionTb productoCreacion;
-                    int idNegocio =
-                        await NegocioDb.crearNegocioSiNoExiste(idUsuario);
+                  ProductoCreacionTb productoCreacion;
+                  int idNegocio =
+                      await NegocioDb.crearNegocioSiNoExiste(idUsuario);
 
-                    print('producto_:: ${widget.data?.idProducto}');
-                    if (widget.data?.idProducto == null) {
-                      //-- Creamos el producto --//
-                      productoCreacion = ProductoCreacionTb(
-                          idNegocio: idNegocio,
-                          nombreProducto: nombreProducto,
-                          precio: precio,
-                          descripcion: descripcion,
-                          cantidadDisponible: cantidadDisponible,
-                          oferta: enOferta);
-
-                      myImageList.items.isNotEmpty && idUsuario != null
-                          ? crearProducto(productoCreacion, idUsuario)
-                          : print('imagenToUpload es null o idUsuario es null');
-                    } else {
-                      //Actualizar ya que idProducto != null
-                      _producto = ProductoTb(
-                        idProducto: widget.data!.idProducto,
-                        idNegocio: widget.data!.idNegocio,
-                        nombre: nombreProducto,
+                  if (_producto?.idProducto == null) {
+                    //-- Creamos el producto --//
+                    productoCreacion = ProductoCreacionTb(
+                        idNegocio: idNegocio,
+                        nombreProducto: nombreProducto,
                         precio: precio,
                         descripcion: descripcion,
                         cantidadDisponible: cantidadDisponible,
-                        oferta: enOferta,
-                        urlImage: widget.data!.urlImage,
-                        nombreImage: widget.data!.nombreImage,
-                      );
+                        oferta: enOferta);
 
-                      idUsuario != null
-                          ? actualizarProducto(_producto!, idUsuario)
-                          : print('urlImage es null');
-                    }
-                  })
+                    myImageList.items.isNotEmpty && idUsuario != null
+                        ? crearProducto(productoCreacion, idUsuario)
+                        : print('imagenToUpload es null o idUsuario es null');
+                  } else {
+                    //Actualizar ya que idProducto != null
+                    _producto = ProductoTb(
+                      idProducto: _producto!.idProducto,
+                      idNegocio: _producto!.idNegocio,
+                      nombre: nombreProducto,
+                      precio: precio,
+                      descripcion: descripcion,
+                      cantidadDisponible: cantidadDisponible,
+                      oferta: enOferta,
+                      urlImage: _producto!.urlImage,
+                      nombreImage: _producto!.nombreImage,
+                    );
+
+                    idUsuario != null
+                        ? actualizarProducto(_producto!, idUsuario)
+                        : print('idUsuario es null');
+                  }
+                },
+              )
           ],
         ),
       ),

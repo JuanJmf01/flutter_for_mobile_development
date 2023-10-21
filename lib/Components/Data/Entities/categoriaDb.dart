@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
-import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -30,17 +29,11 @@ class CategoriaDb {
   }
 
   static void obtenerCategorias(
-      {int? idProducto, required BuildContext context, required String url}) async {
-    print("ENTRA PRIMERO AQUI");
-
+    BuildContext context,
+    String url,
+  ) async {
     await context
         .read<SubCategoriaSeleccionadaProvider>()
         .obtenerAllSubCategorias(url);
-
-    if (idProducto != null) {
-      await context
-          .read<SubCategoriaSeleccionadaProvider>()
-          .obtenerSubCategoriasSeleccionadas(idProducto);
-    }
   }
 }
