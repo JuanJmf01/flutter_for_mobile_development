@@ -9,6 +9,7 @@ import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioGeneralDetail.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/agregarServicio.dart';
 import 'package:etfi_point/Pages/productosGeneralForm.dart';
@@ -140,6 +141,34 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
             icon: Icon(Icons.delete),
             onPressed: () {
               // Acción cuando se presiona el icono de eliminar
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return ConfirmationDialog(
+                    titulo: 'Advertencia',
+                    message: '¿Seguro que deseas eliminar este producto?',
+                    onAcceptMessage: 'Aceptar',
+                    onCancelMessage: 'Cancelar',
+                    onAccept: () async {
+                      try {
+                        print('Id producto: $idProServicio');
+                        if (objectType == ProductoTb) {
+                          await ProductoDb.deleteProducto(idProServicio!);
+                        }
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
+                        }
+                        //deleteProduct(producto.idProducto);
+                      } catch (error) {
+                        print('Error al eliminar el producto: $error');
+                      }
+                    },
+                    onCancel: () {
+                      Navigator.of(context).pop();
+                    },
+                  );
+                },
+              );
             },
           ),
         ],

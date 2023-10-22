@@ -397,7 +397,9 @@ class _FastDescriptionState extends State<FastDescription> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(8.0, 20.0, 20.0, 20.0),
                 child: Text(
-                  'No hay descripcion que mostrar',
+                  proServicio.descripcion.isNotEmpty
+                      ? proServicio.descripcion
+                      : "No hay descripcion que mostrar",
                   style: TextStyle(
                     color: Colors.grey[800],
                     fontSize: 16,
@@ -768,38 +770,41 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 ],
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0,
-                  productSecondaryImages.isNotEmpty ? 0.0 : 20.0, 0.0, 0.0),
-              child: const Text(
-                'Descripcion detallada',
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 22),
-              ),
-            ),
-            Padding(
-                padding: EdgeInsets.fromLTRB(
-                    isChecked ? 8.0 : 16, 23.0, isChecked ? 8.0 : 30, 30.0),
-                child: isChecked
-                    ? GeneralInputs(
-                        verticalPadding: 15.0,
-                        controller: _descripcionDetalldaController,
-                        labelText:
-                            'Agrega una descripcion detalla del producto',
-                        color: Colors.grey.shade200,
-                        keyboardType: TextInputType.multiline,
-                        minLines: 3,
-                        maxLines: 40,
-                      )
-                    : Text(
-                        descripcionDetalladaAux != null &&
-                                descripcionDetalladaAux!.isNotEmpty
-                            ? descripcionDetalladaAux!
-                            : 'No hay descripcion que mostrar',
-                        style: TextStyle(
-                          color: Colors.grey[800],
-                          fontSize: 16,
-                        ),
-                      )),
+            // Padding(
+            //   padding: EdgeInsets.fromLTRB(16.0,
+            //       productSecondaryImages.isNotEmpty ? 0.0 : 20.0, 0.0, 0.0),
+            //   child: const Text(
+            //     'Descripcion detallada',
+            //     style: TextStyle(
+            //       fontWeight: FontWeight.w600,
+            //       fontSize: 22,
+            //     ),
+            //   ),
+            // ),
+            // Padding(
+            //   padding: EdgeInsets.fromLTRB(
+            //       isChecked ? 8.0 : 16, 23.0, isChecked ? 8.0 : 30, 30.0),
+            //   child: isChecked
+            //       ? GeneralInputs(
+            //           verticalPadding: 15.0,
+            //           controller: _descripcionDetalldaController,
+            //           labelText: 'Agrega una descripcion detalla del producto',
+            //           color: Colors.grey.shade200,
+            //           keyboardType: TextInputType.multiline,
+            //           minLines: 3,
+            //           maxLines: 40,
+            //         )
+            //       : Text(
+            //           descripcionDetalladaAux != null &&
+            //                   descripcionDetalladaAux!.isNotEmpty
+            //               ? descripcionDetalladaAux!
+            //               : 'No hay descripcion que mostrar',
+            //           style: TextStyle(
+            //             color: Colors.grey[800],
+            //             fontSize: 16,
+            //           ),
+            //         ),
+            // ),
             allProductImages.items.isNotEmpty
                 ? Column(
                     children: [

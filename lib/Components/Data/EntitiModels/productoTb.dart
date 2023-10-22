@@ -7,10 +7,11 @@ class ProductoTb {
   final String? descripcionDetallada;
   final int cantidadDisponible;
   final int? oferta; // bool (0 or 1)
-  
+  final int? descuento;
+  final DateTime? fechaCreacion;
+
   final String urlImage;
   final String nombreImage;
-  //String? fechaDeCreacion;
   //int? estado;
 
   ProductoTb(
@@ -22,8 +23,10 @@ class ProductoTb {
       this.descripcionDetallada,
       required this.cantidadDisponible,
       this.oferta,
+      this.descuento,
       required this.urlImage,
-      required this.nombreImage
+      required this.nombreImage,
+      this.fechaCreacion
       //this.fechaDeCreacion,
       //this.estado,
       });
@@ -38,6 +41,9 @@ class ProductoTb {
       descripcionDetallada: json['descripcionDetallada'],
       cantidadDisponible: json['cantidadDisponible'],
       oferta: json['oferta'],
+      descuento: json['descuento'],
+      fechaCreacion: DateTime.parse(
+          json['fechaCreacion']), // Convierte la cadena a DateTime
       urlImage: json['urlImage'],
       nombreImage: json['nombreImage'],
     );
@@ -53,6 +59,8 @@ class ProductoTb {
       'descripcionDetallada': descripcionDetallada,
       'cantidadDisponible': cantidadDisponible,
       'oferta': oferta,
+      'descuento': descuento,
+      'fechaCreacion': fechaCreacion,
       'urlImage': urlImage,
       'nombreImage': nombreImage,
       //'fechaDeCreacion': fechaDeCreacion,
@@ -74,6 +82,7 @@ class ProductoCreacionTb {
   final String? descripcionDetallada;
   final int cantidadDisponible;
   final int? oferta; // bool (0 or 1)
+  final int? descuento;
 
   ProductoCreacionTb({
     required this.idNegocio,
@@ -83,6 +92,7 @@ class ProductoCreacionTb {
     this.descripcionDetallada,
     required this.cantidadDisponible,
     this.oferta,
+    this.descuento,
   });
 
   //FromJson
@@ -96,6 +106,7 @@ class ProductoCreacionTb {
       'descripcionDetallada': descripcionDetallada,
       'cantidadDisponible': cantidadDisponible,
       'oferta': oferta,
+      'descuento': descuento,
     };
   }
 
@@ -104,4 +115,3 @@ class ProductoCreacionTb {
     return 'ProductoCreacionTb{nombreProducto: $nombreProducto}';
   }
 }
-

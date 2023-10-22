@@ -52,8 +52,11 @@ class _AgregarServicioState extends State<AgregarServicio> {
   final TextEditingController _precioController = TextEditingController();
 
   final TextEditingController _descripcionController = TextEditingController();
+  final TextEditingController _descuentoController = TextEditingController();
 
   ServicioTb? _servicio;
+
+  int? enOferta = 0;
   bool isChecked = false;
 
   ImageList myImageList = ImageList([]);
@@ -159,14 +162,44 @@ class _AgregarServicioState extends State<AgregarServicio> {
       _nombreController.text = servicio!.nombre;
       _precioController.text = (servicio.precio).toStringAsFixed(0);
       _descripcionController.text = servicio.descripcion ?? '';
-
+      _descuentoController.text = servicio.descuento.toString();
       urlPrincipalImage = servicio.urlImage;
 
+      enOferta = servicio.oferta;
+
       getListSecondaryProductImages();
+      estaEnOferta();
 
       return servicio;
     }
     return null;
+  }
+
+  void estaEnOferta() {
+    enOferta == 1
+        ? isChecked = true
+        : enOferta == 0
+            ? isChecked = false
+            : isChecked = false;
+  }
+
+  String newPrice() {
+    double precioInicial = double.tryParse(_precioController.text) ?? 0.0;
+    double descuento = double.tryParse(_descuentoController.text) ?? 0.0;
+
+    // Asegúrate de que el descuento esté dentro del rango de 1 a 100
+    if (descuento < 0) {
+      descuento = 0;
+      _descuentoController.text = '0';
+    } else if (descuento > 100.0) {
+      descuento = 100.0;
+      _descuentoController.text = '100';
+    }
+
+    // Calcula el nuevo precio
+    double nuevoPrecio = precioInicial - (precioInicial * (descuento / 100.0));
+
+    return 'Nuevo precio con descuento: \$${nuevoPrecio.toStringAsFixed(2)}';
   }
 
   @override
@@ -186,6 +219,13 @@ class _AgregarServicioState extends State<AgregarServicio> {
           .read<SubCategoriaSeleccionadaProvider>()
           .obtenerSubCategoriasSeleccionadas(servicio!.idServicio, ServicioTb);
     }
+
+    _precioController.addListener(_updatePrice);
+    _descuentoController.addListener(_updatePrice);
+  }
+
+  void _updatePrice() {
+    setState(() {});
   }
 
   @override
@@ -229,13 +269,14 @@ class _AgregarServicioState extends State<AgregarServicio> {
                           padding:
                               const EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 0.0),
                           child: ElevatedGlobalButton(
-                            nameSavebutton: '¿Producto en oferta?',
+                            nameSavebutton: 'Servicio en oferta?',
                             borderSideColor:
                                 !isChecked ? Colors.grey : Colors.transparent,
                             onPress: () {
                               setState(() {
                                 isChecked = !isChecked;
-                                //enOferta = isChecked ? 1 : 0;
+                                enOferta = isChecked ? 1 : 0;
+                                print("en oferta: $enOferta");
                               });
                             },
                             backgroundColor:
@@ -359,6 +400,19 @@ class _AgregarServicioState extends State<AgregarServicio> {
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                         ],
                       ),
+                      isChecked
+                          ? GeneralInputs(
+                              controller: _descuentoController,
+                              horizontalPadding: 16.0,
+                              verticalPadding: 15.0,
+                              textLabelOutside: 'Descuento',
+                              labelText:
+                                  'Agrega un valor del 1 al 100 para el descuento',
+                              color: colorTextField,
+                              keyboardType: TextInputType.number,
+                            )
+                          : const SizedBox.shrink(),
+                      Text(newPrice()),
                       GeneralInputs(
                         controller: _descripcionController,
                         textLabelOutside: 'Descripcion',
@@ -408,13 +462,15 @@ class _AgregarServicioState extends State<AgregarServicio> {
                 ServicioCreacionTb servicioCreacion;
                 int idNegocio =
                     await NegocioDb.crearNegocioSiNoExiste(idUsuario);
+                int descuento = int.tryParse(_descuentoController.text) ?? 0;
 
                 servicioCreacion = ServicioCreacionTb(
                   idNegocio: idNegocio,
                   nombre: nombreServicio,
                   descripcion: descripcion,
                   precio: precio,
-                  oferta: 0,
+                  oferta: enOferta ?? 0,
+                  descuento: isChecked ? descuento : 0,
                 );
 
                 if (idUsuario != null) {

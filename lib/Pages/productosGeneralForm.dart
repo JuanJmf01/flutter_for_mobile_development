@@ -18,6 +18,7 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
+import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
@@ -61,6 +62,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _cantidadDisponibleController =
       TextEditingController();
+  final TextEditingController _descuentoController = TextEditingController();
 
   CategoriaTb? categoriaSeleccionada;
   List<CategoriaTb> categoriasDisponibles = [];
@@ -96,6 +98,13 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           .read<SubCategoriaSeleccionadaProvider>()
           .obtenerSubCategoriasSeleccionadas(producto!.idProducto, ProductoTb);
     }
+
+    _precioController.addListener(_updatePrice);
+    _descuentoController.addListener(_updatePrice);
+  }
+
+  void _updatePrice() {
+    setState(() {});
   }
 
   ProductoTb? assingValuesToInputs() {
@@ -106,6 +115,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       _descripcionController.text = producto.descripcion ?? '';
       _cantidadDisponibleController.text =
           producto.cantidadDisponible.toString();
+      _descuentoController.text = producto.descuento.toString();
 
       urlPrincipalImage = producto.urlImage;
 
@@ -280,6 +290,25 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     );
   }
 
+  String newPrice() {
+    double precioInicial = double.tryParse(_precioController.text) ?? 0.0;
+    double descuento = double.tryParse(_descuentoController.text) ?? 0.0;
+
+    // Asegúrate de que el descuento esté dentro del rango de 1 a 100
+    if (descuento < 0) {
+      descuento = 0;
+      _descuentoController.text = '0';
+    } else if (descuento > 100.0) {
+      descuento = 100.0;
+      _descuentoController.text = '100';
+    }
+
+    // Calcula el nuevo precio
+    double nuevoPrecio = precioInicial - (precioInicial * (descuento / 100.0));
+
+    return 'Nuevo precio con descuento: \$${nuevoPrecio.toStringAsFixed(2)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
@@ -328,6 +357,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                               setState(() {
                                 isChecked = !isChecked;
                                 enOferta = isChecked ? 1 : 0;
+                                print("en oferta: ${obtenerFechaHoraActual()}");
                               });
                             },
                             backgroundColor:
@@ -467,6 +497,20 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
                         ],
                       ),
+                      isChecked
+                          ? GeneralInputs(
+                              controller: _descuentoController,
+                              horizontalPadding: 16.0,
+                              verticalPadding: 15.0,
+                              textLabelOutside: 'Descuento',
+                              labelText:
+                                  'Agrega un valor del 1 al 100 para el descuento',
+                              color: colorTextField,
+                              keyboardType: TextInputType.number,
+                            )
+                          : const SizedBox.shrink(),
+
+                      Text(newPrice()),
                       GeneralInputs(
                         controller: _descripcionController,
                         verticalPadding: 15.0,
@@ -535,6 +579,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                   final descripcion = _descripcionController.text;
                   int cantidadDisponible =
                       int.tryParse(_cantidadDisponibleController.text) ?? 0;
+                  int descuento = int.tryParse(_descuentoController.text) ?? 0;
 
                   ProductoCreacionTb productoCreacion;
                   int idNegocio =
@@ -542,13 +587,16 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
                   if (_producto?.idProducto == null) {
                     //-- Creamos el producto --//
+
                     productoCreacion = ProductoCreacionTb(
-                        idNegocio: idNegocio,
-                        nombreProducto: nombreProducto,
-                        precio: precio,
-                        descripcion: descripcion,
-                        cantidadDisponible: cantidadDisponible,
-                        oferta: enOferta);
+                      idNegocio: idNegocio,
+                      nombreProducto: nombreProducto,
+                      precio: precio,
+                      descripcion: descripcion,
+                      cantidadDisponible: cantidadDisponible,
+                      oferta: enOferta,
+                      descuento: isChecked ? descuento : 0,
+                    );
 
                     myImageList.items.isNotEmpty && idUsuario != null
                         ? crearProducto(productoCreacion, idUsuario)

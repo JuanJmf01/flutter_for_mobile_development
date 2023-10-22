@@ -33,9 +33,10 @@ class ServicioDb {
         for (var subCategoria in categoriasSeleccionadas) {
           ProServicioSubCategoriaTb servicioSubCategoria =
               ProServicioSubCategoriaTb(
-                  idProServicio: idServicio,
-                  idCategoria: subCategoria.idCategoria,
-                  idSubCategoria: subCategoria.idSubCategoria);
+            idProServicio: idServicio,
+            idCategoria: subCategoria.idCategoria,
+            idSubCategoria: subCategoria.idSubCategoria,
+          );
 
           await ProServiceSubCategoriasDb.insertSubCategoriasSeleccionadas(
               servicioSubCategoria, ServicioTb);
@@ -51,7 +52,7 @@ class ServicioDb {
     }
   }
 
-   static Future<List<ServicioTb>> getServiciosByNegocio(int idUsuario) async {
+  static Future<List<ServicioTb>> getServiciosByNegocio(int idUsuario) async {
     Dio dio = Dio();
 
     try {
@@ -81,7 +82,7 @@ class ServicioDb {
     }
   }
 
-    static Future<ServicioTb> getServicio(int idServicio) async {
+  static Future<ServicioTb> getServicio(int idServicio) async {
     Dio dio = Dio();
 
     try {
@@ -97,5 +98,4 @@ class ServicioDb {
       throw Exception('Error en la solicitud: $error');
     }
   }
-
 }

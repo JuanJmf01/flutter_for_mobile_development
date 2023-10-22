@@ -46,8 +46,17 @@ class _IndividualProductState extends State<IndividualProduct> {
   //   });
   // }
 
+  String priceWithDesc(double price, int descuento) {
+    double newPrice;
+
+    newPrice = price - (price * (descuento / 100.0));
+
+    return newPrice.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final producto = widget.producto;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 0.0),
       child: Container(
@@ -62,7 +71,7 @@ class _IndividualProductState extends State<IndividualProduct> {
           children: [
             InkWell(
               onTap: () {
-                _navigateToProductDetail(widget.producto.idProducto);
+                _navigateToProductDetail(producto.idProducto);
               },
               child: ShowImage(
                 padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
@@ -73,7 +82,7 @@ class _IndividualProductState extends State<IndividualProduct> {
                 height: 170.0,
                 width: double.infinity,
                 fit: BoxFit.cover,
-                networkImage: widget.producto.urlImage,
+                networkImage: producto.urlImage,
               ),
             ),
             Padding(
@@ -82,25 +91,35 @@ class _IndividualProductState extends State<IndividualProduct> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.producto.nombre,
+                    producto.nombre,
                     style: Theme.of(context).textTheme.titleMedium!.merge(
                           const TextStyle(
-                            fontWeight: FontWeight.w700,
-                          ),
+                              fontWeight: FontWeight.w600, fontSize: 17.5),
                         ),
                   ),
                   const SizedBox(
                     height: 8.0,
                   ),
                   Text(
-                    "Price two",
+                    "\$${producto.precio} COP",
                     style: Theme.of(context).textTheme.titleSmall!.merge(
                           TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Colors.grey.shade500,
-                          ),
+                              fontWeight: FontWeight.w700,
+                              color: Colors.blue,
+                              fontSize: 17),
                         ),
                   ),
+                  producto.oferta == 1 && producto.descuento != null
+                      ? Text(
+                          priceWithDesc(producto.precio, producto.descuento!),
+                          style: Theme.of(context).textTheme.titleSmall!.merge(
+                                TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.grey.shade500,
+                                ),
+                              ),
+                        )
+                      : SizedBox()
                   // Row(
                   //   children: [
                   //     CartPrincipalIcon(

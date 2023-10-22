@@ -7,16 +7,19 @@ class ServicioTb {
   final int oferta;
   final String urlImage;
   final String nombreImage;
+  final int? descuento;
 
-  ServicioTb(
-      {required this.idServicio,
-      required this.idNegocio,
-      required this.nombre,
-      this.descripcion,
-      required this.precio,
-      required this.oferta,
-      required this.urlImage,
-      required this.nombreImage});
+  ServicioTb({
+    required this.idServicio,
+    required this.idNegocio,
+    required this.nombre,
+    this.descripcion,
+    required this.precio,
+    required this.oferta,
+    required this.urlImage,
+    required this.nombreImage,
+    this.descuento,
+  });
 
   factory ServicioTb.fromJson(Map<String, dynamic> json) {
     return ServicioTb(
@@ -26,6 +29,7 @@ class ServicioTb {
       descripcion: json['descripcion'],
       precio: json['precio'].toDouble(),
       oferta: json['oferta'],
+      descuento: json['descuento'],
       urlImage: json['urlImage'],
       nombreImage: json['nombreImage'],
     );
@@ -39,6 +43,7 @@ class ServicioTb {
       'descripcion': descripcion,
       'precio': precio,
       'oferta': oferta,
+      'descuento': descuento,
       'urlImage': urlImage,
       'nombreImage': nombreImage,
     };
@@ -56,6 +61,7 @@ class ServicioCreacionTb {
   final String? descripcion;
   final double precio;
   final int oferta;
+  final int? descuento;
 
   ServicioCreacionTb({
     required this.idNegocio,
@@ -63,6 +69,7 @@ class ServicioCreacionTb {
     this.descripcion,
     required this.precio,
     required this.oferta,
+    this.descuento,
   });
 
   Map<String, dynamic> toMap() {
@@ -72,6 +79,7 @@ class ServicioCreacionTb {
       'descripcion': descripcion,
       'precio': precio,
       'oferta': oferta,
+      'descuento': descuento,
     };
   }
 

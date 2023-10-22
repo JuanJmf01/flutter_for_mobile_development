@@ -36,6 +36,8 @@ class ProductoDb {
     print('Producto: $producto');
     print('categorias: $categoriasSeleccionadas');
 
+    print("PRO DESCR: ${producto.descuento}");
+
     Dio dio = Dio();
     Map<String, dynamic> data = producto.toMap();
     String url = MisRutas.rutaProductos;
@@ -202,8 +204,8 @@ class ProductoDb {
     Dio dio = Dio();
 
     try {
-      bool result =
-          await ProServiceSubCategoriasDb.deleteProductSubCategories(idProducto);
+      bool result = await ProServiceSubCategoriasDb.deleteProductSubCategories(
+          idProducto);
       if (result) {
         result = await ProductImageDb.deleteProductImages(idProducto);
       } else {
