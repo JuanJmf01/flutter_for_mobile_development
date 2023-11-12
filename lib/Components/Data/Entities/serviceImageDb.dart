@@ -59,6 +59,32 @@ class ServiceImageDb {
     }
   }
 
+  static Future<bool> deleteServiceImages(int idServicio) async {
+    Dio dio = Dio();
+    String url = '${MisRutas.rutaServiceImages}/$idServicio';
+
+    try {
+      Response response = await dio.delete(
+        url,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 202) {
+        print('ServiceImages eliminados correctamente');
+        return true;
+      } else if (response.statusCode == 404) {
+        print('ServiceImages no encontrado');
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error de conexión: $error');
+    }
+    return false;
+  }
+
   static Future<bool> deleteServiceImage(int idServiceImage) async {
     Dio dio = Dio();
     String url = '${MisRutas.rutaServiceImage}/$idServiceImage';

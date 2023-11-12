@@ -77,9 +77,8 @@ class ProServiceSubCategoriasDb {
     }
   }
 
-  static Future<bool> deleteProductSubCategories(int idProducto) async {
+  static Future<bool> deleteProServicioSubCategories(int idProServicio, String url) async {
     Dio dio = Dio();
-    String url = '${MisRutas.rutaProductosSubCategorias}/$idProducto';
 
     try {
       Response response = await dio.delete(
@@ -90,11 +89,11 @@ class ProServiceSubCategoriasDb {
       );
 
       if (response.statusCode == 202) {
-        print('ProductosSubCategorias eliminados correctamente');
+        print('ProServiciosSubCategorias eliminados correctamente');
         return true;
         // Realiza las operaciones necesarias con la respuesta
       } else if (response.statusCode == 404) {
-        print('Producto no encontrado en deleteProductosSubCategorias');
+        print('ProServicio no encontrado en deleteProServicioSubCategories');
       } else {
         print('Error en la solicitud: ${response.statusCode}');
       }

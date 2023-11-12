@@ -273,9 +273,9 @@ class RatingsDb {
   /// Args:
   ///   idProducto (int): The parameter "idProducto" represents the ID of the product for which the
   /// ratings need to be deleted.
-  static Future<void> deleteRatingsByProducto(int idProducto) async {
+  static Future<void> deleteRatingsByProServicio(
+      int idProductom, String url) async {
     Dio dio = Dio();
-    String url = '${MisRutas.rutaRatings}/$idProducto';
 
     try {
       Response response = await dio.delete(

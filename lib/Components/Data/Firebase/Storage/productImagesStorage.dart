@@ -91,13 +91,13 @@ class ProductImagesStorage {
   static Future<bool> deleteImage(ImageStorageDeleteTb imageInfo) async {
     String fileName = imageInfo.fileName;
     int idUsuario = imageInfo.idUsuario;
-    int idProducto = imageInfo.idProServicio;
+    int idProServicio = imageInfo.idProServicio;
     String imageName = imageInfo.nombreImagen;
 
     try {
       final Reference ref = FirebaseStorage.instance
           .ref()
-          .child('imagenes/$idUsuario/$fileName/$idProducto/$imageName');
+          .child('imagenes/$idUsuario/$fileName/$idProServicio/$imageName');
 
       await ref.delete(); // Elimina la imagen
 
@@ -105,6 +105,34 @@ class ProductImagesStorage {
       return true;
     } catch (error) {
       print('Error eliminando image: $error');
+      // Si hay un error, retornamos false
+      return false;
+    }
+  }
+
+  static Future<bool> deleteProServicioImage(
+      ImageStorageDeleteTb imageInfo) async {
+    int idUsuario = imageInfo.idUsuario;
+    String fileName = imageInfo.fileName;
+    int idProducto = imageInfo.idProServicio;
+
+    try {
+      final Reference ref = FirebaseStorage.instance
+          .ref()
+          .child('imagenes/$idUsuario/$fileName/$idProducto');
+
+      // Listar los elementos dentro del directorio
+      ListResult result = await ref.listAll();
+
+      // Eliminar cada archivo dentro del directorio
+      await Future.forEach(result.items, (Reference item) async {
+        await item.delete();
+      });
+
+      // Si no hay errores al eliminar, retornamos true
+      return true;
+    } catch (error) {
+      print('Error eliminando directorio: $error');
       // Si hay un error, retornamos false
       return false;
     }

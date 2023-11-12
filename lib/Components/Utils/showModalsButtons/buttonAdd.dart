@@ -45,7 +45,10 @@ class ButtonAdd extends StatelessWidget {
         ItemForModalButtons(
           onPress: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => AgregarServicio()));
+                MaterialPageRoute(builder: (context) => AgregarServicio(
+                  titulo: "Agregar servicio",
+                  nameSaveButton: "Agregasr",
+                )));
           },
           padding: padding,
           icon: CupertinoIcons.heart_circle,

@@ -161,7 +161,10 @@ class ProductoDb {
     String url = '${MisRutas.rutaProductos}/$idProducto';
 
     try {
-      await ProServiceSubCategoriasDb.deleteProductSubCategories(idProducto);
+      String urlSubCategorias =
+          '${MisRutas.rutaProductosSubCategorias}/$idProducto';
+      await ProServiceSubCategoriasDb.deleteProServicioSubCategories(
+          idProducto, urlSubCategorias);
       for (var subCategoria in categoriasSeleccionadas) {
         ProServicioSubCategoriaTb productoCategoria = ProServicioSubCategoriaTb(
           idSubCategoria: subCategoria.idSubCategoria,
@@ -202,10 +205,12 @@ class ProductoDb {
   /// that needs to be deleted.
   static Future<void> deleteProducto(int idProducto) async {
     Dio dio = Dio();
-
+    String urlSubCategorias =
+        '${MisRutas.rutaProductosSubCategorias}/$idProducto';
     try {
-      bool result = await ProServiceSubCategoriasDb.deleteProductSubCategories(
-          idProducto);
+      bool result =
+          await ProServiceSubCategoriasDb.deleteProServicioSubCategories(
+              idProducto, urlSubCategorias);
       if (result) {
         result = await ProductImageDb.deleteProductImages(idProducto);
       } else {
@@ -214,7 +219,9 @@ class ProductoDb {
 
       print('resulDelete_: $result');
       if (result) {
-        await RatingsDb.deleteRatingsByProducto(idProducto);
+        String urlRating = '${MisRutas.rutaRatings}/$idProducto';
+
+        await RatingsDb.deleteRatingsByProServicio(idProducto, urlRating);
         Response response =
             await dio.delete('${MisRutas.rutaProductos}/$idProducto');
 

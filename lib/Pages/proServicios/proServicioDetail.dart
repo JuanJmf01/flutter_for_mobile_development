@@ -1,4 +1,5 @@
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
@@ -6,6 +7,7 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
+import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
@@ -92,6 +94,51 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
     });
   }
 
+  void eliminarProServicio(int idUsuario) {
+    print("ENTRA EN ELIMINAR DIR");
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ConfirmationDialog(
+          titulo: 'Advertencia',
+          message: '¿Seguro que deseas eliminar este producto o servicio?',
+          onAcceptMessage: 'Aceptar',
+          onCancelMessage: 'Cancelar',
+          onAccept: () async {
+            ImageStorageDeleteTb imageInfo = ImageStorageDeleteTb(
+              fileName: fileName,
+              idUsuario: idUsuario,
+              nombreImagen: '',
+              idProServicio: idProServicio!,
+            );
+
+            bool resultStorageImages =
+                await ProductImagesStorage.deleteProServicioImage(imageInfo);
+            if (resultStorageImages) {
+              try {
+                print('Id producto: $idProServicio');
+                if (objectType == ProductoTb) {
+                  await ProductoDb.deleteProducto(idProServicio!);
+                } else if (objectType == ServicioTb) {
+                  await ServicioDb.deleteServicio(idProServicio!);
+                }
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
+                //deleteProduct(producto.idProducto);
+              } catch (error) {
+                print('Error al eliminar el producto: $error');
+              }
+            }
+          },
+          onCancel: () {
+            Navigator.of(context).pop();
+          },
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -124,6 +171,8 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                 MaterialPageRoute(
                   builder: (context) => objectType == ServicioTb
                       ? AgregarServicio(
+                          titulo: "Editar Servicio",
+                          nameSaveButton: "Actualizar",
                           servicio: widget.proServicio,
                         )
                       : objectType == ProductoTb
@@ -138,39 +187,12 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete),
-            onPressed: () {
-              // Acción cuando se presiona el icono de eliminar
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return ConfirmationDialog(
-                    titulo: 'Advertencia',
-                    message: '¿Seguro que deseas eliminar este producto?',
-                    onAcceptMessage: 'Aceptar',
-                    onCancelMessage: 'Cancelar',
-                    onAccept: () async {
-                      try {
-                        print('Id producto: $idProServicio');
-                        if (objectType == ProductoTb) {
-                          await ProductoDb.deleteProducto(idProServicio!);
-                        }
-                        if (context.mounted) {
-                          Navigator.of(context).pop();
-                        }
-                        //deleteProduct(producto.idProducto);
-                      } catch (error) {
-                        print('Error al eliminar el producto: $error');
-                      }
-                    },
-                    onCancel: () {
-                      Navigator.of(context).pop();
-                    },
-                  );
-                },
-              );
-            },
-          ),
+              icon: Icon(Icons.delete),
+              onPressed: () {
+                if (idUsuario != null && idProServicio != null) {
+                  eliminarProServicio(idUsuario);
+                }
+              }),
         ],
       ),
       backgroundColor: Colors.grey[300],

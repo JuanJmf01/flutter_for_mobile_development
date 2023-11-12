@@ -37,9 +37,13 @@ class AgregarServicio extends StatefulWidget {
   const AgregarServicio({
     super.key,
     this.servicio,
+    required this.titulo,
+    required this.nameSaveButton,
   });
 
   final ServicioTb? servicio;
+  final String titulo;
+  final String nameSaveButton;
 
   @override
   State<AgregarServicio> createState() => _AgregarServicioState();
@@ -56,7 +60,7 @@ class _AgregarServicioState extends State<AgregarServicio> {
 
   ServicioTb? _servicio;
 
-  int? enOferta = 0;
+  int enOferta = 0;
   bool isChecked = false;
 
   ImageList myImageList = ImageList([]);
@@ -228,6 +232,42 @@ class _AgregarServicioState extends State<AgregarServicio> {
     setState(() {});
   }
 
+  void actualizarServicio(ServicioTb servicio, int idUsuario) async {
+    int idServicio = servicio.idServicio;
+
+    if (urlPrincipalImage != null) {
+      File urlImageInFile = await FileTemporal.convertToTempFile(
+          urlImage: urlPrincipalImage, image: principalImage);
+      Uint8List principalImageBytesAux = await urlImageInFile.readAsBytes();
+      setState(() {
+        principalImageBytes = principalImageBytesAux;
+      });
+    }
+
+    if (principalImageBytes != null || principalImage != null) {
+      ImageStorageTb image = ImageStorageTb(
+        idUsuario: idUsuario,
+        idFile: idServicio,
+        newImageBytes:
+            principalImageBytes ?? await assetToUint8List(principalImage!),
+        fileName: 'servicios',
+        imageName: servicio.nombreImage,
+        width: 195.0,
+        height: 170.0,
+        isPrincipalImage: 0,
+      );
+      await ProductImagesStorage.updateImage(image);
+    } else {
+      print('Imagen a actualizar es null');
+    }
+    try {
+      await ServicioDb.updateServicio(servicio, categoriasSeleccionadas);
+      //mostrarCuadroExito(idProducto);
+    } catch (error) {
+      print('Problemas al actualizar el servicio $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
@@ -249,8 +289,8 @@ class _AgregarServicioState extends State<AgregarServicio> {
           backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
           iconTheme: IconThemeData(color: Colors.black, size: 30),
           toolbarHeight: 60,
-          title: const Text(
-            "Agregar servicio",
+          title: Text(
+            widget.titulo,
             style: TextStyle(color: Colors.black),
           ),
         ),
@@ -448,7 +488,7 @@ class _AgregarServicioState extends State<AgregarServicio> {
               ),
             ),
             ElevatedGlobalButton(
-              nameSavebutton: "Agregar",
+              nameSavebutton: widget.nameSaveButton,
               widthSizeBox: double.infinity,
               heightSizeBox: 50.0,
               fontSize: 21,
@@ -464,17 +504,35 @@ class _AgregarServicioState extends State<AgregarServicio> {
                     await NegocioDb.crearNegocioSiNoExiste(idUsuario);
                 int descuento = int.tryParse(_descuentoController.text) ?? 0;
 
-                servicioCreacion = ServicioCreacionTb(
-                  idNegocio: idNegocio,
-                  nombre: nombreServicio,
-                  descripcion: descripcion,
-                  precio: precio,
-                  oferta: enOferta ?? 0,
-                  descuento: isChecked ? descuento : 0,
-                );
+                if (_servicio?.idServicio == null) {
+                  servicioCreacion = ServicioCreacionTb(
+                    idNegocio: idNegocio,
+                    nombre: nombreServicio,
+                    descripcion: descripcion,
+                    precio: precio,
+                    oferta: enOferta ?? 0,
+                    descuento: isChecked ? descuento : 0,
+                  );
 
-                if (idUsuario != null) {
-                  crearServicio(servicioCreacion, idUsuario);
+                  if (idUsuario != null) {
+                    crearServicio(servicioCreacion, idUsuario);
+                  }
+                } else {
+                  _servicio = ServicioTb(
+                    idServicio: _servicio!.idServicio,
+                    idNegocio: _servicio!.idNegocio,
+                    nombre: nombreServicio,
+                    precio: precio,
+                    oferta: enOferta,
+                    urlImage: _servicio!.urlImage,
+                    nombreImage: _servicio!.nombreImage,
+                  );
+
+                  print("PRIMER PARTE ${_servicio!.nombre}");
+
+                  idUsuario != null
+                      ? actualizarServicio(_servicio!, idUsuario)
+                      : print('idUsuario es null');
                 }
               },
             )
