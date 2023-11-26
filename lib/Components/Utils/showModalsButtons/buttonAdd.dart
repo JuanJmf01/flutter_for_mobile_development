@@ -1,6 +1,6 @@
 import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
-import 'package:etfi_point/Pages/proServicios/servicios/agregarServicio.dart';
+import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +45,7 @@ class ButtonAdd extends StatelessWidget {
         ItemForModalButtons(
           onPress: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => AgregarServicio(
+                MaterialPageRoute(builder: (context) => ServiciosGeneralForm(
                   titulo: "Agregar servicio",
                   nameSaveButton: "Agregasr",
                 )));

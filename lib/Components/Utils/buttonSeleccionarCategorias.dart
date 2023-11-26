@@ -117,7 +117,7 @@ class _ButtonSeleccionarCategoriasState
               labelColor: Colors.black,
               controller: _tabController,
               tabs: widget.categoriasDisponibles.map((categoria) {
-                int index = widget.categoriasDisponibles.indexOf(categoria);
+                //int index = widget.categoriasDisponibles.indexOf(categoria);
                 return Tab(
                   text: categoria.nombre,
                   // Puedes acceder al idCategoria aquí:
@@ -137,8 +137,8 @@ class _ButtonSeleccionarCategoriasState
                 elementos: categoria.subCategorias,
                 categoriasSeleccionadas: categoriasSeleccionadas,
                 onlyShow: true,
-                marginContainer: EdgeInsets.all(5.0),
-                paddingContainer: EdgeInsets.all(12.0),
+                marginContainer: const EdgeInsets.all(5.0),
+                paddingContainer: const EdgeInsets.all(12.0),
               ),
             );
           }).toList(),

@@ -18,7 +18,6 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
-import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
@@ -59,6 +58,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
+  final TextEditingController _precioConDescuentoController =
+      TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _cantidadDisponibleController =
       TextEditingController();
@@ -99,12 +100,12 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           .obtenerSubCategoriasSeleccionadas(producto!.idProducto, ProductoTb);
     }
 
-    _precioController.addListener(_updatePrice);
-    _descuentoController.addListener(_updatePrice);
-  }
-
-  void _updatePrice() {
-    setState(() {});
+    _precioController.addListener(() {
+      newPrice();
+    });
+    _descuentoController.addListener(() {
+      newPrice();
+    });
   }
 
   ProductoTb? assingValuesToInputs() {
@@ -290,7 +291,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     );
   }
 
-  String newPrice() {
+  void newPrice() {
     double precioInicial = double.tryParse(_precioController.text) ?? 0.0;
     double descuento = double.tryParse(_descuentoController.text) ?? 0.0;
 
@@ -305,8 +306,53 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
     // Calcula el nuevo precio
     double nuevoPrecio = precioInicial - (precioInicial * (descuento / 100.0));
+    _precioConDescuentoController.text = nuevoPrecio.toString();
+  }
 
-    return 'Nuevo precio con descuento: \$${nuevoPrecio.toStringAsFixed(2)}';
+  void guardar(int idUsuario) async{
+        //--- Se asigna cada String de los campso de texto a una variable ---//
+        final nombreProducto = _nombreController.text;
+        double precio = double.tryParse(_precioController.text) ?? 0.0;
+        final descripcion = _descripcionController.text;
+        int cantidadDisponible =
+            int.tryParse(_cantidadDisponibleController.text) ?? 0;
+        int descuento = int.tryParse(_descuentoController.text) ?? 0;
+
+        ProductoCreacionTb productoCreacion;
+        int idNegocio = await NegocioDb.crearNegocioSiNoExiste(idUsuario);
+
+        if (_producto?.idProducto == null) {
+          //-- Creamos el producto --//
+
+          productoCreacion = ProductoCreacionTb(
+            idNegocio: idNegocio,
+            nombreProducto: nombreProducto,
+            precio: precio,
+            descripcion: descripcion,
+            cantidadDisponible: cantidadDisponible,
+            oferta: enOferta,
+            descuento: isChecked ? descuento : 0,
+          );
+
+          myImageList.items.isNotEmpty
+              ? crearProducto(productoCreacion, idUsuario)
+              : print('imagenToUpload es null o idUsuario es null');
+        } else {
+          //Actualizar ya que idProducto != null
+          _producto = ProductoTb(
+            idProducto: _producto!.idProducto,
+            idNegocio: _producto!.idNegocio,
+            nombre: nombreProducto,
+            precio: precio,
+            descripcion: descripcion,
+            cantidadDisponible: cantidadDisponible,
+            oferta: enOferta,
+            urlImage: _producto!.urlImage,
+            nombreImage: _producto!.nombreImage,
+          );
+
+          actualizarProducto(_producto!, idUsuario);
+        }
   }
 
   @override
@@ -330,9 +376,26 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
             backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
             iconTheme: IconThemeData(color: Colors.black, size: 30),
             toolbarHeight: 60,
-            title: Text(
-              widget.titulo,
-              style: TextStyle(color: Colors.black),
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  widget.titulo,
+                  style: TextStyle(color: Colors.black),
+                ),
+                GlobalTextButton(
+                  onPressed: () {
+                    print("PRESS");
+                    if (idUsuario != null && isUserSignedIn) {
+                      print("Entra");
+                      guardar(idUsuario);
+                    }
+                  },
+                  textButton: 'Guardar',
+                  fontSizeTextButton: 19,
+                  letterSpacing: 0.3,
+                )
+              ],
             )),
         backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
         body: Column(
@@ -344,32 +407,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                   child: Column(
                     children: [
                       // Checked button
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 0.0),
-                          child: ElevatedGlobalButton(
-                            nameSavebutton: '¿Producto en oferta?',
-                            borderSideColor:
-                                !isChecked ? Colors.grey : Colors.transparent,
-                            onPress: () {
-                              setState(() {
-                                isChecked = !isChecked;
-                                enOferta = isChecked ? 1 : 0;
-                                print("en oferta: ${obtenerFechaHoraActual()}");
-                              });
-                            },
-                            backgroundColor:
-                                isChecked ? Colors.blue : Colors.white,
-                            colorNameSaveButton:
-                                isChecked ? Colors.white : Colors.black,
-                            borderRadius: BorderRadius.circular(17.0),
-                            //borderSideColor: Colors.grey
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
+
                       myImageList.items.isNotEmpty
                           ? MyImageList(
                               imageList: myImageList,
@@ -479,6 +517,33 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
                       const GlobalDivider(),
 
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 0.0),
+                          child: ElevatedGlobalButton(
+                            nameSavebutton: '¿Producto en oferta?',
+                            borderSideColor:
+                                !isChecked ? Colors.grey : Colors.transparent,
+                            onPress: () {
+                              setState(() {
+                                isChecked = !isChecked;
+                                enOferta = isChecked ? 1 : 0;
+                                //print("en oferta: ${obtenerFechaHoraActual()}");
+                              });
+                            },
+                            backgroundColor:
+                                isChecked ? Colors.blue : Colors.white,
+                            colorNameSaveButton:
+                                isChecked ? Colors.white : Colors.black,
+                            borderRadius: BorderRadius.circular(8.0),
+                            //borderSideColor: Colors.grey
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+
                       GeneralInputs(
                           controller: _nombreController,
                           horizontalPadding: 16.0,
@@ -486,31 +551,53 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           textLabelOutside: 'Nombre',
                           labelText: 'Agrega un nombre',
                           color: colorTextField),
-                      GeneralInputs(
-                        controller: _precioController,
-                        horizontalPadding: 16.0,
-                        textLabelOutside: 'Precio',
-                        labelText: 'Agrega un precio',
-                        color: colorTextField,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GeneralInputs(
+                              controller: _precioController,
+                              horizontalPadding: 16.0,
+                              textLabelOutside:
+                                  !isChecked ? 'Precio' : 'Precio antes',
+                              labelText: 'Agrega un precio',
+                              color: colorTextField,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9]')),
+                              ],
+                            ),
+                          ),
+                          isChecked
+                              ? Expanded(
+                                  child: GeneralInputs(
+                                    controller: _precioConDescuentoController,
+                                    horizontalPadding: 16.0,
+                                    verticalPadding: 15.0,
+                                    textLabelOutside: 'Precio despues',
+                                    color: const Color.fromARGB(11, 0, 0, 0),
+                                    keyboardType: TextInputType.number,
+                                    enable: false,
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
                         ],
                       ),
+
                       isChecked
                           ? GeneralInputs(
                               controller: _descuentoController,
                               horizontalPadding: 16.0,
                               verticalPadding: 15.0,
-                              textLabelOutside: 'Descuento',
+                              textLabelOutside: '% Descuento',
                               labelText:
-                                  'Agrega un valor del 1 al 100 para el descuento',
+                                  'Agrega un valor de 0% a 100% para el descuento',
                               color: colorTextField,
                               keyboardType: TextInputType.number,
                             )
                           : const SizedBox.shrink(),
 
-                      Text(newPrice()),
                       GeneralInputs(
                         controller: _descripcionController,
                         verticalPadding: 15.0,
@@ -563,64 +650,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                 ),
               ),
             ),
-            if (isUserSignedIn)
-              ElevatedGlobalButton(
-                nameSavebutton: widget.nameSavebutton,
-                widthSizeBox: double.infinity,
-                heightSizeBox: 50.0,
-                fontSize: 21,
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.0,
-                onPress: () async {
-                  //--- Se asigna cada String de los campso de texto a una variable ---//
-                  final nombreProducto = _nombreController.text;
-                  double precio =
-                      double.tryParse(_precioController.text) ?? 0.0;
-                  final descripcion = _descripcionController.text;
-                  int cantidadDisponible =
-                      int.tryParse(_cantidadDisponibleController.text) ?? 0;
-                  int descuento = int.tryParse(_descuentoController.text) ?? 0;
-
-                  ProductoCreacionTb productoCreacion;
-                  int idNegocio =
-                      await NegocioDb.crearNegocioSiNoExiste(idUsuario);
-
-                  if (_producto?.idProducto == null) {
-                    //-- Creamos el producto --//
-
-                    productoCreacion = ProductoCreacionTb(
-                      idNegocio: idNegocio,
-                      nombreProducto: nombreProducto,
-                      precio: precio,
-                      descripcion: descripcion,
-                      cantidadDisponible: cantidadDisponible,
-                      oferta: enOferta,
-                      descuento: isChecked ? descuento : 0,
-                    );
-
-                    myImageList.items.isNotEmpty && idUsuario != null
-                        ? crearProducto(productoCreacion, idUsuario)
-                        : print('imagenToUpload es null o idUsuario es null');
-                  } else {
-                    //Actualizar ya que idProducto != null
-                    _producto = ProductoTb(
-                      idProducto: _producto!.idProducto,
-                      idNegocio: _producto!.idNegocio,
-                      nombre: nombreProducto,
-                      precio: precio,
-                      descripcion: descripcion,
-                      cantidadDisponible: cantidadDisponible,
-                      oferta: enOferta,
-                      urlImage: _producto!.urlImage,
-                      nombreImage: _producto!.nombreImage,
-                    );
-
-                    idUsuario != null
-                        ? actualizarProducto(_producto!, idUsuario)
-                        : print('idUsuario es null');
-                  }
-                },
-              )
           ],
         ),
       ),

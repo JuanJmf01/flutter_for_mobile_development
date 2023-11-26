@@ -33,10 +33,6 @@ class ProductoDb {
   ///   a Future<int>.
   static Future<int> insertProducto(ProductoCreacionTb producto,
       List<SubCategoriaTb> categoriasSeleccionadas) async {
-    print('Producto: $producto');
-    print('categorias: $categoriasSeleccionadas');
-
-    print("PRO DESCR: ${producto.descuento}");
 
     Dio dio = Dio();
     Map<String, dynamic> data = producto.toMap();

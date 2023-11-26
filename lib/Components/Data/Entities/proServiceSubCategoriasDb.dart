@@ -6,7 +6,22 @@ import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
+/// The `ProServiceSubCategoriasDb` class contains static methods for fetching, inserting, and deleting
+/// subcategories related to a product or service.
 class ProServiceSubCategoriasDb {
+
+  /// The function `getProServiceSelectedSubCategoies` retrieves a list of subcategories based on the
+  /// given `idProServicio` and `objectType` parameters.
+  /// 
+  /// Args:
+  ///   idProServicio (int): The id of the professional service for which you want to retrieve the
+  /// selected subcategories.
+  ///   objectType (Type): The `objectType` parameter is a `Type` object that represents the type of
+  /// object for which we want to retrieve the selected subcategories. It can be either `ProductoTb` or
+  /// `ServicioTb`.
+  /// 
+  /// Returns:
+  ///   a Future object that resolves to a List of integers.
   static Future<List<int>> getProServiceSelectedSubCategoies(
       int idProServicio, Type objectType) async {
     Dio dio = Dio();
@@ -42,6 +57,14 @@ class ProServiceSubCategoriasDb {
     }
   }
 
+  /// The function `insertSubCategoriasSeleccionadas` is a static method that inserts selected
+  /// subcategories for a product or service into the database using the Dio package in Dart.
+  /// 
+  /// Args:
+  ///   productoSubCategoria (ProServicioSubCategoriaTb): An instance of the class
+  /// ProServicioSubCategoriaTb, which represents a product or service subcategory.
+  ///   objectType (Type): The `objectType` parameter is a `Type` object that represents the type of the
+  /// object being inserted. It can be either `ProductoTb` or `ServicioTb`.
   static Future<void> insertSubCategoriasSeleccionadas(
       ProServicioSubCategoriaTb productoSubCategoria, Type objectType) async {
     Dio dio = Dio();
@@ -77,6 +100,18 @@ class ProServiceSubCategoriasDb {
     }
   }
 
+  /// The function `deleteProServicioSubCategories` sends a DELETE request to a specified URL to delete
+  /// subcategories of a ProServicio, and returns a boolean indicating whether the deletion was
+  /// successful.
+  /// 
+  /// Args:
+  ///   idProServicio (int): The id of the ProServicio (professional service) for which you want to
+  /// delete the subcategories.
+  ///   url (String): The `url` parameter is the endpoint URL where the DELETE request will be sent to
+  /// delete the ProServicioSubCategories.
+  /// 
+  /// Returns:
+  ///   a Future<bool>.
   static Future<bool> deleteProServicioSubCategories(int idProServicio, String url) async {
     Dio dio = Dio();
 

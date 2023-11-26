@@ -76,27 +76,35 @@ class _IndividulServiceState extends State<IndividulService> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            ProServicioDetail(proServicio: widget.servicio),
+        builder: (context) => ProServicioDetail(proServicio: widget.servicio),
       ),
     );
   }
 
+  String priceWithDesc(double price, int descuento) {
+    double newPrice;
+
+    newPrice = price - (price * (descuento / 100.0));
+
+    return newPrice.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final servicio = widget.servicio;
     return Container(
       padding: EdgeInsets.all(0.0),
       //height: 140,
       //width: double.infinity,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(22.0),
-        color: Colors.grey.shade300,
+        color: Colors.white,
       ),
       child: Row(
         children: [
           InkWell(
             onTap: () {
-              _navigateToServiceDetail(widget.servicio.idServicio);
+              _navigateToServiceDetail(servicio.idServicio);
             },
             child: ShowImage(
               height: double.infinity,
@@ -106,46 +114,61 @@ class _IndividulServiceState extends State<IndividulService> {
               //     topRight: Radius.circular(20),
               //     bottomRight: Radius.circular(20.0)),
               borderRadius: BorderRadius.circular(20.0),
-              networkImage: widget.servicio.urlImage,
+              networkImage: servicio.urlImage,
             ),
           ),
           Expanded(
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // Alinea el texto a la izquierda
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.servicio.nombre,
-                  style: Theme.of(context).textTheme.titleMedium!.merge(
-                        const TextStyle(
-                          fontWeight: FontWeight.w700,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "\$ ${servicio.precio}",
+                    style: Theme.of(context).textTheme.titleSmall!.merge(
+                          TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20.5,
+                          ),
                         ),
-                      ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      children: [
-                        Text(
-                          widget.servicio.precio.toString(),
+                  ),
+                  servicio.oferta == 1 && servicio.descuento != null
+                      ? Text(
+                          "\$ ${priceWithDesc(servicio.precio, servicio.descuento!)}",
                           style: Theme.of(context).textTheme.titleSmall!.merge(
                                 TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey.shade500,
-                                ),
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.grey.shade500,
+                                    fontSize: 16),
                               ),
+                        )
+                      : SizedBox.shrink(),
+                  Spacer(),
+                  Text(
+                    servicio.nombre,
+                    style: Theme.of(context).textTheme.titleMedium!.merge(
+                          const TextStyle(
+                              fontWeight: FontWeight.w700, fontSize: 16.5),
                         ),
-                        Text("Precio Anterior"),
-                      ],
-                    ),
-                    Icon(CupertinoIcons.heart_fill),
-                  ],
-                )
-              ],
+                  ),
+                  Icon(CupertinoIcons.heart_fill),
+                ],
+              ),
             ),
           ),
+          servicio.oferta == 1
+              ? Container(
+                  width: 30.0,
+                  height: double.infinity,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(30.0),
+                      bottomRight: Radius.circular(30.0),
+                    ),
+                    color: Color(0xFFC59400),
+                  ),
+                )
+              : SizedBox.shrink()
         ],
       ),
     );

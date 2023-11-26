@@ -2,21 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class GeneralInputs extends StatelessWidget {
-  const GeneralInputs(
-      {super.key,
-      required this.controller,
-      required this.labelText,
-      required this.color,
-      this.textLabelOutside,
-      this.keyboardType,
-      this.inputFormatters,
-      this.minLines,
-      this.maxLines,
-      this.horizontalPadding,
-      this.verticalPadding});
+  const GeneralInputs({
+    super.key,
+    required this.controller,
+    this.labelText,
+    required this.color,
+    this.textLabelOutside,
+    this.keyboardType,
+    this.inputFormatters,
+    this.minLines,
+    this.maxLines,
+    this.horizontalPadding,
+    this.verticalPadding,
+    this.enable,
+  });
 
   final TextEditingController controller;
-  final String labelText;
+  final String? labelText;
   final Color color;
   final TextInputType? keyboardType;
   final String? textLabelOutside;
@@ -25,6 +27,7 @@ class GeneralInputs extends StatelessWidget {
   final int? maxLines;
   final double? horizontalPadding;
   final double? verticalPadding;
+  final bool? enable;
 
   @override
   Widget build(BuildContext context) {
@@ -45,11 +48,11 @@ class GeneralInputs extends StatelessWidget {
           ),
           Container(
             decoration: BoxDecoration(
-              color: color, // Cuadro blanco
-              borderRadius: BorderRadius.circular(25.0),
-              border: Border.all(width: 1.0, color: Colors.grey.shade400)
-            ),
+                color: color, // Cuadro blanco
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(width: 1.0, color: Colors.grey.shade400)),
             child: TextField(
+              enabled: enable ?? true,
               controller: controller,
               minLines: minLines ?? 1,
               maxLines: maxLines,

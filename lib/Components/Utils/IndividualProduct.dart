@@ -86,120 +86,60 @@ class _IndividualProductState extends State<IndividualProduct> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    producto.nombre,
-                    style: Theme.of(context).textTheme.titleMedium!.merge(
-                          const TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 17.5),
-                        ),
-                  ),
                   const SizedBox(
                     height: 8.0,
                   ),
                   Text(
-                    "\$${producto.precio} COP",
+                    "\$${producto.precio}",
                     style: Theme.of(context).textTheme.titleSmall!.merge(
-                          TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.blue,
-                              fontSize: 17),
+                          const TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 20.5,
+                          ),
                         ),
                   ),
                   producto.oferta == 1 && producto.descuento != null
                       ? Text(
-                          priceWithDesc(producto.precio, producto.descuento!),
+                          "\$ ${priceWithDesc(producto.precio, producto.descuento!)}",
                           style: Theme.of(context).textTheme.titleSmall!.merge(
                                 TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  color: Colors.grey.shade500,
-                                ),
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.grey.shade500,
+                                    fontSize: 15),
                               ),
                         )
-                      : SizedBox()
-                  // Row(
-                  //   children: [
-                  //     CartPrincipalIcon(
-                  //         onpress: () async {
-                  //       if (idUsuario != null) {
-                  //         ShoppingCartCreacionTb
-                  //             shoppingCartProduct =
-                  //             ShoppingCartCreacionTb(
-                  //           idUsuario: idUsuario,
-                  //           idProducto:
-                  //               producto.idProducto,
-                  //           cantidad: 1,
-                  //         );
-                  //         bool result = await ShoppingCartDb
-                  //             .insertShoppingCartProduct(
-                  //                 shoppingCartProduct);
-                  //         if (result &&
-                  //             context.mounted) {
-                  //           print(
-                  //               'INIZIALIZAR VALORES');
-                  //           context
-                  //               .read<
-                  //                   ShoppingCartProvider>()
-                  //               .initializeValues();
-                  //         }
-                  //       }
-                  //     }),
-                  // ModifyPrincipalIcon(onpress: () async {
-                  //   print(producto.idProducto);
-                  //   result = await Navigator.push<int>(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) =>
-                  //           EditarProducto(producto: producto),
-                  //     ),
-                  //   );
-                  //   if (result != null) {
-                  //     print('Funciona $result');
-                  //     renderizarProductoModificado(result);
-                  //   }
-                  // }),
-                  // DeletedPrincipalIcon(
-                  //   onpress: () {
-                  //     showDialog(
-                  //       context: context,
-                  //       builder: (BuildContext context) {
-                  //         return ConfirmationDialog(
-                  //           titulo: 'Advertencia',
-                  //           message:
-                  //               '¿Seguro que deseas eliminar este producto?',
-                  //           onAcceptMessage: 'Aceptar',
-                  //           onCancelMessage: 'Cancelar',
-                  //           onAccept: () async {
-                  //             try {
-                  //               print(
-                  //                   'Id producto: ${producto.idProducto}');
-                  //               await ProductoDb.deleteProducto(
-                  //                   producto.idProducto);
-                  //               if (context.mounted) {
-                  //                 Navigator.of(context).pop();
-                  //               }
-                  //               deleteProduct(producto.idProducto);
-                  //             } catch (error) {
-                  //               print(
-                  //                   'Error al eliminar el producto: $error');
-                  //             }
-                  //           },
-                  //           onCancel: () {
-                  //             Navigator.of(context).pop();
-                  //           },
-                  //         );
-                  //       },
-                  //     );
-                  //   },
-                  // )
-                  //],
-                  // ),
+                      : const SizedBox(),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0.0, 25.0, 0.0, 0.0),
+                    child: Text(
+                      producto.nombre,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 17,
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
+            const Spacer(),
+            producto.oferta == 1
+                ? Container(
+                    width: double.infinity,
+                    height: 30.0,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.vertical(
+                        bottom: Radius.circular(20.0),
+                        top: Radius.zero,
+                      ),
+                      color: Color(0xFFC59400),
+                    ),
+                  )
+                : SizedBox.shrink()
           ],
         ),
       ),

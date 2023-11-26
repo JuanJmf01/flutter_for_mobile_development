@@ -5,16 +5,19 @@ import 'package:etfi_point/Components/Data/EntitiModels/ratingsTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
-/// The `RatingsDb` class provides methods for saving, retrieving, updating, and deleting ratings data
-/// from a MySQL database.
 
+/// The `RatingsDb` class provides methods for saving, retrieving, updating, and deleting ratings from a
+/// database. these ratings comes from services or products.
 class RatingsDb {
+
   /// The function `saveRating` checks if a rating already exists and either updates it or inserts a new
-  /// rating accordingly.
-  ///
+  /// rating based on the result.
+  /// 
   /// Args:
   ///   rating (RatingsCreacionTb): The rating object that needs to be saved.
   ///   existeRating (bool): A boolean value indicating whether a rating already exists or not.
+  ///   url (String): The `url` parameter is a string that represents the URL where the rating will be
+  /// saved or updated.
   static Future<void> saveRating(
       RatingsCreacionTb rating, bool existeRating, String url) async {
     if (existeRating) {
@@ -26,10 +29,16 @@ class RatingsDb {
     }
   }
 
-  /// The function `insertRating` sends a POST request to a specified URL with a JSON-encoded data object,
-  ///
+
+  /// The function `insertRating` is a static method that takes a `RatingsCreacionTb` object and a URL as
+  /// parameters, and sends a POST request to the specified URL with the rating data.
+  /// 
   /// Args:
-  ///   rating (RatingsCreacionTb): The parameter "rating" is an object of type "RatingsCreacionTb".
+  ///   rating (RatingsCreacionTb): The parameter "rating" is an object of type "RatingsCreacionTb". It
+  /// represents the rating data that needs to be inserted.
+  ///   url (String): The `url` parameter is a string that represents the endpoint URL where the rating
+  /// will be inserted. It can be either `MisRutas.rutaRatings` or `MisRutas.rutaServiceRatings`,
+  /// depending on the type of rating being inserted.
   static Future<void> insertRating(RatingsCreacionTb rating, String url) async {
     Dio dio = Dio();
     Map<String, dynamic> data = {};
@@ -57,15 +66,16 @@ class RatingsDb {
     }
   }
 
-  /// The function `getReviewsByProducto` retrieves a list of reviews for a given product ID using the Dio
-  /// package in Dart.
-  ///
+  /// The function `getReviewsByProducto` retrieves reviews for a product or service based on the
+  /// provided ID and object type.
+  /// 
   /// Args:
-  ///   idProServicio (int): The parameter `idProServicio` is an integer that represents the ID of a product. It
-  /// is used to fetch the reviews for a specific product.
-  ///
+  ///   idProServicio (int): The id of the product or service for which you want to retrieve reviews.
+  ///   objectType (Type): The `objectType` parameter is the type of object for which you want to
+  /// retrieve reviews. It can be either `ProductoTb` or `ServicioTb`.
+  /// 
   /// Returns:
-  ///   a Future that resolves to a List of Map<String, dynamic> objects.
+  ///   a Future object that resolves to a List of Map<String, dynamic>.
   static Future<List<Map<String, dynamic>>> getReviewsByProducto(
       int idProServicio, Type objectType) async {
     Dio dio = Dio();
@@ -104,11 +114,15 @@ class RatingsDb {
     }
   }
 
-  /// The function `updateRating` update a rating in a database by sending a PATCH request
-  /// with the updated ratings data.
-  ///
+  /// The function `updateRating` is a static method that takes a `RatingsCreacionTb` object and a URL
+  /// as parameters, and sends a PATCH request to the specified URL with the data from the
+  /// `RatingsCreacionTb` object.
+  /// 
   /// Args:
-  ///   rating (RatingsCreacionTb): The parameter "rating" is an object of type "RatingsCreacionTb".
+  ///   rating (RatingsCreacionTb): The parameter "rating" is an object of type "RatingsCreacionTb"
+  /// which contains the data for the rating that needs to be updated.
+  ///   url (String): The `url` parameter is a string that represents the URL endpoint where the rating
+  /// data will be updated. It can be either `MisRutas.rutaRatings` or `MisRutas.rutaServiceRatings`.
   static Future<void> updateRatign(RatingsCreacionTb rating, String url) async {
     Dio dio = Dio();
     Map<String, dynamic> data = {};
@@ -141,15 +155,19 @@ class RatingsDb {
     }
   }
 
-  /// The function `getRatingByProductoAndUsuario` retrieves a rating by the given user ID and product ID
-  /// using a GET request.
-  ///
+
+  /// The function `getRatingByProServicioAndUsuario` retrieves a rating based on the user ID, product
+  /// ID, and URL provided.
+  /// 
   /// Args:
-  ///   idUsuario (int): The parameter "idUsuario" represents the ID of the user.
-  ///   idProducto (int): The parameter "idProducto" is an integer that represents the ID of a product.
-  ///
+  ///   idUsuario (int): The `idUsuario` parameter represents the user ID.
+  ///   idProducto (int): The parameter `idProducto` represents the ID of a product or service. It is
+  /// used to identify a specific product or service for which the rating is being retrieved.
+  ///   url (String): The `url` parameter is a string that represents the URL endpoint for the API
+  /// request. It is used to determine which API route to call.
+  /// 
   /// Returns:
-  ///   a Future object that resolves to a RatingsCreacionTb object.
+  ///   a Future object that resolves to a RatingsCreacionTb object or null.
   static Future<RatingsCreacionTb?> getRatingByProServicioAndUsuario(
       int idUsuario, int idProducto, String url) async {
     Dio dio = Dio();
@@ -267,12 +285,13 @@ class RatingsDb {
     return starCounts;
   }
 
-  /// The function `deleteRatings` sends a DELETE request to a specified URL with the given `idProducto`
-  /// and handles the response accordingly.
-  ///
+
+  /// The function `deleteRatingsByProServicio` sends a DELETE request to the specified URL to delete
+  /// ratings associated with a product, and handles different response statuses accordingly.
+  /// 
   /// Args:
-  ///   idProducto (int): The parameter "idProducto" represents the ID of the product for which the
-  /// ratings need to be deleted.
+  ///   idProductom (int): The id of the product or service for which the ratings need to be deleted.
+  ///   url (String): The URL where the ratings will be deleted from.
   static Future<void> deleteRatingsByProServicio(
       int idProductom, String url) async {
     Dio dio = Dio();
@@ -297,6 +316,16 @@ class RatingsDb {
     }
   }
 
+  /// The function `checkRatingExists` checks if a rating exists for a given product or service.
+  /// 
+  /// Args:
+  ///   idProservicio (int): The id of the product or service for which we want to check if a rating
+  /// exists.
+  ///   idUsuario (int): The user ID.
+  ///   url (String): The URL endpoint to send the request to.
+  /// 
+  /// Returns:
+  ///   a `Future<bool>`.
   static Future<bool> checkRatingExists(
       int idProservicio, int idUsuario, String url) async {
     Dio dio = Dio();

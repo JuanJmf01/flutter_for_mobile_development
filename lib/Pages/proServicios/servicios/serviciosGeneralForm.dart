@@ -17,6 +17,7 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
@@ -33,8 +34,8 @@ import 'package:flutter/services.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
-class AgregarServicio extends StatefulWidget {
-  const AgregarServicio({
+class ServiciosGeneralForm extends StatefulWidget {
+  const ServiciosGeneralForm({
     super.key,
     this.servicio,
     required this.titulo,
@@ -46,15 +47,16 @@ class AgregarServicio extends StatefulWidget {
   final String nameSaveButton;
 
   @override
-  State<AgregarServicio> createState() => _AgregarServicioState();
+  State<ServiciosGeneralForm> createState() => _ServiciosGeneralFormState();
 }
 
-class _AgregarServicioState extends State<AgregarServicio> {
+class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
 
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
-
+  final TextEditingController _precioConDescuentoController =
+      TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final TextEditingController _descuentoController = TextEditingController();
 
@@ -187,7 +189,7 @@ class _AgregarServicioState extends State<AgregarServicio> {
             : isChecked = false;
   }
 
-  String newPrice() {
+  void newPrice() {
     double precioInicial = double.tryParse(_precioController.text) ?? 0.0;
     double descuento = double.tryParse(_descuentoController.text) ?? 0.0;
 
@@ -202,8 +204,7 @@ class _AgregarServicioState extends State<AgregarServicio> {
 
     // Calcula el nuevo precio
     double nuevoPrecio = precioInicial - (precioInicial * (descuento / 100.0));
-
-    return 'Nuevo precio con descuento: \$${nuevoPrecio.toStringAsFixed(2)}';
+    _precioConDescuentoController.text = nuevoPrecio.toString();
   }
 
   @override
@@ -224,12 +225,12 @@ class _AgregarServicioState extends State<AgregarServicio> {
           .obtenerSubCategoriasSeleccionadas(servicio!.idServicio, ServicioTb);
     }
 
-    _precioController.addListener(_updatePrice);
-    _descuentoController.addListener(_updatePrice);
-  }
-
-  void _updatePrice() {
-    setState(() {});
+    _precioController.addListener(() {
+      newPrice();
+    });
+    _descuentoController.addListener(() {
+      newPrice();
+    });
   }
 
   void actualizarServicio(ServicioTb servicio, int idUsuario) async {
@@ -268,8 +269,45 @@ class _AgregarServicioState extends State<AgregarServicio> {
     }
   }
 
+  void guardar(int idUsuario) async {
+    final nombreServicio = _nombreController.text;
+    double precio = double.tryParse(_precioController.text) ?? 0.0;
+    final descripcion = _descripcionController.text;
+
+    ServicioCreacionTb servicioCreacion;
+    int idNegocio = await NegocioDb.crearNegocioSiNoExiste(idUsuario);
+    int descuento = int.tryParse(_descuentoController.text) ?? 0;
+
+    if (_servicio?.idServicio == null) {
+      servicioCreacion = ServicioCreacionTb(
+        idNegocio: idNegocio,
+        nombre: nombreServicio,
+        descripcion: descripcion,
+        precio: precio,
+        oferta: enOferta ?? 0,
+        descuento: isChecked ? descuento : 0,
+      );
+
+      crearServicio(servicioCreacion, idUsuario);
+    } else {
+      _servicio = ServicioTb(
+        idServicio: _servicio!.idServicio,
+        idNegocio: _servicio!.idNegocio,
+        nombre: nombreServicio,
+        precio: precio,
+        oferta: enOferta,
+        urlImage: _servicio!.urlImage,
+        nombreImage: _servicio!.nombreImage,
+      );
+
+      print("PRIMER PARTE ${_servicio!.nombre}");
+      actualizarServicio(_servicio!, idUsuario);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
 
     categoriasDisponibles =
@@ -289,9 +327,26 @@ class _AgregarServicioState extends State<AgregarServicio> {
           backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
           iconTheme: IconThemeData(color: Colors.black, size: 30),
           toolbarHeight: 60,
-          title: Text(
-            widget.titulo,
-            style: TextStyle(color: Colors.black),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.titulo,
+                style: TextStyle(color: Colors.black),
+              ),
+              GlobalTextButton(
+                onPressed: () {
+                  print("PRESS");
+                  if (idUsuario != null && isUserSignedIn) {
+                    print("Entra");
+                    guardar(idUsuario);
+                  }
+                },
+                textButton: 'Guardar',
+                fontSizeTextButton: 19,
+                letterSpacing: 0.3,
+              )
+            ],
           ),
         ),
         backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
@@ -303,32 +358,6 @@ class _AgregarServicioState extends State<AgregarServicio> {
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 0.0),
-                          child: ElevatedGlobalButton(
-                            nameSavebutton: 'Servicio en oferta?',
-                            borderSideColor:
-                                !isChecked ? Colors.grey : Colors.transparent,
-                            onPress: () {
-                              setState(() {
-                                isChecked = !isChecked;
-                                enOferta = isChecked ? 1 : 0;
-                                print("en oferta: $enOferta");
-                              });
-                            },
-                            backgroundColor:
-                                isChecked ? Colors.blue : Colors.white,
-                            colorNameSaveButton:
-                                isChecked ? Colors.white : Colors.black,
-                            borderRadius: BorderRadius.circular(17.0),
-                            //borderSideColor: Colors.grey
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
                       myImageList.items.isNotEmpty
                           ? MyImageList(
                               imageList: myImageList,
@@ -421,6 +450,32 @@ class _AgregarServicioState extends State<AgregarServicio> {
                           ],
                         ),
                       const GlobalDivider(),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.fromLTRB(0.0, 15.0, 20.0, 0.0),
+                          child: ElevatedGlobalButton(
+                            nameSavebutton: 'Servicio en oferta?',
+                            borderSideColor:
+                                !isChecked ? Colors.grey : Colors.transparent,
+                            onPress: () {
+                              setState(() {
+                                isChecked = !isChecked;
+                                enOferta = isChecked ? 1 : 0;
+                                print("en oferta: $enOferta");
+                              });
+                            },
+                            backgroundColor:
+                                isChecked ? Colors.blue : Colors.white,
+                            colorNameSaveButton:
+                                isChecked ? Colors.white : Colors.black,
+                            borderRadius: BorderRadius.circular(8.0),
+                            //borderSideColor: Colors.grey
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
                       GeneralInputs(
                         controller: _nombreController,
                         textLabelOutside: 'Nombre',
@@ -429,15 +484,36 @@ class _AgregarServicioState extends State<AgregarServicio> {
                         verticalPadding: verticalPadding,
                         color: colorTextField,
                       ),
-                      GeneralInputs(
-                        controller: _precioController,
-                        horizontalPadding: 16.0,
-                        textLabelOutside: 'Precio',
-                        labelText: 'Agrega un precio',
-                        color: colorTextField,
-                        keyboardType: TextInputType.number,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: GeneralInputs(
+                              controller: _precioController,
+                              horizontalPadding: 16.0,
+                              textLabelOutside:
+                                  !isChecked ? 'Precio' : 'Precio antes',
+                              labelText: 'Agrega un precio',
+                              color: colorTextField,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[0-9]')),
+                              ],
+                            ),
+                          ),
+                          isChecked
+                              ? Expanded(
+                                  child: GeneralInputs(
+                                    controller: _precioConDescuentoController,
+                                    horizontalPadding: 16.0,
+                                    verticalPadding: 15.0,
+                                    textLabelOutside: 'Precio con descuento',
+                                    color: const Color.fromARGB(11, 0, 0, 0),
+                                    keyboardType: TextInputType.number,
+                                    enable: false,
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
                         ],
                       ),
                       isChecked
@@ -452,7 +528,6 @@ class _AgregarServicioState extends State<AgregarServicio> {
                               keyboardType: TextInputType.number,
                             )
                           : const SizedBox.shrink(),
-                      Text(newPrice()),
                       GeneralInputs(
                         controller: _descripcionController,
                         textLabelOutside: 'Descripcion',
@@ -487,55 +562,6 @@ class _AgregarServicioState extends State<AgregarServicio> {
                 ),
               ),
             ),
-            ElevatedGlobalButton(
-              nameSavebutton: widget.nameSaveButton,
-              widthSizeBox: double.infinity,
-              heightSizeBox: 50.0,
-              fontSize: 21,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1.0,
-              onPress: () async {
-                final nombreServicio = _nombreController.text;
-                double precio = double.tryParse(_precioController.text) ?? 0.0;
-                final descripcion = _descripcionController.text;
-
-                ServicioCreacionTb servicioCreacion;
-                int idNegocio =
-                    await NegocioDb.crearNegocioSiNoExiste(idUsuario);
-                int descuento = int.tryParse(_descuentoController.text) ?? 0;
-
-                if (_servicio?.idServicio == null) {
-                  servicioCreacion = ServicioCreacionTb(
-                    idNegocio: idNegocio,
-                    nombre: nombreServicio,
-                    descripcion: descripcion,
-                    precio: precio,
-                    oferta: enOferta ?? 0,
-                    descuento: isChecked ? descuento : 0,
-                  );
-
-                  if (idUsuario != null) {
-                    crearServicio(servicioCreacion, idUsuario);
-                  }
-                } else {
-                  _servicio = ServicioTb(
-                    idServicio: _servicio!.idServicio,
-                    idNegocio: _servicio!.idNegocio,
-                    nombre: nombreServicio,
-                    precio: precio,
-                    oferta: enOferta,
-                    urlImage: _servicio!.urlImage,
-                    nombreImage: _servicio!.nombreImage,
-                  );
-
-                  print("PRIMER PARTE ${_servicio!.nombre}");
-
-                  idUsuario != null
-                      ? actualizarServicio(_servicio!, idUsuario)
-                      : print('idUsuario es null');
-                }
-              },
-            )
           ],
         ),
       ),

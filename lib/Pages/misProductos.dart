@@ -229,7 +229,7 @@ class _MisProductosState extends State<MisProductos> {
                 return Column(
                   children: [
                     Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
                         child: productos.isNotEmpty
                             ? GridView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
@@ -239,7 +239,7 @@ class _MisProductosState extends State<MisProductos> {
                                   crossAxisCount: 2,
                                   crossAxisSpacing: 8.0,
                                   mainAxisSpacing: 20.0,
-                                  mainAxisExtent: 290,
+                                  mainAxisExtent: 305,
                                 ),
                                 itemCount: productos.length,
                                 itemBuilder: (BuildContext context, index) {

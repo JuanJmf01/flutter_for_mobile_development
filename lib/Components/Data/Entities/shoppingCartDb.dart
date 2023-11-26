@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/shoppingCartTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
-import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
 
 class ShoppingCartDb {
   /// Insert a shopping cart product into the database using Dio.

@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
+// Actualizar documentacion
+
 /// The `ProductImageDb` class contains static methods for inserting, retrieving, updating, and deleting
 /// product images from a database using HTTP requests.
 

@@ -1,5 +1,5 @@
 class MisRutas {
-  static String rutaPrincipal = 'http://192.168.68.107:3000/api';
+  static String rutaPrincipal = 'http://192.168.68.104:3000/api';
 
   // -- Demas rutas -- //
   static String rutaCategorias2 = '$rutaPrincipal/categorias';

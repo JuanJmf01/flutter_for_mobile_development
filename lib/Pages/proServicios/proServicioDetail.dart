@@ -13,7 +13,7 @@ import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioGeneralDetail.dart';
-import 'package:etfi_point/Pages/proServicios/servicios/agregarServicio.dart';
+import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:etfi_point/Pages/productosGeneralForm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -170,7 +170,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => objectType == ServicioTb
-                      ? AgregarServicio(
+                      ? ServiciosGeneralForm(
                           titulo: "Editar Servicio",
                           nameSaveButton: "Actualizar",
                           servicio: widget.proServicio,

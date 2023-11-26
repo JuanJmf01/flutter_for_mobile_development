@@ -3,9 +3,20 @@ import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class ServiceImageDb {
+
+
+ /// The function `insertServiceImage` sends a POST request to a specified URL with the provided service
+ /// image data and returns the inserted service image if successful.
+ /// 
+ /// Args:
+ ///   serviceImage (ProServicioImageCreacionTb): The parameter `serviceImage` is an instance of the
+ /// class `ProServicioImageCreacionTb`. It represents the data of a service image that needs to be
+ /// inserted into a database.
+ /// 
+ /// Returns:
+ ///   a Future object of type ProservicioImagesTb.
   static Future<ProservicioImagesTb> insertServiceImage(
       ProServicioImageCreacionTb serviceImage) async {
-    print("MI SERVICIO IMAGE: $serviceImage");
     Dio dio = Dio();
     String url = MisRutas.rutaServiceImages;
     Map<String, dynamic> data = serviceImage.toMapServicios();
@@ -34,7 +45,15 @@ class ServiceImageDb {
     }
   }
 
-  // Verificar la posibilidad de eliminar este metodo y hacerlo uno solo junto con 'getProductSecondaryImages'
+  /// The function `getServiceSecondaryImages` retrieves a list of secondary images for a given service
+  /// ID using the Dio package in Dart.
+  /// 
+  /// Args:
+  ///   idServicio (int): The parameter `idServicio` is an integer that represents the ID of a service.
+  /// It is used to fetch the secondary images associated with that service.
+  /// 
+  /// Returns:
+  ///   a Future object that resolves to a List of ProservicioImagesTb objects.
   static Future<List<ProservicioImagesTb>> getServiceSecondaryImages(
       int idServicio) async {
     Dio dio = Dio();
@@ -59,6 +78,15 @@ class ServiceImageDb {
     }
   }
 
+  /// The function `deleteServiceImages` sends a DELETE request to a specified URL to delete service
+  /// images and returns a boolean value indicating whether the deletion was successful or not.
+  /// 
+  /// Args:
+  ///   idServicio (int): The parameter `idServicio` is an integer that represents the ID of the service
+  /// for which you want to delete the images.
+  /// 
+  /// Returns:
+  ///   a Future<bool>.
   static Future<bool> deleteServiceImages(int idServicio) async {
     Dio dio = Dio();
     String url = '${MisRutas.rutaServiceImages}/$idServicio';
@@ -85,6 +113,16 @@ class ServiceImageDb {
     return false;
   }
 
+  /// The function `deleteServiceImage` is a static method that sends a DELETE request to a specified
+  /// URL to delete a service image, and returns a boolean value indicating whether the deletion was
+  /// successful or not.
+  /// 
+  /// Args:
+  ///   idServiceImage (int): The parameter `idServiceImage` is the ID of the service image that you
+  /// want to delete.
+  /// 
+  /// Returns:
+  ///   a Future<bool>.
   static Future<bool> deleteServiceImage(int idServiceImage) async {
     Dio dio = Dio();
     String url = '${MisRutas.rutaServiceImage}/$idServiceImage';
