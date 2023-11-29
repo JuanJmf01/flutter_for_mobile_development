@@ -385,9 +385,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                 ),
                 GlobalTextButton(
                   onPressed: () {
-                    print("PRESS");
                     if (idUsuario != null && isUserSignedIn) {
-                      print("Entra");
                       guardar(idUsuario);
                     }
                   },

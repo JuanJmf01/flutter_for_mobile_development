@@ -1,8 +1,5 @@
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
+import 'package:etfi_point/Components/Utils/MisProductos.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Pages/proServicios/misServicios.dart';
 import 'package:flutter/cupertino.dart';
@@ -25,7 +22,7 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
 
     // Oyente para cada cambio de pestaña en el tabBar
     // _tabController.addListener(() {
@@ -109,6 +106,14 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
                   Tab(
                     icon: Icon(
                       _tabController.index == 2
+                          ? CupertinoIcons.photo_fill_on_rectangle_fill
+                          : CupertinoIcons.photo_on_rectangle,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Tab(
+                    icon: Icon(
+                      _tabController.index == 3
                           ? CupertinoIcons.rectangle_3_offgrid_fill
                           : CupertinoIcons.rectangle_3_offgrid,
                       color: Colors.black,
@@ -132,6 +137,11 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
             const SingleChildScrollView(
               child: Center(
                 child: Text('Contenido de la pestaña 3 y otras imágenes'),
+              ),
+            ),
+            const SingleChildScrollView(
+              child: Center(
+                child: Text('Contenido de la pestaña 4 y otras imágenes'),
               ),
             ),
           ],
@@ -196,72 +206,6 @@ class _TopProfileState extends State<TopProfile> {
         ],
       ),
     );
-  }
-}
-
-
-//DEBERIA ESTAR EN UNA CLASE DIFERENTE
-class MisProductos extends StatefulWidget {
-  MisProductos({Key? key}) : super(key: key);
-
-  @override
-  State<MisProductos> createState() => _MisProductosState();
-}
-
-class _MisProductosState extends State<MisProductos> {
-  List<ProductoTb> productos = [];
-
-  @override
-  Widget build(BuildContext context) {
-    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
-
-    //final TextEditingController searchController = TextEditingController();
-    return idUsuario != null
-        ? FutureBuilder<List<ProductoTb>>(
-            future: ProductoDb.getProductosByNegocio(idUsuario),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Text('Error al cargar los productos');
-              } else if (snapshot.hasData) {
-                productos = snapshot.data!;
-                return Column(
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                        child: productos.isNotEmpty
-                            ? GridView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 8.0,
-                                  mainAxisSpacing: 20.0,
-                                  mainAxisExtent: 305,
-                                ),
-                                itemCount: productos.length,
-                                itemBuilder: (BuildContext context, index) {
-                                  final ProductoTb producto = productos[index];
-                                  return IndividualProduct(producto: producto);
-                                },
-                              )
-                            : const Padding(
-                                padding: EdgeInsets.only(top: 40),
-                                child: Center(
-                                  child: Text('No hay productos que mostrar'),
-                                ),
-                              )),
-                  ],
-                );
-              } else {
-                return Text('No se encontraron los productos');
-              }
-              // Mostrar un indicador de carga
-            },
-          )
-        : Center(child: CircularProgressIndicator());
   }
 }
 

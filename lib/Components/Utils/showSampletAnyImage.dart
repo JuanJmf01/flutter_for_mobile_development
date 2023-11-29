@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:etfi_point/Components/Utils/IndividualProduct.dart';
+import 'package:etfi_point/Components/Utils/MisProductos.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';

@@ -1,5 +1,6 @@
 import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
+import 'package:etfi_point/Pages/crearVinculo.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -44,11 +45,13 @@ class ButtonAdd extends StatelessWidget {
         ),
         ItemForModalButtons(
           onPress: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => ServiciosGeneralForm(
-                  titulo: "Agregar servicio",
-                  nameSaveButton: "Agregasr",
-                )));
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const ServiciosGeneralForm(
+                          titulo: "Agregar servicio",
+                          nameSaveButton: "Agregasr",
+                        )));
           },
           padding: padding,
           icon: CupertinoIcons.heart_circle,
@@ -56,11 +59,14 @@ class ButtonAdd extends StatelessWidget {
           textItem: 'Nuevo servicio',
         ),
         ItemForModalButtons(
-          onPress: () {},
+          onPress: () {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const CrearVinculo()));
+          },
           padding: padding,
           icon: CupertinoIcons.photo_on_rectangle,
           colorIcon: colorIcons,
-          textItem: 'Nueva imagen',
+          textItem: 'Nuevo vinculo',
         ),
         ItemForModalButtons(
           onPress: () {},
