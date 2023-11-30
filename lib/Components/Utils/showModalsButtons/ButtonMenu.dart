@@ -1,7 +1,9 @@
+import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonLogin.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,18 +38,18 @@ class ButtonMenu extends StatelessWidget {
                             onAcceptMessage: 'Aceptar',
                             onCancelMessage: 'Cancelar',
                             onAccept: () async {
-                              // await Auth.signOut(context);
-                              // if (context.mounted) {
-                              //   Navigator.of(context).pop();
-                              //   //Navigator.pop(context);
-                              //   Navigator.pushReplacement(
-                              //     context,
-                              //     MaterialPageRoute(
-                              //         builder: (context) => Menu(
-                              //               index: 0,
-                              //             )),
-                              //   );
-                              // }
+                              await Auth.signOut(context);
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                                //Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Menu(
+                                            index: 0,
+                                          )),
+                                );
+                              }
                             },
                             onCancel: () {
                               Navigator.of(context).pop();

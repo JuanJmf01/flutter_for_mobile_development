@@ -50,7 +50,7 @@ class _MyImageListState extends State<MyImageList> {
 
             bool isSelected = false;
 
-            if (image is ProductImageToUpload) {
+            if (image is ProServicioImageToUpload) {
               originalWidth = image.width;
               originalHeight = image.height;
               desiredWidth = 600.0;
@@ -69,7 +69,7 @@ class _MyImageListState extends State<MyImageList> {
                   padding: const EdgeInsets.fromLTRB(5.0, 0.0, 4.0, 8.0),
                   child: GestureDetector(
                     onTap: () {
-                      if (image is ProductImageToUpload) {
+                      if (image is ProServicioImageToUpload) {
                         setState(() {
                           widget.onImageSelected(image.newImage);
                         });
@@ -85,7 +85,7 @@ class _MyImageListState extends State<MyImageList> {
                               : null),
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(16.0),
-                          child: image is ProductImageToUpload
+                          child: image is ProServicioImageToUpload
                               ? AssetThumb(
                                   asset: image.newImage,
                                   width: desiredWidth.toInt(),

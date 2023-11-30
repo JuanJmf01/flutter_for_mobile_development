@@ -116,7 +116,7 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
       if (myImageList.items.isNotEmpty) {
         for (var imagen in myImageList.items) {
           String finalNameImage = assingName(principalImage!.name!);
-          if (imagen is ProductImageToUpload) {
+          if (imagen is ProServicioImageToUpload) {
             Uint8List imageBytes = await assetToUint8List(imagen.newImage);
 
             ImageStorageCreacionTb image = ImageStorageCreacionTb(
@@ -381,7 +381,7 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                         alignment: Alignment.centerLeft,
                         child: GlobalTextButton(
                           onPressed: () async {
-                            List<ProductImageToUpload> selectedImagesAux =
+                            List<ProServicioImageToUpload> selectedImagesAux =
                                 await CrudImages.agregarImagenes();
                             setState(() {
                               myImageList.items.addAll(selectedImagesAux);

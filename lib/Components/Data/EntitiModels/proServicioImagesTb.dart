@@ -135,28 +135,28 @@ class ProServicioImageCreacionTb {
   }
 }
 
-class ProductImageToUpdate extends ImageListItem {
+class ProServicioImageToUpdate extends ImageListItem {
   final String nombreImage;
   final Asset newImage;
 
-  ProductImageToUpdate({
+  ProServicioImageToUpdate({
     required this.nombreImage,
     required this.newImage,
   });
 
   @override
   String toString() {
-    return 'ProductImageToUpdate{nombreImage: $nombreImage, newImage: $newImage}';
+    return 'ProServicioImageToUpdate{nombreImage: $nombreImage, newImage: $newImage}';
   }
 }
 
-class ProductImageToUpload extends ImageListItem {
+class ProServicioImageToUpload extends ImageListItem {
   final String nombreImage;
   final Asset newImage;
   final double width;
   final double height;
 
-  ProductImageToUpload({
+  ProServicioImageToUpload({
     required this.nombreImage,
     required this.newImage,
     required this.width,

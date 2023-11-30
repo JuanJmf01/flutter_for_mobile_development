@@ -54,7 +54,6 @@ class UsuarioCreacionTb {
     this.domiciliario,
   });
 
-  //Al recibir un JSON de la API debe ser convertico a un instancia de tipo UsuarioCreacionTb para que sea utilizada
   factory UsuarioCreacionTb.fromJson(Map<String, dynamic> json) {
     return UsuarioCreacionTb(
       nombres: json['nombres'],

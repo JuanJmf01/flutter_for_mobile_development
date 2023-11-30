@@ -1,6 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
-import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MisServicios extends StatefulWidget {
-  const MisServicios({super.key});
+  const MisServicios({super.key, required this.idUsuario});
+
+  final int idUsuario;
 
   @override
   State<MisServicios> createState() => _MisServiciosState();
@@ -19,49 +21,47 @@ class _MisServiciosState extends State<MisServicios> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
-
-    return idUsuario != null
-        ? FutureBuilder(
-            future: ServicioDb.getServiciosByNegocio(idUsuario),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(
-                  child: CircularProgressIndicator(),
-                );
-              } else if (snapshot.hasError) {
-                return Text('Error al cargar los servicios');
-              } else if (snapshot.hasData) {
-                servicios = snapshot.data!;
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: GridView.builder(
-                          physics: const NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 1,
-                            crossAxisSpacing: 0.0,
-                            mainAxisSpacing: 15.0,
-                            mainAxisExtent: 150,
-                          ),
-                          itemCount: servicios.length,
-                          itemBuilder: (BuildContext context, index) {
-                            return IndividulService(
-                              servicio: servicios[index],
-                              index: index,
-                            );
-                          }),
-                    ),
-                  ],
-                );
-              } else {
-                return Text('No se encontraron los servicios');
-              }
-            })
-        : Center(child: CircularProgressIndicator());
+    return FutureBuilder(
+        future: context
+            .read<ProServiciosProvider>()
+            .obtenerServiciosByNegocio(widget.idUsuario),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            return Text('Error al cargar los servicios');
+          } else if (snapshot.hasData) {
+            servicios = snapshot.data!;
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 1,
+                        crossAxisSpacing: 0.0,
+                        mainAxisSpacing: 15.0,
+                        mainAxisExtent: 150,
+                      ),
+                      itemCount: servicios.length,
+                      itemBuilder: (BuildContext context, index) {
+                        return IndividulService(
+                          servicio: servicios[index],
+                          index: index,
+                        );
+                      }),
+                ),
+              ],
+            );
+          } else {
+            return Text('No se encontraron los servicios');
+          }
+        });
   }
 }
 
@@ -178,8 +178,7 @@ class _IndividulServiceState extends State<IndividulService> {
             Text(
               servicio.nombre,
               style: Theme.of(context).textTheme.titleMedium!.merge(
-                    const TextStyle(
-                        fontWeight: FontWeight.w700, fontSize: 18),
+                    const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
                   ),
             ),
           ],

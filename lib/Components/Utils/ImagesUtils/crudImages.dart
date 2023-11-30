@@ -6,13 +6,13 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 
 // En estado de purebas para su utilizacion en productsGeneralForm.dart
 class CrudImages {
-  static Future<List<ProductImageToUpload>> agregarImagenes() async {
+  static Future<List<ProServicioImageToUpload>> agregarImagenes() async {
     List<Asset?> imagesAsset = await getImagesAsset();
-    List<ProductImageToUpload> allProServiciosImagesAux = [];
+    List<ProServicioImageToUpload> allProServiciosImagesAux = [];
 
     if (imagesAsset.isNotEmpty) {
       for (var image in imagesAsset) {
-        ProductImageToUpload newImage = ProductImageToUpload(
+        ProServicioImageToUpload newImage = ProServicioImageToUpload(
           nombreImage: assingName(image!.name!),
           newImage: image,
           width: image.originalWidth!.toDouble(),

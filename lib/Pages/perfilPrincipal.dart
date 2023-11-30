@@ -1,4 +1,5 @@
 import 'package:etfi_point/Components/Utils/MisProductos.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Pages/proServicios/misServicios.dart';
@@ -40,6 +41,8 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
   @override
   Widget build(BuildContext context) {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
+
     return Scaffold(
       backgroundColor: Colors.grey.shade200,
       appBar: PreferredSize(
@@ -129,10 +132,13 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
               _tabController, // Asignamos el TabController al TabBarView
           children: [
             SingleChildScrollView(
-              child: MisProductos(),
-            ),
-            const SingleChildScrollView(
-              child: MisServicios(),
+                child: idUsuario != null
+                    ? MisProductos(idUsuario: idUsuario)
+                    : const Text("IdUsuario null")),
+            SingleChildScrollView(
+              child: idUsuario != null
+                  ? MisServicios(idUsuario: idUsuario)
+                  : const Text("IdUsuario null"),
             ),
             const SingleChildScrollView(
               child: Center(
@@ -208,4 +214,3 @@ class _TopProfileState extends State<TopProfile> {
     );
   }
 }
-

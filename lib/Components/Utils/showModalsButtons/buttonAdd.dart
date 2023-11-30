@@ -1,9 +1,12 @@
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
 import 'package:etfi_point/Pages/crearVinculo.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class ButtonAdd extends StatelessWidget {
   const ButtonAdd({super.key});
@@ -11,8 +14,21 @@ class ButtonAdd extends StatelessWidget {
   final EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 10.0);
   final Color colorIcons = Colors.black54;
 
+  void irANuevoVinculo(int idUsuario, BuildContext context) {
+    context
+        .read<ProServiciosProvider>()
+        .obtenerProServiciosByNegocio(idUsuario);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CrearVinculo(
+                  idUsuario: idUsuario,
+                )));
+  }
+
   @override
   Widget build(BuildContext context) {
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.only(
@@ -59,9 +75,10 @@ class ButtonAdd extends StatelessWidget {
           textItem: 'Nuevo servicio',
         ),
         ItemForModalButtons(
-          onPress: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const CrearVinculo()));
+          onPress: (){
+            if(idUsuario != null){
+              irANuevoVinculo(idUsuario, context);
+            }
           },
           padding: padding,
           icon: CupertinoIcons.photo_on_rectangle,

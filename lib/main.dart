@@ -1,11 +1,12 @@
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonAdd.dart';
 import 'package:etfi_point/Pages/allProducts.dart';
 import 'package:etfi_point/Pages/filtros.dart';
-import 'package:etfi_point/Pages/misProductos.dart';
+import 'package:etfi_point/Pages/perfilPrincipal.dart';
 import 'package:etfi_point/Pages/shoppingCart.dart';
 import 'package:etfi_point/firebase_options.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,7 +15,6 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +32,9 @@ void main() async {
         ChangeNotifierProvider<ShoppingCartProvider>(
             create: (_) => ShoppingCartProvider()),
         ChangeNotifierProvider<SubCategoriaSeleccionadaProvider>(
-            create: (_) => SubCategoriaSeleccionadaProvider())
+            create: (_) => SubCategoriaSeleccionadaProvider()),
+        ChangeNotifierProvider<ProServiciosProvider>(
+            create: (_) => ProServiciosProvider())
       ],
       child: const MyApp(),
     ),

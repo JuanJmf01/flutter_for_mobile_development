@@ -1,15 +1,15 @@
 import 'dart:typed_data';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
+import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-
 class MisProductos extends StatefulWidget {
-  MisProductos({Key? key}) : super(key: key);
+  const MisProductos({super.key, required this.idUsuario});
+
+  final int idUsuario;
 
   @override
   State<MisProductos> createState() => _MisProductosState();
@@ -20,58 +20,55 @@ class _MisProductosState extends State<MisProductos> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
-
     //final TextEditingController searchController = TextEditingController();
-    return idUsuario != null
-        ? FutureBuilder<List<ProductoTb>>(
-            future: ProductoDb.getProductosByNegocio(idUsuario),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return Text('Error al cargar los productos');
-              } else if (snapshot.hasData) {
-                productos = snapshot.data!;
-                return Column(
-                  children: [
-                    Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                        child: productos.isNotEmpty
-                            ? GridView.builder(
-                                physics: const NeverScrollableScrollPhysics(),
-                                shrinkWrap: true,
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  crossAxisSpacing: 8.0,
-                                  mainAxisSpacing: 20.0,
-                                  mainAxisExtent: 305,
-                                ),
-                                itemCount: productos.length,
-                                itemBuilder: (BuildContext context, index) {
-                                  final ProductoTb producto = productos[index];
-                                  return IndividualProduct(producto: producto);
-                                },
-                              )
-                            : const Padding(
-                                padding: EdgeInsets.only(top: 40),
-                                child: Center(
-                                  child: Text('No hay productos que mostrar'),
-                                ),
-                              )),
-                  ],
-                );
-              } else {
-                return Text('No se encontraron los productos');
-              }
-              // Mostrar un indicador de carga
-            },
-          )
-        : Center(child: CircularProgressIndicator());
+    return FutureBuilder<List<ProductoTb>>(
+      future: context
+          .read<ProServiciosProvider>()
+          .obtenerProductosByNegocio(widget.idUsuario),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Text('Error al cargar los productos');
+        } else if (snapshot.hasData) {
+          productos = snapshot.data!;
+          return Column(
+            children: [
+              Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6.0),
+                  child: productos.isNotEmpty
+                      ? GridView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 8.0,
+                            mainAxisSpacing: 20.0,
+                            mainAxisExtent: 305,
+                          ),
+                          itemCount: productos.length,
+                          itemBuilder: (BuildContext context, index) {
+                            final ProductoTb producto = productos[index];
+                            return IndividualProduct(producto: producto);
+                          },
+                        )
+                      : const Padding(
+                          padding: EdgeInsets.only(top: 40),
+                          child: Center(
+                            child: Text('No hay productos que mostrar'),
+                          ),
+                        )),
+            ],
+          );
+        } else {
+          return Text('No se encontraron los productos');
+        }
+        // Mostrar un indicador de carga
+      },
+    );
   }
 }
-
 
 class IndividualProduct extends StatefulWidget {
   const IndividualProduct({super.key, required this.producto});

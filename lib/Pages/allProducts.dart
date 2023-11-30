@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -34,7 +35,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             child: IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {
-                // Lógica para el icono en la parte derecha del AppBar
+                showModalBottomSheet(
+                      isScrollControlled: true,
+                      context: context,
+                      builder: (BuildContext context) => ButtonMenu(),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10.0),
+                          topRight: Radius.circular(10.0),
+                        ),
+                      ),
+                    );
               },
             ),
           )

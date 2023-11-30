@@ -436,8 +436,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
   ImageList allProductImages = ImageList([]);
   bool isChecked = true;
 
-  List<ProductImageToUpload> imagesToUpload = [];
-  List<ProductImageToUpdate> imagesToUpdate = [];
+  List<ProServicioImageToUpload> imagesToUpload = [];
+  List<ProServicioImageToUpdate> imagesToUpdate = [];
 
   final TextEditingController _descripcionDetalldaController =
       TextEditingController();
@@ -568,11 +568,11 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
   void agregarImagenes() async {
     List<Asset?> imagesAsset = await getImagesAsset();
-    List<ProductImageToUpload> allProductImagesAux = [];
+    List<ProServicioImageToUpload> allProductImagesAux = [];
 
     if (imagesAsset.isNotEmpty) {
       for (var image in imagesAsset) {
-        ProductImageToUpload newImage = ProductImageToUpload(
+        ProServicioImageToUpload newImage = ProServicioImageToUpload(
           nombreImage: assingName(image!.name!),
           newImage: image,
           width: image.originalWidth!.toDouble(),
@@ -605,8 +605,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
       * En este caso el objeto ya se encuentra dentro de 'imagesToUpdate' por lo tanto 
        * solo es necesario actualizar "imageToUpdate" respecto a su posicion 'indice' y dejar 
        * "nombreImage" igual ya que este nombre se utiliza para completar la ruta en firebase Storage y actualizar */
-      if (indice != -1 || image is ProductImageToUpdate) {
-        ProductImageToUpdate newImage = ProductImageToUpdate(
+      if (indice != -1 || image is ProServicioImageToUpdate) {
+        ProServicioImageToUpdate newImage = ProServicioImageToUpdate(
           nombreImage: imagesToUpdate[indice].nombreImage,
           newImage: asset,
         );
@@ -616,7 +616,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         });
       } else {
         if (image is ProservicioImagesTb) {
-          ProductImageToUpdate newImage = ProductImageToUpdate(
+          ProServicioImageToUpdate newImage = ProServicioImageToUpdate(
             nombreImage: image.nombreImage,
             newImage: asset,
           );
@@ -624,10 +624,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
             imagesToUpdate.add(newImage);
             allProductImages.items[imageIndex] = newImage;
           });
-        } else if (image is ProductImageToUpload) {
+        } else if (image is ProServicioImageToUpload) {
           int indiceToUpload = imagesToUpload.indexWhere(
               (element) => element.nombreImage == image.nombreImage);
-          ProductImageToUpload newImage = ProductImageToUpload(
+          ProServicioImageToUpload newImage = ProServicioImageToUpload(
             nombreImage: assingName(asset.name!),
             newImage: asset,
             width: asset.originalWidth!.toDouble(),
@@ -691,14 +691,14 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 }
               },
               objectToDelete: 'la imagen');
-        } else if (image is ProductImageToUpdate ||
-            image is ProductImageToUpload) {
+        } else if (image is ProServicioImageToUpdate ||
+            image is ProServicioImageToUpload) {
           return RuleOut(
             onPress: () {
               int imageIndex = allProductImages.items.indexOf(image);
               /**De la lista de imagenes originales, sacamos la imagen base o imagen que inicialmente habia */
 
-              if (image is ProductImageToUpdate) {
+              if (image is ProServicioImageToUpdate) {
                 ProservicioImagesTb oldImage =
                     productSecondaryImages[imageIndex];
 
@@ -706,7 +706,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                   allProductImages.items[imageIndex] = oldImage;
                   imagesToUpdate.remove(image);
                 });
-              } else if (image is ProductImageToUpload) {
+              } else if (image is ProServicioImageToUpload) {
                 setState(() {
                   allProductImages.items.removeAt(imageIndex);
                   imagesToUpload.remove(image);
@@ -818,16 +818,16 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                                         width: double.infinity,
                                         fit: BoxFit.cover,
                                       )
-                                    : image is ProductImageToUpload ||
-                                            image is ProductImageToUpdate
+                                    : image is ProServicioImageToUpload ||
+                                            image is ProServicioImageToUpdate
                                         ? FutureBuilder<ByteData>(
                                             future: (() {
                                               if (image
-                                                  is ProductImageToUpload) {
+                                                  is ProServicioImageToUpload) {
                                                 return image.newImage
                                                     .getByteData();
                                               } else if (image
-                                                  is ProductImageToUpdate) {
+                                                  is ProServicioImageToUpdate) {
                                                 return image.newImage
                                                     .getByteData();
                                               }

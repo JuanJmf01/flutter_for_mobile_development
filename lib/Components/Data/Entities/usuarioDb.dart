@@ -40,7 +40,7 @@ class UsuarioDb {
     }
   }
 
-  static Future<int?> getIdUsuarioByCorreo(String correo) async {
+  static Future<UsuarioTb> getUsuarioByCorreo(String correo) async {
     Dio dio = Dio();
     String url = MisRutas.rutaUsuarios;
 
@@ -49,11 +49,10 @@ class UsuarioDb {
         'email': correo,
       };
 
-      Response response = await dio.post(
+      Response response = await dio.get(
         url,
         data: data,
         options: Options(
-          responseType: ResponseType.json,
           headers: {
             'Content-Type': 'application/json',
           },
@@ -61,12 +60,8 @@ class UsuarioDb {
       );
 
       if (response.statusCode == 200) {
-        int idUsuario = response.data;
-        print(idUsuario);
-        return idUsuario;
-      } else if (response.statusCode == 404) {
-        print('id no encontrado return null');
-        return null;
+        UsuarioTb usuario = UsuarioTb.fromJson(response.data);
+        return usuario;
       } else {
         throw Exception('Error en la respuesta: ${response.statusCode}');
       }
@@ -78,8 +73,13 @@ class UsuarioDb {
   static Future<bool> ifExistsUserByEmail(String email) async {
     try {
       print('ifExistsUserByEmail llega aca');
-      int? id = await getIdUsuarioByCorreo(email);
-      return id != null;
+      UsuarioTb usuario = await getUsuarioByCorreo(email);
+
+      if (usuario.idUsuario != null) {
+        return true;
+      } else {
+        return false;
+      }
     } catch (error) {
       //throw Exception('Error en la respuesta: $error');
       print('Error en la  respuesta ifExistUserByEmail');
