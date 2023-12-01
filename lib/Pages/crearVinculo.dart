@@ -1,7 +1,10 @@
+import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
+import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,6 +22,9 @@ class CrearVinculo extends StatefulWidget {
 
 class _CrearVinculoState extends State<CrearVinculo> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
+  final TextEditingController _descripcionController = TextEditingController();
+
+  List<ProServicioImageToUpload> imagesToUpload = [];
 
   int indicePagina = 1;
 
@@ -241,55 +247,79 @@ class _CrearVinculoState extends State<CrearVinculo> {
   }
 
   Widget paginaDos() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child: Container(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 45,
-                    width: 45,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.grey.shade200),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
-                    child: Text(
-                      'Bussines name',
-                      style: TextStyle(
-                          fontSize: 15.5, fontWeight: FontWeight.w500),
-                    ),
-                  )
-                ],
-              ),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 0.0),
-                child: Text(
-                  'Lorem ipsum es el texto que se usa habitualmente en diseño gráfico en demostraciones de tipografías',
-                  style: TextStyle(fontSize: 16.3),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20.0, 10.0, 0.0, 0.0),
-                child: Container(
-                  width: 340,
-                  height: 320,
+    return Container(
+      
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  height: 45,
+                  width: 45,
                   decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
+                      borderRadius: BorderRadius.circular(50.0),
                       color: Colors.grey.shade200),
                 ),
-              )
-            ],
-          ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+                  child: Text(
+                    'Bussines name',
+                    style:
+                        TextStyle(fontSize: 15.5, fontWeight: FontWeight.w500),
+                  ),
+                )
+              ],
+            ),
+            Padding(
+                padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
+                child: GeneralInputs(
+                  controller: _descripcionController,
+                  labelText: 'Agrega una descripción',
+                  colorBorder: Colors.transparent,
+                )),
+            Padding(
+                padding: EdgeInsets.fromLTRB(
+                    20.0, 0.0, 0.0, imagesToUpload.isNotEmpty ? 10.0 : 30.0),
+                child: imagesToUpload.isNotEmpty
+                    ? SizedBox(
+                        width: 360,
+                        height: 340,
+                        child: PageView.builder(
+                          itemCount: imagesToUpload.length,
+                          itemBuilder: (context, index) {
+                            final image = imagesToUpload[index];
+                            return ShowImage(
+                              imageAsset: image.newImage,
+                              borderRadius: BorderRadius.circular(20.0),
+                              heightAsset: 340,
+                              widthAsset: 360,
+                            );
+                          },
+                        ),
+                      )
+                    : const SizedBox.shrink()),
+            Align(
+              alignment: Alignment.centerRight,
+              child: GlobalTextButton(
+                onPressed: () async {
+                  List<ProServicioImageToUpload> selectedImagesAux =
+                      await CrudImages.agregarImagenes();
+                  setState(() {
+                    imagesToUpload.addAll(selectedImagesAux);
+                  });
+                },
+                fontWeightTextButton: FontWeight.w700,
+                letterSpacing: 0.7,
+                fontSizeTextButton: 17.5,
+                textButton: 'Agregar imagen(es)',
+              ),
+            )
+          ],
         ),
       ),
     );
-    ;
   }
 }

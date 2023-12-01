@@ -4,7 +4,6 @@ import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 
-// En estado de purebas para su utilizacion en productsGeneralForm.dart
 class CrudImages {
   static Future<List<ProServicioImageToUpload>> agregarImagenes() async {
     List<Asset?> imagesAsset = await getImagesAsset();

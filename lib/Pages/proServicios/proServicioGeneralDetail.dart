@@ -20,6 +20,7 @@ import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/reviewsAndOpinions.dart';
@@ -769,41 +770,41 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 ],
               ),
             ),
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(16.0,
-            //       productSecondaryImages.isNotEmpty ? 0.0 : 20.0, 0.0, 0.0),
-            //   child: const Text(
-            //     'Descripcion detallada',
-            //     style: TextStyle(
-            //       fontWeight: FontWeight.w600,
-            //       fontSize: 22,
-            //     ),
-            //   ),
-            // ),
-            // Padding(
-            //   padding: EdgeInsets.fromLTRB(
-            //       isChecked ? 8.0 : 16, 23.0, isChecked ? 8.0 : 30, 30.0),
-            //   child: isChecked
-            //       ? GeneralInputs(
-            //           verticalPadding: 15.0,
-            //           controller: _descripcionDetalldaController,
-            //           labelText: 'Agrega una descripcion detalla del producto',
-            //           color: Colors.grey.shade200,
-            //           keyboardType: TextInputType.multiline,
-            //           minLines: 3,
-            //           maxLines: 40,
-            //         )
-            //       : Text(
-            //           descripcionDetalladaAux != null &&
-            //                   descripcionDetalladaAux!.isNotEmpty
-            //               ? descripcionDetalladaAux!
-            //               : 'No hay descripcion que mostrar',
-            //           style: TextStyle(
-            //             color: Colors.grey[800],
-            //             fontSize: 16,
-            //           ),
-            //         ),
-            // ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(16.0,
+                  productSecondaryImages.isNotEmpty ? 0.0 : 20.0, 0.0, 0.0),
+              child: const Text(
+                'Descripcion detallada',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 22,
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                  isChecked ? 8.0 : 16, 23.0, isChecked ? 8.0 : 30, 30.0),
+              child: isChecked
+                  ? GeneralInputs(
+                      verticalPadding: 15.0,
+                      controller: _descripcionDetalldaController,
+                      labelText: 'Agrega una descripcion detalla del producto',
+                      color: Colors.grey.shade200,
+                      keyboardType: TextInputType.multiline,
+                      minLines: 3,
+                      maxLines: 40,
+                    )
+                  : Text(
+                      descripcionDetalladaAux != null &&
+                              descripcionDetalladaAux!.isNotEmpty
+                          ? descripcionDetalladaAux!
+                          : 'No hay descripcion que mostrar',
+                      style: TextStyle(
+                        color: Colors.grey[800],
+                        fontSize: 16,
+                      ),
+                    ),
+            ),
             allProductImages.items.isNotEmpty
                 ? Column(
                     children: [
@@ -820,41 +821,15 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                                       )
                                     : image is ProServicioImageToUpload ||
                                             image is ProServicioImageToUpdate
-                                        ? FutureBuilder<ByteData>(
-                                            future: (() {
-                                              if (image
-                                                  is ProServicioImageToUpload) {
-                                                return image.newImage
-                                                    .getByteData();
-                                              } else if (image
-                                                  is ProServicioImageToUpdate) {
-                                                return image.newImage
-                                                    .getByteData();
-                                              }
-                                            })(),
-                                            builder: (BuildContext context,
-                                                AsyncSnapshot<ByteData>
-                                                    snapshot) {
-                                              if (snapshot.hasData) {
-                                                final byteData = snapshot.data!;
-                                                final bytes = byteData.buffer
-                                                    .asUint8List();
-                                                return SizedBox(
-                                                  width: double.infinity,
-                                                  child: Image.memory(
-                                                    bytes,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                                );
-                                              } else if (snapshot.hasError) {
-                                                return const Text(
-                                                    'Error al cargar la imagen');
-                                              } else {
-                                                return const Center(
-                                                    child:
-                                                        CircularProgressIndicator());
-                                              }
-                                            },
+                                        // Si image is ProServicioImageToUpload entt image.newImage, de lo contrario si image is ProServicioImageToUpdate entt image.newImage
+                                        ? ShowImage(
+                                            imageAsset: image
+                                                    is ProServicioImageToUpload
+                                                ? image.newImage
+                                                : image is ProServicioImageToUpdate
+                                                    ? image.newImage
+                                                    : null,
+                                            widthAsset: double.infinity,
                                           )
                                         : SizedBox.shrink()),
                             isChecked

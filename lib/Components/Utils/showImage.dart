@@ -1,32 +1,32 @@
 import 'dart:ffi';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ShowImage extends StatelessWidget {
-  const ShowImage({
-    super.key,
-    this.padding,
-    this.imageAsset,
-    this.networkImage,
-    this.height,
-    this.width,
-    this.heightAsset,
-    this.widthAsset,
-    this.fit,
-    this.color,
-    this.borderRadius,
-    this.heightNetwork,
-    this.widthNetWork
-  });
+  const ShowImage(
+      {super.key,
+      this.padding,
+      this.imageAsset,
+      this.networkImage,
+      this.height,
+      this.width,
+      this.heightAsset,
+      this.widthAsset,
+      this.fit,
+      this.color,
+      this.borderRadius,
+      this.heightNetwork,
+      this.widthNetWork});
 
   final EdgeInsets? padding;
   final Asset? imageAsset;
   final String? networkImage;
   final double? height;
   final double? width;
-  final int? heightAsset;
-  final int? widthAsset;
+  final double? heightAsset;
+  final double? widthAsset;
   final BoxFit? fit;
   final Color? color;
   final BorderRadius? borderRadius;
@@ -47,11 +47,7 @@ class ShowImage extends StatelessWidget {
           borderRadius:
               hasBorderRadius ? borderRadius! : BorderRadius.circular(0.0),
           child: imageAsset != null
-              ? AssetThumb(
-                  asset: imageAsset!,
-                  width: widthAsset ?? 0,
-                  height: heightAsset ?? 0,
-                )
+              ? showAssetImage(imageAsset!)
               : Image.network(
                   networkImage!,
                   width: widthNetWork,
@@ -60,6 +56,32 @@ class ShowImage extends StatelessWidget {
                 ),
         ),
       ),
+    );
+  }
+
+  Widget showAssetImage(Asset image) {
+    return FutureBuilder<ByteData>(
+      future: (() {
+        return image.getByteData();
+      })(),
+      builder: (BuildContext context, AsyncSnapshot<ByteData> snapshot) {
+        if (snapshot.hasData) {
+          final byteData = snapshot.data!;
+          final bytes = byteData.buffer.asUint8List();
+          return SizedBox(
+            width: widthAsset,
+            height: heightAsset,
+            child: Image.memory(
+              bytes,
+              fit: BoxFit.cover,
+            ),
+          );
+        } else if (snapshot.hasError) {
+          return const Text('Error al cargar la imagen');
+        } else {
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 }

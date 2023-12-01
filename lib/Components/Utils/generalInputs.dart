@@ -6,7 +6,8 @@ class GeneralInputs extends StatelessWidget {
     super.key,
     required this.controller,
     this.labelText,
-    required this.color,
+    this.color,
+    this.colorBorder,
     this.textLabelOutside,
     this.keyboardType,
     this.inputFormatters,
@@ -19,7 +20,8 @@ class GeneralInputs extends StatelessWidget {
 
   final TextEditingController controller;
   final String? labelText;
-  final Color color;
+  final Color? color;
+  final Color? colorBorder;
   final TextInputType? keyboardType;
   final String? textLabelOutside;
   final List<TextInputFormatter>? inputFormatters;
@@ -38,19 +40,24 @@ class GeneralInputs extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 4.5),
-            child: Text(
-              textLabelOutside ?? '',
-              style: TextStyle(
-                  color: Colors.black54, fontSize: 17.2, letterSpacing: 0.6),
-            ),
-          ),
+          textLabelOutside != '' && textLabelOutside != null
+              ? Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 4.5),
+                  child: Text(
+                    textLabelOutside!,
+                    style: TextStyle(
+                        color: Colors.black54,
+                        fontSize: 17.2,
+                        letterSpacing: 0.6),
+                  ),
+                )
+              : SizedBox.shrink(),
           Container(
             decoration: BoxDecoration(
                 color: color, // Cuadro blanco
                 borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(width: 1.0, color: Colors.grey.shade400)),
+                border: Border.all(
+                    width: 1.0, color: colorBorder ?? Colors.grey.shade400)),
             child: TextField(
               enabled: enable ?? true,
               controller: controller,
