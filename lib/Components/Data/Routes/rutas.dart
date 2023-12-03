@@ -1,5 +1,5 @@
 class MisRutas {
-  static String rutaPrincipal = 'http://192.168.68.104:3000/api';
+  static String rutaPrincipal = 'http://192.168.68.106:3000/api';
 
   // -- Demas rutas -- //
   static String rutaCategorias2 = '$rutaPrincipal/categorias';
@@ -73,4 +73,18 @@ class MisRutas {
   // Esta tabla contiene los nombres de las sub-categorias de servicios
   static String rutaSubCategoriaServicios =
       '$rutaPrincipal/subCategoriasServicios';
+
+  // -- Rutas para la tabla enlaceProductos -- //
+  static String rutaEnlaceProductos = '$rutaPrincipal/enlaceProducto';
+
+  // -- Rutas para la tabla enlaceServicios -- //
+  static String rutaEnlaceServicios = '$rutaPrincipal/enlaceServicio';
+
+  // -- Rutas para la tabla enlaceProductoImages -- //
+  static String rutaEnlaceProductosImage =
+      '$rutaPrincipal/enlaceProductoImages';
+
+  // -- Rutas para la tabla enlaceServiciosImages -- //
+  static String rutaEnlaceServiciosImage =
+      '$rutaPrincipal/enlaceServiciosImages';
 }

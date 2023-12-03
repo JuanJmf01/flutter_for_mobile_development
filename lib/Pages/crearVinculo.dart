@@ -1,6 +1,14 @@
+import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioCreacionTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioImagesDb.dart';
+import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
+import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
@@ -34,8 +42,57 @@ class _CrearVinculoState extends State<CrearVinculo> {
 
   dynamic selectedProServicio;
 
-  void guardar() {
-    print("Guardar");
+  void cargarImagenes(int idEnlaceProducto) async {
+    for (var imageToUpload in imagesToUpload) {
+      ImageStorageCreacionTb image = ImageStorageCreacionTb(
+        idUsuario: widget.idUsuario,
+        idProServicio: idEnlaceProducto,
+        newImageBytes: await assetToUint8List(imageToUpload.newImage),
+        fileName: 'enlaceProductos',
+        finalNameImage: imageToUpload.nombreImage,
+      );
+
+      String urlImage = await ProductImagesStorage.cargarImage(image);
+
+      EnlaceProServicioImagesCreacionTb enlaceProServicioImage =
+          EnlaceProServicioImagesCreacionTb(
+        idEnlaceProducto: idEnlaceProducto,
+        nombreImage: imageToUpload.nombreImage,
+        urlImage: urlImage,
+        width: imageToUpload.width,
+        height: imageToUpload.height,
+      );
+
+      EnlaceProServicioImagesDb.insertEnlaceProServicioImage(
+          enlaceProServicioImage);
+    }
+  }
+
+  void guardarEnlace() async {
+    final descripcion = _descripcionController.text;
+    int idProservicio = -1;
+    String url = '';
+    if (selectedProServicio is ProductoTb) {
+      idProservicio = selectedProServicio.idProducto;
+      url = MisRutas.rutaEnlaceProductos;
+    } else if (selectedProServicio is ServicioTb) {
+      idProservicio = selectedProServicio.idServicio;
+      url = MisRutas.rutaEnlaceServicios;
+    }
+
+    if (idProservicio != -1) {
+      EnlaceProServicioCreacionTb enlaceProducto = EnlaceProServicioCreacionTb(
+        idProServicio: idProservicio,
+        descripcion: descripcion,
+      );
+
+      int idEnlaceProducto = await EnlaceProServicioDb.insertEnlaceProServicio(
+          enlaceProducto, url);
+
+      cargarImagenes(idEnlaceProducto);
+    } else {
+      print("Error al asignar el idProServicio en enlaceProducto");
+    }
   }
 
   @override
@@ -81,7 +138,7 @@ class _CrearVinculoState extends State<CrearVinculo> {
                 GlobalTextButton(
                   onPressed: () {
                     if (isUserSignedIn && indicePagina == 2) {
-                      guardar();
+                      guardarEnlace();
                     } else {
                       setState(() {
                         indicePagina += 1;
@@ -248,7 +305,6 @@ class _CrearVinculoState extends State<CrearVinculo> {
 
   Widget paginaDos() {
     return Container(
-      
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(8.0),
