@@ -1,10 +1,9 @@
 class UsuarioTb {
-  final int idUsuario;
+  int idUsuario;
   String nombres;
   String? apellidos;
   String email;
   String? numeroCelular;
-  int? domiciliario; //bool (0 or 1)
 
   UsuarioTb({
     required this.idUsuario,
@@ -12,17 +11,15 @@ class UsuarioTb {
     this.apellidos,
     required this.email,
     this.numeroCelular,
-    this.domiciliario,
   });
 
-   factory UsuarioTb.fromJson(Map<String, dynamic> json) {
+  factory UsuarioTb.fromJson(Map<String, dynamic> json) {
     return UsuarioTb(
       idUsuario: json['idUsuario'],
       nombres: json['nombres'],
       apellidos: json['apellidos'],
       email: json['email'],
       numeroCelular: json['numeroCelular'],
-      domiciliario: json['domiciliario'],
     );
   }
 
@@ -33,10 +30,8 @@ class UsuarioTb {
       'apellidos': apellidos,
       'email': email,
       'numeroCelular': numeroCelular,
-      'domiciliario': domiciliario,
     };
   }
-
 }
 
 class UsuarioCreacionTb {

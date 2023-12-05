@@ -739,7 +739,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
 
     return SliverToBoxAdapter(
       child: Container(

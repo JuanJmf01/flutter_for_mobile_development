@@ -1,4 +1,4 @@
-import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioCreacionTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
@@ -7,7 +7,6 @@ import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioImagesDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
-import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
@@ -42,13 +41,16 @@ class _CrearVinculoState extends State<CrearVinculo> {
 
   dynamic selectedProServicio;
 
-  void cargarImagenes(int idEnlaceProducto) async {
+  void cargarImagenes(int idEnlaceProServicio, bool isProduct,
+      Type objectTypeEnlaceProducto) async {
+    String fileName = isProduct ? 'enlaceProductos' : 'enlaceServicios';
+
     for (var imageToUpload in imagesToUpload) {
       ImageStorageCreacionTb image = ImageStorageCreacionTb(
         idUsuario: widget.idUsuario,
-        idProServicio: idEnlaceProducto,
+        idProServicio: idEnlaceProServicio,
         newImageBytes: await assetToUint8List(imageToUpload.newImage),
-        fileName: 'enlaceProductos',
+        fileName: fileName,
         finalNameImage: imageToUpload.nombreImage,
       );
 
@@ -56,7 +58,7 @@ class _CrearVinculoState extends State<CrearVinculo> {
 
       EnlaceProServicioImagesCreacionTb enlaceProServicioImage =
           EnlaceProServicioImagesCreacionTb(
-        idEnlaceProducto: idEnlaceProducto,
+        idEnlaceProServicio: idEnlaceProServicio,
         nombreImage: imageToUpload.nombreImage,
         urlImage: urlImage,
         width: imageToUpload.width,
@@ -64,20 +66,22 @@ class _CrearVinculoState extends State<CrearVinculo> {
       );
 
       EnlaceProServicioImagesDb.insertEnlaceProServicioImage(
-          enlaceProServicioImage);
+          enlaceProServicioImage, objectTypeEnlaceProducto);
     }
   }
 
   void guardarEnlace() async {
     final descripcion = _descripcionController.text;
     int idProservicio = -1;
-    String url = '';
-    if (selectedProServicio is ProductoTb) {
+    bool isProduct = selectedProServicio is ProductoTb;
+    Type objectTypeEnlaceProducto;
+
+    if (isProduct) {
       idProservicio = selectedProServicio.idProducto;
-      url = MisRutas.rutaEnlaceProductos;
-    } else if (selectedProServicio is ServicioTb) {
+      objectTypeEnlaceProducto = ProductoTb;
+    } else {
       idProservicio = selectedProServicio.idServicio;
-      url = MisRutas.rutaEnlaceServicios;
+      objectTypeEnlaceProducto = ServicioTb;
     }
 
     if (idProservicio != -1) {
@@ -86,10 +90,11 @@ class _CrearVinculoState extends State<CrearVinculo> {
         descripcion: descripcion,
       );
 
-      int idEnlaceProducto = await EnlaceProServicioDb.insertEnlaceProServicio(
-          enlaceProducto, url);
+      int idEnlaceProServicio =
+          await EnlaceProServicioDb.insertEnlaceProServicio(
+              enlaceProducto, objectTypeEnlaceProducto);
 
-      cargarImagenes(idEnlaceProducto);
+      cargarImagenes(idEnlaceProServicio, isProduct, objectTypeEnlaceProducto);
     } else {
       print("Error al asignar el idProServicio en enlaceProducto");
     }

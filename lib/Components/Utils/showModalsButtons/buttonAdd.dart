@@ -28,7 +28,7 @@ class ButtonAdd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.only(

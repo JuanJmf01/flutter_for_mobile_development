@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:flutter/material.dart';
 
@@ -36,16 +34,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               icon: Icon(Icons.settings),
               onPressed: () {
                 showModalBottomSheet(
-                      isScrollControlled: true,
-                      context: context,
-                      builder: (BuildContext context) => ButtonMenu(),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10.0),
-                          topRight: Radius.circular(10.0),
-                        ),
-                      ),
-                    );
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (BuildContext context) => ButtonMenu(),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      topRight: Radius.circular(10.0),
+                    ),
+                  ),
+                );
               },
             ),
           )
@@ -86,7 +84,10 @@ class TiendasQueSigo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      children: [Historias(), PictureDescription()],
+      children: [
+        Historias(),
+        ShowEnlaces(),
+      ],
     );
   }
 }
@@ -130,63 +131,64 @@ class Historias extends StatelessWidget {
   }
 }
 
-class PictureDescription extends StatelessWidget {
-  const PictureDescription({super.key});
+class ShowEnlaces extends StatelessWidget {
+  const ShowEnlaces({super.key});
 
   @override
   Widget build(BuildContext context) {
-    String urlImage =
-        "https://www.panoramaweb.com.mx/u/fotografias/fotosnoticias/2022/8/25/35305.jpg";
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child: Container(
-        color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 45,
-                    width: 45,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.grey.shade200),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
-                    child: Text(
-                      'Bussines name',
-                      style: TextStyle(
-                          fontSize: 15.5, fontWeight: FontWeight.w500),
-                    ),
-                  )
-                ],
-              ),
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 0.0),
-                child: Text(
-                  'Lorem ipsum es el texto que se usa habitualmente en diseño gráfico en demostraciones de tipografías',
-                  style: TextStyle(fontSize: 16.3),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20.0, 10.0, 0.0, 0.0),
-                child: Container(
-                  width: 340,
-                  height: 320,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20.0),
-                      color: Colors.grey.shade200),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
+    return Text("Funciona ");
+    
+    
+    // Padding(
+    //   padding: const EdgeInsets.only(top: 10.0),
+    //   child: Container(
+    //     color: Colors.white,
+    //     child: Padding(
+    //       padding: const EdgeInsets.all(8.0),
+    //       child: Column(
+    //         children: [
+    //           Row(
+    //             children: [
+    //               Container(
+    //                 height: 45,
+    //                 width: 45,
+    //                 decoration: BoxDecoration(
+    //                     borderRadius: BorderRadius.circular(50.0),
+    //                     color: Colors.grey.shade200),
+    //               ),
+    //               const Padding(
+    //                 padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+    //                 child: Text(
+    //                   'Bussines name',
+    //                   style: TextStyle(
+    //                       fontSize: 15.5, fontWeight: FontWeight.w500),
+    //                 ),
+    //               )
+    //             ],
+    //           ),
+    //           const Padding(
+    //             padding: EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 0.0),
+    //             child: Text(
+    //               'Lorem ipsum es el texto que se usa habitualmente en diseño gráfico en demostraciones de tipografías',
+    //               style: TextStyle(fontSize: 16.3),
+    //             ),
+    //           ),
+    //           Padding(
+    //             padding: const EdgeInsets.fromLTRB(20.0, 10.0, 0.0, 0.0),
+    //             child: Container(
+    //               width: 340,
+    //               height: 320,
+    //               decoration: BoxDecoration(
+    //                   borderRadius: BorderRadius.circular(20.0),
+    //                   color: Colors.grey.shade200),
+    //             ),
+    //           )
+    //         ],
+    //       ),
+    //     ),
+    //   ),
+    // );
   }
 }
 

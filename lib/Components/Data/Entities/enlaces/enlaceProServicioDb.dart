@@ -1,13 +1,26 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioCreacionTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class EnlaceProServicioDb {
   static Future<int> insertEnlaceProServicio(
-      EnlaceProServicioCreacionTb enlaceProducto, String url) async {
+      EnlaceProServicioCreacionTb enlaceProducto, Type objectType) async {
     Dio dio = Dio();
-    Map<String, dynamic> data = enlaceProducto.toMap();
+
+    Map<String, dynamic> data = {};
+    String url = '';
+
+    if (objectType == ProductoTb) {
+      data = enlaceProducto.toMapEnlaceProducto();
+      url = MisRutas.rutaEnlaceProductos;
+    } else if (objectType == ServicioTb) {
+      data = enlaceProducto.toMapEnlaceServicio();
+      url = MisRutas.rutaEnlaceServicios;
+    }
 
     try {
       Response response = await dio.post(url,
@@ -28,6 +41,30 @@ class EnlaceProServicioDb {
     } catch (error) {
       print('Ha ocurrido un error $error');
       throw Exception('Error de conexión: $error');
+    }
+  }
+
+  static Future<List<EnlaceProservicioTb>> getAllEnlaceProServicios() async {
+    Dio dio = Dio();
+
+    String url = MisRutas.rutaEnlaceProductos;
+
+    try {
+      Response response = await dio.get(url,
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ));
+
+      if (response.statusCode == 200) {
+        List<EnlaceProservicioTb> enlaceProservicio = (response.data as List<dynamic>)
+            .map((data) => EnlaceProservicioTb.fromJsonEnlaceProducto(data))
+            .toList();
+        return enlaceProservicio;
+      } else {
+        throw Exception('Failed to fetch enlaceProServicios');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
     }
   }
 }

@@ -358,7 +358,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
   @override
   Widget build(BuildContext context) {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
 
     categoriasSeleccionadas =
         Provider.of<SubCategoriaSeleccionadaProvider>(context)

@@ -86,5 +86,5 @@ class MisRutas {
 
   // -- Rutas para la tabla enlaceServiciosImages -- //
   static String rutaEnlaceServiciosImage =
-      '$rutaPrincipal/enlaceServiciosImages';
+      '$rutaPrincipal/enlaceServicioImages';
 }

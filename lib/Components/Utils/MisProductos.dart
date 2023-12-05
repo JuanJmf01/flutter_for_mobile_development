@@ -175,7 +175,7 @@ class _IndividualProductState extends State<IndividualProduct> {
                                 TextStyle(
                                     fontWeight: FontWeight.w700,
                                     color: Colors.grey.shade500,
-                                    fontSize: 15),
+                                    fontSize: 17),
                               ),
                         )
                       : const SizedBox(),

@@ -5,21 +5,25 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 class UsuarioProvider extends ChangeNotifier {
-  int? _idUsuario;
-  late UsuarioTb _usuario;
+  int? _idUsuarioActual;
+  late UsuarioTb _usuarioActual;
 
-  int? get idUsuario => _idUsuario;
-  UsuarioTb get usuario => _usuario;
+  int? get idUsuarioActual => _idUsuarioActual;
+  UsuarioTb get usuarioActual => _usuarioActual;
 
-  Future<void> obtenerIdUsuario() async {
+  Future<void> obtenerIdUsuarioActual() async {
     print('se llama a obtenerIdUsuario');
     if (FirebaseAuth.instance.currentUser != null) {
       String? email = FirebaseAuth.instance.currentUser?.email;
       if (email != null) {
         try {
-          UsuarioTb usuario = await UsuarioDb.getUsuarioByCorreo(email);
-          _idUsuario = usuario.idUsuario;
-          _usuario = usuario;
+          UsuarioTb? usuario = await UsuarioDb.getUsuarioByCorreo(email);
+          if (usuario != null) {
+            _idUsuarioActual = usuario.idUsuario;
+            _usuarioActual = usuario;
+          } else {
+            print("IdUsuario es null en UsuarioProvider");
+          }
           notifyListeners();
         } catch (e) {
           // Manejo de errores

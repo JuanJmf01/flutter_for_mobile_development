@@ -308,7 +308,7 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
   @override
   Widget build(BuildContext context) {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
 
     categoriasDisponibles =
         Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;

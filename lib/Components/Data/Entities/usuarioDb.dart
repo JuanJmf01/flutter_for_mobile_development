@@ -16,7 +16,7 @@ class UsuarioDb {
     //Se convierte un usuario de tipo UsuarioCreacionTb a un tipo Map<String, dynamic>
     //De esta manera podemos convertirlo a un json ya que la api recibe en json
     Map<String, dynamic> data = usuario.toMap();
-    String url = '${MisRutas.rutaUsuarios}/insert';
+    String url = MisRutas.rutaUsuarios;
 
     try {
       Response response = await dio.post(
@@ -40,7 +40,7 @@ class UsuarioDb {
     }
   }
 
-  static Future<UsuarioTb> getUsuarioByCorreo(String correo) async {
+  static Future<UsuarioTb?> getUsuarioByCorreo(String correo) async {
     Dio dio = Dio();
     String url = MisRutas.rutaUsuarios;
 
@@ -62,6 +62,8 @@ class UsuarioDb {
       if (response.statusCode == 200) {
         UsuarioTb usuario = UsuarioTb.fromJson(response.data);
         return usuario;
+      }else if(response.statusCode == 404){
+        return null;
       } else {
         throw Exception('Error en la respuesta: ${response.statusCode}');
       }
@@ -73,16 +75,16 @@ class UsuarioDb {
   static Future<bool> ifExistsUserByEmail(String email) async {
     try {
       print('ifExistsUserByEmail llega aca');
-      UsuarioTb usuario = await getUsuarioByCorreo(email);
+      UsuarioTb? usuario = await getUsuarioByCorreo(email);
 
-      if (usuario.idUsuario != null) {
+      if (usuario != null) {
         return true;
       } else {
         return false;
       }
     } catch (error) {
       //throw Exception('Error en la respuesta: $error');
-      print('Error en la  respuesta ifExistUserByEmail');
+      print('Error en la  respuesta ifExistUserByEmail: $error');
       return false;
     }
   }

@@ -41,7 +41,7 @@ class _ProfileNavigatorState extends State<ProfileNavigator>
   @override
   Widget build(BuildContext context) {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
-    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
+    int? idUsuario = context.watch<UsuarioProvider>().idUsuarioActual;
 
     return Scaffold(
       backgroundColor: Colors.grey.shade200,

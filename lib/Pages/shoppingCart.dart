@@ -42,7 +42,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
     shoppingCartProducts =
         context.watch<ShoppingCartProvider>().shoppingCartProducts;
     return isLoading

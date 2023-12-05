@@ -116,7 +116,7 @@ class _MenuState extends State<Menu> {
   }
 
   Future<void> obtenerIdUsuarioAsincrono() async {
-    await context.read<UsuarioProvider>().obtenerIdUsuario();
+    await context.read<UsuarioProvider>().obtenerIdUsuarioActual();
   }
 
   @override
@@ -128,7 +128,7 @@ class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     bool isUserSignedIn = Provider.of<LoginProvider>(context).isUserSignedIn; //
-    int? idUsuario = context.watch<UsuarioProvider>().idUsuario;
+    int? idUsuario = context.watch<UsuarioProvider>().idUsuarioActual;
 
     return Scaffold(
         body: screens[_currentIndex],

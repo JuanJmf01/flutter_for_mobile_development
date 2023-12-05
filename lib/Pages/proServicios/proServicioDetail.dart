@@ -158,7 +158,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuario;
+    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalle del servicio'),
