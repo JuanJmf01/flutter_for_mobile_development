@@ -18,7 +18,7 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
-import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
+import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';

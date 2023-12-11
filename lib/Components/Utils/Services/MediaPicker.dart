@@ -22,8 +22,9 @@ Future<Asset?> getImageAsset() async {
   }
   return null;
 }
+
 //Future <List<Asset?>> getImagesAsset(List<Asset?> selectedImages) async {
-Future <List<Asset?>> getImagesAsset() async {
+Future<List<Asset?>> getImagesAsset() async {
   List<Asset> resultList = [];
 
   try {
@@ -32,7 +33,7 @@ Future <List<Asset?>> getImagesAsset() async {
       enableCamera: true, // Habilitar la opción de tomar fotos desde la cámara
       //selectedAssets: selectedImages, // Imágenes seleccionadas previamente
     );
-    if(resultList.isNotEmpty){
+    if (resultList.isNotEmpty) {
       return resultList;
     }
   } catch (e) {
@@ -40,4 +41,15 @@ Future <List<Asset?>> getImagesAsset() async {
   }
 
   return [];
+}
+
+Future<XFile?> pickVideo() async {
+  final picker = ImagePicker();
+  final XFile? media = await picker.pickVideo(source: ImageSource.gallery);
+
+  if (media != null) {
+    return XFile(media.path);
+  } else {
+    return null;
+  }
 }

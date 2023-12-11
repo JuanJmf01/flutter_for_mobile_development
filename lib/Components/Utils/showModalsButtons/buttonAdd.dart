@@ -2,7 +2,8 @@ import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
-import 'package:etfi_point/Pages/crearVinculo.dart';
+import 'package:etfi_point/Pages/enlaces/crearEnlace.dart';
+import 'package:etfi_point/Pages/crearReel.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,19 @@ class ButtonAdd extends StatelessWidget {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => CrearVinculo(
+            builder: (context) => CrearEnlace(
+                  idUsuario: idUsuario,
+                )));
+  }
+
+  void irANuevoReel(int idUsuario, BuildContext context) {
+    context
+        .read<ProServiciosProvider>()
+        .obtenerProServiciosByNegocio(idUsuario);
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => CrearReel(
                   idUsuario: idUsuario,
                 )));
   }
@@ -75,8 +88,8 @@ class ButtonAdd extends StatelessWidget {
           textItem: 'Nuevo servicio',
         ),
         ItemForModalButtons(
-          onPress: (){
-            if(idUsuario != null){
+          onPress: () {
+            if (idUsuario != null) {
               irANuevoVinculo(idUsuario, context);
             }
           },
@@ -86,7 +99,11 @@ class ButtonAdd extends StatelessWidget {
           textItem: 'Nuevo vinculo',
         ),
         ItemForModalButtons(
-          onPress: () {},
+          onPress: () {
+            if (idUsuario != null) {
+              irANuevoReel(idUsuario, context);
+            }
+          },
           padding: padding,
           icon: CupertinoIcons.rectangle_3_offgrid,
           colorIcon: colorIcons,

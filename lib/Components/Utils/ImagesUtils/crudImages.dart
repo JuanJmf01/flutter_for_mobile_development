@@ -1,6 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
-import 'package:etfi_point/Components/Utils/Services/selectImage.dart';
+import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 
