@@ -24,14 +24,13 @@ class _CrearReelState extends State<CrearReel> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final TextEditingController _descripcionController = TextEditingController();
 
-  late ChewieController? _chewieController;
+  VideoPlayerController? _controller;
+  XFile? reel;
 
   int indicePagina = 1;
 
   bool automaticallyImplyLeading = true;
   dynamic selectedProServicio;
-
-  XFile? reel;
 
   void updateSelectedProServicio(dynamic proServicio) {
     setState(() {
@@ -39,16 +38,19 @@ class _CrearReelState extends State<CrearReel> {
     });
   }
 
-  void _initializeChewieController(XFile videoFile) {
-    final videoPlayerController =
-        VideoPlayerController.file(File(videoFile.path));
-    _chewieController = ChewieController(
-      videoPlayerController: videoPlayerController,
-      aspectRatio: videoPlayerController.value.aspectRatio,
-      autoPlay: false, // Cambiar a true si deseas reproducción automática
-      looping: false, // Cambiar a true si deseas reproducción en bucle
-      allowFullScreen: true, // Permitir pantalla completa
-    );
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  Future<void> initializeVideo() async {
+    if (reel != null) {
+      _controller = VideoPlayerController.file(File(reel!.path));
+      await _controller?.initialize();
+      setState(() {});
+      _controller?.play();
+    }
   }
 
   @override
@@ -127,76 +129,105 @@ class _CrearReelState extends State<CrearReel> {
     return SingleChildScrollView(
       child: Container(
         color: Colors.white,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Container(
-                    height: 45,
-                    width: 45,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50.0),
-                        color: Colors.grey.shade200),
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Container(
+                  height: 45,
+                  width: 45,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(50.0),
+                    color: Colors.grey.shade200,
                   ),
-                  const Padding(
-                    padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
-                    child: Text(
-                      'Bussines name',
-                      style: TextStyle(
-                          fontSize: 15.5, fontWeight: FontWeight.w500),
-                    ),
-                  )
-                ],
-              ),
-              Padding(
-                  padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
-                  child: GeneralInputs(
-                    controller: _descripcionController,
-                    labelText: 'Agrega una descripción',
-                    colorBorder: Colors.transparent,
-                  )),
-              Padding(
-                padding: EdgeInsets.fromLTRB(
-                    30.0, 0.0, 0.0, reel != null ? 10.0 : 30.0),
-                child: reel != null
-                    ? _chewieController != null
-                        ? AspectRatio(
-                            aspectRatio: _chewieController!
-                                .videoPlayerController.value.aspectRatio,
-                            child: GestureDetector(
-                              onTap: () {
-                                _chewieController!.enterFullScreen();
-                              },
-                              child: Chewie(
-                                controller: _chewieController!,
-                              ),
-                            ),
-                          )
-                        : Container()
-                    : const SizedBox.shrink(),
-              ),
-              Align(
-                alignment: Alignment.centerRight,
-                child: GlobalTextButton(
-                  onPressed: () async {
-                    XFile? videoReel = await pickVideo();
-                    if (videoReel != null) {
-                      setState(() {
-                        reel = videoReel;
-                        _initializeChewieController(videoReel);
-                      });
-                    }
-                  },
-                  fontWeightTextButton: FontWeight.w700,
-                  letterSpacing: 0.7,
-                  fontSizeTextButton: 17.5,
-                  textButton: 'Agregar reel',
                 ),
-              )
-            ],
-          ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+                  child: Text(
+                    'Bussines name',
+                    style:
+                        TextStyle(fontSize: 15.5, fontWeight: FontWeight.w500),
+                  ),
+                )
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
+              child: GeneralInputs(
+                controller: _descripcionController,
+                labelText: 'Agrega una descripción',
+                colorBorder: Colors.transparent,
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                  30.0, 0.0, 0.0, reel != null ? 10.0 : 30.0),
+              child: reel != null
+                  ? _controller != null
+                      ? GestureDetector(
+                          onTap: () {
+                            if (_controller!.value.isPlaying) {
+                              _controller!.pause();
+                            } else {
+                              _controller!.play();
+                            }
+                          },
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              AspectRatio(
+                                aspectRatio:
+                                    _controller!.value.aspectRatio * 1.2,
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  child: Stack(
+                                    children: [
+                                      VideoPlayer(_controller!),
+                                      Align(
+                                        alignment: Alignment.bottomCenter,
+                                        child: VideoProgressIndicator(
+                                          _controller!,
+                                          allowScrubbing: true,
+                                          colors: VideoProgressColors(
+                                            playedColor: Colors.grey
+                                                .shade700, // Color de la parte ya reproducida
+                                            bufferedColor: Colors
+                                                .grey, // Color de la parte ya cargada pero no reproducida
+                                            backgroundColor: Colors
+                                                .transparent, // Color de fondo
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container()
+                  : const SizedBox.shrink(),
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: GlobalTextButton(
+                onPressed: () async {
+                  XFile? videoReel = await pickVideo();
+                  if (videoReel != null) {
+                    setState(() {
+                      reel = videoReel;
+                    });
+                    await initializeVideo();
+                  }
+                },
+                fontWeightTextButton: FontWeight.w700,
+                letterSpacing: 0.7,
+                fontSizeTextButton: 17.5,
+                textButton: 'Agregar reel',
+              ),
+            )
+          ],
         ),
       ),
     );
