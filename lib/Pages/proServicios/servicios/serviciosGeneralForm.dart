@@ -284,7 +284,7 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
         nombre: nombreServicio,
         descripcion: descripcion,
         precio: precio,
-        oferta: enOferta ?? 0,
+        oferta: enOferta,
         descuento: isChecked ? descuento : 0,
       );
 

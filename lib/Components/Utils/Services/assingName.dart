@@ -1,13 +1,13 @@
 import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'dart:math';
 
-String assingName(String imageName) {
+String assingName(String archivoName) {
   String finalNameImage;
 
   String currentDateTime = obtenerFechaHoraActual();
   String aleatorio = generarTextoAleatorio();
-  String nameImage = imageName.split('.').first;
-  String extension = imageName.split('.').last;
+  String nameImage = archivoName.split('.').first;
+  String extension = archivoName.split('.').last;
 
   print('aleatorio: $aleatorio');
 

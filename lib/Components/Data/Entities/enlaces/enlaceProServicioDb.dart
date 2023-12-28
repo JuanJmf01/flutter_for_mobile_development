@@ -44,6 +44,7 @@ class EnlaceProServicioDb {
     }
   }
 
+  // Aun no se esta utiliznado
   static Future<List<EnlaceProservicioTb>> getAllEnlaceProServicios() async {
     Dio dio = Dio();
 

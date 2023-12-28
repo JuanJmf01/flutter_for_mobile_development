@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 class UsuarioProvider extends ChangeNotifier {
+  // VERIFICAR LA OPCION DE UTILIZAR UNA VERIABLE ENTERA PARA ID NEGOCIO ACTUAL EN CASO DE QUE EL UISAURIO ACTUAL TENGA UN NEGOCIO
   int? _idUsuarioActual;
   late UsuarioTb _usuarioActual;
 

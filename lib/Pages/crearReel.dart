@@ -1,10 +1,18 @@
 import 'dart:io';
 
 import 'package:chewie/chewie.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/reelTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/reelDb.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
+import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
+import 'package:etfi_point/Pages/enlaces/cargarMediaDeEnlaces.dart';
 import 'package:etfi_point/Pages/enlaces/paginaUno.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -31,6 +39,56 @@ class _CrearReelState extends State<CrearReel> {
 
   bool automaticallyImplyLeading = true;
   dynamic selectedProServicio;
+
+  void guardarReel() async {
+    String descripcion = _descripcionController.text;
+    String fileName = '';
+    int idNewReel = -1;
+
+    if (selectedProServicio is ProductoTb) {
+      ProductEnlaceReelCreacionTb reel = ProductEnlaceReelCreacionTb(
+        idProducto: selectedProServicio.idProducto,
+        descripcion: descripcion,
+      );
+
+      fileName = 'enlaceProductReel';
+
+      idNewReel = await ReelDb.insertproductEnlaceReel(reel);
+    } else if (selectedProServicio is ServicioTb) {
+      ServiceEnlaceReelCreacionTb reel = ServiceEnlaceReelCreacionTb(
+        idServicio: selectedProServicio.idServicio,
+        descripcion: descripcion,
+      );
+      fileName = 'enlaceServiceReel';
+
+      idNewReel = await ReelDb.insertServiceEnlaceReel(reel);
+    } else if (selectedProServicio == null) {
+      int? idNegocio = await NegocioDb.checkBusinessExists(widget.idUsuario);
+      if (idNegocio != null) {
+        ReelCreacionTb reel = ReelCreacionTb(
+          idNegocio: idNegocio,
+          descripcion: descripcion,
+        );
+        idNewReel = await ReelDb.insertOnlyReel(reel);
+      }
+      fileName = 'onlyReel';
+    }
+
+    if (idNewReel != -1 && reel != null) {
+      String nombreReel = reel!.name;
+      String finalNameVideo = assingName(nombreReel);
+
+      VideoStorageCreacionTb video = VideoStorageCreacionTb(
+        idUsuario: widget.idUsuario,
+        idVideo: idNewReel,
+        video: reel!,
+        fileName: 'enlaceProductReel',
+        finalNameVideo: finalNameVideo,
+      );
+
+      CargarMediaDeEnlaces.uploadVideoAndGetURL(video);
+    }
+  }
 
   void updateSelectedProServicio(dynamic proServicio) {
     setState(() {
@@ -92,12 +150,7 @@ class _CrearReelState extends State<CrearReel> {
                 GlobalTextButton(
                   onPressed: () {
                     if (isUserSignedIn && indicePagina == 2) {
-                      // CargarMedia.guardarEnlace(
-                      //   _descripcionController,
-                      //   selectedProServicio,
-                      //   widget.idUsuario,
-                      //   imagesToUpload,
-                      // );
+                      guardarReel();
                       print("Guardar");
                     } else {
                       setState(() {

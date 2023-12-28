@@ -4,7 +4,7 @@ import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
-import 'package:etfi_point/Pages/enlaces/cargarMedia.dart';
+import 'package:etfi_point/Pages/enlaces/cargarMediaDeEnlaces.dart';
 import 'package:etfi_point/Pages/enlaces/paginaUno.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -76,7 +76,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
               GlobalTextButton(
                 onPressed: () {
                   if (isUserSignedIn && indicePagina == 2) {
-                    CargarMedia.guardarEnlace(
+                    CargarMediaDeEnlaces.guardarEnlace(
                       _descripcionController,
                       selectedProServicio,
                       widget.idUsuario,

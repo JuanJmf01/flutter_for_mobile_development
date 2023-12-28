@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'dart:typed_data';
+
+import 'package:image_picker/image_picker.dart';
 
 class ImageStorageTb {
   final int idUsuario;
@@ -48,5 +51,21 @@ class ImageStorageDeleteTb {
     required this.idUsuario,
     required this.nombreImagen,
     required this.idProServicio,
+  });
+}
+
+class VideoStorageCreacionTb {
+  final int idUsuario;
+  final int idVideo;
+  final XFile video;
+  final String fileName;
+  final String finalNameVideo;
+
+  VideoStorageCreacionTb({
+    required this.idUsuario,
+    required this.idVideo,
+    required this.video,
+    required this.fileName,
+    required this.finalNameVideo,
   });
 }
