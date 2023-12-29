@@ -1,26 +1,32 @@
 //Agregar id primary key
 class EnlaceProServicioImagesTb {
-  final int idEnlaceProServicio;
   final String nombreImage;
   final String urlImage;
   final double width;
   final double height;
 
   EnlaceProServicioImagesTb({
-    required this.idEnlaceProServicio,
     required this.nombreImage,
     required this.urlImage,
     required this.width,
     required this.height,
   });
 
-  factory EnlaceProServicioImagesTb.fromJson(Map<String, dynamic> json) {
+  factory EnlaceProServicioImagesTb.fromJsonEnlaceProducto(Map<String, dynamic> json) {
     return EnlaceProServicioImagesTb(
-      idEnlaceProServicio: json['idEnlaceProServicio'],
       nombreImage: json['nombreImage'],
       urlImage: json['urlImage'],
-      width: json['width'],
-      height: json['height'],
+      width: json['width'].toDouble(),
+      height: json['height'].toDouble(),
+    );
+  }
+
+  factory EnlaceProServicioImagesTb.fromJsonEnlaceServicio(Map<String, dynamic> json) {
+    return EnlaceProServicioImagesTb(
+      nombreImage: json['nombreImage'],
+      urlImage: json['urlImage'],
+      width: json['width'].toDouble(),
+      height: json['height'].toDouble(),
     );
   }
 }

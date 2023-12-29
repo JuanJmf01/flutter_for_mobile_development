@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:chewie/chewie.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/reelTb.dart';
@@ -82,7 +81,7 @@ class _CrearReelState extends State<CrearReel> {
         idUsuario: widget.idUsuario,
         idVideo: idNewReel,
         video: reel!,
-        fileName: 'enlaceProductReel',
+        fileName: fileName,
         finalNameVideo: finalNameVideo,
       );
 

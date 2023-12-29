@@ -4,6 +4,7 @@ import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaPr
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// Test here
 class CategoriaDb {
   static Future<List<CategoriaTb>> getAllCategorias(String url) async {
     Dio dio = Dio();
