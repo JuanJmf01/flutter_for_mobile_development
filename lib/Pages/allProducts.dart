@@ -1,6 +1,15 @@
+import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
+import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
+import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
+import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
+import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -28,6 +37,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         actions: [
           Container(
@@ -138,83 +148,85 @@ class Historias extends StatelessWidget {
   }
 }
 
-class NewsFeed extends StatelessWidget {
+class NewsFeed extends StatefulWidget {
   const NewsFeed({super.key});
+
+  @override
+  State<NewsFeed> createState() => _NewsFeedState();
+}
+
+class _NewsFeedState extends State<NewsFeed> {
+  void heart() {
+    print("Funciona");
+  }
+
+  void navigateToServiceOrProductDetail(Type objectType, int idProServicio) {
+    if (objectType == NewsFeedProductosTb) {
+      navigateToProductDetail(idProServicio);
+    } else if (objectType == NewsFeedServiciosTb) {
+      navigateToServiceDetail(idProServicio);
+    }
+  }
+
+  void navigateToServiceDetail(int idServicio) {
+    ServicioDb.getServicio(idServicio).then((servicio) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProServicioDetail(proServicio: servicio),
+        ),
+      );
+    });
+  }
+
+  void navigateToProductDetail(int idProducto) {
+    ProductoDb.getProducto(idProducto).then((producto) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProServicioDetail(proServicio: producto),
+        ),
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<NewsFeedTb>(
-        future: NewsFeedDb.getAllEnlaceProductos(),
+        future: NewsFeedDb.getAllEnlaces(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             NewsFeedTb newsFeed = snapshot.data!;
             List<NewsFeedItem> items = newsFeed.newsFeed;
             if (items.isNotEmpty) {
-              return ListView.builder(
-                shrinkWrap: true,
-                physics:
-                    const NeverScrollableScrollPhysics(), // Evita el desplazamiento independiente de este ListView
-                itemCount: items.length,
-                itemBuilder: (BuildContext context, int index) {
-                  NewsFeedItem item = items[index];
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(15.0, 0.0, 20.0, 0.0),
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  physics:
+                      const NeverScrollableScrollPhysics(), // Evita el desplazamiento independiente de este ListView
+                  itemCount: items.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    NewsFeedItem item = items[index];
 
-                  if (item is NeswFeedProductosTb) {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 10.0),
-                      child: Container(
-                        color: Colors.white,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    height: 45,
-                                    width: 45,
-                                    decoration: BoxDecoration(
-                                        borderRadius:
-                                            BorderRadius.circular(50.0),
-                                        color: Colors.grey.shade200),
-                                  ),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
-                                    child: Text(
-                                      'Bussines name',
-                                      style: TextStyle(
-                                          fontSize: 15.5,
-                                          fontWeight: FontWeight.w500),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              Padding(
-                                padding:
-                                    EdgeInsets.fromLTRB(20.0, 8.0, 0.0, 0.0),
-                                child: Text(
-                                  "Descripcion",
-                                  style: TextStyle(fontSize: 16.3),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.fromLTRB(
-                                    20.0, 10.0, 0.0, 0.0),
-                                child: Container(
-                                  width: 340,
-                                  height: 320,
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      color: Colors.grey.shade200),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                },
+                    if (item is NewsFeedProductosTb) {
+                      return contenidoEnlace(
+                        item.descripcion,
+                        item.enlaceProductoImages,
+                        item.idProducto,
+                        NewsFeedProductosTb,
+                      );
+                    } else if (item is NewsFeedServiciosTb) {
+                      return contenidoEnlace(
+                        item.descripcion,
+                        item.enlaceServicioImages,
+                        item.idServicio,
+                        NewsFeedServiciosTb,
+                      );
+                    }
+                    return null;
+                  },
+                ),
               );
             } else {
               return Text('La lista está vacía');
@@ -227,6 +239,95 @@ class NewsFeed extends StatelessWidget {
             );
           }
         });
+  }
+
+  Widget contenidoEnlace(
+      String descripcion,
+      List<EnlaceProServicioImagesTb> images,
+      int idProServicio,
+      Type objectType) {
+    double paddingImage = 22.0;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 40.0),
+      child: Padding(
+        padding: const EdgeInsets.all(0.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(50.0),
+                      color: Colors.grey.shade200),
+                ),
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+                  child: Text(
+                    'Bussines name',
+                    style:
+                        TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
+                  ),
+                )
+              ],
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
+              child: Text(
+                descripcion,
+                style: TextStyle(fontSize: 16.8),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(paddingImage, 10.0, 0.0, 0.0),
+              child: Container(
+                width: 355,
+                height: 345,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18.0),
+                    color: Colors.grey.shade200),
+                child: PageViewImagesScroll(images: images),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(paddingImage + 10.0, 10.0, 0.0, 0.0),
+              child: Row(
+                children: [
+                  iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
+                  iconWidget(CupertinoIcons.chat_bubble_text, heart,
+                      paddingLeft: 18.0, iconSize: 36),
+                  iconWidget(CupertinoIcons.share, heart,
+                      paddingLeft: 18.0, iconSize: 35.0),
+                  Spacer(),
+                  iconWidget(CupertinoIcons.arrow_turn_up_right, () {
+                    navigateToServiceOrProductDetail(objectType, idProServicio);
+                  }, paddingRight: 15.0),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget iconWidget(IconData icon, VoidCallback onPress,
+      {double? paddingRight, double? paddingLeft, double? iconSize}) {
+    return Padding(
+      padding:
+          EdgeInsets.only(right: paddingRight ?? 0.0, left: paddingLeft ?? 0.0),
+      child: IconButton(
+        icon: Icon(
+          icon,
+          size: iconSize ?? 38.0,
+          color: Colors.black87,
+        ),
+        onPressed: onPress,
+      ),
+    );
   }
 }
 

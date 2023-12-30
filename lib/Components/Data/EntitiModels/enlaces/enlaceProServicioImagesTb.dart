@@ -12,6 +12,9 @@ class EnlaceProServicioImagesTb {
     required this.height,
   });
 
+
+  // fromJsonEnlaceProducto y fromJsonEnlaceServicio son iguales. Verificar la necesidad de utilizar idEnlaceProducto y idEnlaceServicio respectivamente o utilizar un solo metodo de fabrica y no dos
+
   factory EnlaceProServicioImagesTb.fromJsonEnlaceProducto(Map<String, dynamic> json) {
     return EnlaceProServicioImagesTb(
       nombreImage: json['nombreImage'],

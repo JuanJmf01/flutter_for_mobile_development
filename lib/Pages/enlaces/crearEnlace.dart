@@ -3,6 +3,7 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
+import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/enlaces/cargarMediaDeEnlaces.dart';
 import 'package:etfi_point/Pages/enlaces/paginaUno.dart';
@@ -146,22 +147,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
                 padding: EdgeInsets.fromLTRB(
                     20.0, 0.0, 0.0, imagesToUpload.isNotEmpty ? 10.0 : 30.0),
                 child: imagesToUpload.isNotEmpty
-                    ? SizedBox(
-                        width: 360,
-                        height: 340,
-                        child: PageView.builder(
-                          itemCount: imagesToUpload.length,
-                          itemBuilder: (context, index) {
-                            final image = imagesToUpload[index];
-                            return ShowImage(
-                              imageAsset: image.newImage,
-                              borderRadius: BorderRadius.circular(20.0),
-                              heightAsset: 340,
-                              widthAsset: 360,
-                            );
-                          },
-                        ),
-                      )
+                    ? PageViewImagesScroll(images: imagesToUpload)
                     : const SizedBox.shrink()),
             Align(
               alignment: Alignment.centerRight,
