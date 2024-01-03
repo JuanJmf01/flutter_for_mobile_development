@@ -1,4 +1,5 @@
 import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/publicacionImagesTb.dart';
 
 class NewsFeedProductosTb extends NewsFeedItem {
   final int idEnlaceProducto;
@@ -108,52 +109,35 @@ class NeswFeedPublicacionesTb extends NewsFeedItem {
   final int idPublicacion;
   final int idNegocio;
   final String descripcion;
-  final List<EnlacePublicacionImagesTb> enlacePublicacionImages;
+  final String fechaCreacion;
+  final List<PublicacionImagesTb> enlacePublicacionImages;
   //final List<RatingsEnlacePublicacionTb> ratingsEnlacePublicacion;
 
   NeswFeedPublicacionesTb({
     required this.idPublicacion,
     required this.idNegocio,
     required this.descripcion,
+    required this.fechaCreacion,
     required this.enlacePublicacionImages,
     //required this.ratingsEnlacePublicacion,
   });
 
   factory NeswFeedPublicacionesTb.fromJson(Map<String, dynamic> json) {
-    List<EnlacePublicacionImagesTb> enlacePublicacionImagesList = [];
-    if (json['enlacePublicacionImages'] != null) {
-      var enlacepublicacionImagesJson = json['enlacePublicacionImages'] as List;
+    List<PublicacionImagesTb> enlacePublicacionImagesList = [];
+    if (json['publicacionImages'] != null) {
+      var enlacepublicacionImagesJson = json['publicacionImages'] as List;
       enlacePublicacionImagesList = enlacepublicacionImagesJson
           .map((enlacePublicacionImage) =>
-              EnlacePublicacionImagesTb.fromJson(enlacePublicacionImage))
+              PublicacionImagesTb.fromJson(enlacePublicacionImage))
           .toList();
     }
 
     return NeswFeedPublicacionesTb(
-      idPublicacion: json['idEnlaceServicio'],
-      idNegocio: json['idServicio'],
+      idPublicacion: json['idPublicacion'],
+      idNegocio: json['idNegocio'],
       descripcion: json['descripcion'],
+      fechaCreacion: json['fechaCreacion'],
       enlacePublicacionImages: enlacePublicacionImagesList,
-    );
-  }
-}
-
-class EnlacePublicacionImagesTb {
-  final int idPublicacion;
-  final String nombreImage;
-  final String urlImage;
-
-  EnlacePublicacionImagesTb({
-    required this.idPublicacion,
-    required this.nombreImage,
-    required this.urlImage,
-  });
-
-  factory EnlacePublicacionImagesTb.fromJson(Map<String, dynamic> json) {
-    return EnlacePublicacionImagesTb(
-      idPublicacion: json['idEnlaceServicio'],
-      nombreImage: json['nombreImage'],
-      urlImage: json['urlImage'],
     );
   }
 }
@@ -171,6 +155,40 @@ class EnlacePublicacionImagesTb {
 //     required this.likes,
 //   });
 // }
+
+class NeswFeedReelProServicioTb extends NewsFeedItem {
+  final int idProServicio;
+  final String urlReel;
+  final String descripcion;
+  final String fechaCreacion;
+
+  NeswFeedReelProServicioTb({
+    required this.idProServicio,
+    required this.urlReel,
+    required this.descripcion,
+    required this.fechaCreacion,
+  });
+
+  factory NeswFeedReelProServicioTb.fromJsonReelProducto(
+      Map<String, dynamic> json) {
+    return NeswFeedReelProServicioTb(
+      idProServicio: json['idProducto'],
+      urlReel: json['urlReel'],
+      descripcion: json['descripcion'],
+      fechaCreacion: json['fechaCreacion'],
+    );
+  }
+
+  factory NeswFeedReelProServicioTb.fromJsonReelServicio(
+      Map<String, dynamic> json) {
+    return NeswFeedReelProServicioTb(
+      idProServicio: json['idServicio'],
+      urlReel: json['urlReel'],
+      descripcion: json['descripcion'],
+      fechaCreacion: json['fechaCreacion'],
+    );
+  }
+}
 
 class NewsFeedTb {
   final List<NewsFeedItem> newsFeed;

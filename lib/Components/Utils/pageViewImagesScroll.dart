@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/publicacionImagesTb.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +25,8 @@ class PageViewImagesScroll extends StatelessWidget {
                   heightAsset: 340,
                   widthAsset: 360,
                 )
-              : image is EnlaceProServicioImagesTb
+              : image is EnlaceProServicioImagesTb ||
+                      image is PublicacionImagesTb
                   ? ShowImage(
                       networkImage: image.urlImage,
                       borderRadius: BorderRadius.circular(18.0),

@@ -13,6 +13,7 @@ import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Pages/enlaces/cargarMediaDeEnlaces.dart';
 import 'package:etfi_point/Pages/enlaces/paginaUno.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -34,58 +35,61 @@ class _CrearReelState extends State<CrearReel> {
   VideoPlayerController? _controller;
   XFile? reel;
 
-  int indicePagina = 1;
-
-  bool automaticallyImplyLeading = true;
   dynamic selectedProServicio;
 
   void guardarReel() async {
     String descripcion = _descripcionController.text;
     String fileName = '';
-    int idNewReel = -1;
 
-    if (selectedProServicio is ProductoTb) {
-      ProductEnlaceReelCreacionTb reel = ProductEnlaceReelCreacionTb(
-        idProducto: selectedProServicio.idProducto,
-        descripcion: descripcion,
-      );
+    fileName = selectedProServicio is ProductoTb
+        ? 'enlaceProductReel'
+        : selectedProServicio is ServicioTb
+            ? 'enlaceServiceReel'
+            : 'onlyReel';
 
-      fileName = 'enlaceProductReel';
-
-      idNewReel = await ReelDb.insertproductEnlaceReel(reel);
-    } else if (selectedProServicio is ServicioTb) {
-      ServiceEnlaceReelCreacionTb reel = ServiceEnlaceReelCreacionTb(
-        idServicio: selectedProServicio.idServicio,
-        descripcion: descripcion,
-      );
-      fileName = 'enlaceServiceReel';
-
-      idNewReel = await ReelDb.insertServiceEnlaceReel(reel);
-    } else if (selectedProServicio == null) {
-      int? idNegocio = await NegocioDb.checkBusinessExists(widget.idUsuario);
-      if (idNegocio != null) {
-        ReelCreacionTb reel = ReelCreacionTb(
-          idNegocio: idNegocio,
-          descripcion: descripcion,
-        );
-        idNewReel = await ReelDb.insertOnlyReel(reel);
-      }
-      fileName = 'onlyReel';
-    }
-
-    if (idNewReel != -1 && reel != null) {
+    if (reel != null) {
       String nombreReel = reel!.name;
       String finalNameVideo = assingName(nombreReel);
 
       VideoStorageCreacionTb video = VideoStorageCreacionTb(
         idUsuario: widget.idUsuario,
-        idVideo: idNewReel,
         video: reel!,
         fileName: fileName,
         finalNameVideo: finalNameVideo,
       );
 
-      CargarMediaDeEnlaces.uploadVideoAndGetURL(video);
+      String urlReel = await CargarMediaDeEnlaces.uploadVideoAndGetURL(video);
+
+      if (selectedProServicio is ProductoTb) {
+        ProductEnlaceReelCreacionTb reel = ProductEnlaceReelCreacionTb(
+          idProducto: selectedProServicio.idProducto,
+          urlReel: urlReel,
+          nombreReel: nombreReel,
+          descripcion: descripcion,
+        );
+
+        ReelDb.insertproductEnlaceReel(reel);
+      } else if (selectedProServicio is ServicioTb) {
+        ServiceEnlaceReelCreacionTb reel = ServiceEnlaceReelCreacionTb(
+          idServicio: selectedProServicio.idServicio,
+          urlReel: urlReel,
+          nombreReel: nombreReel,
+          descripcion: descripcion,
+        );
+
+        ReelDb.insertServiceEnlaceReel(reel);
+      } else if (selectedProServicio == null) {
+        int? idNegocio = await NegocioDb.checkBusinessExists(widget.idUsuario);
+        if (idNegocio != null) {
+          ReelCreacionTb reel = ReelCreacionTb(
+            idNegocio: idNegocio,
+            urlReel: urlReel,
+            nombreReel: nombreReel,
+          );
+          ReelDb.insertOnlyReel(reel);
+        }
+        fileName = 'onlyReel';
+      }
     }
   }
 
@@ -118,66 +122,35 @@ class _CrearReelState extends State<CrearReel> {
     double letterSpacing = 0.3;
 
     return GestureDetector(
-        onTap: () {
-          _focusScopeNode.unfocus();
-        },
-        child: Scaffold(
-          appBar: AppBar(
+      onTap: () {
+        _focusScopeNode.unfocus();
+      },
+      child: Scaffold(
+        appBar: AppBar(
             backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
             iconTheme: IconThemeData(color: Colors.black, size: 25),
             toolbarHeight: 60,
-            automaticallyImplyLeading: automaticallyImplyLeading,
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                indicePagina == 1
-                    ? const Text(
-                        "Crear vinculo",
-                        style: TextStyle(color: Colors.black),
-                      )
-                    : GlobalTextButton(
-                        onPressed: () {
-                          setState(() {
-                            indicePagina -= 1;
-                            automaticallyImplyLeading = true;
-                          });
-                        },
-                        textButton: "Atras",
-                        fontSizeTextButton: fontSize,
-                        letterSpacing: letterSpacing,
-                      ),
-                GlobalTextButton(
-                  onPressed: () {
-                    if (isUserSignedIn && indicePagina == 2) {
-                      guardarReel();
-                      print("Guardar");
-                    } else {
-                      setState(() {
-                        indicePagina += 1;
-                        automaticallyImplyLeading = false;
-                      });
-                      print("Siguiente");
-                    }
-                  },
-                  textButton: indicePagina == 1 ? 'Siguiente' : 'Guardar',
-                  fontSizeTextButton: fontSize,
-                  letterSpacing: letterSpacing,
-                )
-              ],
-            ),
-          ),
-          backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
-          body: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: indicePagina == 1
-                  ? PaginaUno(
-                      callback: updateSelectedProServicio,
-                    )
-                  : paginaDos()),
-        ));
+            //automaticallyImplyLeading: automaticallyImplyLeading,
+            title: GlobalTextButton(
+              onPressed: () {
+                if (isUserSignedIn) {
+                  guardarReel();
+                }
+              },
+              textButton: 'Guardar',
+              fontSizeTextButton: fontSize,
+              letterSpacing: letterSpacing,
+            )),
+        backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
+        body: Padding(
+          padding: EdgeInsets.all(8.0),
+          child: paginaPrincipal(),
+        ),
+      ),
+    );
   }
 
-  Widget paginaDos() {
+  Widget paginaPrincipal() {
     return SingleChildScrollView(
       child: Container(
         color: Colors.white,
@@ -259,26 +232,113 @@ class _CrearReelState extends State<CrearReel> {
                           ),
                         )
                       : Container()
-                  : const SizedBox.shrink(),
+                  : GestureDetector(
+                      onTap: () async {
+                        XFile? videoReel = await pickVideo();
+                        if (videoReel != null) {
+                          setState(() {
+                            reel = videoReel;
+                          });
+                          await initializeVideo();
+                        }
+                      },
+                      child: Container(
+                        height: 470.0,
+                        width: double.infinity,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(20.0),
+                          border: Border.all(
+                            width: 1.0,
+                            color: Colors.grey.shade400,
+                          ),
+                        ),
+                        child: const Icon(CupertinoIcons.add),
+                      ),
+                    ),
             ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: GlobalTextButton(
-                onPressed: () async {
-                  XFile? videoReel = await pickVideo();
-                  if (videoReel != null) {
-                    setState(() {
-                      reel = videoReel;
-                    });
-                    await initializeVideo();
-                  }
-                },
-                fontWeightTextButton: FontWeight.w700,
-                letterSpacing: 0.7,
-                fontSizeTextButton: 17.5,
-                textButton: 'Agregar reel',
+
+            Padding(
+              padding: const EdgeInsets.only(top: 20.0),
+              child: Column(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PaginaUno(callback: updateSelectedProServicio),
+                        ),
+                      );
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(
+                          CupertinoIcons.link_circle,
+                          size: 30.0,
+                        ),
+                        GlobalTextButton(
+                          textButton: "Agregar enlace",
+                          fontSizeTextButton: 19.0,
+                          color: Colors.black,
+                        ),
+                        Spacer(),
+                        const Icon(
+                          CupertinoIcons.forward,
+                          size: 30.0,
+                        ),
+                      ],
+                    ),
+                  ),
+                  selectedProServicio != null
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            selectedProServicio is ServicioTb ||
+                                    selectedProServicio is ProductoTb
+                                ? Text(
+                                    selectedProServicio.nombre,
+                                    style: TextStyle(
+                                        fontSize: 15.5,
+                                        fontWeight: FontWeight.w500),
+                                  )
+                                : const SizedBox.shrink(),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  selectedProServicio = null;
+                                });
+                              },
+                              child: Icon(
+                                CupertinoIcons.xmark,
+                                size: 19.0,
+                              ),
+                            )
+                          ],
+                        )
+                      : const SizedBox.shrink()
+                ],
               ),
             )
+            // Align(
+            //   alignment: Alignment.centerRight,
+            //   child: GlobalTextButton(
+            //     onPressed: () async {
+            //       XFile? videoReel = await pickVideo();
+            //       if (videoReel != null) {
+            //         setState(() {
+            //           reel = videoReel;
+            //         });
+            //         await initializeVideo();
+            //       }
+            //     },
+            //     fontWeightTextButton: FontWeight.w700,
+            //     letterSpacing: 0.7,
+            //     fontSizeTextButton: 17.5,
+            //     textButton: 'Agregar reel',
+            //   ),
+            // )
           ],
         ),
       ),

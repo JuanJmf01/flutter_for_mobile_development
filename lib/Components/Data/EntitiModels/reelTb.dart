@@ -1,11 +1,13 @@
 class ReelCreacionTb {
   final int idNegocio;
-  final String? urlReel;
+  final String urlReel;
+  final String nombreReel;
   final String? descripcion;
 
   ReelCreacionTb({
     required this.idNegocio,
-    this.urlReel,
+    required this.urlReel,
+    required this.nombreReel,
     this.descripcion,
   });
 
@@ -13,20 +15,22 @@ class ReelCreacionTb {
     return {
       'idNegocio': idNegocio,
       'urlReel': urlReel,
+      'nombreReel': nombreReel,
       'descripcion': descripcion,
     };
   }
 }
 
-
 class ProductEnlaceReelCreacionTb {
   final int idProducto;
-  final String? urlReel;
+  final String urlReel;
+  final String nombreReel;
   final String? descripcion;
 
   ProductEnlaceReelCreacionTb({
     required this.idProducto,
-    this.urlReel,
+    required this.urlReel,
+    required this.nombreReel,
     this.descripcion,
   });
 
@@ -34,6 +38,7 @@ class ProductEnlaceReelCreacionTb {
     return {
       'idProducto': idProducto,
       'urlReel': urlReel,
+      'nombreReel': nombreReel,
       'descripcion': descripcion,
     };
   }
@@ -41,12 +46,14 @@ class ProductEnlaceReelCreacionTb {
 
 class ServiceEnlaceReelCreacionTb {
   final int idServicio;
-  final String? urlReel;
+  final String urlReel;
+  final String nombreReel;
   final String? descripcion;
 
   ServiceEnlaceReelCreacionTb({
     required this.idServicio,
-    this.urlReel,
+    required this.urlReel,
+    required this.nombreReel,
     this.descripcion,
   });
 
@@ -54,8 +61,8 @@ class ServiceEnlaceReelCreacionTb {
     return {
       'idServicio': idServicio,
       'urlReel': urlReel,
+      'nombreReel': nombreReel,
       'descripcion': descripcion,
     };
   }
 }
-

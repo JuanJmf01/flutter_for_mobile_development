@@ -89,7 +89,17 @@ class MisRutas {
       '$rutaPrincipal/enlaceServicioImages';
 
   // -- Rutas para la tabla reels -- //
-  static String rutaProductEnlaceReels = '$rutaPrincipal/productEnlaceReels';
-  static String rutaServiceEnlaceReels = '$rutaPrincipal/serviceEnlaceReels';
   static String rutaOnlyReels = '$rutaPrincipal/onlyReel';
+
+  // -- Rutas para la tabla publicaciones -- //
+  static String rutaPublicaciones = '$rutaPrincipal/publicaciones';
+
+  // -- Rutas para la tabla publicacionImages -- //
+  static String rutaPublicacionImages = '$rutaPrincipal/publicacionImages';
+
+  // -- Rutas para la tabla serviceEnlaceReels -- //
+  static String rutaServiceEnlaceReels = '$rutaPrincipal/serviceEnlaceReels';
+
+  // -- Rutas para la tabla productEnlaceReels -- //
+  static String rutaProductEnlaceReels = '$rutaPrincipal/productEnlaceReels';
 }

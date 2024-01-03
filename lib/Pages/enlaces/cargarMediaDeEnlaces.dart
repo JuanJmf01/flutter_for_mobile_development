@@ -94,14 +94,13 @@ class CargarMediaDeEnlaces {
 
     String fileName = video.fileName;
     int idUsuario = video.idUsuario;
-    int idFile = video.idVideo;
 
     // Convertir XFile a File
     File videoFile = File(video.video.path);
 
     Reference ref = storage
         .ref()
-        .child('videos/$idUsuario/$fileName/$idFile')
+        .child('videos/$idUsuario/$fileName')
         .child(video.finalNameVideo);
 
     UploadTask uploadTask = ref.putFile(videoFile);

@@ -1,6 +1,7 @@
 import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/publicacionImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
@@ -193,7 +194,7 @@ class _NewsFeedState extends State<NewsFeed> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<NewsFeedTb>(
-        future: NewsFeedDb.getAllEnlaces(),
+        future: NewsFeedDb.getAllNewsFeed(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             NewsFeedTb newsFeed = snapshot.data!;
@@ -213,15 +214,21 @@ class _NewsFeedState extends State<NewsFeed> {
                       return contenidoEnlace(
                         item.descripcion,
                         item.enlaceProductoImages,
-                        item.idProducto,
                         NewsFeedProductosTb,
+                        idProServicio: item.idProducto,
                       );
                     } else if (item is NewsFeedServiciosTb) {
                       return contenidoEnlace(
                         item.descripcion,
                         item.enlaceServicioImages,
-                        item.idServicio,
                         NewsFeedServiciosTb,
+                        idProServicio: item.idServicio,
+                      );
+                    } else if (item is NeswFeedPublicacionesTb) {
+                      return contenidoEnlace(
+                        item.descripcion,
+                        item.enlacePublicacionImages,
+                        NeswFeedPublicacionesTb,
                       );
                     }
                     return null;
@@ -242,11 +249,12 @@ class _NewsFeedState extends State<NewsFeed> {
   }
 
   Widget contenidoEnlace(
-      String descripcion,
-      List<EnlaceProServicioImagesTb> images,
-      int idProServicio,
-      Type objectType) {
+      String descripcion, List<dynamic> images, Type objectType,
+      {int? idProServicio}) {
     double paddingImage = 22.0;
+    // if (images[0] is PublicacionImagesTb) {
+    //   print("Funciona ${images[0].urlImage}");
+    // }
 
     return Padding(
       padding: const EdgeInsets.only(top: 40.0),
@@ -293,18 +301,23 @@ class _NewsFeedState extends State<NewsFeed> {
               ),
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(paddingImage + 10.0, 10.0, 0.0, 0.0),
+              padding: EdgeInsets.fromLTRB(paddingImage + 10.0, 5.0, 0.0, 0.0),
               child: Row(
                 children: [
                   iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
                   iconWidget(CupertinoIcons.chat_bubble_text, heart,
-                      paddingLeft: 18.0, iconSize: 36),
+                      paddingLeft: 10.0, iconSize: 35),
                   iconWidget(CupertinoIcons.share, heart,
-                      paddingLeft: 18.0, iconSize: 35.0),
+                      paddingLeft: 10.0, iconSize: 34.0),
                   Spacer(),
-                  iconWidget(CupertinoIcons.arrow_turn_up_right, () {
-                    navigateToServiceOrProductDetail(objectType, idProServicio);
-                  }, paddingRight: 15.0),
+                  idProServicio != null
+                      ? iconWidget(CupertinoIcons.arrow_turn_up_right, () {
+                          navigateToServiceOrProductDetail(
+                            objectType,
+                            idProServicio,
+                          );
+                        }, paddingRight: 15.0)
+                      : SizedBox.shrink()
                 ],
               ),
             )
@@ -322,7 +335,7 @@ class _NewsFeedState extends State<NewsFeed> {
       child: IconButton(
         icon: Icon(
           icon,
-          size: iconSize ?? 38.0,
+          size: iconSize ?? 37.0,
           color: Colors.black87,
         ),
         onPressed: onPress,

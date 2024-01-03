@@ -56,14 +56,12 @@ class ImageStorageDeleteTb {
 
 class VideoStorageCreacionTb {
   final int idUsuario;
-  final int idVideo;
   final XFile video;
   final String fileName;
   final String finalNameVideo;
 
   VideoStorageCreacionTb({
     required this.idUsuario,
-    required this.idVideo,
     required this.video,
     required this.fileName,
     required this.finalNameVideo,

@@ -4,7 +4,7 @@ class GlobalTextButton extends StatelessWidget {
   const GlobalTextButton({
     super.key,
     this.padding,
-    required this.onPressed,
+    this.onPressed,
     required this.textButton,
     this.color,
     this.fontSizeTextButton,
@@ -13,7 +13,7 @@ class GlobalTextButton extends StatelessWidget {
   });
 
   final EdgeInsets? padding;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String textButton;
   final Color? color;
   final double? fontSizeTextButton;
