@@ -321,24 +321,6 @@ class _CrearReelState extends State<CrearReel> {
                 ],
               ),
             )
-            // Align(
-            //   alignment: Alignment.centerRight,
-            //   child: GlobalTextButton(
-            //     onPressed: () async {
-            //       XFile? videoReel = await pickVideo();
-            //       if (videoReel != null) {
-            //         setState(() {
-            //           reel = videoReel;
-            //         });
-            //         await initializeVideo();
-            //       }
-            //     },
-            //     fontWeightTextButton: FontWeight.w700,
-            //     letterSpacing: 0.7,
-            //     fontSizeTextButton: 17.5,
-            //     textButton: 'Agregar reel',
-            //   ),
-            // )
           ],
         ),
       ),

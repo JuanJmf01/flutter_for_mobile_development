@@ -4,7 +4,7 @@ import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart'
 import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonAdd.dart';
-import 'package:etfi_point/Pages/allProducts.dart';
+import 'package:etfi_point/Pages/newsFeed.dart';
 import 'package:etfi_point/Pages/filtros.dart';
 import 'package:etfi_point/Pages/perfilPrincipal.dart';
 import 'package:etfi_point/Pages/shoppingCart.dart';

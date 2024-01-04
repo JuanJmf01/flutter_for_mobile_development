@@ -1,14 +1,10 @@
-import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/publicacionImagesTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
-import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
+import 'package:etfi_point/Components/Utils/showVideo.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -157,14 +153,19 @@ class NewsFeed extends StatefulWidget {
 }
 
 class _NewsFeedState extends State<NewsFeed> {
+  double paddingTopEachPublicacion = 40.0;
+  double paddingMedia = 22.0;
+
   void heart() {
     print("Funciona");
   }
 
   void navigateToServiceOrProductDetail(Type objectType, int idProServicio) {
-    if (objectType == NewsFeedProductosTb) {
+    if (objectType == NewsFeedProductosTb ||
+        objectType == NeswFeedReelProductTb) {
       navigateToProductDetail(idProServicio);
-    } else if (objectType == NewsFeedServiciosTb) {
+    } else if (objectType == NewsFeedServiciosTb ||
+        objectType == NeswFeedReelServiceTb) {
       navigateToServiceDetail(idProServicio);
     }
   }
@@ -211,24 +212,44 @@ class _NewsFeedState extends State<NewsFeed> {
                     NewsFeedItem item = items[index];
 
                     if (item is NewsFeedProductosTb) {
-                      return contenidoEnlace(
-                        item.descripcion,
+                      return contenidoImages(
+                        item.descripcion ?? '',
                         item.enlaceProductoImages,
                         NewsFeedProductosTb,
                         idProServicio: item.idProducto,
                       );
                     } else if (item is NewsFeedServiciosTb) {
-                      return contenidoEnlace(
-                        item.descripcion,
+                      return contenidoImages(
+                        item.descripcion ?? '',
                         item.enlaceServicioImages,
                         NewsFeedServiciosTb,
                         idProServicio: item.idServicio,
                       );
                     } else if (item is NeswFeedPublicacionesTb) {
-                      return contenidoEnlace(
-                        item.descripcion,
+                      return contenidoImages(
+                        item.descripcion ?? '',
                         item.enlacePublicacionImages,
                         NeswFeedPublicacionesTb,
+                      );
+                    } else if (item is NeswFeedReelProductTb) {
+                      return contenidoReels(
+                        item.descripcion ?? '',
+                        item.urlReel,
+                        NeswFeedReelProductTb,
+                        idProServicio: item.idProducto,
+                      );
+                    } else if (item is NeswFeedReelServiceTb) {
+                      return contenidoReels(
+                        item.descripcion ?? '',
+                        item.urlReel,
+                        NeswFeedReelServiceTb,
+                        idProServicio: item.idServicio,
+                      );
+                    } else if (item is NeswFeedOnlyReelTb) {
+                      return contenidoReels(
+                        item.descripcion ?? '',
+                        item.urlReel,
+                        NeswFeedOnlyReelTb,
                       );
                     }
                     return null;
@@ -248,82 +269,82 @@ class _NewsFeedState extends State<NewsFeed> {
         });
   }
 
-  Widget contenidoEnlace(
+  Widget contenidoImages(
       String descripcion, List<dynamic> images, Type objectType,
       {int? idProServicio}) {
-    double paddingImage = 22.0;
     // if (images[0] is PublicacionImagesTb) {
     //   print("Funciona ${images[0].urlImage}");
     // }
 
     return Padding(
-      padding: const EdgeInsets.only(top: 40.0),
-      child: Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+      padding: EdgeInsets.only(top: paddingTopEachPublicacion),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          //Contenido parte superior de cada publicacion
+          contenidoParteSuperior(),
+          Padding(
+            padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
+            child: Text(
+              descripcion,
+              style: TextStyle(fontSize: 16.8),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(paddingMedia, 10.0, 0.0, 0.0),
+            child: Container(
+              width: 355,
+              height: 345,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18.0),
+                  color: Colors.grey.shade200),
+              child: PageViewImagesScroll(images: images),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(paddingMedia + 10.0, 5.0, 0.0, 0.0),
+            child: Row(
               children: [
-                Container(
-                  height: 50,
-                  width: 50,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50.0),
-                      color: Colors.grey.shade200),
-                ),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
-                  child: Text(
-                    'Bussines name',
-                    style:
-                        TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
-                  ),
-                )
+                iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
+                iconWidget(CupertinoIcons.chat_bubble_text, heart,
+                    paddingLeft: 10.0, iconSize: 35),
+                iconWidget(CupertinoIcons.share, heart,
+                    paddingLeft: 10.0, iconSize: 34.0),
+                Spacer(),
+                idProServicio != null
+                    ? iconWidget(CupertinoIcons.arrow_turn_up_right, () {
+                        navigateToServiceOrProductDetail(
+                          objectType,
+                          idProServicio,
+                        );
+                      }, paddingRight: 15.0)
+                    : SizedBox.shrink()
               ],
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
-              child: Text(
-                descripcion,
-                style: TextStyle(fontSize: 16.8),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(paddingImage, 10.0, 0.0, 0.0),
-              child: Container(
-                width: 355,
-                height: 345,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(18.0),
-                    color: Colors.grey.shade200),
-                child: PageViewImagesScroll(images: images),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(paddingImage + 10.0, 5.0, 0.0, 0.0),
-              child: Row(
-                children: [
-                  iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
-                  iconWidget(CupertinoIcons.chat_bubble_text, heart,
-                      paddingLeft: 10.0, iconSize: 35),
-                  iconWidget(CupertinoIcons.share, heart,
-                      paddingLeft: 10.0, iconSize: 34.0),
-                  Spacer(),
-                  idProServicio != null
-                      ? iconWidget(CupertinoIcons.arrow_turn_up_right, () {
-                          navigateToServiceOrProductDetail(
-                            objectType,
-                            idProServicio,
-                          );
-                        }, paddingRight: 15.0)
-                      : SizedBox.shrink()
-                ],
-              ),
-            )
-          ],
-        ),
+          )
+        ],
       ),
+    );
+  }
+
+  Widget contenidoParteSuperior() {
+    return Row(
+      children: [
+        Container(
+          height: 50,
+          width: 50,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(50.0),
+              color: Colors.grey.shade200),
+        ),
+        const Padding(
+          padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+          child: Text(
+            'Bussines name',
+            style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
+          ),
+        )
+      ],
     );
   }
 
@@ -339,6 +360,48 @@ class _NewsFeedState extends State<NewsFeed> {
           color: Colors.black87,
         ),
         onPressed: onPress,
+      ),
+    );
+  }
+
+  Widget contenidoReels(String descripcion, String urlReel, Type objectType,
+      {int? idProServicio}) {
+    return Padding(
+      padding: EdgeInsets.only(top: paddingTopEachPublicacion),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          contenidoParteSuperior(),
+          Padding(
+            padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
+            child: Text(
+              descripcion,
+              style: TextStyle(fontSize: 16.8),
+            ),
+          ),
+          ShowVideo(urlReel: urlReel),
+          Padding(
+            padding: EdgeInsets.fromLTRB(paddingMedia + 10.0, 5.0, 0.0, 0.0),
+            child: Row(
+              children: [
+                iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
+                iconWidget(CupertinoIcons.chat_bubble_text, heart,
+                    paddingLeft: 10.0, iconSize: 35),
+                iconWidget(CupertinoIcons.share, heart,
+                    paddingLeft: 10.0, iconSize: 34.0),
+                Spacer(),
+                idProServicio != null
+                    ? iconWidget(CupertinoIcons.arrow_turn_up_right, () {
+                        navigateToServiceOrProductDetail(
+                          objectType,
+                          idProServicio,
+                        );
+                      }, paddingRight: 15.0)
+                    : SizedBox.shrink()
+              ],
+            ),
+          )
+        ],
       ),
     );
   }

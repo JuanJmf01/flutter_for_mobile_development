@@ -10,6 +10,9 @@ class NewsFeedDb {
         getAllEnlaceProductos(),
         getAllEnlaceServicios(),
         getAllPublicaciones(),
+        getAllProductReels(),
+        //getAllServiceReels(),
+        //getAllOnlyReels(),
       ]);
 
       // Combinar las respuestas en una sola lista de NewsFeedItem
@@ -76,7 +79,7 @@ class NewsFeedDb {
     }
   }
 
-   static Future<NewsFeedTb> getAllPublicaciones() async {
+  static Future<NewsFeedTb> getAllPublicaciones() async {
     Dio dio = Dio();
     String url = MisRutas.rutaPublicaciones;
 
@@ -92,8 +95,6 @@ class NewsFeedDb {
         List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
             .map((data) => NeswFeedPublicacionesTb.fromJson(data))
             .toList();
-        
-        print(response.data);
 
         return NewsFeedTb(newsFeed);
       } else {
@@ -101,6 +102,94 @@ class NewsFeedDb {
       }
     } catch (error) {
       throw Exception('Error: $error');
+    }
+  }
+
+  static Future<NewsFeedTb> getAllProductReels() async {
+    Dio dio = Dio();
+    String url = MisRutas.rutaProductEnlaceReels;
+
+    try {
+      Response response = await dio.get(
+        url,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
+            .map((data) => NeswFeedReelProductTb.fromJsonReelProducto(data))
+            .toList();
+
+        return NewsFeedTb(newsFeed);
+      } else {
+        throw Exception('Failed to fetch enlaceProductReels');
+      }
+    } catch (error) {
+      print('Error: $error');
+      return NewsFeedTb([]);
+    }
+  }
+
+  static Future<NewsFeedTb> getAllServiceReels() async {
+    Dio dio = Dio();
+    String url = MisRutas.rutaServiceEnlaceReels;
+
+    try {
+      Response response = await dio.get(
+        url,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
+            .map((data) => NeswFeedReelServiceTb.fromJsonReelServicio(data))
+            .toList();
+
+        return NewsFeedTb(newsFeed);
+      } else if (response.statusCode == 404) {
+        print("No se encontraron filas. Vacio");
+        return NewsFeedTb([]);
+      } else {
+        throw Exception('Failed to fetch enlaceServiceReels');
+      }
+    } catch (error) {
+      print('Error: $error');
+      return NewsFeedTb([]);
+    }
+  }
+
+  static Future<NewsFeedTb> getAllOnlyReels() async {
+    Dio dio = Dio();
+    String url = MisRutas.rutaOnlyReels;
+
+    try {
+      Response response = await dio.get(
+        url,
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+      print("SI ENTRA");
+
+      if (response.statusCode == 200) {
+        List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
+            .map((data) => NeswFeedOnlyReelTb.fromJsonReel(data))
+            .toList();
+
+        return NewsFeedTb(newsFeed);
+      } else if (response.statusCode == 404) {
+        print("No se encontraron filas. Vacio");
+        return NewsFeedTb([]);
+      } else {
+        throw Exception('Failed to fetch onlyReels');
+      }
+    } catch (error) {
+      print('Error_:: $error');
+      return NewsFeedTb([]);
     }
   }
 }

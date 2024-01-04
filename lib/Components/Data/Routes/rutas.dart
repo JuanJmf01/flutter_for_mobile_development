@@ -88,14 +88,14 @@ class MisRutas {
   static String rutaEnlaceServiciosImage =
       '$rutaPrincipal/enlaceServicioImages';
 
-  // -- Rutas para la tabla reels -- //
-  static String rutaOnlyReels = '$rutaPrincipal/onlyReel';
-
   // -- Rutas para la tabla publicaciones -- //
   static String rutaPublicaciones = '$rutaPrincipal/publicaciones';
 
   // -- Rutas para la tabla publicacionImages -- //
   static String rutaPublicacionImages = '$rutaPrincipal/publicacionImages';
+
+  // -- Rutas para la tabla reels -- //
+  static String rutaOnlyReels = '$rutaPrincipal/onlyReel';
 
   // -- Rutas para la tabla serviceEnlaceReels -- //
   static String rutaServiceEnlaceReels = '$rutaPrincipal/serviceEnlaceReels';
