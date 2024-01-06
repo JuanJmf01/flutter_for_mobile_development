@@ -11,7 +11,7 @@ class NewsFeedDb {
         getAllEnlaceServicios(),
         getAllPublicaciones(),
         getAllProductReels(),
-        //getAllServiceReels(),
+        getAllServiceReels(),
         //getAllOnlyReels(),
       ]);
 

@@ -154,7 +154,7 @@ class NewsFeed extends StatefulWidget {
 
 class _NewsFeedState extends State<NewsFeed> {
   double paddingTopEachPublicacion = 40.0;
-  double paddingMedia = 22.0;
+  double paddingMedia = 20.0;
 
   void heart() {
     print("Funciona");
@@ -202,7 +202,7 @@ class _NewsFeedState extends State<NewsFeed> {
             List<NewsFeedItem> items = newsFeed.newsFeed;
             if (items.isNotEmpty) {
               return Padding(
-                padding: const EdgeInsets.fromLTRB(15.0, 0.0, 20.0, 0.0),
+                padding: const EdgeInsets.fromLTRB(15.0, 0.0, 15.0, 0.0),
                 child: ListView.builder(
                   shrinkWrap: true,
                   physics:
@@ -294,34 +294,14 @@ class _NewsFeedState extends State<NewsFeed> {
             padding: EdgeInsets.fromLTRB(paddingMedia, 10.0, 0.0, 0.0),
             child: Container(
               width: 355,
-              height: 345,
+              height: 365,
               decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(18.0),
-                  color: Colors.grey.shade200),
+                borderRadius: BorderRadius.circular(18.0),
+              ),
               child: PageViewImagesScroll(images: images),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(paddingMedia + 10.0, 5.0, 0.0, 0.0),
-            child: Row(
-              children: [
-                iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
-                iconWidget(CupertinoIcons.chat_bubble_text, heart,
-                    paddingLeft: 10.0, iconSize: 35),
-                iconWidget(CupertinoIcons.share, heart,
-                    paddingLeft: 10.0, iconSize: 34.0),
-                Spacer(),
-                idProServicio != null
-                    ? iconWidget(CupertinoIcons.arrow_turn_up_right, () {
-                        navigateToServiceOrProductDetail(
-                          objectType,
-                          idProServicio,
-                        );
-                      }, paddingRight: 15.0)
-                    : SizedBox.shrink()
-              ],
-            ),
-          )
+          filaIconos(objectType, idProServicio: idProServicio),
         ],
       ),
     );
@@ -356,7 +336,7 @@ class _NewsFeedState extends State<NewsFeed> {
       child: IconButton(
         icon: Icon(
           icon,
-          size: iconSize ?? 37.0,
+          size: iconSize ?? 35.0,
           color: Colors.black87,
         ),
         onPressed: onPress,
@@ -364,8 +344,12 @@ class _NewsFeedState extends State<NewsFeed> {
     );
   }
 
-  Widget contenidoReels(String descripcion, String urlReel, Type objectType,
-      {int? idProServicio}) {
+  Widget contenidoReels(
+    String descripcion,
+    String urlReel,
+    Type objectType, {
+    int? idProServicio,
+  }) {
     return Padding(
       padding: EdgeInsets.only(top: paddingTopEachPublicacion),
       child: Column(
@@ -373,34 +357,41 @@ class _NewsFeedState extends State<NewsFeed> {
         children: [
           contenidoParteSuperior(),
           Padding(
-            padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
+            padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 10.0),
             child: Text(
               descripcion,
               style: TextStyle(fontSize: 16.8),
             ),
           ),
-          ShowVideo(urlReel: urlReel),
-          Padding(
-            padding: EdgeInsets.fromLTRB(paddingMedia + 10.0, 5.0, 0.0, 0.0),
-            child: Row(
-              children: [
-                iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
-                iconWidget(CupertinoIcons.chat_bubble_text, heart,
-                    paddingLeft: 10.0, iconSize: 35),
-                iconWidget(CupertinoIcons.share, heart,
-                    paddingLeft: 10.0, iconSize: 34.0),
-                Spacer(),
-                idProServicio != null
-                    ? iconWidget(CupertinoIcons.arrow_turn_up_right, () {
-                        navigateToServiceOrProductDetail(
-                          objectType,
-                          idProServicio,
-                        );
-                      }, paddingRight: 15.0)
-                    : SizedBox.shrink()
-              ],
-            ),
-          )
+          ShowVideo(
+            urlReel: urlReel,
+          ),
+          // Fila de iconos
+          filaIconos(objectType, idProServicio: idProServicio)
+        ],
+      ),
+    );
+  }
+
+  Widget filaIconos(Type objectType, {int? idProServicio}) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(paddingMedia + 5.0, 5.0, 0.0, 0.0),
+      child: Row(
+        children: [
+          iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
+          iconWidget(CupertinoIcons.chat_bubble_text, heart,
+              paddingLeft: 5.0, iconSize: 33),
+          iconWidget(CupertinoIcons.share, heart,
+              paddingLeft: 5.0, iconSize: 32.0),
+          Spacer(),
+          idProServicio != null
+              ? iconWidget(CupertinoIcons.arrow_turn_up_right, () {
+                  navigateToServiceOrProductDetail(
+                    objectType,
+                    idProServicio,
+                  );
+                }, paddingRight: 15.0)
+              : SizedBox.shrink()
         ],
       ),
     );
