@@ -11,7 +11,7 @@ class NewsFeedDb {
         getAllEnlaceServicios(),
         getAllPublicaciones(),
         getAllProductReels(),
-        getAllServiceReels(),
+        //getAllServiceReels(),
         //getAllOnlyReels(),
       ]);
 
@@ -20,6 +20,13 @@ class NewsFeedDb {
       for (var result in results) {
         combinedList.addAll(result.newsFeed);
       }
+
+      combinedList.sort((a, b) {
+        DateTime fechaA = a.getFechaCreacion();
+        DateTime fechaB = b.getFechaCreacion();
+
+        return fechaB.compareTo(fechaA);
+      });
 
       return NewsFeedTb(combinedList);
     } catch (error) {

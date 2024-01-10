@@ -1,4 +1,5 @@
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
+import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
@@ -61,7 +62,6 @@ class _MyImageListState extends State<MyImageList> {
               isSelected = widget.urlPrincipalImage == image.urlImage;
             }
 
-
             return Column(
               children: [
                 Expanded(
@@ -92,10 +92,14 @@ class _MyImageListState extends State<MyImageList> {
                                   height: desiredHeight!.toInt(),
                                 )
                               : image is ProservicioImagesTb
-                                  ? Image.network(
-                                      image.urlImage,
+                                  ? ShowImage(
+                                      networkImage: image.urlImage,
                                       fit: widget.fit ?? BoxFit.contain,
                                     )
+                                  // ? Image.network(
+                                  //     image.urlImage,
+                                  //     fit: widget.fit ?? BoxFit.contain,
+                                  //   )
                                   : SizedBox.shrink()),
                     ),
                   ),

@@ -79,6 +79,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       body: TabBarView(
         controller: _tabController,
         children: [
+          //Text("Solo texto"),
           TiendasQueSigo(),
           Center(child: Text('Contenido del Tab 2')),
         ],
@@ -364,7 +365,8 @@ class _NewsFeedState extends State<NewsFeed> {
             ),
           ),
           ShowVideo(
-            urlReel: urlReel,
+            urlReel:
+                "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
           ),
           // Fila de iconos
           filaIconos(objectType, idProServicio: idProServicio)

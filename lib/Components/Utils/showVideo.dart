@@ -3,6 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
+// Center(
+//   child: Icon(
+//     _controller.value.isPlaying
+//         ? Icons.pause
+//         : Icons.play_arrow,
+//     size: 50.0,
+//     color: Colors.white,
+//   ),
+// ),
+
 class ShowVideo extends StatefulWidget {
   const ShowVideo({
     super.key,
@@ -88,15 +98,6 @@ class _ShowVideoState extends State<ShowVideo> {
                       children: [
                         VideoPlayer(_controller),
                         //Aqui podriamos mostrar un icono de pausa o despausa algo asi:
-                        // Center(
-                        //   child: Icon(
-                        //     _controller.value.isPlaying
-                        //         ? Icons.pause
-                        //         : Icons.play_arrow,
-                        //     size: 50.0,
-                        //     color: Colors.white,
-                        //   ),
-                        // ),
                       ],
                     ),
                   ),
@@ -129,108 +130,204 @@ class ShowVideoFullScreen extends StatefulWidget {
 }
 
 class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
+  //late VideoPlayerController _videoPlayerController;
+  //ChewieController? _chewieController;
   late PageController _pageController;
-  late List<ChewieController> _chewieControllers;
-
-  List<String> urlReels = [];
-
   bool _liked = false;
-  int _currentPage = 0;
+  bool _isVideoPaused = false; // Variable para controlar el estado de pausa
+
+  bool _isVideoInitialized = false;
+  double _currentSliderValue = 0.0; // Valor actual de la barra de progreso
+
+  int _currentPage = 0; // Mantener el seguimiento de la página actual
+  int maxPage = 0;
+
+  List<ChewieController> chewieControllers = [];
 
   @override
   void initState() {
     super.initState();
+    _pageController = PageController();
 
-    urlReels.add(widget.urlReel);
-    urlReels.add(widget.urlReel);
-    urlReels.add(widget.urlReel);
+    //Este metodo solo se ejecuta dentro del initState al cambiar de pestaña de reels
+    _pageController.addListener(_handlePageChange);
 
-    _initializeControllers();
+    _initializeChewieControllers(
+      widget.urlReel,
+      true,
+      savedPosition: widget.savedPosition,
+    );
+    nextReel();
   }
 
-  void _initializeControllers() {
-    _pageController = PageController(initialPage: _currentPage);
-    _chewieControllers = List.generate(urlReels.length, (index) {
-      var videoPlayerController =
-          VideoPlayerController.networkUrl(Uri.parse(urlReels[index]));
+  void _handlePageChange() {
+    if (_pageController.page != null) {
+      int lastPage = _currentPage;
 
-      videoPlayerController.initialize().then((_) {
-        if (mounted) {
-          setState(() {
-            _chewieControllers[index] = ChewieController(
-              videoPlayerController: videoPlayerController,
-              autoPlay: index == _currentPage,
-              looping: true,
-            );
-
-            if (widget.savedPosition != null && index == _currentPage) {
-              _chewieControllers[index]!.seekTo(widget.savedPosition!);
-            }
-          });
-        }
+      setState(() {
+        _currentPage = _pageController.page!.round();
       });
 
-      videoPlayerController.setLooping(true);
-      return ChewieController(
-        videoPlayerController: videoPlayerController,
-        autoPlay: false,
-        looping: true,
-      );
+      _updatePlayback(_currentPage);
+
+      if (_currentPage > lastPage && maxPage == (_currentPage - 1)) {
+        nextReel();
+        setState(() {
+          maxPage = _currentPage;
+        });
+      }
+    }
+  }
+
+  void _updatePlayback(int pageIndex) {
+    for (int i = 0; i < chewieControllers.length; i++) {
+      if (i == pageIndex) {
+        // Esta página es la que esta actualmente en pantalla, por lo que debería reproducirse
+        chewieControllers[i].play();
+        setState(() {
+          _isVideoPaused = false;
+        });
+      } else {
+        // Las demás páginas estan fuera de la pantalla, por lo que deberian pausarse
+        chewieControllers[i].pause();
+      }
+    }
+  }
+
+  void _initializeChewieControllers(String urlReel, bool autoPlay,
+      {Duration? savedPosition}) {
+    VideoPlayerController videoPlayerController =
+        VideoPlayerController.networkUrl(Uri.parse(urlReel));
+
+    videoPlayerController.addListener(() {
+      if (videoPlayerController.value.isPlaying) {
+        if (mounted) {
+          setState(() {
+            _currentSliderValue =
+                videoPlayerController.value.position.inSeconds.toDouble();
+          });
+        }
+      }
     });
+
+    videoPlayerController.initialize().then((_) {
+      if (savedPosition != null) {
+        videoPlayerController
+            .seekTo(savedPosition); // Mueve el video a la posición guardada
+      }
+      if (mounted) {
+        ChewieController chewieController = ChewieController(
+          videoPlayerController: videoPlayerController,
+          autoPlay: autoPlay,
+          looping: true,
+          showControls: false,
+          showControlsOnInitialize: false,
+          //aspectRatio: MediaQuery.of(context).size.aspectRatio,
+        );
+        setState(() {
+          _isVideoInitialized = true;
+          chewieControllers.add(chewieController);
+        });
+      }
+    });
+
+    videoPlayerController.setLooping(true);
+  }
+
+  void nextReel() {
+    //Hacer consulta sql para nuevo reel
+    String nextUrlReel = widget.urlReel;
+
+    _initializeChewieControllers(nextUrlReel, false);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
+        top: false,
+        bottom: false,
         child: GestureDetector(
+          onTap: () {
+            if (_currentPage >= 0 && _currentPage < chewieControllers.length) {
+              ChewieController currentController =
+                  chewieControllers[_currentPage];
+
+              if (currentController.videoPlayerController.value.isPlaying) {
+                currentController.pause();
+                setState(() {
+                  _isVideoPaused = true;
+                });
+              } else {
+                currentController.play();
+                setState(() {
+                  _isVideoPaused = false;
+                });
+              }
+            }
+          },
           onDoubleTap: () {
             setState(() {
               _liked = !_liked;
             });
           },
-          onVerticalDragEnd: (details) {
-            if (details.primaryVelocity! > 0) {
-              _pageController.previousPage(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            } else if (details.primaryVelocity! < 0) {
-              _pageController.nextPage(
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeOut,
-              );
-            }
-          },
-          child: PageView.builder(
-            controller: _pageController,
-            itemCount: urlReels.length,
-            scrollDirection: Axis.vertical, // Cambio a desplazamiento vertical
-
-            onPageChanged: (index) {
-              setState(() {
-                _currentPage = index;
-              });
-            },
-            itemBuilder: (context, index) {
-              return Stack(
-                fit: StackFit.expand,
-                children: [
-                  _chewieControllers[index] != null
-                      ? FittedBox(
-                          fit: BoxFit.cover,
-                          child: SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            height: MediaQuery.of(context).size.height,
-                            child:
-                                Chewie(controller: _chewieControllers[index]!),
-                          ),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              PageView.builder(
+                itemCount: chewieControllers.length,
+                scrollDirection: Axis.vertical,
+                controller: _pageController,
+                itemBuilder: (BuildContext context, int index) {
+                  return _isVideoInitialized
+                      ? Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Container(
+                              width: MediaQuery.of(context)
+                                  .size
+                                  .width, // Ancho igual al de la pantalla
+                              child:
+                                  Chewie(controller: chewieControllers[index]),
+                            ),
+                            AnimatedPositioned(
+                              duration: Duration(milliseconds: 10),
+                              bottom: 0,
+                              left: 0,
+                              right: 0,
+                              child: LinearProgressIndicator(
+                                value: (_currentSliderValue /
+                                        chewieControllers[index]
+                                            .videoPlayerController
+                                            .value
+                                            .duration
+                                            .inSeconds)
+                                    .toDouble(),
+                                minHeight: 3.5,
+                                backgroundColor: Colors.grey.shade300,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.grey.shade600),
+                              ),
+                            ),
+                          ],
                         )
-                      : Center(child: CircularProgressIndicator()),
-                  if (_liked) Center(child: Icon(Icons.favorite)),
-                ],
-              );
-            },
+                      : Center(child: CircularProgressIndicator());
+                },
+              ),
+              // Otros widgets adicionales
+              if (_liked) Center(child: Icon(Icons.favorite)),
+              if (_isVideoPaused) // Mostrar el botón de pausa si está pausado
+                Positioned.fill(
+                  child: Center(
+                    child: Icon(
+                      Icons.play_arrow_rounded,
+                      size: 60,
+                      color: Colors.white70,
+                    ),
+                  ),
+                ),
+              OptionsScreen(),
+            ],
           ),
         ),
       ),
@@ -240,7 +337,9 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
   @override
   void dispose() {
     _pageController.dispose();
-    _chewieControllers.forEach((controller) => controller?.dispose());
+    for (ChewieController? controller in chewieControllers) {
+      controller?.dispose();
+    }
     super.dispose();
   }
 }

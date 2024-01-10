@@ -37,6 +37,11 @@ class NewsFeedProductosTb extends NewsFeedItem {
       enlaceProductoImages: enlaceProductoImagesList,
     );
   }
+
+  @override
+  DateTime getFechaCreacion() {
+    return DateTime.parse(fechaCreacion);
+  }
 }
 
 // class RatingsEnlaceProductoTb {
@@ -89,6 +94,11 @@ class NewsFeedServiciosTb extends NewsFeedItem {
       enlaceServicioImages: enlaceServicioImagesList,
     );
   }
+
+  @override
+  DateTime getFechaCreacion() {
+    return DateTime.parse(fechaCreacion);
+  }
 }
 
 // class RatingsEnlaceServicioTb {
@@ -140,6 +150,11 @@ class NeswFeedPublicacionesTb extends NewsFeedItem {
       enlacePublicacionImages: enlacePublicacionImagesList,
     );
   }
+
+  @override
+  DateTime getFechaCreacion() {
+    return DateTime.parse(fechaCreacion);
+  }
 }
 
 // class RatingsEnlacePublicacionTb {
@@ -178,6 +193,11 @@ class NeswFeedReelProductTb extends NewsFeedItem {
       fechaCreacion: json['fechaCreacion'],
     );
   }
+
+  @override
+  DateTime getFechaCreacion() {
+    return DateTime.parse(fechaCreacion);
+  }
 }
 
 class NeswFeedReelServiceTb extends NewsFeedItem {
@@ -202,6 +222,11 @@ class NeswFeedReelServiceTb extends NewsFeedItem {
       fechaCreacion: json['fechaCreacion'],
     );
   }
+
+  @override
+  DateTime getFechaCreacion() {
+    return DateTime.parse(fechaCreacion);
+  }
 }
 
 class NeswFeedOnlyReelTb extends NewsFeedItem {
@@ -225,6 +250,11 @@ class NeswFeedOnlyReelTb extends NewsFeedItem {
       fechaCreacion: json['fechaCreacion'],
     );
   }
+
+  @override
+  DateTime getFechaCreacion() {
+    return DateTime.parse(fechaCreacion);
+  }
 }
 
 class NewsFeedTb {
@@ -233,4 +263,6 @@ class NewsFeedTb {
   NewsFeedTb(this.newsFeed);
 }
 
-abstract class NewsFeedItem {}
+abstract class NewsFeedItem {
+  DateTime getFechaCreacion();
+}
