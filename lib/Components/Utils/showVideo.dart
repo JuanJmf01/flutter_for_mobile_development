@@ -1,4 +1,5 @@
 import 'package:chewie/chewie.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -244,6 +245,7 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade900,
       body: SafeArea(
         top: false,
         bottom: false,
@@ -291,7 +293,7 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
                                   Chewie(controller: chewieControllers[index]),
                             ),
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: 10),
+                              duration: Duration(milliseconds: 300),
                               bottom: 0,
                               left: 0,
                               right: 0,
@@ -317,7 +319,7 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
               // Otros widgets adicionales
               if (_liked) Center(child: Icon(Icons.favorite)),
               if (_isVideoPaused) // Mostrar el botón de pausa si está pausado
-                Positioned.fill(
+                const Positioned.fill(
                   child: Center(
                     child: Icon(
                       Icons.play_arrow_rounded,
@@ -327,6 +329,7 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
                   ),
                 ),
               OptionsScreen(),
+              OptionsScreen2(),
             ],
           ),
         ),
@@ -350,73 +353,177 @@ class OptionsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5.0, 0.0, 8.0, 0.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(50.0),
+                        color: Colors.grey.shade400),
+                    width: 45.0,
+                    height: 45.0,
+                  ),
+                ),
+                const Text(
+                  "Nombre usuario",
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 8.0, bottom: 5.0),
+              child: Text(
+                "Esta es mi descripcion, larga o corta... 😘🍟🍾",
+                style: TextStyle(
+                  fontSize: 17.0,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          ],
+        ));
+  }
+}
+
+class OptionsScreen2 extends StatelessWidget {
+  const OptionsScreen2({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    double iconsSize = 35.0;
+    Color iconColor = Colors.white;
+    FontWeight iconFontWeight = FontWeight.w700;
+
+    void handleIconTap(BuildContext context, int index) {
+      // Agrega lógica para manejar el clic en los íconos aquí
+      // Por ejemplo, podrías llamar a funciones diferentes dependiendo del ícono presionado
+      switch (index) {
+        case 0: // Ícono del corazón
+          print("Corazon");
+          break;
+        case 1: // Ícono del chat
+          print("Chat");
+          break;
+        case 2: // Ícono de compartir
+          print("compartir");
+
+        case 3: // Ícono del enlace
+          print("enlace");
+          break;
+        default:
+          break;
+      }
+    }
+
+    return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          SizedBox(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+      child: Align(
+        alignment: Alignment.bottomRight,
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: FractionallySizedBox(
+            heightFactor: 0.6,
+            child: Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.8,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(height: 110),
-                  Row(
+                  Column(
                     children: [
-                      CircleAvatar(
-                        child: Icon(Icons.person, size: 18),
-                        radius: 16,
+                      GestureDetector(
+                        onTap: () => handleIconTap(context, 0),
+                        child: Icon(
+                          CupertinoIcons.heart,
+                          size: iconsSize,
+                          color: iconColor,
+                        ),
                       ),
-                      SizedBox(width: 6),
-                      Text('flutter_developer02'),
-                      SizedBox(width: 10),
-                      Icon(Icons.verified, size: 15),
-                      SizedBox(width: 6),
-                      TextButton(
-                        onPressed: () {},
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
                         child: Text(
-                          'Follow',
+                          "313.3",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: iconColor,
+                            fontWeight: iconFontWeight,
+                            fontSize: 15.5,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(width: 6),
-                  Text('Flutter is beautiful and fast 💙❤💛 ..'),
-                  SizedBox(height: 10),
-                  Row(
+                  Column(
                     children: [
-                      Icon(
-                        Icons.music_note,
-                        size: 15,
+                      GestureDetector(
+                        onTap: () => handleIconTap(context, 1),
+                        child: Icon(
+                          CupertinoIcons.chat_bubble,
+                          size: iconsSize,
+                          color: iconColor,
+                        ),
                       ),
-                      Text('Original Audio - some music track--'),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          "313.3",
+                          style: TextStyle(
+                            color: iconColor,
+                            fontWeight: iconFontWeight,
+                            fontSize: 15.5,
+                          ),
+                        ),
+                      ),
                     ],
+                  ),
+                  Column(
+                    children: [
+                      GestureDetector(
+                        onTap: () => handleIconTap(context, 2),
+                        child: Icon(
+                          CupertinoIcons.paperplane,
+                          size: iconsSize,
+                          color: iconColor,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          "313.3",
+                          style: TextStyle(
+                            color: iconColor,
+                            fontWeight: iconFontWeight,
+                            fontSize: 15.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                    onTap: () => handleIconTap(context, 3),
+                    child: Icon(
+                      CupertinoIcons.arrow_turn_up_right,
+                      color: iconColor,
+                      size: iconsSize,
+                    ),
                   ),
                 ],
               ),
-              Column(
-                children: [
-                  Icon(Icons.favorite_outline),
-                  Text('601k'),
-                  SizedBox(height: 20),
-                  Icon(Icons.comment_rounded),
-                  Text('1123'),
-                  SizedBox(height: 20),
-                  Transform(
-                    transform: Matrix4.rotationZ(5.8),
-                    child: Icon(Icons.send),
-                  ),
-                  SizedBox(height: 50),
-                  Icon(Icons.more_vert),
-                ],
-              )
-            ],
+            ),
           ),
-        ],
+        ),
       ),
+      // Otros widgets aquí
     );
   }
 }

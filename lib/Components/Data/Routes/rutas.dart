@@ -102,4 +102,34 @@ class MisRutas {
 
   // -- Rutas para la tabla productEnlaceReels -- //
   static String rutaProductEnlaceReels = '$rutaPrincipal/productEnlaceReels';
+
+  // -- Rutas para la tabla ratingsEnlaceProducto -- //
+  static String rutaRatingsEnlaceProducto =
+      '$rutaPrincipal/ratingEnlaceProducto';
+
+  static String rutaCheckRatingEnlaceProductoIfExist =
+      '$rutaPrincipal/checkRatingEnlaceProductoIfExist';
+
+  // -- Rutas para la tabla ratingsEnlaceServicio -- //
+  static String rutaRatingsEnlaceServicio =
+      '$rutaPrincipal/ratingEnlaceServicio';
+
+  static String rutaCheckRatingEnlaceServicioIfExist =
+      '$rutaPrincipal/checkRatingEnlaceServicioIfExist';
+
+  // -- Rutas para la tabla ratingsProductEnlaceReel -- //
+  static String rutaRatingsEnlaceVidProducto =
+      '$rutaPrincipal/ratingEnlaceVidProducto';
+
+  static String rutaCheckRatingEnlaceVidProductIfExist =
+      '$rutaPrincipal/checkRatingEnlaceVidProductoIfExist';
+
+        // -- Rutas para la tabla ratingsProductEnlaceReel -- //
+  static String rutaRatingsEnlaceVidServicio =
+      '$rutaPrincipal/ratingEnlaceVidServicio';
+
+  static String rutaCheckRatingEnlaceVidServiceIfExist =
+      '$rutaPrincipal/checkRatingEnlaceVidServicioIfExist';
 }
+
+

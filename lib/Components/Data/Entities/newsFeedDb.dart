@@ -7,11 +7,11 @@ class NewsFeedDb {
     try {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
-        getAllEnlaceProductos(),
-        getAllEnlaceServicios(),
-        getAllPublicaciones(),
-        getAllProductReels(),
-        //getAllServiceReels(),
+        //getAllEnlaceProductos(),
+        //getAllEnlaceServicios(),
+        //getAllPublicaciones(),
+        //getAllProductReels(),
+        getAllServiceReels(),
         //getAllOnlyReels(),
       ]);
 
