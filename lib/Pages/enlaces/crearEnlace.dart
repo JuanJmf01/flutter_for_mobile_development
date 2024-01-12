@@ -80,7 +80,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
 
           PublicacionImagesCreacionTb publicacionImage =
               PublicacionImagesCreacionTb(
-            idPublicacion: idPublicacion,
+            idFotoPublicacion: idPublicacion,
             nombreImage: imageToUpload.nombreImage,
             urlImage: urlImage,
             width: imageToUpload.width,

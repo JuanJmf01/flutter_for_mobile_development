@@ -22,14 +22,14 @@ class PublicacionImagesTb {
 }
 
 class PublicacionImagesCreacionTb {
-  final int idPublicacion;
+  final int idFotoPublicacion;
   final String nombreImage;
   final String urlImage;
   final double width;
   final double height;
 
   PublicacionImagesCreacionTb({
-    required this.idPublicacion,
+    required this.idFotoPublicacion,
     required this.nombreImage,
     required this.urlImage,
     required this.width,
@@ -38,7 +38,7 @@ class PublicacionImagesCreacionTb {
 
   Map<String, dynamic> toMapPublicacion() {
     return {
-      'idPublicacion': idPublicacion,
+      'idFotoPublicacion': idFotoPublicacion,
       'nombreImage': nombreImage,
       'urlImage': urlImage,
       'width': width,

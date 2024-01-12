@@ -7,10 +7,10 @@ import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class RatingsEnlaceProServicioDb {
-  static Future<void> saveRating(int idProServicio, int idEnlaceProservicio,
-      int idUsuario, RatingsEnlaceProServicioTb rating, Type objectType) async {
+  static Future<void> saveRating(int idEnlaceProservicio, int idUsuario,
+      RatingsEnlaceProServicioTb rating, Type objectType) async {
     bool existeRating = await checkRatingEnlaceProServicioIfExists(
-        idProServicio, idEnlaceProservicio, idUsuario, objectType);
+        idEnlaceProservicio, idUsuario, objectType);
 
     if (existeRating) {
       print('Ya existe');
@@ -63,7 +63,7 @@ class RatingsEnlaceProServicioDb {
     }
   }
 
-  static Future<bool> checkRatingEnlaceProServicioIfExists(int idProServicio,
+  static Future<bool> checkRatingEnlaceProServicioIfExists(
       int idEnlaceProServicio, int idUsuario, Type objectType) async {
     Dio dio = Dio();
     Map<String, dynamic> data = {};

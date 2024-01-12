@@ -1,11 +1,13 @@
 import 'dart:io';
 
+import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/reelTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/publicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/reelDb.dart';
+import 'package:etfi_point/Components/Data/Entities/publicacionesDb.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
@@ -68,7 +70,7 @@ class _CrearReelState extends State<CrearReel> {
           descripcion: descripcion,
         );
 
-        ReelDb.insertproductEnlaceReel(reel);
+        EnlaceProServicioDb.insertproductEnlaceReel(reel);
       } else if (selectedProServicio is ServicioTb) {
         ServiceEnlaceReelCreacionTb reel = ServiceEnlaceReelCreacionTb(
           idServicio: selectedProServicio.idServicio,
@@ -77,7 +79,7 @@ class _CrearReelState extends State<CrearReel> {
           descripcion: descripcion,
         );
 
-        ReelDb.insertServiceEnlaceReel(reel);
+        EnlaceProServicioDb.insertServiceEnlaceReel(reel);
       } else if (selectedProServicio == null) {
         int? idNegocio = await NegocioDb.checkBusinessExists(widget.idUsuario);
         if (idNegocio != null) {
@@ -86,7 +88,7 @@ class _CrearReelState extends State<CrearReel> {
             urlReel: urlReel,
             nombreReel: nombreReel,
           );
-          ReelDb.insertOnlyReel(reel);
+          PublicacionesDb.insertOnlyReel(reel);
         }
         fileName = 'onlyReel';
       }
@@ -257,7 +259,6 @@ class _CrearReelState extends State<CrearReel> {
                       ),
                     ),
             ),
-
             Padding(
               padding: const EdgeInsets.only(top: 20.0),
               child: Column(

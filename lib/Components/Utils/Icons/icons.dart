@@ -20,12 +20,20 @@ class HeartIcon extends StatelessWidget {
 }
 
 class HeartSolidIcon extends StatelessWidget {
-  const HeartSolidIcon({super.key, this.size});
+  const HeartSolidIcon({super.key, this.size, this.onTap, this.color});
 
   final double? size;
+  final VoidCallback? onTap;
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
-    return Icon(CupertinoIcons.heart_fill);
+    return GestureDetector(
+        onTap: onTap,
+        child: Icon(
+          CupertinoIcons.heart_fill,
+          color: color,
+          size: size,
+        ));
   }
 }

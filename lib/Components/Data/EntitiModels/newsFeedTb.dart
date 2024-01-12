@@ -6,6 +6,7 @@ class NewsFeedProductosTb extends NewsFeedItem {
   final int idProducto;
   final String? descripcion;
   final String fechaCreacion;
+  final int likes;
   final List<EnlaceProServicioImagesTb> enlaceProductoImages;
 
   NewsFeedProductosTb({
@@ -13,6 +14,7 @@ class NewsFeedProductosTb extends NewsFeedItem {
     required this.idProducto,
     this.descripcion,
     required this.fechaCreacion,
+    required this.likes,
     required this.enlaceProductoImages,
   });
 
@@ -32,6 +34,7 @@ class NewsFeedProductosTb extends NewsFeedItem {
       idProducto: json['idProducto'],
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
+      likes: json['likes'],
       enlaceProductoImages: enlaceProductoImagesList,
     );
   }
@@ -84,14 +87,14 @@ class NewsFeedServiciosTb extends NewsFeedItem {
 }
 
 class NeswFeedPublicacionesTb extends NewsFeedItem {
-  final int idPublicacion;
+  final int idFotoPublicacion;
   final int idNegocio;
   final String? descripcion;
   final String fechaCreacion;
   final List<PublicacionImagesTb> enlacePublicacionImages;
 
   NeswFeedPublicacionesTb({
-    required this.idPublicacion,
+    required this.idFotoPublicacion,
     required this.idNegocio,
     this.descripcion,
     required this.fechaCreacion,
@@ -109,7 +112,7 @@ class NeswFeedPublicacionesTb extends NewsFeedItem {
     }
 
     return NeswFeedPublicacionesTb(
-      idPublicacion: json['idPublicacion'],
+      idFotoPublicacion: json['idFotoPublicacion'],
       idNegocio: json['idNegocio'],
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
@@ -122,7 +125,6 @@ class NeswFeedPublicacionesTb extends NewsFeedItem {
     return DateTime.parse(fechaCreacion);
   }
 }
-
 
 class NeswFeedReelProductTb extends NewsFeedItem {
   final int idProductEnlaceReel;
@@ -189,14 +191,14 @@ class NeswFeedReelServiceTb extends NewsFeedItem {
 }
 
 class NeswFeedOnlyReelTb extends NewsFeedItem {
-  final int idReel;
+  final int idReelPublicacion;
   final int idNegocio;
   final String urlReel;
   final String? descripcion;
   final String fechaCreacion;
 
   NeswFeedOnlyReelTb({
-    required this.idReel,
+    required this.idReelPublicacion,
     required this.idNegocio,
     required this.urlReel,
     this.descripcion,
@@ -205,7 +207,7 @@ class NeswFeedOnlyReelTb extends NewsFeedItem {
 
   factory NeswFeedOnlyReelTb.fromJsonReel(Map<String, dynamic> json) {
     return NeswFeedOnlyReelTb(
-      idReel: json['idReel'],
+      idReelPublicacion: json['idReelPublicacion'],
       idNegocio: json['idNegocio'],
       urlReel: json['urlReel'],
       descripcion: json['descripcion'],

@@ -1,17 +1,19 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class NewsFeedDb {
-  static Future<NewsFeedTb> getAllNewsFeed() async {
+  static Future<NewsFeedTb> getAllNewsFeed(int idUsuario) async {
     try {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
-        //getAllEnlaceProductos(),
+        getAllEnlaceProductos(idUsuario),
         //getAllEnlaceServicios(),
         //getAllPublicaciones(),
         //getAllProductReels(),
-        getAllServiceReels(),
+        //getAllServiceReels(),
         //getAllOnlyReels(),
       ]);
 
@@ -34,19 +36,22 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllEnlaceProductos() async {
+  static Future<NewsFeedTb> getAllEnlaceProductos(int idUsuario) async {
     Dio dio = Dio();
     String url = MisRutas.rutaEnlaceProductos;
+    Map<String, dynamic> data = {'idUsuario': idUsuario};
 
     try {
       Response response = await dio.get(
         url,
+        data: jsonEncode(data),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
       );
 
       if (response.statusCode == 200) {
+        print("Dataaaa:  ${response.data}");
         List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
             .map((data) => NewsFeedProductosTb.fromJson(data))
             .toList();
@@ -180,8 +185,6 @@ class NewsFeedDb {
           headers: {'Content-Type': 'application/json'},
         ),
       );
-      print("SI ENTRA");
-
       if (response.statusCode == 200) {
         List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
             .map((data) => NeswFeedOnlyReelTb.fromJsonReel(data))

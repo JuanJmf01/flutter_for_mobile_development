@@ -124,12 +124,26 @@ class MisRutas {
   static String rutaCheckRatingEnlaceVidProductIfExist =
       '$rutaPrincipal/checkRatingEnlaceVidProductoIfExist';
 
-        // -- Rutas para la tabla ratingsProductEnlaceReel -- //
+  // -- Rutas para la tabla ratingsProductEnlaceReel -- //
   static String rutaRatingsEnlaceVidServicio =
       '$rutaPrincipal/ratingEnlaceVidServicio';
 
   static String rutaCheckRatingEnlaceVidServiceIfExist =
       '$rutaPrincipal/checkRatingEnlaceVidServicioIfExist';
+
+  // -- Rutas para la tabla ratingsFotosPublicacion -- //
+
+  static String rutaRatingsFotoPublicacion =
+      '$rutaPrincipal/ratingFotoPublicacion';
+
+  static String rutaCheckRatingFotoPublicacionIfExist =
+      '$rutaPrincipal/checkRatingFotoPublicacionIfExist';
+
+  // -- Rutas para la tabla ratingsReelsPublicacion -- //
+
+  static String rutaRatingsReelPublicacion =
+      '$rutaPrincipal/ratingReelPublicacion';
+
+  static String rutaCheckRatingReelPublicacionIfExist =
+      '$rutaPrincipal/checkRatingReelPublicacionIfExist';
 }
-
-
