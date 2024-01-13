@@ -36,8 +36,6 @@ class PublicacionesDb {
     }
   }
 
-  // Ratings para publicaciones de tipo imagen
-
   static Future<void> saveRating(int idPublicacion, int idUsuario,
       RatingsPublicacionesTb rating, Type objectType) async {
     bool existeRating = await checkRatingPublicacionIfExists(
@@ -45,7 +43,7 @@ class PublicacionesDb {
 
     if (existeRating) {
       print('Ya existe');
-      //Actualizar o eliminar
+      updateLikePublicacion(rating, objectType);
     } else {
       print('No existe');
       await insertRatingsPublicacion(rating, objectType);
@@ -122,6 +120,42 @@ class PublicacionesDb {
     } catch (error) {
       print('Error de conexión: $error');
       throw Exception('Error: $error');
+    }
+  }
+
+   static Future<void> updateLikePublicacion(
+      RatingsPublicacionesTb rating, Type objectType) async {
+    Dio dio = Dio();
+    Map<String, dynamic> data = {};
+    String url = '';
+
+    if (objectType == NeswFeedPublicacionesTb) {
+      data = rating.toMapRatingFotoPublicacion();
+      url = MisRutas.rutaUpdateLikeFotoPublicacion;
+    } else if (objectType == NeswFeedOnlyReelTb) {
+      data = rating.toMapRatingReelPublicacion();
+      url = MisRutas.rutaUpdateLikeReelPublicacion;
+    }
+
+    print("NUEVO LIke: ${rating.likes}");
+
+    try {
+      Response response = await dio.patch(
+        url,
+        data: jsonEncode(data),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('Likepublicaciones actualizado correctamente');
+        print(response.data);
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error de conexioon: $error');
     }
   }
 

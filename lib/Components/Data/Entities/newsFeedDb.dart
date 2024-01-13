@@ -10,11 +10,11 @@ class NewsFeedDb {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
         getAllEnlaceProductos(idUsuario),
-        //getAllEnlaceServicios(),
-        //getAllPublicaciones(),
-        //getAllProductReels(),
-        //getAllServiceReels(),
-        //getAllOnlyReels(),
+        // getAllEnlaceServicios(idUsuario),
+        // getAllPublicaciones(idUsuario),
+        // getAllProductReels(idUsuario),
+        // getAllServiceReels(idUsuario),
+        // getAllOnlyReels(idUsuario),
       ]);
 
       // Combinar las respuestas en una sola lista de NewsFeedItem
@@ -65,13 +65,15 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllEnlaceServicios() async {
+  static Future<NewsFeedTb> getAllEnlaceServicios(int idUsuario) async {
     Dio dio = Dio();
     String url = MisRutas.rutaEnlaceServicios;
+    Map<String, dynamic> data = {'idUsuario': idUsuario};
 
     try {
       Response response = await dio.get(
         url,
+        data: jsonEncode(data),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
@@ -91,13 +93,15 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllPublicaciones() async {
+  static Future<NewsFeedTb> getAllPublicaciones(int idUsuario) async {
     Dio dio = Dio();
     String url = MisRutas.rutaPublicaciones;
+    Map<String, dynamic> data = {'idUsuario': idUsuario};
 
     try {
       Response response = await dio.get(
         url,
+        data: jsonEncode(data),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
@@ -117,13 +121,15 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllProductReels() async {
+  static Future<NewsFeedTb> getAllProductReels(int idUsuario) async {
     Dio dio = Dio();
     String url = MisRutas.rutaProductEnlaceReels;
+    Map<String, dynamic> data = {'idUsuario': idUsuario};
 
     try {
       Response response = await dio.get(
         url,
+        data: jsonEncode(data),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
@@ -144,13 +150,15 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllServiceReels() async {
+  static Future<NewsFeedTb> getAllServiceReels(int idUsuario) async {
     Dio dio = Dio();
     String url = MisRutas.rutaServiceEnlaceReels;
+    Map<String, dynamic> data = {'idUsuario': idUsuario};
 
     try {
       Response response = await dio.get(
         url,
+        data: jsonEncode(data),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
@@ -174,13 +182,15 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllOnlyReels() async {
+  static Future<NewsFeedTb> getAllOnlyReels(int idUsuario) async {
     Dio dio = Dio();
     String url = MisRutas.rutaOnlyReels;
+    Map<String, dynamic> data = {'idUsuario': idUsuario};
 
     try {
       Response response = await dio.get(
         url,
+        data: jsonEncode(data),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),

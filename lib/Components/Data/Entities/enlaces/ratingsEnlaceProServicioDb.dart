@@ -14,7 +14,7 @@ class RatingsEnlaceProServicioDb {
 
     if (existeRating) {
       print('Ya existe');
-      //Actualizar o eliminar
+      updateLikeEnlaceProServicio(rating, objectType);
     } else {
       print('No existe');
       await insertRatingsEnlaceProServicio(rating, objectType);
@@ -109,6 +109,46 @@ class RatingsEnlaceProServicioDb {
     } catch (error) {
       print('Error de conexión: $error');
       throw Exception('Error: $error');
+    }
+  }
+
+  static Future<void> updateLikeEnlaceProServicio(
+      RatingsEnlaceProServicioTb rating, Type objectType) async {
+    Dio dio = Dio();
+    Map<String, dynamic> data = {};
+    String url = '';
+
+    if (objectType == NewsFeedProductosTb) {
+      data = rating.toMapEnlaceProducto();
+      url = MisRutas.rutaUpdateLikeEnlaceProducto;
+    } else if (objectType == NewsFeedServiciosTb) {
+      data = rating.toMapEnlaceServicio();
+      url = MisRutas.rutaUpdateLikeEnlaceServicio;
+    } else if (objectType == NeswFeedReelProductTb) {
+      data = rating.toMapEnlaceVidProducto();
+      url = MisRutas.rutaUpdateLikeEnlaceProductReel;
+    } else if (objectType == NeswFeedReelServiceTb) {
+      data = rating.toMapEnlaceVidServicio();
+      url = MisRutas.rutaUpdateLikeEnlaceServiceReel;
+    }
+
+    try {
+      Response response = await dio.patch(
+        url,
+        data: jsonEncode(data),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        print('LikeEnlaceProServicio actualizado correctamente');
+        print(response.data);
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (error) {
+      print('Error de conexioon: $error');
     }
   }
 }

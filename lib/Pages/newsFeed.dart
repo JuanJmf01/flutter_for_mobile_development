@@ -203,10 +203,13 @@ class _NewsFeedState extends State<NewsFeed> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    int? idUsuarioOnline =
+        Provider.of<UsuarioProvider>(context).idUsuarioActual;
 
     return FutureBuilder<NewsFeedTb>(
-        future: idUsuario != null ? NewsFeedDb.getAllNewsFeed(idUsuario) : null,
+        future: idUsuarioOnline != null
+            ? NewsFeedDb.getAllNewsFeed(idUsuarioOnline)
+            : null,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             NewsFeedTb newsFeed = snapshot.data!;
@@ -225,56 +228,70 @@ class _NewsFeedState extends State<NewsFeed> {
                     if (item is NewsFeedProductosTb) {
                       return contenidoImages(
                         item.descripcion ?? '',
+                        item.idUsuario,
+                        item.nombreUsuario,
                         item.enlaceProductoImages,
                         NewsFeedProductosTb,
                         index,
                         likes: item.likes,
                         idPublicacion: item.idEnlaceProducto,
                         idProServicio: item.idProducto,
-                        idUsuario: idUsuario,
+                        idUsuarioOnline: idUsuarioOnline,
                       );
-                    } else if (item is NewsFeedServiciosTb) {
-                      return contenidoImages(
-                        item.descripcion ?? '',
-                        item.enlaceServicioImages,
-                        NewsFeedServiciosTb,
-                        index,
-                        idPublicacion: item.idEnlaceServicio,
-                        idProServicio: item.idServicio,
-                        idUsuario: idUsuario,
-                      );
-                    } else if (item is NeswFeedPublicacionesTb) {
-                      return contenidoImages(
-                        item.descripcion ?? '',
-                        item.enlacePublicacionImages,
-                        NeswFeedPublicacionesTb,
-                        index,
-                        idUsuario: idUsuario,
-                        idPublicacion: item.idFotoPublicacion,
-                      );
+                      // } else if (item is NewsFeedServiciosTb) {
+                      //   return contenidoImages(
+                      //     item.descripcion ?? '',
+                      //     item.enlaceServicioImages,
+                      //     NewsFeedServiciosTb,
+                      //     index,
+                      //     likes: item.likes,
+                      //     idPublicacion: item.idEnlaceServicio,
+                      //     idProServicio: item.idServicio,
+                      //     idUsuarioOnline: idUsuarioOnline,
+                      //   );
+                      // } else if (item is NeswFeedPublicacionesTb) {
+                      //   return contenidoImages(
+                      //     item.descripcion ?? '',
+                      //     item.enlacePublicacionImages,
+                      //     NeswFeedPublicacionesTb,
+                      //     index,
+                      //     likes: item.likes,
+                      //     idUsuarioOnline: idUsuarioOnline,
+                      //     idPublicacion: item.idFotoPublicacion,
+                      //   );
+                      // } else if (item is NeswFeedReelProductTb) {
+                      //   return contenidoReels(
+                      //     item.descripcion ?? '',
+                      //     item.urlReel,
+                      //     index,
+                      //     NeswFeedReelProductTb,
+                      //     likes: item.likes,
+                      //     idPublicacion: item.idProductEnlaceReel,
+                      //     idProServicio: item.idProducto,
+                      //     idUsuarioOnline: idUsuarioOnline,
+                      //   );
+                      // } else if (item is NeswFeedReelServiceTb) {
+                      //   return contenidoReels(
+                      //     item.descripcion ?? '',
+                      //     item.urlReel,
+                      //     index,
+                      //     NeswFeedReelServiceTb,
+                      //     likes: item.likes,
+                      //     idPublicacion: item.idServiceEnlaceReel,
+                      //     idProServicio: item.idServicio,
+                      //     idUsuarioOnline: idUsuarioOnline,
+                      //   );
+                      // } else if (item is NeswFeedOnlyReelTb) {
+                      //   return contenidoReels(
+                      //     item.descripcion ?? '',
+                      //     item.urlReel,
+                      //     index,
+                      //     NeswFeedOnlyReelTb,
+                      //     likes: item.likes,
+                      //     idUsuarioOnline: idUsuarioOnline,
+                      //     idPublicacion: item.idReelPublicacion,
+                      //   );
                     }
-                    // } else if (item is NeswFeedReelProductTb) {
-                    //   return contenidoReels(
-                    //     item.descripcion ?? '',
-                    //     item.urlReel,
-                    //     NeswFeedReelProductTb,
-                    //     idPublicacion: item.idProductEnlaceReel,
-                    //     idUsuario: idUsuario,
-                    //   );
-                    // } else if (item is NeswFeedReelServiceTb) {
-                    //   return contenidoReels(item.descripcion ?? '',
-                    //       item.urlReel, NeswFeedReelServiceTb,
-                    //       idPublicacion: item.idServiceEnlaceReel,
-                    //       idUsuario: idUsuario);
-                    // } else if (item is NeswFeedOnlyReelTb) {
-                    //   return contenidoReels(
-                    //     item.descripcion ?? '',
-                    //     item.urlReel,
-                    //     NeswFeedOnlyReelTb,
-                    //     idUsuario: idUsuario,
-                    //     idPublicacion: item.idReelPublicacion,
-                    //   );
-                    // }
                     return null;
                   },
                 ),
@@ -292,16 +309,19 @@ class _NewsFeedState extends State<NewsFeed> {
         });
   }
 
-  Widget contenidoImages(
-      String descripcion, List<dynamic> images, Type objectType, int index,
-      {int? likes, int? idPublicacion, int? idProServicio, int? idUsuario}) {
+  Widget contenidoImages(String descripcion, int idUsuario,
+      String nombreUsuario, List<dynamic> images, Type objectType, int index,
+      {int? likes,
+      int? idPublicacion,
+      int? idProServicio,
+      int? idUsuarioOnline}) {
     return Padding(
       padding: EdgeInsets.only(top: paddingTopEachPublicacion),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //Contenido parte superior de cada publicacion
-          contenidoParteSuperior(),
+          contenidoParteSuperior(idUsuario, nombreUsuario),
           Padding(
             padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
             child: Text(
@@ -320,161 +340,182 @@ class _NewsFeedState extends State<NewsFeed> {
               child: PageViewImagesScroll(images: images),
             ),
           ),
-          filaIconos(objectType,
+          filaIconos(objectType, index,
               like: likes,
               idPublicacion: idPublicacion,
-              idUsuario: idUsuario,
-              index: index)
+              idProServicio: idProServicio,
+              idUsuarioOnline: idUsuarioOnline)
         ],
       ),
     );
   }
 
-  Widget filaIconos(Type objectType,
-      {int? like, int? idPublicacion, int? idUsuario, required int index}) {
+  Widget filaIconos(Type objectType, int index,
+      {int? like,
+      int? idPublicacion,
+      int? idProServicio,
+      int? idUsuarioOnline}) {
     bool isLiked =
         isLikedMap[index] ?? (like == 1); // Asumimos 'false' si es nulo
+    double iconSize = 32.0;
+    double iconPaddingRight = 20.0;
 
-    void crearRatingEnlaceProServicio() {
+    void saveRatingEnlaceProServicio() {
       print('Like: $isLiked');
-      if (idUsuario != null && idPublicacion != null) {
+      if (idUsuarioOnline != null && idPublicacion != null) {
         RatingsEnlaceProServicioTb ratingEnlaceProducto =
             RatingsEnlaceProServicioTb(
-                idUsuario: idUsuario,
+                idUsuario: idUsuarioOnline,
                 idEnlaceProServicio: idPublicacion,
                 likes: isLiked ? 0 : 1);
 
         RatingsEnlaceProServicioDb.saveRating(
-            idPublicacion, idUsuario, ratingEnlaceProducto, objectType);
+            idPublicacion, idUsuarioOnline, ratingEnlaceProducto, objectType);
+      }
+    }
+
+    void saveRatingPublicacion() {
+      if (idUsuarioOnline != null && idPublicacion != null) {
+        RatingsPublicacionesTb ratingPublicacion = RatingsPublicacionesTb(
+            idUsuario: idUsuarioOnline,
+            idPublicacion: idPublicacion,
+            likes: isLiked ? 0 : 1);
+
+        PublicacionesDb.saveRating(
+            idPublicacion, idUsuarioOnline, ratingPublicacion, objectType);
+      }
+    }
+
+    void handleLike(bool like) {
+      setState(() {
+        isLikedMap[index] = like;
+      });
+      if (objectType == NeswFeedOnlyReelTb ||
+          objectType == NeswFeedPublicacionesTb) {
+        saveRatingPublicacion();
+      } else {
+        saveRatingEnlaceProServicio();
       }
     }
 
     return Padding(
-      padding: EdgeInsets.fromLTRB(paddingMedia + 5.0, 5.0, 0.0, 0.0),
+      padding: EdgeInsets.fromLTRB(paddingMedia, 10.0, 0.0, 0.0),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           isLiked == true
               ? FutureBuilder<void>(
                   // Use FutureBuilder para asegurar la actualización inmediata del estado
                   future: Future<void>.delayed(Duration.zero),
                   builder: (context, snapshot) {
-                    return HeartSolidIcon(
-                      size: 33.0,
+                    return ManageIcon(
+                      size: iconSize,
+                      icon: CupertinoIcons.heart_fill,
                       color: Colors.red,
-                      onTap: () {
-                        setState(() {
-                          isLikedMap[index] = false;
-                        });
-                      },
+                      paddingLeft: 10.0,
+                      paddingRight: 15.0,
+                      onTap: () => handleLike(false),
                     );
                   },
                 )
-              : HeartIcon(
-                  size: 33.0,
-                  onTap: () {
-                    setState(() {
-                      isLikedMap[index] = true;
-                    });
-                    crearRatingEnlaceProServicio();
-                  },
+              : ManageIcon(
+                  icon: CupertinoIcons.heart,
+                  size: iconSize,
+                  paddingLeft: 10.0,
+                  paddingRight: iconPaddingRight,
+                  onTap: () => handleLike(true),
                 ),
+          ManageIcon(
+            size: iconSize,
+            paddingRight: iconPaddingRight,
+            icon: CupertinoIcons.chat_bubble_text,
+          ),
+          ManageIcon(
+            size: iconSize,
+            paddingRight: iconPaddingRight,
+            icon: CupertinoIcons.paperplane,
+          ),
+          ManageIcon(
+            icon: CupertinoIcons.square,
+            paddingRight: iconPaddingRight,
+            size: iconSize,
+          ),
+          Spacer(),
+          idProServicio != null
+              ? ManageIcon(
+                  icon: CupertinoIcons.arrow_turn_up_right,
+                  size: iconSize,
+                  paddingRight: 10.0,
+                  onTap: () {
+                    navigateToServiceOrProductDetail(objectType, idProServicio);
+                  },
+                )
+              : SizedBox.shrink()
         ],
       ),
     );
   }
 
-  Widget contenidoParteSuperior() {
-    return Row(
-      children: [
-        Container(
-          height: 50,
-          width: 50,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(50.0),
-              color: Colors.grey.shade200),
-        ),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
-          child: Text(
-            'Bussines name',
-            style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
+  Widget contenidoParteSuperior(int idUsuario, String nombreUsuario) {
+    return GestureDetector(
+      onTap: (){
+        
+      },
+      child: Row(
+        children: [
+          Container(
+            height: 50,
+            width: 50,
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50.0),
+                color: Colors.grey.shade200),
           ),
-        )
-      ],
+          Padding(
+            padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+            child: Text(
+              nombreUsuario,
+              style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
+            ),
+          )
+        ],
+      ),
     );
   }
 
-  //   void crearRatingPublicacion() {
-  //   if (idUsuario != null && idPublicacion != null) {
-  //     RatingsPublicacionesTb ratingPublicacion = RatingsPublicacionesTb(
-  //         idUsuario: idUsuario,
-  //         idPublicacion: idPublicacion,
-  //         likes: isLiked ? 0 : 1);
-
-  //     PublicacionesDb.saveRating(
-  //         idPublicacion, idUsuario, ratingPublicacion, objectType);
-  //   }
-  // }
-
-  // Widget contenidoReels(
-  //   String descripcion,
-  //   String urlReel,
-  //   Type objectType, {
-  //   int? idPublicacion,
-  //   int? idUsuario,
-  // }) {
-  //   return Padding(
-  //     padding: EdgeInsets.only(top: paddingTopEachPublicacion),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         contenidoParteSuperior(),
-  //         Padding(
-  //           padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 10.0),
-  //           child: Text(
-  //             descripcion,
-  //             style: TextStyle(fontSize: 16.8),
-  //           ),
-  //         ),
-  //         ShowVideo(
-  //           urlReel:
-  //               "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
-  //         ),
-  //         // Fila de iconos
-  //         filaIconos(objectType,
-  //             idPublicacion: idPublicacion, idUsuario: idUsuario)
-  //       ],
-  //     ),
-  //   );
-  // }
-
-  // iconWidget(CupertinoIcons.heart, heart, paddingLeft: 5.0),
-  // iconWidget(CupertinoIcons.chat_bubble_text, heart,
-  //     paddingLeft: 5.0, iconSize: 33),
-  // iconWidget(CupertinoIcons.share, heart,
-  //     paddingLeft: 5.0, iconSize: 32.0),
-  // Spacer(),
-  // idProServicio != null
-  //     ? iconWidget(CupertinoIcons.arrow_turn_up_right, () {
-  //         navigateToServiceOrProductDetail(
-  //           objectType,
-  //           idProServicio,
-  //         );
-  //       }, paddingRight: 15.0)
-  //     : SizedBox.shrink()
-
-  Widget iconWidget(IconData icon, VoidCallback onPress,
-      {double? paddingRight, double? paddingLeft, double? iconSize}) {
+  Widget contenidoReels(
+    String descripcion,
+    String urlReel,
+    int index,
+    Type objectType, {
+    int? likes,
+    int? idPublicacion,
+    int? idProServicio,
+    int? idUsuarioOnline,
+  }) {
     return Padding(
-      padding:
-          EdgeInsets.only(right: paddingRight ?? 0.0, left: paddingLeft ?? 0.0),
-      child: IconButton(
-        icon: Icon(
-          icon,
-          size: iconSize ?? 35.0,
-          color: Colors.black87,
-        ),
-        onPressed: onPress,
+      padding: EdgeInsets.only(top: paddingTopEachPublicacion),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          //contenidoParteSuperior(),
+          Padding(
+            padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 10.0),
+            child: Text(
+              descripcion,
+              style: TextStyle(fontSize: 16.8),
+            ),
+          ),
+          ShowVideo(
+            urlReel:
+                "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+          ),
+          // Fila de iconos
+          filaIconos(objectType, index,
+              like: likes,
+              idPublicacion: idPublicacion,
+              idProServicio: idProServicio,
+              idUsuarioOnline: idUsuarioOnline)
+        ],
       ),
     );
   }

@@ -110,12 +110,18 @@ class MisRutas {
   static String rutaCheckRatingEnlaceProductoIfExist =
       '$rutaPrincipal/checkRatingEnlaceProductoIfExist';
 
+  static String rutaUpdateLikeEnlaceProducto =
+      '$rutaPrincipal/enlaceProductoLike';
+
   // -- Rutas para la tabla ratingsEnlaceServicio -- //
   static String rutaRatingsEnlaceServicio =
       '$rutaPrincipal/ratingEnlaceServicio';
 
   static String rutaCheckRatingEnlaceServicioIfExist =
       '$rutaPrincipal/checkRatingEnlaceServicioIfExist';
+
+  static String rutaUpdateLikeEnlaceServicio =
+      '$rutaPrincipal/enlaceServicioLike';
 
   // -- Rutas para la tabla ratingsProductEnlaceReel -- //
   static String rutaRatingsEnlaceVidProducto =
@@ -124,12 +130,18 @@ class MisRutas {
   static String rutaCheckRatingEnlaceVidProductIfExist =
       '$rutaPrincipal/checkRatingEnlaceVidProductoIfExist';
 
-  // -- Rutas para la tabla ratingsProductEnlaceReel -- //
+  static String rutaUpdateLikeEnlaceProductReel =
+      '$rutaPrincipal/enlaceProductReelLike';
+
+  // -- Rutas para la tabla ratingsServiceEnlaceReel -- //
   static String rutaRatingsEnlaceVidServicio =
       '$rutaPrincipal/ratingEnlaceVidServicio';
 
   static String rutaCheckRatingEnlaceVidServiceIfExist =
       '$rutaPrincipal/checkRatingEnlaceVidServicioIfExist';
+
+  static String rutaUpdateLikeEnlaceServiceReel =
+      '$rutaPrincipal/enlaceServiceReelLike';
 
   // -- Rutas para la tabla ratingsFotosPublicacion -- //
 
@@ -139,6 +151,9 @@ class MisRutas {
   static String rutaCheckRatingFotoPublicacionIfExist =
       '$rutaPrincipal/checkRatingFotoPublicacionIfExist';
 
+  static String rutaUpdateLikeFotoPublicacion =
+      '$rutaPrincipal/enlaceFotoPublicacionLike';
+
   // -- Rutas para la tabla ratingsReelsPublicacion -- //
 
   static String rutaRatingsReelPublicacion =
@@ -146,4 +161,7 @@ class MisRutas {
 
   static String rutaCheckRatingReelPublicacionIfExist =
       '$rutaPrincipal/checkRatingReelPublicacionIfExist';
+
+  static String rutaUpdateLikeReelPublicacion =
+      '$rutaPrincipal/enlaceReelPublicacionLike';
 }

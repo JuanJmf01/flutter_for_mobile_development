@@ -7,6 +7,9 @@ class NewsFeedProductosTb extends NewsFeedItem {
   final String? descripcion;
   final String fechaCreacion;
   final int likes;
+  final int idUsuario;
+  final String nombreUsuario;
+  final String? apellidoUsuario;
   final List<EnlaceProServicioImagesTb> enlaceProductoImages;
 
   NewsFeedProductosTb({
@@ -15,6 +18,9 @@ class NewsFeedProductosTb extends NewsFeedItem {
     this.descripcion,
     required this.fechaCreacion,
     required this.likes,
+    required this.idUsuario,
+    required this.nombreUsuario,
+    this.apellidoUsuario,
     required this.enlaceProductoImages,
   });
 
@@ -35,6 +41,9 @@ class NewsFeedProductosTb extends NewsFeedItem {
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
       likes: json['likes'],
+      idUsuario: json['idUsuario'],
+      nombreUsuario: json['nombreUsuario'],
+      apellidoUsuario: json['apellidoUsuario'],
       enlaceProductoImages: enlaceProductoImagesList,
     );
   }
@@ -50,6 +59,7 @@ class NewsFeedServiciosTb extends NewsFeedItem {
   final int idServicio;
   final String? descripcion;
   final String fechaCreacion;
+  final int likes;
   final List<EnlaceProServicioImagesTb> enlaceServicioImages;
 
   NewsFeedServiciosTb({
@@ -57,6 +67,7 @@ class NewsFeedServiciosTb extends NewsFeedItem {
     required this.idServicio,
     this.descripcion,
     required this.fechaCreacion,
+    required this.likes,
     required this.enlaceServicioImages,
   });
 
@@ -76,6 +87,7 @@ class NewsFeedServiciosTb extends NewsFeedItem {
       idServicio: json['idServicio'],
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
+      likes: json['likes'],
       enlaceServicioImages: enlaceServicioImagesList,
     );
   }
@@ -91,6 +103,7 @@ class NeswFeedPublicacionesTb extends NewsFeedItem {
   final int idNegocio;
   final String? descripcion;
   final String fechaCreacion;
+  final int likes;
   final List<PublicacionImagesTb> enlacePublicacionImages;
 
   NeswFeedPublicacionesTb({
@@ -98,6 +111,7 @@ class NeswFeedPublicacionesTb extends NewsFeedItem {
     required this.idNegocio,
     this.descripcion,
     required this.fechaCreacion,
+    required this.likes,
     required this.enlacePublicacionImages,
   });
 
@@ -116,6 +130,7 @@ class NeswFeedPublicacionesTb extends NewsFeedItem {
       idNegocio: json['idNegocio'],
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
+      likes: json['likes'],
       enlacePublicacionImages: enlacePublicacionImagesList,
     );
   }
@@ -132,6 +147,7 @@ class NeswFeedReelProductTb extends NewsFeedItem {
   final String urlReel;
   final String? descripcion;
   final String fechaCreacion;
+  final int likes;
 
   NeswFeedReelProductTb({
     required this.idProductEnlaceReel,
@@ -139,6 +155,7 @@ class NeswFeedReelProductTb extends NewsFeedItem {
     required this.urlReel,
     this.descripcion,
     required this.fechaCreacion,
+    required this.likes,
   });
 
   factory NeswFeedReelProductTb.fromJsonReelProducto(
@@ -149,6 +166,7 @@ class NeswFeedReelProductTb extends NewsFeedItem {
       urlReel: json['urlReel'],
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
+      likes: json['likes'],
     );
   }
 
@@ -164,6 +182,7 @@ class NeswFeedReelServiceTb extends NewsFeedItem {
   final String urlReel;
   final String? descripcion;
   final String fechaCreacion;
+  final int likes;
 
   NeswFeedReelServiceTb({
     required this.idServiceEnlaceReel,
@@ -171,6 +190,7 @@ class NeswFeedReelServiceTb extends NewsFeedItem {
     required this.urlReel,
     this.descripcion,
     required this.fechaCreacion,
+    required this.likes,
   });
 
   factory NeswFeedReelServiceTb.fromJsonReelServicio(
@@ -181,6 +201,7 @@ class NeswFeedReelServiceTb extends NewsFeedItem {
       urlReel: json['urlReel'],
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
+      likes: json['likes'],
     );
   }
 
@@ -196,6 +217,7 @@ class NeswFeedOnlyReelTb extends NewsFeedItem {
   final String urlReel;
   final String? descripcion;
   final String fechaCreacion;
+  final int likes;
 
   NeswFeedOnlyReelTb({
     required this.idReelPublicacion,
@@ -203,6 +225,7 @@ class NeswFeedOnlyReelTb extends NewsFeedItem {
     required this.urlReel,
     this.descripcion,
     required this.fechaCreacion,
+    required this.likes,
   });
 
   factory NeswFeedOnlyReelTb.fromJsonReel(Map<String, dynamic> json) {
@@ -212,6 +235,7 @@ class NeswFeedOnlyReelTb extends NewsFeedItem {
       urlReel: json['urlReel'],
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
+      likes: json['likes'],
     );
   }
 
