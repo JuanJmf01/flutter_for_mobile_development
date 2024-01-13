@@ -8,7 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProfileNavigator extends StatefulWidget {
-  const ProfileNavigator({super.key});
+  const ProfileNavigator({super.key, required this.idUsuario});
+
+  final int idUsuario;
 
   @override
   State<ProfileNavigator> createState() => _ProfileNavigatorState();
