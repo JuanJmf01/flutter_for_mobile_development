@@ -459,7 +459,7 @@ class _NewsFeedState extends State<NewsFeed> {
   Widget contenidoParteSuperior(int idUsuario, String nombreUsuario) {
     return GestureDetector(
       onTap: (){
-        
+        print("ID: $idUsuario");
       },
       child: Row(
         children: [

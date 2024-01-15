@@ -101,7 +101,7 @@ class _MenuState extends State<Menu> {
     super.initState();
     _pages = [
       Home(),
-      ProfileNavigator(idUsuario: idUsuario),
+      PerfilPrincipal(idUsuario: idUsuario),
       CleanClass(),
       ShoppingCart(),
       Filtros(),
@@ -125,9 +125,6 @@ class _MenuState extends State<Menu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Tu Aplicación'),
-      ),
       body: _pages[_currentIndex],
       bottomNavigationBar: _buildBottomNavigationBar(),
     );

@@ -7,16 +7,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class ProfileNavigator extends StatefulWidget {
-  const ProfileNavigator({super.key, required this.idUsuario});
+class PerfilPrincipal extends StatefulWidget {
+  const PerfilPrincipal({super.key, required this.idUsuario});
 
   final int idUsuario;
 
   @override
-  State<ProfileNavigator> createState() => _ProfileNavigatorState();
+  State<PerfilPrincipal> createState() => _PerfilPrincipalState();
 }
 
-class _ProfileNavigatorState extends State<ProfileNavigator>
+class _PerfilPrincipalState extends State<PerfilPrincipal>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
