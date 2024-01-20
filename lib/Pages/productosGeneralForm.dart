@@ -161,16 +161,16 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
 
       if (principalImageBytes != null || principalImage != null) {
-        ImageStorageCreacionTb image = ImageStorageCreacionTb(
+        ImagesStorageTb image = ImagesStorageTb(
           idUsuario: idUsuario,
-          idProServicio: idProducto,
+          idFile: idProducto,
           newImageBytes:
               principalImageBytes ?? await assetToUint8List(principalImage!),
-          finalNameImage: principalImage!.name!,
+          imageName: principalImage!.name!,
           fileName: 'productos',
         );
 
-        String url = await ProductImagesStorage.cargarImage(image);
+        String url = await ImagesStorage.cargarImage(image);
         ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
           idProServicio: idProducto,
           nombreImage: principalImage!.name!,
@@ -188,15 +188,15 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           if (imagen is ProServicioImageToUpload) {
             Uint8List imageBytes = await assetToUint8List(imagen.newImage);
 
-            ImageStorageCreacionTb image = ImageStorageCreacionTb(
+            ImagesStorageTb image = ImagesStorageTb(
               idUsuario: idUsuario,
-              idProServicio: idProducto,
+              idFile: idProducto,
               newImageBytes: imageBytes,
-              finalNameImage: imagen.nombreImage,
+              imageName: imagen.nombreImage,
               fileName: 'productos',
             );
 
-            String url = await ProductImagesStorage.cargarImage(image);
+            String url = await ImagesStorage.cargarImage(image);
 
             ProServicioImageCreacionTb productImage =
                 ProServicioImageCreacionTb(
@@ -231,18 +231,16 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     }
 
     if (principalImageBytes != null || principalImage != null) {
-      ImageStorageTb image = ImageStorageTb(
-          idUsuario: idUsuario,
-          idFile: idProducto,
-          newImageBytes:
-              principalImageBytes ?? await assetToUint8List(principalImage!),
-          fileName: 'productos',
-          imageName: producto.nombreImage,
-          width: 195.0,
-          height: 170.0,
-          isPrincipalImage: 0);
+      ImagesStorageTb image = ImagesStorageTb(
+        idUsuario: idUsuario,
+        idFile: idProducto,
+        newImageBytes:
+            principalImageBytes ?? await assetToUint8List(principalImage!),
+        fileName: 'productos',
+        imageName: producto.nombreImage,
+      );
 
-      await ProductImagesStorage.updateImage(image);
+      await ImagesStorage.updateImage(image);
     } else {
       print('Imagen a actualizar es null');
     }
@@ -309,50 +307,50 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     _precioConDescuentoController.text = nuevoPrecio.toString();
   }
 
-  void guardar(int idUsuario) async{
-        //--- Se asigna cada String de los campso de texto a una variable ---//
-        final nombreProducto = _nombreController.text;
-        double precio = double.tryParse(_precioController.text) ?? 0.0;
-        final descripcion = _descripcionController.text;
-        int cantidadDisponible =
-            int.tryParse(_cantidadDisponibleController.text) ?? 0;
-        int descuento = int.tryParse(_descuentoController.text) ?? 0;
+  void guardar(int idUsuario) async {
+    //--- Se asigna cada String de los campso de texto a una variable ---//
+    final nombreProducto = _nombreController.text;
+    double precio = double.tryParse(_precioController.text) ?? 0.0;
+    final descripcion = _descripcionController.text;
+    int cantidadDisponible =
+        int.tryParse(_cantidadDisponibleController.text) ?? 0;
+    int descuento = int.tryParse(_descuentoController.text) ?? 0;
 
-        ProductoCreacionTb productoCreacion;
-        int idNegocio = await NegocioDb.crearNegocioSiNoExiste(idUsuario);
+    ProductoCreacionTb productoCreacion;
+    int idNegocio = await NegocioDb.crearNegocioSiNoExiste(idUsuario);
 
-        if (_producto?.idProducto == null) {
-          //-- Creamos el producto --//
+    if (_producto?.idProducto == null) {
+      //-- Creamos el producto --//
 
-          productoCreacion = ProductoCreacionTb(
-            idNegocio: idNegocio,
-            nombreProducto: nombreProducto,
-            precio: precio,
-            descripcion: descripcion,
-            cantidadDisponible: cantidadDisponible,
-            oferta: enOferta,
-            descuento: isChecked ? descuento : 0,
-          );
+      productoCreacion = ProductoCreacionTb(
+        idNegocio: idNegocio,
+        nombreProducto: nombreProducto,
+        precio: precio,
+        descripcion: descripcion,
+        cantidadDisponible: cantidadDisponible,
+        oferta: enOferta,
+        descuento: isChecked ? descuento : 0,
+      );
 
-          myImageList.items.isNotEmpty
-              ? crearProducto(productoCreacion, idUsuario)
-              : print('imagenToUpload es null o idUsuario es null');
-        } else {
-          //Actualizar ya que idProducto != null
-          _producto = ProductoTb(
-            idProducto: _producto!.idProducto,
-            idNegocio: _producto!.idNegocio,
-            nombre: nombreProducto,
-            precio: precio,
-            descripcion: descripcion,
-            cantidadDisponible: cantidadDisponible,
-            oferta: enOferta,
-            urlImage: _producto!.urlImage,
-            nombreImage: _producto!.nombreImage,
-          );
+      myImageList.items.isNotEmpty
+          ? crearProducto(productoCreacion, idUsuario)
+          : print('imagenToUpload es null o idUsuario es null');
+    } else {
+      //Actualizar ya que idProducto != null
+      _producto = ProductoTb(
+        idProducto: _producto!.idProducto,
+        idNegocio: _producto!.idNegocio,
+        nombre: nombreProducto,
+        precio: precio,
+        descripcion: descripcion,
+        cantidadDisponible: cantidadDisponible,
+        oferta: enOferta,
+        urlImage: _producto!.urlImage,
+        nombreImage: _producto!.nombreImage,
+      );
 
-          actualizarProducto(_producto!, idUsuario);
-        }
+      actualizarProducto(_producto!, idUsuario);
+    }
   }
 
   @override
@@ -435,7 +433,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                               alignment: Alignment.centerLeft,
                               child: GlobalTextButton(
                                 onPressed: () async {
-                                  List<ProServicioImageToUpload> selectedImagesAux =
+                                  List<ProServicioImageToUpload>
+                                      selectedImagesAux =
                                       await CrudImages.agregarImagenes();
                                   setState(() {
                                     myImageList.items.addAll(selectedImagesAux);

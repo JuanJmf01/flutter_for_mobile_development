@@ -1,6 +1,7 @@
 import 'package:etfi_point/Components/Data/EntitiModels/enlaces/ratingsEnlaceProServicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/publicacionesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/enlaces/ratingsEnlaceProServicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
@@ -11,7 +12,9 @@ import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/showVideo.dart';
+import 'package:etfi_point/Pages/perfilPrincipal.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
+import 'package:etfi_point/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +52,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             child: IconButton(
               icon: Icon(Icons.settings),
               onPressed: () {
+                // UTILIZAR  LA CLASE globalButtonBase EN LA CLASE ButtonMenu
                 showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
@@ -203,12 +207,12 @@ class _NewsFeedState extends State<NewsFeed> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuarioOnline =
+    int? idUsuarioActual =
         Provider.of<UsuarioProvider>(context).idUsuarioActual;
 
     return FutureBuilder<NewsFeedTb>(
-        future: idUsuarioOnline != null
-            ? NewsFeedDb.getAllNewsFeed(idUsuarioOnline)
+        future: idUsuarioActual != null
+            ? NewsFeedDb.getAllEnlaceProductos(idUsuarioActual)
             : null,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -228,15 +232,14 @@ class _NewsFeedState extends State<NewsFeed> {
                     if (item is NewsFeedProductosTb) {
                       return contenidoImages(
                         item.descripcion ?? '',
-                        item.idUsuario,
-                        item.nombreUsuario,
                         item.enlaceProductoImages,
                         NewsFeedProductosTb,
                         index,
+                        item.usuario,
                         likes: item.likes,
                         idPublicacion: item.idEnlaceProducto,
                         idProServicio: item.idProducto,
-                        idUsuarioOnline: idUsuarioOnline,
+                        idUsuarioActual: idUsuarioActual,
                       );
                       // } else if (item is NewsFeedServiciosTb) {
                       //   return contenidoImages(
@@ -247,7 +250,7 @@ class _NewsFeedState extends State<NewsFeed> {
                       //     likes: item.likes,
                       //     idPublicacion: item.idEnlaceServicio,
                       //     idProServicio: item.idServicio,
-                      //     idUsuarioOnline: idUsuarioOnline,
+                      //     idUsuarioActual: idUsuarioActual,
                       //   );
                       // } else if (item is NeswFeedPublicacionesTb) {
                       //   return contenidoImages(
@@ -256,7 +259,7 @@ class _NewsFeedState extends State<NewsFeed> {
                       //     NeswFeedPublicacionesTb,
                       //     index,
                       //     likes: item.likes,
-                      //     idUsuarioOnline: idUsuarioOnline,
+                      //     idUsuarioActual: idUsuarioActual,
                       //     idPublicacion: item.idFotoPublicacion,
                       //   );
                       // } else if (item is NeswFeedReelProductTb) {
@@ -268,7 +271,7 @@ class _NewsFeedState extends State<NewsFeed> {
                       //     likes: item.likes,
                       //     idPublicacion: item.idProductEnlaceReel,
                       //     idProServicio: item.idProducto,
-                      //     idUsuarioOnline: idUsuarioOnline,
+                      //     idUsuarioActual: idUsuarioActual,
                       //   );
                       // } else if (item is NeswFeedReelServiceTb) {
                       //   return contenidoReels(
@@ -279,7 +282,7 @@ class _NewsFeedState extends State<NewsFeed> {
                       //     likes: item.likes,
                       //     idPublicacion: item.idServiceEnlaceReel,
                       //     idProServicio: item.idServicio,
-                      //     idUsuarioOnline: idUsuarioOnline,
+                      //     idUsuarioActual: idUsuarioActual,
                       //   );
                       // } else if (item is NeswFeedOnlyReelTb) {
                       //   return contenidoReels(
@@ -288,7 +291,7 @@ class _NewsFeedState extends State<NewsFeed> {
                       //     index,
                       //     NeswFeedOnlyReelTb,
                       //     likes: item.likes,
-                      //     idUsuarioOnline: idUsuarioOnline,
+                      //     idUsuarioActual: idUsuarioActual,
                       //     idPublicacion: item.idReelPublicacion,
                       //   );
                     }
@@ -309,19 +312,19 @@ class _NewsFeedState extends State<NewsFeed> {
         });
   }
 
-  Widget contenidoImages(String descripcion, int idUsuario,
-      String nombreUsuario, List<dynamic> images, Type objectType, int index,
+  Widget contenidoImages(String descripcion, List<dynamic> images,
+      Type objectType, int index, UsuarioTb usuario,
       {int? likes,
       int? idPublicacion,
       int? idProServicio,
-      int? idUsuarioOnline}) {
+      int? idUsuarioActual}) {
     return Padding(
       padding: EdgeInsets.only(top: paddingTopEachPublicacion),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //Contenido parte superior de cada publicacion
-          contenidoParteSuperior(idUsuario, nombreUsuario),
+          contenidoParteSuperior(usuario.idUsuario, usuario.nombres),
           Padding(
             padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
             child: Text(
@@ -344,7 +347,7 @@ class _NewsFeedState extends State<NewsFeed> {
               like: likes,
               idPublicacion: idPublicacion,
               idProServicio: idProServicio,
-              idUsuarioOnline: idUsuarioOnline)
+              idUsuarioActual: idUsuarioActual)
         ],
       ),
     );
@@ -354,7 +357,7 @@ class _NewsFeedState extends State<NewsFeed> {
       {int? like,
       int? idPublicacion,
       int? idProServicio,
-      int? idUsuarioOnline}) {
+      int? idUsuarioActual}) {
     bool isLiked =
         isLikedMap[index] ?? (like == 1); // Asumimos 'false' si es nulo
     double iconSize = 32.0;
@@ -362,27 +365,27 @@ class _NewsFeedState extends State<NewsFeed> {
 
     void saveRatingEnlaceProServicio() {
       print('Like: $isLiked');
-      if (idUsuarioOnline != null && idPublicacion != null) {
+      if (idUsuarioActual != null && idPublicacion != null) {
         RatingsEnlaceProServicioTb ratingEnlaceProducto =
             RatingsEnlaceProServicioTb(
-                idUsuario: idUsuarioOnline,
+                idUsuario: idUsuarioActual,
                 idEnlaceProServicio: idPublicacion,
                 likes: isLiked ? 0 : 1);
 
         RatingsEnlaceProServicioDb.saveRating(
-            idPublicacion, idUsuarioOnline, ratingEnlaceProducto, objectType);
+            idPublicacion, idUsuarioActual, ratingEnlaceProducto, objectType);
       }
     }
 
     void saveRatingPublicacion() {
-      if (idUsuarioOnline != null && idPublicacion != null) {
+      if (idUsuarioActual != null && idPublicacion != null) {
         RatingsPublicacionesTb ratingPublicacion = RatingsPublicacionesTb(
-            idUsuario: idUsuarioOnline,
+            idUsuario: idUsuarioActual,
             idPublicacion: idPublicacion,
             likes: isLiked ? 0 : 1);
 
         PublicacionesDb.saveRating(
-            idPublicacion, idUsuarioOnline, ratingPublicacion, objectType);
+            idPublicacion, idUsuarioActual, ratingPublicacion, objectType);
       }
     }
 
@@ -456,10 +459,21 @@ class _NewsFeedState extends State<NewsFeed> {
     );
   }
 
-  Widget contenidoParteSuperior(int idUsuario, String nombreUsuario) {
+  Widget contenidoParteSuperior(
+    int idUsuario,
+    String nombreUsuario,
+  ) {
     return GestureDetector(
-      onTap: (){
-        print("ID: $idUsuario");
+      onTap: () {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Menu(
+              currentIndex: 1,
+              idUsuario: idUsuario,
+            ),
+          ),
+        );
       },
       child: Row(
         children: [
@@ -490,7 +504,7 @@ class _NewsFeedState extends State<NewsFeed> {
     int? likes,
     int? idPublicacion,
     int? idProServicio,
-    int? idUsuarioOnline,
+    int? idUsuarioActual,
   }) {
     return Padding(
       padding: EdgeInsets.only(top: paddingTopEachPublicacion),
@@ -514,7 +528,7 @@ class _NewsFeedState extends State<NewsFeed> {
               like: likes,
               idPublicacion: idPublicacion,
               idProServicio: idProServicio,
-              idUsuarioOnline: idUsuarioOnline)
+              idUsuarioActual: idUsuarioActual)
         ],
       ),
     );

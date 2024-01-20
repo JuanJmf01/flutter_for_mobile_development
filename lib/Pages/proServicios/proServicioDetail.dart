@@ -113,7 +113,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
             );
 
             bool resultStorageImages =
-                await ProductImagesStorage.deleteProServicioImage(imageInfo);
+                await ImagesStorage.deleteProServicioImage(imageInfo);
             if (resultStorageImages) {
               try {
                 print('Id producto: $idProServicio');

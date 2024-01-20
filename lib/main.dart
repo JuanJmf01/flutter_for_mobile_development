@@ -80,18 +80,40 @@ class _MyAppState extends State<MyApp> {
         //   ),
         // ),
         title: "Mi app",
-        home: Menu());
+        home: FutureBuilder<int>(
+          future: context.read<UsuarioProvider>().obtenerIdUsuarioActual(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Text('Error al cargar idUsuario');
+            } else if (snapshot.hasData) {
+              int idUsuario = snapshot.data!;
+              return Menu(currentIndex: 0, idUsuario: idUsuario);
+            } else {
+              return Text('No se encontro idUsuario');
+            }
+          },
+        ));
   }
 }
 
 class Menu extends StatefulWidget {
+  const Menu({
+    super.key,
+    required this.currentIndex,
+    required this.idUsuario,
+  });
+
+  final int currentIndex;
+  final int idUsuario;
+
   @override
-  _MenuState createState() => _MenuState();
+  State<Menu> createState() => _MenuState();
 }
 
 class _MenuState extends State<Menu> {
   int _currentIndex = 0;
-  int idUsuario = 1;
 
   // Lista de clases (páginas) correspondientes a cada pestaña
   List<Widget> _pages = [];
@@ -99,9 +121,16 @@ class _MenuState extends State<Menu> {
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.currentIndex;
+    _loadPages();
+  }
+
+  void _loadPages() {
     _pages = [
       Home(),
-      PerfilPrincipal(idUsuario: idUsuario),
+      PerfilPrincipal(
+        idUsuario: widget.idUsuario,
+      ),
       CleanClass(),
       ShoppingCart(),
       Filtros(),

@@ -452,15 +452,15 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         Uint8List imageBytes = await assetToUint8List(imageToUpload.newImage);
         String fileName = assingName(imageToUpload.newImage.name!);
 
-        ImageStorageCreacionTb image = ImageStorageCreacionTb(
+        ImagesStorageTb image = ImagesStorageTb(
           idUsuario: idUsuario,
-          idProServicio: widget.idProServicio,
+          idFile: widget.idProServicio,
           newImageBytes: imageBytes,
           fileName: fileName,
-          finalNameImage: fileName,
+          imageName: fileName,
         );
 
-        String url = await ProductImagesStorage.cargarImage(image);
+        String url = await ImagesStorage.cargarImage(image);
 
         ProServicioImageCreacionTb proServicioCreacionImage =
             ProServicioImageCreacionTb(
@@ -511,17 +511,14 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
         print("LONG IMAGE_: ${imageToUpdate.originalHeight!.toDouble()}");
 
-        ImageStorageTb image = ImageStorageTb(
+        ImagesStorageTb image = ImagesStorageTb(
             idUsuario: idUsuario,
             idFile: widget.idProServicio,
             newImageBytes: await assetToUint8List(imageToUpdate),
             fileName: fileName,
-            imageName: nombreImage,
-            width: imageToUpdate.originalWidth!.toDouble(),
-            height: imageToUpdate.originalHeight!.toDouble(),
-            isPrincipalImage: 0);
+            imageName: nombreImage);
 
-        String url = await ProductImagesStorage.updateImage(image);
+        String url = await ImagesStorage.updateImage(image);
         print('URL image_: $url');
         for (int i = 0; i < productSecondaryImages.length; i++) {
           //Solo entra al if en una ocacion por lo que no hay problema con el setState dentro del ciclo for
@@ -659,7 +656,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 );
 
                 bool deleteResult =
-                    await ProductImagesStorage.deleteImage(infoImageToDelete);
+                    await ImagesStorage.deleteImage(infoImageToDelete);
 
                 if (fileName == MisRutasFirebase.forProducts) {
                   await ProductImageDb.deleteProuctImage(

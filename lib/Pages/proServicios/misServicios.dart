@@ -1,4 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
@@ -19,10 +21,14 @@ class _MisServiciosState extends State<MisServicios> {
 
   @override
   Widget build(BuildContext context) {
+    int idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
+
     return FutureBuilder(
-        future: context
-            .read<ProServiciosProvider>()
-            .obtenerServiciosByNegocio(widget.idUsuario),
+        future: widget.idUsuario == idUsuarioActual
+            ? context
+                .read<ProServiciosProvider>()
+                .obtenerServiciosByNegocio(idUsuarioActual)
+            : ServicioDb.getServiciosByNegocio(widget.idUsuario),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(

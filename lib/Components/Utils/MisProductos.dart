@@ -1,5 +1,7 @@
 import 'dart:typed_data';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
@@ -7,7 +9,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class MisProductos extends StatefulWidget {
-  const MisProductos({super.key, required this.idUsuario});
+  const MisProductos({
+    super.key,
+    required this.idUsuario,
+  });
 
   final int idUsuario;
 
@@ -20,11 +25,15 @@ class _MisProductosState extends State<MisProductos> {
 
   @override
   Widget build(BuildContext context) {
+    int idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
+
     //final TextEditingController searchController = TextEditingController();
     return FutureBuilder<List<ProductoTb>>(
-      future: context
-          .read<ProServiciosProvider>()
-          .obtenerProductosByNegocio(widget.idUsuario),
+      future: widget.idUsuario == idUsuarioActual
+          ? context
+              .read<ProServiciosProvider>()
+              .obtenerProductosByNegocio(idUsuarioActual)
+          : ProductoDb.getProductosByNegocio(widget.idUsuario),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());

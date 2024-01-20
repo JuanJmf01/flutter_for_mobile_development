@@ -1,5 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/publicacionImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 
 class NewsFeedProductosTb extends NewsFeedItem {
   final int idEnlaceProducto;
@@ -7,9 +8,7 @@ class NewsFeedProductosTb extends NewsFeedItem {
   final String? descripcion;
   final String fechaCreacion;
   final int likes;
-  final int idUsuario;
-  final String nombreUsuario;
-  final String? apellidoUsuario;
+  final UsuarioTb usuario;
   final List<EnlaceProServicioImagesTb> enlaceProductoImages;
 
   NewsFeedProductosTb({
@@ -18,9 +17,7 @@ class NewsFeedProductosTb extends NewsFeedItem {
     this.descripcion,
     required this.fechaCreacion,
     required this.likes,
-    required this.idUsuario,
-    required this.nombreUsuario,
-    this.apellidoUsuario,
+    required this.usuario,
     required this.enlaceProductoImages,
   });
 
@@ -41,9 +38,7 @@ class NewsFeedProductosTb extends NewsFeedItem {
       descripcion: json['descripcion'],
       fechaCreacion: json['fechaCreacion'],
       likes: json['likes'],
-      idUsuario: json['idUsuario'],
-      nombreUsuario: json['nombreUsuario'],
-      apellidoUsuario: json['apellidoUsuario'],
+      usuario: UsuarioTb.fromJson(json),
       enlaceProductoImages: enlaceProductoImagesList,
     );
   }

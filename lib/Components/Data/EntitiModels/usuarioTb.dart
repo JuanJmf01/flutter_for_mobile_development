@@ -2,15 +2,19 @@ class UsuarioTb {
   int idUsuario;
   String nombres;
   String? apellidos;
-  String email;
+  String? email;
   String? numeroCelular;
+  String? urlFotoPerfil;
+  String? urlFotoPortada;
 
   UsuarioTb({
     required this.idUsuario,
     required this.nombres,
     this.apellidos,
-    required this.email,
+    this.email,
     this.numeroCelular,
+    this.urlFotoPerfil,
+    this.urlFotoPortada,
   });
 
   factory UsuarioTb.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class UsuarioTb {
       apellidos: json['apellidos'],
       email: json['email'],
       numeroCelular: json['numeroCelular'],
+      urlFotoPerfil: json['urlFotoPerfil'],
+      urlFotoPortada: json['urlFotoPortada'],
     );
   }
 
@@ -69,3 +75,55 @@ class UsuarioCreacionTb {
     };
   }
 }
+
+
+class UsuarioPrincipalProfileTb {
+  int idUsuario;
+  String nombres;
+  String? apellidos;
+  String? email;
+  String? numeroCelular;
+  String? urlFotoPerfil;
+  String? urlFotoPortada;
+  int seguidores;
+  int siguiendo;
+
+  UsuarioPrincipalProfileTb({
+    required this.idUsuario,
+    required this.nombres,
+    this.apellidos,
+    this.email,
+    this.numeroCelular,
+    this.urlFotoPerfil,
+    this.urlFotoPortada,
+    required this.seguidores,
+    required this.siguiendo,
+  });
+
+  factory UsuarioPrincipalProfileTb.fromJson(Map<String, dynamic> json) {
+    return UsuarioPrincipalProfileTb(
+      idUsuario: json['idUsuario'],
+      nombres: json['nombres'],
+      apellidos: json['apellidos'],
+      email: json['email'],
+      numeroCelular: json['numeroCelular'],
+      urlFotoPerfil: json['urlFotoPerfil'],
+      urlFotoPortada: json['urlFotoPortada'],
+      seguidores: json['seguidores'],
+      siguiendo: json['siguiendo'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'idUsuario': idUsuario,
+      'nombres': nombres,
+      'apellidos': apellidos,
+      'email': email,
+      'numeroCelular': numeroCelular,
+    };
+  }
+}
+
+
+

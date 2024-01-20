@@ -68,15 +68,15 @@ class _CrearEnlaceState extends State<CrearEnlace> {
             await PublicacionesDb.insertPublicacion(publicacion);
 
         for (var imageToUpload in imagesToUpload) {
-          ImageStorageCreacionTb image = ImageStorageCreacionTb(
+          ImagesStorageTb image = ImagesStorageTb(
             idUsuario: idUsuario,
-            idProServicio: idPublicacion,
+            idFile: idPublicacion,
             newImageBytes: await assetToUint8List(imageToUpload.newImage),
             fileName: 'publicaciones',
-            finalNameImage: imageToUpload.nombreImage,
+            imageName: imageToUpload.nombreImage,
           );
 
-          String urlImage = await ProductImagesStorage.cargarImage(image);
+          String urlImage = await ImagesStorage.cargarImage(image);
 
           PublicacionImagesCreacionTb publicacionImage =
               PublicacionImagesCreacionTb(

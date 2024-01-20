@@ -4,6 +4,7 @@ import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
+import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
 import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -49,7 +50,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
       if (!userExists) {
         newUser(userCredential);
       }
-      
+
       if (context.mounted) {
         context.read<LoginProvider>().checkUserSignedIn();
         //context.read<UsuarioProvider>().obtenerIdUsuario();
@@ -82,19 +83,11 @@ class _ButtonLoginState extends State<ButtonLogin> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10.0),
-      decoration: const BoxDecoration(
-        //color: Colors.grey[800], // Gris tirando a oscuro
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(10.0),
-          topRight: Radius.circular(10.0),
-        ),
-      ),
-      child: Column(
+    return GlobalButtonBase(
+      itemsColumn: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-         LineForDropdownButton(),
+          LineForDropdownButton(),
           //const SizedBox(height: 10.0),
           Padding(
             padding: const EdgeInsets.only(top: 40.0),

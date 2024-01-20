@@ -62,7 +62,7 @@ class UsuarioDb {
       if (response.statusCode == 200) {
         UsuarioTb usuario = UsuarioTb.fromJson(response.data);
         return usuario;
-      }else if(response.statusCode == 404){
+      } else if (response.statusCode == 404) {
         return null;
       } else {
         throw Exception('Error en la respuesta: ${response.statusCode}');
@@ -88,4 +88,68 @@ class UsuarioDb {
       return false;
     }
   }
+
+  static Future<UsuarioPrincipalProfileTb> getUsuarioProfile(
+      int idUsuario) async {
+    Dio dio = Dio();
+    String url = '${MisRutas.rutaUsuariosProfile}/$idUsuario';
+
+    try {
+      Response response = await dio.get(url,
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ));
+
+      if (response.statusCode == 200) {
+        UsuarioPrincipalProfileTb usuarioProfile =
+            UsuarioPrincipalProfileTb.fromJson(response.data);
+
+        return usuarioProfile;
+      } else {
+        throw Exception('Error en la solicitud ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Error: $error');
+    }
+  }
+
+  //   static Future<int> insertProducto(ProductoCreacionTb producto,
+  //     List<SubCategoriaTb> categoriasSeleccionadas) async {
+
+  //   Dio dio = Dio();
+  //   Map<String, dynamic> data = producto.toMap();
+  //   String url = MisRutas.rutaProductos;
+
+  //   try {
+  //     Response response = await dio.post(url,
+  //         data: jsonEncode(data),
+  //         options: Options(
+  //           headers: {'Content-Type': 'application/json'},
+  //         ));
+  //     if (response.statusCode == 200) {
+  //       print('Producto insertado correctamenre (print)');
+  //       print(response.data);
+  //       int idProducto = response.data;
+
+  //       // Insert categorias seleccionadas
+  //       for (var subCategoria in categoriasSeleccionadas) {
+  //         ProServicioSubCategoriaTb productoSubCategoria =
+  //             ProServicioSubCategoriaTb(
+  //                 idProServicio: idProducto,
+  //                 idCategoria: subCategoria.idCategoria,
+  //                 idSubCategoria: subCategoria.idSubCategoria);
+
+  //         await ProServiceSubCategoriasDb.insertSubCategoriasSeleccionadas(
+  //             productoSubCategoria, ProductoTb);
+  //       }
+  //       return idProducto;
+  //     } else {
+  //       throw Exception(
+  //           'Error en la solicitud en insertProducto: ${response.statusCode}');
+  //     }
+  //   } catch (error) {
+  //     print('Ha ocurrido un error $error');
+  //     throw Exception('Error de conexión: $error');
+  //   }
+  // }
 }

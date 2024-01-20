@@ -3,40 +3,37 @@ import 'dart:typed_data';
 
 import 'package:image_picker/image_picker.dart';
 
-class ImageStorageTb {
+class ImagesStorageTb {
   final int idUsuario;
   final int idFile;
   final Uint8List newImageBytes;
   final String fileName;
   final String imageName;
-  final double width;
-  final double height;
-  final int isPrincipalImage;
 
-  ImageStorageTb(
+  ImagesStorageTb(
       {required this.idUsuario,
       required this.idFile,
       required this.newImageBytes,
       required this.fileName,
-      required this.imageName,
-      required this.width,
-      required this.height,
-      required this.isPrincipalImage});
+      required this.imageName});
 }
 
-class ImageStorageCreacionTb {
+
+class ImageStorageTb {
   final int idUsuario;
-  final int idProServicio;
   final Uint8List newImageBytes;
   final String fileName;
-  final String finalNameImage;
+  final String imageName;
+  final double width;
+  final double height;
 
-  ImageStorageCreacionTb({
+  ImageStorageTb({
     required this.idUsuario,
-    required this.idProServicio,
     required this.newImageBytes,
     required this.fileName,
-    required this.finalNameImage,
+    required this.imageName,
+    required this.width,
+    required this.height,
   });
 }
 

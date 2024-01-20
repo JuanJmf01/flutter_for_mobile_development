@@ -6,14 +6,14 @@ class ItemForModalButtons extends StatelessWidget {
       {super.key,
       required this.onPress,
       required this.padding,
-      required this.icon,
-      required this.colorIcon,
+      this.icon,
+      this.colorIcon,
       required this.textItem});
 
   final VoidCallback onPress;
   final EdgeInsets padding;
-  final IconData icon;
-  final Color colorIcon;
+  final IconData? icon;
+  final Color? colorIcon;
   final String textItem;
 
   @override
@@ -33,8 +33,10 @@ class ItemForModalButtons extends StatelessWidget {
               SizedBox(width: 10.0),
               Text(
                 textItem,
-                style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+                style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16),
               ),
             ],
           ),

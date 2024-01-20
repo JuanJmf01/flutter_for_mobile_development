@@ -7,6 +7,8 @@ import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+// UTILIZAR  LA CLASE globalButtonBase
+
 class ButtonMenu extends StatelessWidget {
   ButtonMenu({super.key});
 
@@ -42,13 +44,13 @@ class ButtonMenu extends StatelessWidget {
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                                 //Navigator.pop(context);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => Menu(
-                                          //index: 0,
-                                          )),
-                                );
+                                // Navigator.pushReplacement(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //       builder: (context) => Menu(
+                                //             currentIndex: 0,
+                                //           )),
+                                // );
                               }
                             },
                             onCancel: () {

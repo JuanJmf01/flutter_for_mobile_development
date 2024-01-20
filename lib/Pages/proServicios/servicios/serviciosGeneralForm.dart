@@ -91,15 +91,15 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
       String finalNameImage = assingName(principalImage!.name!);
 
       if (principalImageBytes != null || principalImage != null) {
-        ImageStorageCreacionTb image = ImageStorageCreacionTb(
+        ImagesStorageTb image = ImagesStorageTb(
           idUsuario: idUsuario,
-          idProServicio: idServicio,
+          idFile: idServicio,
           newImageBytes:
               principalImageBytes ?? await assetToUint8List(principalImage!),
           fileName: 'servicios',
-          finalNameImage: finalNameImage,
+          imageName: finalNameImage,
         );
-        String url = await ProductImagesStorage.cargarImage(image);
+        String url = await ImagesStorage.cargarImage(image);
 
         ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
           idProServicio: idServicio,
@@ -119,15 +119,15 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
           if (imagen is ProServicioImageToUpload) {
             Uint8List imageBytes = await assetToUint8List(imagen.newImage);
 
-            ImageStorageCreacionTb image = ImageStorageCreacionTb(
+            ImagesStorageTb image = ImagesStorageTb(
               idUsuario: idUsuario,
-              idProServicio: idServicio,
+              idFile: idServicio,
               newImageBytes: imageBytes,
-              finalNameImage: finalNameImage,
+              imageName: finalNameImage,
               fileName: 'servicios',
             );
 
-            String url = await ProductImagesStorage.cargarImage(image);
+            String url = await ImagesStorage.cargarImage(image);
 
             ProServicioImageCreacionTb serviceImage =
                 ProServicioImageCreacionTb(
@@ -246,18 +246,15 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
     }
 
     if (principalImageBytes != null || principalImage != null) {
-      ImageStorageTb image = ImageStorageTb(
+      ImagesStorageTb image = ImagesStorageTb(
         idUsuario: idUsuario,
         idFile: idServicio,
         newImageBytes:
             principalImageBytes ?? await assetToUint8List(principalImage!),
         fileName: 'servicios',
         imageName: servicio.nombreImage,
-        width: 195.0,
-        height: 170.0,
-        isPrincipalImage: 0,
       );
-      await ProductImagesStorage.updateImage(image);
+      await ImagesStorage.updateImage(image);
     } else {
       print('Imagen a actualizar es null');
     }

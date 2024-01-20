@@ -1,16 +1,17 @@
+import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/MisProductos.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
+import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
+import 'package:etfi_point/Components/Utils/showModalsButtons/buttonFotoPerfilPortada.dart';
 import 'package:etfi_point/Pages/proServicios/misServicios.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'package:flutter/material.dart';
 
 class PerfilPrincipal extends StatefulWidget {
-  const PerfilPrincipal({Key? key, required this.idUsuario}) : super(key: key);
+  const PerfilPrincipal({
+    super.key,
+    required this.idUsuario,
+  });
 
   final int idUsuario;
 
@@ -21,10 +22,13 @@ class PerfilPrincipal extends StatefulWidget {
 class _PerfilPrincipalState extends State<PerfilPrincipal>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late UsuarioPrincipalProfileTb usuarioPrincipal;
 
   @override
   void initState() {
     super.initState();
+    print("ID USUARIO: ${widget.idUsuario}");
+
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _tabController.addListener(_handleTabSelection);
     _updateCircleTabs();
@@ -46,92 +50,138 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
 
+    void showModalButtonFotoPerfilPortada(String typePicture) {
+      showModalBottomSheet(
+        isScrollControlled: true,
+        context: context,
+        builder: (BuildContext context) => ButtonFotoPerfilPortada(
+            verFoto: "Ver foto de $typePicture",
+            cambiarFoto: "Cambiar foto de $typePicture",
+            eliminarFoto: "Eliminar foto de $typePicture"),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(10.0),
+            topRight: Radius.circular(10.0),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
-      body: DefaultTabController(
-        length: 3,
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              SliverAppBar(
-                expandedHeight: screenHeight * 0.4,
-                floating: false,
-                pinned: true,
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Stack(
-                    children: [
-                      // Contenedor de la foto de portada
-                      Container(
-                        width: double.infinity,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10.0),
-                            topRight: Radius.circular(10.0),
-                          ),
-                          color: Colors.grey.shade300,
-                        ),
-                        child: Stack(
+      body: FutureBuilder<UsuarioPrincipalProfileTb>(
+        future: UsuarioDb.getUsuarioProfile(widget.idUsuario),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Text('Error al cargar el usuario');
+          } else if (snapshot.hasData) {
+            usuarioPrincipal = snapshot.data!;
+            return DefaultTabController(
+              length: 3,
+              child: NestedScrollView(
+                headerSliverBuilder:
+                    (BuildContext context, bool innerBoxIsScrolled) {
+                  return [
+                    SliverAppBar(
+                      expandedHeight: screenHeight * 0.4,
+                      floating: false,
+                      pinned: true,
+                      flexibleSpace: FlexibleSpaceBar(
+                        background: Stack(
                           children: [
+                            // Contenedor de la foto de portada
+                            GestureDetector(
+                              onTap: () {
+                                showModalButtonFotoPerfilPortada("portada");
+                              },
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(10.0),
+                                    topRight: Radius.circular(10.0),
+                                  ),
+                                  color: Colors.grey.shade300,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      left: 16.0,
+                                      bottom: 16.0,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          showModalButtonFotoPerfilPortada(
+                                              "perfil");
+                                        },
+                                        child: CircleAvatar(
+                                          radius: 40.0,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            // Contenedor de los Tabs superpuesto
                             Positioned(
-                              left: 16.0,
-                              bottom: 16.0,
-                              child: CircleAvatar(
-                                radius: 30.0,
+                              top: 0,
+                              left: 0,
+                              right: 0,
+                              child: Container(
+                                height: 60,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 0.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.only(top: 6.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      for (int index = 0; index < 3; index++)
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 20.0),
+                                          child: CircleTab(
+                                            index: index,
+                                            tabController: _tabController,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                      // Contenedor de los Tabs superpuesto
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          height: 60,
-                          padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 6.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                for (int index = 0; index < 3; index++)
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 20.0),
-                                    child: CircleTab(
-                                      index: index,
-                                      tabController: _tabController,
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ];
+                },
+                body: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildTabContent(0),
+                    _buildTabContent(1),
+                    _buildTabContent(2),
+                  ],
                 ),
               ),
-            ];
-          },
-          body: TabBarView(
-            controller: _tabController,
-            children: [
-              _buildTabContent(0),
-              _buildTabContent(1),
-              _buildTabContent(2),
-            ],
-          ),
-        ),
+            );
+          } else {
+            return Text('No se encontraron los productos');
+          }
+        },
       ),
     );
   }
 
   Widget _buildTabContent(int tabIndex) {
+    print("ID USUARIO 2: ${widget.idUsuario}");
+
     return tabIndex == 0
         ? ContenidoProServicios(idUsuario: widget.idUsuario)
         : tabIndex == 1
-            ? PerfilCentral()
+            ? PerfilCentral(usuarioProfile: usuarioPrincipal)
             : tabIndex == 2
                 ? ContenidoEnlaces()
                 : SizedBox();
@@ -145,14 +195,14 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
 }
 
 class CircleTab extends StatelessWidget {
-  final int index;
-  final TabController tabController;
-
   const CircleTab({
-    Key? key,
+    super.key,
     required this.index,
     required this.tabController,
-  }) : super(key: key);
+  });
+
+  final int index;
+  final TabController tabController;
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +215,7 @@ class CircleTab extends StatelessWidget {
         backgroundColor: tabController.index == index
             ? Colors.grey.shade600 // Color cuando está seleccionado
             : Colors.grey.shade500, // Color cuando no está seleccionado
-        child: Icon(
+        child: const Icon(
           Icons.star, // Puedes personalizar esto según tus necesidades
           color: Colors.white,
         ),
@@ -175,17 +225,17 @@ class CircleTab extends StatelessWidget {
 }
 
 class CircleContainer extends StatefulWidget {
+  const CircleContainer({
+    super.key,
+    required this.isSelected,
+    required this.onTap,
+  });
+
   final bool isSelected;
   final VoidCallback onTap;
 
-  const CircleContainer({
-    Key? key,
-    required this.isSelected,
-    required this.onTap,
-  }) : super(key: key);
-
   @override
-  _CircleContainerState createState() => _CircleContainerState();
+  State<CircleContainer> createState() => _CircleContainerState();
 }
 
 class _CircleContainerState extends State<CircleContainer> {
@@ -204,7 +254,7 @@ class _CircleContainerState extends State<CircleContainer> {
           shape: BoxShape.circle,
           color: containerColor,
         ),
-        child: Icon(
+        child: const Icon(
           Icons.star,
           color: Colors.white,
         ),
@@ -226,7 +276,12 @@ List<CircleTabData> _circleTabs = [
 ];
 
 class PerfilCentral extends StatefulWidget {
-  const PerfilCentral({super.key});
+  const PerfilCentral({
+    super.key,
+    required this.usuarioProfile,
+  });
+
+  final UsuarioPrincipalProfileTb usuarioProfile;
 
   @override
   State<PerfilCentral> createState() => _PerfilCentralState();
@@ -235,6 +290,7 @@ class PerfilCentral extends StatefulWidget {
 class _PerfilCentralState extends State<PerfilCentral> {
   @override
   Widget build(BuildContext context) {
+    UsuarioPrincipalProfileTb usuario = widget.usuarioProfile;
     return Padding(
       padding: EdgeInsets.all(8.0),
       child: Column(
@@ -245,8 +301,8 @@ class _PerfilCentralState extends State<PerfilCentral> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Tu nombre",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+                usuario.nombres,
+                style: TextStyle(fontSize: 21, fontWeight: FontWeight.w500),
               ),
               Padding(
                 padding: EdgeInsets.only(right: 8.0, top: 5.0),
@@ -257,15 +313,15 @@ class _PerfilCentralState extends State<PerfilCentral> {
                       child: Column(
                         children: [
                           Text(
-                            "720",
+                            usuario.siguiendo.toString(),
                             style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 19),
+                                fontWeight: FontWeight.w600, fontSize: 18),
                           ),
                           Text(
                             "Seguidores",
                             style: TextStyle(
                                 color: Colors.grey.shade600,
-                                fontSize: 15.0,
+                                fontSize: 14.0,
                                 fontWeight: FontWeight.w500),
                           ),
                         ],
@@ -273,16 +329,16 @@ class _PerfilCentralState extends State<PerfilCentral> {
                     ),
                     Column(
                       children: [
-                        const Text(
-                          "1160",
+                        Text(
+                          usuario.seguidores.toString(),
                           style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 19),
+                              fontWeight: FontWeight.w600, fontSize: 18),
                         ),
                         Text(
-                          "Seguidores",
+                          "Siguiendo",
                           style: TextStyle(
                               color: Colors.grey.shade600,
-                              fontSize: 15.0,
+                              fontSize: 14.0,
                               fontWeight: FontWeight.w500),
                         ),
                       ],
@@ -294,20 +350,28 @@ class _PerfilCentralState extends State<PerfilCentral> {
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Padding(
                 padding: EdgeInsets.only(top: 10.0),
                 child: Container(
                   width: MediaQuery.of(context).size.width *
-                      0.45, // Establece el ancho máximo al 40%
-                  child: Text(
+                      0.47, // Establece el ancho máximo al 40%
+                  child: const Text(
                     "Descripción previa del perfil de cierto usuario 🍟🍾il de cierto usuario 🍟🍾il de cierto usuario 🍟🍾",
-                    style: TextStyle(fontSize: 15.5),
+                    style: TextStyle(fontSize: 14.6),
                   ),
                 ),
               ),
+              ElevatedGlobalButton(
+                nameSavebutton: "Seguir",
+                borderRadius: BorderRadius.circular(12.0),
+                heightSizeBox: 35.0,
+                widthSizeBox: 115.0,
+                onPress: () {},
+              )
             ],
-          )
+          ),
         ],
       ),
     );
@@ -335,9 +399,6 @@ class _ContenidoProServiciosState extends State<ContenidoProServicios>
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = context.watch<UsuarioProvider>().idUsuarioActual;
-    double screenHeight = MediaQuery.of(context).size.height;
-
     return Scaffold(
       body: Column(
         children: [
@@ -345,7 +406,7 @@ class _ContenidoProServiciosState extends State<ContenidoProServicios>
             padding: const EdgeInsets.only(bottom: 10.0),
             child: TabBar(
               controller: _tabController,
-              tabs: [
+              tabs: const [
                 Tab(
                   icon: Icon(
                     CupertinoIcons.cube_box_fill,
@@ -367,20 +428,12 @@ class _ContenidoProServiciosState extends State<ContenidoProServicios>
               children: [
                 SingleChildScrollView(
                   child: Column(
-                    children: [
-                      idUsuario != null
-                          ? MisProductos(idUsuario: idUsuario)
-                          : const Text("IdUsuario null"),
-                    ],
+                    children: [MisProductos(idUsuario: widget.idUsuario)],
                   ),
                 ),
                 SingleChildScrollView(
                   child: Column(
-                    children: [
-                      idUsuario != null
-                          ? MisServicios(idUsuario: idUsuario)
-                          : const Text("IdUsuario null"),
-                    ],
+                    children: [MisServicios(idUsuario: widget.idUsuario)],
                   ),
                 ),
               ],
@@ -424,51 +477,50 @@ class _ContenidoEnlacesState extends State<ContenidoEnlaces>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) => [
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 10.0),
-              child: TabBar(
-                controller: _tabController,
-                tabs: [
-                  Tab(
-                    icon: Icon(
-                      _tabController.index == 0
-                          ? CupertinoIcons.cube_box_fill
-                          : CupertinoIcons.cube_box,
-                      color: Colors.black,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 10.0),
+            child: TabBar(
+              controller: _tabController,
+              tabs: const [
+                Tab(
+                  icon: Icon(
+                    CupertinoIcons.cube_box_fill,
+                    color: Colors.black,
+                  ),
+                ),
+                Tab(
+                  icon: Icon(
+                    CupertinoIcons.heart_circle_fill,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: const [
+                SingleChildScrollView(
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: Text('Contenido de la pestaña 4 y otras imágenes'),
                     ),
                   ),
-                  Tab(
-                    icon: Icon(
-                      _tabController.index == 1
-                          ? CupertinoIcons.heart_circle_fill
-                          : CupertinoIcons.heart_circle,
-                      color: Colors.black,
+                ),
+                SingleChildScrollView(
+                  child: SingleChildScrollView(
+                    child: Center(
+                      child: Text('Contenido de la pestaña 4 y otras imágenes'),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ],
-        body: TabBarView(
-          controller:
-              _tabController, // Asignamos el TabController al TabBarView
-          children: [
-            const SingleChildScrollView(
-              child: Center(
-                child: Text('Contenido de la pestaña 3 y otras imágenes'),
-              ),
-            ),
-            const SingleChildScrollView(
-              child: Center(
-                child: Text('Contenido de la pestaña 4 y otras imágenes'),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

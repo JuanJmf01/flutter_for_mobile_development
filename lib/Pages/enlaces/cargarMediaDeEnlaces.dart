@@ -23,15 +23,15 @@ class CargarMediaDeEnlaces {
     String fileName = isProduct ? 'enlaceProductos' : 'enlaceServicios';
 
     for (var imageToUpload in imagesToUpload) {
-      ImageStorageCreacionTb image = ImageStorageCreacionTb(
+      ImagesStorageTb image = ImagesStorageTb(
         idUsuario: idUsuario,
-        idProServicio: idEnlaceProServicio,
+        idFile: idEnlaceProServicio,
         newImageBytes: await assetToUint8List(imageToUpload.newImage),
         fileName: fileName,
-        finalNameImage: imageToUpload.nombreImage,
+        imageName: imageToUpload.nombreImage,
       );
 
-      String urlImage = await ProductImagesStorage.cargarImage(image);
+      String urlImage = await ImagesStorage.cargarImage(image);
 
       EnlaceProServicioImagesCreacionTb enlaceProServicioImage =
           EnlaceProServicioImagesCreacionTb(

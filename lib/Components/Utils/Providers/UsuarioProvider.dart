@@ -6,13 +6,13 @@ import 'package:flutter/foundation.dart';
 
 class UsuarioProvider extends ChangeNotifier {
   // VERIFICAR LA OPCION DE UTILIZAR UNA VERIABLE ENTERA PARA ID NEGOCIO ACTUAL EN CASO DE QUE EL UISAURIO ACTUAL TENGA UN NEGOCIO
-  int? _idUsuarioActual;
+  late int _idUsuarioActual;
   late UsuarioTb _usuarioActual;
 
-  int? get idUsuarioActual => _idUsuarioActual;
+  int get idUsuarioActual => _idUsuarioActual;
   UsuarioTb get usuarioActual => _usuarioActual;
 
-  Future<void> obtenerIdUsuarioActual() async {
+  Future<int> obtenerIdUsuarioActual() async {
     print('se llama a obtenerIdUsuario');
     if (FirebaseAuth.instance.currentUser != null) {
       String? email = FirebaseAuth.instance.currentUser?.email;
@@ -22,16 +22,18 @@ class UsuarioProvider extends ChangeNotifier {
           if (usuario != null) {
             _idUsuarioActual = usuario.idUsuario;
             _usuarioActual = usuario;
+            notifyListeners();
+            return usuario.idUsuario;
           } else {
             print("IdUsuario es null en UsuarioProvider");
           }
-          notifyListeners();
         } catch (e) {
           // Manejo de errores
-          print('Error al obtener el idUsuario o usuario no inicia sesion: $e');
+          print('Error al obtener el idUsuario o usuario no inicia sesión: $e');
           throw Exception('Error al obtener el idUsuario');
         }
       }
     }
+    throw Exception('Error al obtener el idUsuario');
   }
 }
