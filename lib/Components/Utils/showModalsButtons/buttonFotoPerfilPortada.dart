@@ -1,4 +1,5 @@
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
+import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
@@ -11,28 +12,48 @@ import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
-class ButtonFotoPerfilPortada extends StatelessWidget {
+class ButtonFotoPerfilPortada extends StatefulWidget {
   const ButtonFotoPerfilPortada({
     super.key,
     required this.verFoto,
     required this.cambiarFoto,
-    required this.eliminarFoto,
+    this.eliminarFoto,
+    required this.isProfilePicture,
   });
 
   final String verFoto;
   final String cambiarFoto;
-  final String eliminarFoto;
+  final String? eliminarFoto;
+  final bool isProfilePicture;
 
+  @override
+  State<ButtonFotoPerfilPortada> createState() =>
+      _ButtonFotoPerfilPortadaState();
+}
+
+class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
   final EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 10.0);
+
   final Color colorIcons = Colors.black54;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void checkIfPelfilPhotoExist() {}
 
   void insertProfileImage(int idUsuarioActual) async {
     Asset? imageAsset = await getImageAsset();
-    if (imageAsset != null) {
+    bool isProfilePicture = widget.isProfilePicture;
+
+    String fileName = isProfilePicture ? "fotoPerfil" : "fotoPortada";
+
+    if (imageAsset != null && fileName != '') {
       ImageStorageTb image = ImageStorageTb(
         idUsuario: idUsuarioActual,
         newImageBytes: await assetToUint8List(imageAsset),
-        fileName: 'fotoPerfil',
+        fileName: fileName,
         imageName: assingName(imageAsset.name!),
         width: imageAsset.originalWidth!.toDouble(),
         height: imageAsset.originalHeight!.toDouble(),
@@ -40,6 +61,14 @@ class ButtonFotoPerfilPortada extends StatelessWidget {
 
       String urlImage = await ImagesStorage.cargarImage(image);
       print("URL IMAGE: $urlImage");
+
+      UsuarioDb.updatePhotoProfileOrPortada(
+        urlImage,
+        idUsuarioActual,
+        isProfilePicture,
+      );
+    } else {
+      print("NULLLLL");
     }
   }
 
@@ -47,6 +76,7 @@ class ButtonFotoPerfilPortada extends StatelessWidget {
   Widget build(BuildContext context) {
     int? idUsuarioActual =
         Provider.of<UsuarioProvider>(context).idUsuarioActual;
+
     return GlobalButtonBase(
       itemsColumn: Column(
         mainAxisSize: MainAxisSize.min,
@@ -55,20 +85,24 @@ class ButtonFotoPerfilPortada extends StatelessWidget {
           ItemForModalButtons(
             onPress: () {},
             padding: padding,
-            textItem: verFoto,
+            textItem: widget.verFoto,
           ),
           ItemForModalButtons(
             onPress: () {
-              insertProfileImage(idUsuarioActual);
+              insertProfileImage(
+                idUsuarioActual,
+              );
             },
             padding: padding,
-            textItem: cambiarFoto,
+            textItem: widget.cambiarFoto,
           ),
-          ItemForModalButtons(
-            onPress: () {},
-            padding: padding,
-            textItem: eliminarFoto,
-          )
+          widget.eliminarFoto != null
+              ? ItemForModalButtons(
+                  onPress: () {},
+                  padding: padding,
+                  textItem: widget.eliminarFoto!,
+                )
+              : const SizedBox.shrink()
         ],
       ),
     );

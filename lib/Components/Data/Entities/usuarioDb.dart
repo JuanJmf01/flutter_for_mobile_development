@@ -113,43 +113,37 @@ class UsuarioDb {
     }
   }
 
-  //   static Future<int> insertProducto(ProductoCreacionTb producto,
-  //     List<SubCategoriaTb> categoriasSeleccionadas) async {
+  static Future<void> updatePhotoProfileOrPortada(
+      String urlPhoto, int idUsuario, bool isProfilePicture) async {
+    Dio dio = Dio();
+    String url = MisRutas.rutaUsuarios;
+    Map<String, dynamic> data = {};
 
-  //   Dio dio = Dio();
-  //   Map<String, dynamic> data = producto.toMap();
-  //   String url = MisRutas.rutaProductos;
+    if (isProfilePicture) {
+      data = {'idUsuario': idUsuario, 'urlFotoPerfil': urlPhoto};
+    } else {
+      data = {'idUsuario': idUsuario, 'urlFotoPortada': urlPhoto};
+    }
 
-  //   try {
-  //     Response response = await dio.post(url,
-  //         data: jsonEncode(data),
-  //         options: Options(
-  //           headers: {'Content-Type': 'application/json'},
-  //         ));
-  //     if (response.statusCode == 200) {
-  //       print('Producto insertado correctamenre (print)');
-  //       print(response.data);
-  //       int idProducto = response.data;
+    try {
+      Response response = await dio.patch(
+        url,
+        data: jsonEncode(data),
+        options: Options(
+          headers: {'Content-Type': 'application/json'},
+        ),
+      );
 
-  //       // Insert categorias seleccionadas
-  //       for (var subCategoria in categoriasSeleccionadas) {
-  //         ProServicioSubCategoriaTb productoSubCategoria =
-  //             ProServicioSubCategoriaTb(
-  //                 idProServicio: idProducto,
-  //                 idCategoria: subCategoria.idCategoria,
-  //                 idSubCategoria: subCategoria.idSubCategoria);
-
-  //         await ProServiceSubCategoriasDb.insertSubCategoriasSeleccionadas(
-  //             productoSubCategoria, ProductoTb);
-  //       }
-  //       return idProducto;
-  //     } else {
-  //       throw Exception(
-  //           'Error en la solicitud en insertProducto: ${response.statusCode}');
-  //     }
-  //   } catch (error) {
-  //     print('Ha ocurrido un error $error');
-  //     throw Exception('Error de conexión: $error');
-  //   }
-  // }
+      if (response.statusCode == 200) {
+        print('Usuario actualizado correctamente');
+        print(response.data);
+        // Realiza las operaciones necesarias con la respuesta
+      } else {
+        print('Error en la solicitud: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Ocurrió un error en la conexión
+      print('Error de conexión: $error');
+    }
+  }
 }

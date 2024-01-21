@@ -88,8 +88,8 @@ class _MyAppState extends State<MyApp> {
             } else if (snapshot.hasError) {
               return Text('Error al cargar idUsuario');
             } else if (snapshot.hasData) {
-              int idUsuario = snapshot.data!;
-              return Menu(currentIndex: 0, idUsuario: idUsuario);
+              int idUsuarioActual = snapshot.data!;
+              return Menu(currentIndex: 0, idUsuario: idUsuarioActual);
             } else {
               return Text('No se encontro idUsuario');
             }
@@ -121,6 +121,7 @@ class _MenuState extends State<Menu> {
   @override
   void initState() {
     super.initState();
+    print("IDDDD: ${widget.idUsuario}");
     _currentIndex = widget.currentIndex;
     _loadPages();
   }

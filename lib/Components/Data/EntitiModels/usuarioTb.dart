@@ -41,18 +41,20 @@ class UsuarioTb {
 }
 
 class UsuarioCreacionTb {
-  String? nombres;
+  String? nombres; //No deberia ser null
   String? apellidos;
   String email;
   String? numeroCelular;
-  int? domiciliario; // bool (0 or 1)
+  String? urlFotoPerfil;
+  String? urlFotoPortada;
 
   UsuarioCreacionTb({
     this.nombres,
     this.apellidos,
     required this.email,
     this.numeroCelular,
-    this.domiciliario,
+    this.urlFotoPerfil,
+    this.urlFotoPortada,
   });
 
   factory UsuarioCreacionTb.fromJson(Map<String, dynamic> json) {
@@ -61,7 +63,8 @@ class UsuarioCreacionTb {
       apellidos: json['apellidos'],
       email: json['email'],
       numeroCelular: json['numeroCelular'],
-      domiciliario: json['domiciliario'],
+      urlFotoPerfil: json['urlFotoPerfil'],
+      urlFotoPortada: json['urlFotoPortada'],
     );
   }
 
@@ -71,11 +74,11 @@ class UsuarioCreacionTb {
       'apellidos': apellidos,
       'email': email,
       'numeroCelular': numeroCelular,
-      'domiciliario': domiciliario,
+      'urlFotoPerfil': urlFotoPerfil,
+      'urlFotoPortada': urlFotoPortada,
     };
   }
 }
-
 
 class UsuarioPrincipalProfileTb {
   int idUsuario;
@@ -124,6 +127,3 @@ class UsuarioPrincipalProfileTb {
     };
   }
 }
-
-
-

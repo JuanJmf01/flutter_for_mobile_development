@@ -50,14 +50,23 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
 
-    void showModalButtonFotoPerfilPortada(String typePicture) {
+    void showModalButtonFotoPerfilPortada(
+        String typePhoto, bool isProfilePicture,
+        {String? urlPhoto}) {
+      bool isUrlPhotoAvailable = urlPhoto != null && urlPhoto != '';
+
       showModalBottomSheet(
         isScrollControlled: true,
         context: context,
         builder: (BuildContext context) => ButtonFotoPerfilPortada(
-            verFoto: "Ver foto de $typePicture",
-            cambiarFoto: "Cambiar foto de $typePicture",
-            eliminarFoto: "Eliminar foto de $typePicture"),
+          verFoto: "Ver foto de $typePhoto",
+          cambiarFoto: isUrlPhotoAvailable
+              ? "Cambiar foto de $typePhoto"
+              : "Agregar foto de $typePhoto",
+          eliminarFoto:
+              isUrlPhotoAvailable ? "Eliminar foto de $typePhoto" : null,
+          isProfilePicture: isProfilePicture,
+        ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(10.0),
@@ -93,7 +102,9 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                             // Contenedor de la foto de portada
                             GestureDetector(
                               onTap: () {
-                                showModalButtonFotoPerfilPortada("portada");
+                                showModalButtonFotoPerfilPortada(
+                                    "portada", false,
+                                    urlPhoto: usuarioPrincipal.urlFotoPerfil);
                               },
                               child: Container(
                                 width: double.infinity,
@@ -112,7 +123,9 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                                       child: GestureDetector(
                                         onTap: () {
                                           showModalButtonFotoPerfilPortada(
-                                              "perfil");
+                                              "perfil", true,
+                                              urlPhoto: usuarioPrincipal
+                                                  .urlFotoPortada);
                                         },
                                         child: CircleAvatar(
                                           radius: 40.0,
