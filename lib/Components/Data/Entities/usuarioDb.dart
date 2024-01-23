@@ -91,6 +91,7 @@ class UsuarioDb {
 
   static Future<UsuarioPrincipalProfileTb> getUsuarioProfile(
       int idUsuario) async {
+    print("PARTE DOSSSSS");
     Dio dio = Dio();
     String url = '${MisRutas.rutaUsuariosProfile}/$idUsuario';
 
@@ -113,7 +114,7 @@ class UsuarioDb {
     }
   }
 
-  static Future<void> updatePhotoProfileOrPortada(
+  static Future<UsuarioTb> updatePhotoProfileOrPortada(
       String urlPhoto, int idUsuario, bool isProfilePicture) async {
     Dio dio = Dio();
     String url = MisRutas.rutaUsuarios;
@@ -136,14 +137,20 @@ class UsuarioDb {
 
       if (response.statusCode == 200) {
         print('Usuario actualizado correctamente');
-        print(response.data);
+        final Map<String, dynamic> userData = response.data['user'];
+
+        UsuarioTb updatedUser = UsuarioTb.fromJson(userData);
+
+        return updatedUser;
         // Realiza las operaciones necesarias con la respuesta
       } else {
         print('Error en la solicitud: ${response.statusCode}');
+        throw Exception('Error en la solicitud: ${response.statusCode}');
       }
     } catch (error) {
       // Ocurrió un error en la conexión
       print('Error de conexión: $error');
+      throw Exception('Error de conexión: $error');
     }
   }
 }

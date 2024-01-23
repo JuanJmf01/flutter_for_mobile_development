@@ -9,7 +9,7 @@ import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
-import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Firebase/Storage/FirebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
@@ -652,7 +652,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                   fileName: fileName,
                   idUsuario: idUsuario,
                   nombreImagen: image.nombreImage,
-                  idProServicio: image.idProServicio,
+                  idFile: image.idProServicio,
                 );
 
                 bool deleteResult =

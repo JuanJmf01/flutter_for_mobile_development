@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -48,12 +47,18 @@ class ShowImage extends StatelessWidget {
                 hasBorderRadius ? borderRadius! : BorderRadius.circular(0.0),
             child: imageAsset != null
                 ? showAssetImage(imageAsset!)
-                : Image.network(
-                    networkImage!, //Poner una imagen por defecto
-                    width: widthNetWork,
-                    height: heightNetwork,
-                    fit: fit,
-                  )),
+                : networkImage != null && networkImage != ''
+                    ? Image.network(
+                        networkImage!, //Poner una imagen por defecto
+                        width: widthNetWork,
+                        height: heightNetwork,
+                        fit: fit,
+                      )
+                    : Container(
+                        width: widthNetWork,
+                        height: heightNetwork,
+                        color: Colors.grey.shade300,
+                      )),
       ),
     );
   }

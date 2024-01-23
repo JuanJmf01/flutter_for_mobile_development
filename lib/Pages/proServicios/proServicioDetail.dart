@@ -7,7 +7,7 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
-import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Firebase/Storage/FirebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
@@ -109,7 +109,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
               fileName: fileName,
               idUsuario: idUsuario,
               nombreImagen: '',
-              idProServicio: idProServicio!,
+              idFile: idProServicio!,
             );
 
             bool resultStorageImages =

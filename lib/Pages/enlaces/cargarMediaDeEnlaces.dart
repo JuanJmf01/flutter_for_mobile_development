@@ -8,7 +8,7 @@ import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioImagesDb.dart';
-import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Firebase/Storage/FirebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';

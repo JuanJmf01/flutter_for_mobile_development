@@ -9,7 +9,7 @@ import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
-import 'package:etfi_point/Components/Data/Firebase/Storage/productImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Firebase/Storage/FirebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
@@ -427,8 +427,8 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                                           await FileTemporal.convertToTempFile(
                                               image: principalImage);
                                       Uint8List? croppedBytes =
-                                          await EditarImagen.editImage(tempFile,
-                                              imageAset: principalImage);
+                                          await EditarImagen.editImage(
+                                              tempFile, 2.3, 2.0);
                                       setState(() {
                                         if (croppedBytes != null) {
                                           principalImageBytes =

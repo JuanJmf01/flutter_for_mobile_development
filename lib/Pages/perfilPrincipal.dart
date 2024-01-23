@@ -2,6 +2,7 @@ import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/MisProductos.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
+import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonFotoPerfilPortada.dart';
 import 'package:etfi_point/Pages/proServicios/misServicios.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,13 +24,16 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late UsuarioPrincipalProfileTb usuarioPrincipal;
+  late Future<UsuarioPrincipalProfileTb> _usuarioProfileFuture;
+
+  UsuarioTb? updatedUserProfile;
 
   @override
   void initState() {
     super.initState();
-    print("ID USUARIO: ${widget.idUsuario}");
 
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
+    _usuarioProfileFuture = UsuarioDb.getUsuarioProfile(widget.idUsuario);
     _tabController.addListener(_handleTabSelection);
     _updateCircleTabs();
   }
@@ -41,44 +45,53 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   }
 
   void _handleTabSelection() {
-    setState(() {
-      _updateCircleTabs();
-    });
+    if (_circleTabs[_tabController.index].isSelected != true) {
+      setState(() {
+        _updateCircleTabs();
+      });
+    }
+  }
+
+  void showModalButtonFotoPerfilPortada(String typePhoto, bool isProfilePicture,
+      {String? urlPhoto}) {
+    bool isUrlPhotoAvailable = urlPhoto != null && urlPhoto != '';
+
+    showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (BuildContext context) => ButtonFotoPerfilPortada(
+        verFoto: "Ver foto de $typePhoto",
+        cambiarFoto: isUrlPhotoAvailable
+            ? "Cambiar foto de $typePhoto"
+            : "Agregar foto de $typePhoto",
+        eliminarFoto:
+            isUrlPhotoAvailable ? "Eliminar foto de $typePhoto" : null,
+        isProfilePicture: isProfilePicture,
+        isUrlPhotoAvailable: isUrlPhotoAvailable,
+        onProfileUpdated: (profile) async {
+          setState(() {
+            updatedUserProfile = profile;
+          });
+        },
+      ),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(10.0),
+          topRight: Radius.circular(10.0),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
 
-    void showModalButtonFotoPerfilPortada(
-        String typePhoto, bool isProfilePicture,
-        {String? urlPhoto}) {
-      bool isUrlPhotoAvailable = urlPhoto != null && urlPhoto != '';
-
-      showModalBottomSheet(
-        isScrollControlled: true,
-        context: context,
-        builder: (BuildContext context) => ButtonFotoPerfilPortada(
-          verFoto: "Ver foto de $typePhoto",
-          cambiarFoto: isUrlPhotoAvailable
-              ? "Cambiar foto de $typePhoto"
-              : "Agregar foto de $typePhoto",
-          eliminarFoto:
-              isUrlPhotoAvailable ? "Eliminar foto de $typePhoto" : null,
-          isProfilePicture: isProfilePicture,
-        ),
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(10.0),
-            topRight: Radius.circular(10.0),
-          ),
-        ),
-      );
-    }
+    _updateCircleTabs();
 
     return Scaffold(
       body: FutureBuilder<UsuarioPrincipalProfileTb>(
-        future: UsuarioDb.getUsuarioProfile(widget.idUsuario),
+        future: _usuarioProfileFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -86,6 +99,16 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
             return Text('Error al cargar el usuario');
           } else if (snapshot.hasData) {
             usuarioPrincipal = snapshot.data!;
+            String? urlFotoPerfil = usuarioPrincipal.urlFotoPerfil;
+            String? urlFotoPortada = usuarioPrincipal.urlFotoPortada;
+
+            String? updatedUrlFotoPerfil;
+            String? updatedUrlFotoPortada;
+            if (updatedUserProfile != null) {
+              updatedUrlFotoPerfil = updatedUserProfile!.urlFotoPerfil;
+              updatedUrlFotoPortada = updatedUserProfile!.urlFotoPortada;
+            }
+
             return DefaultTabController(
               length: 3,
               child: NestedScrollView(
@@ -99,12 +122,15 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                       flexibleSpace: FlexibleSpaceBar(
                         background: Stack(
                           children: [
-                            // Contenedor de la foto de portada
+                            // Contenedor de la foto de porta da
                             GestureDetector(
                               onTap: () {
                                 showModalButtonFotoPerfilPortada(
-                                    "portada", false,
-                                    urlPhoto: usuarioPrincipal.urlFotoPerfil);
+                                  "portada",
+                                  false,
+                                  urlPhoto:
+                                      urlFotoPortada ?? updatedUrlFotoPortada,
+                                );
                               },
                               child: Container(
                                 width: double.infinity,
@@ -113,24 +139,64 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                                     topLeft: Radius.circular(10.0),
                                     topRight: Radius.circular(10.0),
                                   ),
-                                  color: Colors.grey.shade300,
+                                  color: Colors.grey.shade200,
                                 ),
                                 child: Stack(
                                   children: [
+                                    (urlFotoPortada != null &&
+                                                urlFotoPortada != '') ||
+                                            (updatedUrlFotoPortada != null &&
+                                                updatedUrlFotoPortada != '')
+                                        ? ShowImage(
+                                            networkImage:
+                                                updatedUrlFotoPortada ??
+                                                    urlFotoPortada,
+                                            fit: BoxFit.cover,
+                                            widthNetWork: double.infinity,
+                                            heightNetwork: screenHeight * 0.5,
+                                          )
+                                        : SizedBox.shrink(),
                                     Positioned(
                                       left: 16.0,
                                       bottom: 16.0,
                                       child: GestureDetector(
-                                        onTap: () {
-                                          showModalButtonFotoPerfilPortada(
-                                              "perfil", true,
-                                              urlPhoto: usuarioPrincipal
-                                                  .urlFotoPortada);
-                                        },
-                                        child: CircleAvatar(
-                                          radius: 40.0,
-                                        ),
-                                      ),
+                                          onTap: () {
+                                            showModalButtonFotoPerfilPortada(
+                                              "perfil",
+                                              true,
+                                              urlPhoto: updatedUrlFotoPerfil ??
+                                                  urlFotoPerfil,
+                                            );
+                                          },
+                                          child: Container(
+                                            width: 105.0,
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(50.0),
+                                                color: Colors.grey.shade300),
+                                            child: (urlFotoPerfil != null &&
+                                                        urlFotoPerfil != '') ||
+                                                    (updatedUrlFotoPerfil !=
+                                                            null &&
+                                                        updatedUrlFotoPerfil !=
+                                                            '')
+                                                ? ShowImage(
+                                                    networkImage:
+                                                        updatedUrlFotoPerfil ??
+                                                            urlFotoPerfil,
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            50.0),
+                                                    heightNetwork: 105.0,
+                                                    widthNetWork: 105.0,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : CircleAvatar(
+                                                    radius: 52.5,
+                                                    backgroundColor:
+                                                        Colors.grey.shade300,
+                                                  ),
+                                          )),
                                     ),
                                   ],
                                 ),
@@ -189,8 +255,6 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   }
 
   Widget _buildTabContent(int tabIndex) {
-    print("ID USUARIO 2: ${widget.idUsuario}");
-
     return tabIndex == 0
         ? ContenidoProServicios(idUsuario: widget.idUsuario)
         : tabIndex == 1

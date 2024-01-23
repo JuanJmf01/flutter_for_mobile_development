@@ -18,7 +18,6 @@ class ImagesStorageTb {
       required this.imageName});
 }
 
-
 class ImageStorageTb {
   final int idUsuario;
   final Uint8List newImageBytes;
@@ -38,16 +37,16 @@ class ImageStorageTb {
 }
 
 class ImageStorageDeleteTb {
-  final String fileName;
   final int idUsuario;
+  final String fileName;
   final String nombreImagen;
-  final int idProServicio;
+  final int idFile;
 
   ImageStorageDeleteTb({
-    required this.fileName,
     required this.idUsuario,
+    required this.fileName,
     required this.nombreImagen,
-    required this.idProServicio,
+    required this.idFile,
   });
 }
 

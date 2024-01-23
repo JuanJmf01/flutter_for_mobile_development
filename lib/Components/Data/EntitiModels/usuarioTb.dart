@@ -38,6 +38,11 @@ class UsuarioTb {
       'numeroCelular': numeroCelular,
     };
   }
+
+  @override
+  String toString() {
+    return 'ProductoTb{idUsuario: $idUsuario, nombres: $nombres, urlFotoPerfil: $urlFotoPerfil, urlFotoPortada: $urlFotoPortada,}';
+  }
 }
 
 class UsuarioCreacionTb {
