@@ -113,6 +113,8 @@ class Menu extends StatefulWidget {
 }
 
 class _MenuState extends State<Menu> {
+  late int idUsuarioActual;
+
   int _currentIndex = 0;
 
   // Lista de clases (páginas) correspondientes a cada pestaña
@@ -121,9 +123,19 @@ class _MenuState extends State<Menu> {
   @override
   void initState() {
     super.initState();
-    print("IDDDD: ${widget.idUsuario}");
     _currentIndex = widget.currentIndex;
     _loadPages();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    idUsuarioActual = _fetchUsuarioProfile();
+  }
+
+  int _fetchUsuarioProfile() {
+    return idUsuarioActual =
+        Provider.of<UsuarioProvider>(context).idUsuarioActual;
   }
 
   void _loadPages() {
@@ -163,8 +175,14 @@ class _MenuState extends State<Menu> {
   Widget _buildBottomNavigationBar() {
     // Lista de iconos para las pestañas
     List<IconData> _icons = [
-      _currentIndex == 0 ? CupertinoIcons.house_fill : CupertinoIcons.house,
-      _currentIndex == 1 ? CupertinoIcons.bag_fill : CupertinoIcons.bag,
+      _currentIndex == 0
+          // || _currentIndex == 1 && widget.idUsuario != idUsuarioActual
+          ? CupertinoIcons.house_fill
+          : CupertinoIcons.house,
+      _currentIndex == 1
+          //&& widget.idUsuario == idUsuarioActual
+          ? CupertinoIcons.bag_fill
+          : CupertinoIcons.bag,
       CupertinoIcons.add,
       _currentIndex == 3
           ? CupertinoIcons.cart_fill

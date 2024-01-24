@@ -95,6 +95,7 @@ class UsuarioPrincipalProfileTb {
   String? urlFotoPortada;
   int seguidores;
   int siguiendo;
+  int esSeguidor;
 
   UsuarioPrincipalProfileTb({
     required this.idUsuario,
@@ -106,6 +107,7 @@ class UsuarioPrincipalProfileTb {
     this.urlFotoPortada,
     required this.seguidores,
     required this.siguiendo,
+    required this.esSeguidor,
   });
 
   factory UsuarioPrincipalProfileTb.fromJson(Map<String, dynamic> json) {
@@ -119,6 +121,7 @@ class UsuarioPrincipalProfileTb {
       urlFotoPortada: json['urlFotoPortada'],
       seguidores: json['seguidores'],
       siguiendo: json['siguiendo'],
+      esSeguidor: json['esSeguidor'],
     );
   }
 

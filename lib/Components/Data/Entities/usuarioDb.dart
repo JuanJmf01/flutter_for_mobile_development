@@ -90,13 +90,20 @@ class UsuarioDb {
   }
 
   static Future<UsuarioPrincipalProfileTb> getUsuarioProfile(
-      int idUsuario) async {
-    print("PARTE DOSSSSS");
+      int idUsuarioVisitante, int idUsuarioVisitado) async {
     Dio dio = Dio();
-    String url = '${MisRutas.rutaUsuariosProfile}/$idUsuario';
+    String url = MisRutas.rutaUsuariosProfile;
+
+    Map<String, dynamic> data = {
+      "idUsuarioVisitante": idUsuarioVisitante,
+      "idUsuarioVisitado": idUsuarioVisitado
+    };
+
+    print("SI ENTROO");
 
     try {
       Response response = await dio.get(url,
+          data: jsonEncode(data),
           options: Options(
             headers: {'Content-Type': 'application/json'},
           ));

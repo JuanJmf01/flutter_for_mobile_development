@@ -465,7 +465,7 @@ class _NewsFeedState extends State<NewsFeed> {
   ) {
     return GestureDetector(
       onTap: () {
-        Navigator.pushReplacement(
+        Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => Menu(

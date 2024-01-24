@@ -4,7 +4,6 @@ class MisRutas {
   // -- Demas rutas -- //
   static String rutaCategorias2 = '$rutaPrincipal/categorias';
 
-
   // -- Rutas para la tabla usuarios -- //
 
   static String rutaUsuarios = '$rutaPrincipal/usuarios';
@@ -168,4 +167,9 @@ class MisRutas {
 
   static String rutaUpdateLikeReelPublicacion =
       '$rutaPrincipal/enlaceReelPublicacionLike';
+
+  // -- Rutas para la tabla seguidores -- //
+
+  static String rutaSeguidores =
+      '$rutaPrincipal/seguidores';
 }

@@ -1,12 +1,16 @@
+import 'package:etfi_point/Components/Data/EntitiModels/seguidoresTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/MisProductos.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonFotoPerfilPortada.dart';
 import 'package:etfi_point/Pages/proServicios/misServicios.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class PerfilPrincipal extends StatefulWidget {
   const PerfilPrincipal({
@@ -27,15 +31,26 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   late Future<UsuarioPrincipalProfileTb> _usuarioProfileFuture;
 
   UsuarioTb? updatedUserProfile;
+  late int idUsuarioActual;
 
   @override
   void initState() {
     super.initState();
 
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
-    _usuarioProfileFuture = UsuarioDb.getUsuarioProfile(widget.idUsuario);
     _tabController.addListener(_handleTabSelection);
     _updateCircleTabs();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _usuarioProfileFuture = _fetchUsuarioProfile();
+  }
+
+  Future<UsuarioPrincipalProfileTb> _fetchUsuarioProfile() async {
+    idUsuarioActual = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    return UsuarioDb.getUsuarioProfile(idUsuarioActual, widget.idUsuario);
   }
 
   void _updateCircleTabs() {
@@ -86,7 +101,6 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
-
     _updateCircleTabs();
 
     return Scaffold(
@@ -122,7 +136,7 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                       flexibleSpace: FlexibleSpaceBar(
                         background: Stack(
                           children: [
-                            // Contenedor de la foto de porta da
+                            // Contenedor de la foto de portada
                             GestureDetector(
                               onTap: () {
                                 showModalButtonFotoPerfilPortada(
@@ -143,19 +157,17 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                                 ),
                                 child: Stack(
                                   children: [
-                                    (urlFotoPortada != null &&
-                                                urlFotoPortada != '') ||
-                                            (updatedUrlFotoPortada != null &&
-                                                updatedUrlFotoPortada != '')
-                                        ? ShowImage(
-                                            networkImage:
-                                                updatedUrlFotoPortada ??
-                                                    urlFotoPortada,
-                                            fit: BoxFit.cover,
-                                            widthNetWork: double.infinity,
-                                            heightNetwork: screenHeight * 0.5,
-                                          )
-                                        : SizedBox.shrink(),
+                                    if ((urlFotoPortada != null &&
+                                            urlFotoPortada.isNotEmpty) ||
+                                        (updatedUrlFotoPortada != null &&
+                                            updatedUrlFotoPortada.isNotEmpty))
+                                      ShowImage(
+                                        networkImage: updatedUrlFotoPortada ??
+                                            urlFotoPortada,
+                                        fit: BoxFit.cover,
+                                        widthNetWork: double.infinity,
+                                        heightNetwork: screenHeight * 0.5,
+                                      ),
                                     Positioned(
                                       left: 16.0,
                                       bottom: 16.0,
@@ -258,7 +270,10 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
     return tabIndex == 0
         ? ContenidoProServicios(idUsuario: widget.idUsuario)
         : tabIndex == 1
-            ? PerfilCentral(usuarioProfile: usuarioPrincipal)
+            ? PerfilCentral(
+                usuarioProfile: usuarioPrincipal,
+                idUsuarioActual: idUsuarioActual,
+              )
             : tabIndex == 2
                 ? ContenidoEnlaces()
                 : SizedBox();
@@ -356,15 +371,47 @@ class PerfilCentral extends StatefulWidget {
   const PerfilCentral({
     super.key,
     required this.usuarioProfile,
+    required this.idUsuarioActual,
   });
 
   final UsuarioPrincipalProfileTb usuarioProfile;
+  final int idUsuarioActual;
 
   @override
   State<PerfilCentral> createState() => _PerfilCentralState();
 }
 
 class _PerfilCentralState extends State<PerfilCentral> {
+  bool esSeguidor = false;
+  int seguidores = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    esSeguidor = widget.usuarioProfile.esSeguidor == 1;
+    seguidores = widget.usuarioProfile.seguidores;
+  }
+
+  void insertSeguidor(int idUsuarioSeguidor, int idUsuarioSeguido) {
+    if (esSeguidor) {
+      SeguidoresDb.deleteSeguidor(idUsuarioSeguidor, idUsuarioSeguido);
+      setState(() {
+        esSeguidor = !esSeguidor;
+        seguidores = seguidores - 1;
+      });
+    } else {
+      SeguidoresCreacionTb seguidor = SeguidoresCreacionTb(
+        idUsuarioSeguidor: idUsuarioSeguidor,
+        idUsuarioSeguido: idUsuarioSeguido,
+      );
+      setState(() {
+        esSeguidor = !esSeguidor;
+        seguidores = seguidores + 1;
+      });
+      SeguidoresDb.insertSeguidor(seguidor);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     UsuarioPrincipalProfileTb usuario = widget.usuarioProfile;
@@ -390,7 +437,7 @@ class _PerfilCentralState extends State<PerfilCentral> {
                       child: Column(
                         children: [
                           Text(
-                            usuario.siguiendo.toString(),
+                            seguidores.toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 18),
                           ),
@@ -407,7 +454,7 @@ class _PerfilCentralState extends State<PerfilCentral> {
                     Column(
                       children: [
                         Text(
-                          usuario.seguidores.toString(),
+                          usuario.siguiendo.toString(),
                           style: TextStyle(
                               fontWeight: FontWeight.w600, fontSize: 18),
                         ),
@@ -440,13 +487,22 @@ class _PerfilCentralState extends State<PerfilCentral> {
                   ),
                 ),
               ),
-              ElevatedGlobalButton(
-                nameSavebutton: "Seguir",
-                borderRadius: BorderRadius.circular(12.0),
-                heightSizeBox: 35.0,
-                widthSizeBox: 115.0,
-                onPress: () {},
-              )
+              widget.idUsuarioActual != usuario.idUsuario
+                  ? ElevatedGlobalButton(
+                      nameSavebutton: esSeguidor ? "Siguiendo" : "Seguir",
+                      borderRadius: BorderRadius.circular(12.0),
+                      heightSizeBox: 35.0,
+                      widthSizeBox: 115.0,
+                      backgroundColor:
+                          esSeguidor ? Colors.grey.shade300 : Colors.blue,
+                      colorNameSaveButton:
+                          esSeguidor ? Colors.black : Colors.white,
+                      onPress: () {
+                        insertSeguidor(
+                            widget.idUsuarioActual, usuario.idUsuario);
+                      },
+                    )
+                  : SizedBox.shrink()
             ],
           ),
         ],
