@@ -16,7 +16,7 @@ class EnlaceProServicioDb {
 
     if (objectType == ProductoTb) {
       data = enlaceProducto.toMapEnlaceProducto();
-      url = MisRutas.rutaEnlaceProductos;
+      url = MisRutas.rutaEnlaceProductosByEnlaceProducto;
     } else if (objectType == ServicioTb) {
       data = enlaceProducto.toMapEnlaceServicio();
       url = MisRutas.rutaEnlaceServicios;
@@ -95,6 +95,58 @@ class EnlaceProServicioDb {
     } catch (error) {
       print('Ha ocurrido un error $error');
       throw Exception('Error de conexión: $error');
+    }
+  }
+
+// Hacer pruebas
+  static Future<List<int>> getEnlaceProServicioSeguidos(
+      int idUsuarioSeguidor, Type objectType) async {
+    Dio dio = Dio();
+
+    String url = '';
+    String claveIdEnlaceProducto = '';
+
+    if (objectType == ProductoTb) {
+      url = '${MisRutas.rutaEnlaceProductosSeguidos}/$idUsuarioSeguidor';
+      claveIdEnlaceProducto = 'idEnlaceProducto';
+    } else if (objectType == ServicioTb) {
+      url = '${MisRutas.rutaEnlaceServiciosSeguidos}/$idUsuarioSeguidor';
+      claveIdEnlaceProducto = 'idEnlaceServicio';
+    }
+
+    if (url != '' && claveIdEnlaceProducto != '') {
+      try {
+        Response response = await dio.get(
+          url,
+          options: Options(
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          ),
+        );
+
+        if (response.statusCode == 200) {
+          // Utilizar directamente la respuesta como una lista de objetos
+          List<dynamic> jsonResponse = response.data;
+
+          // Extraer los valores de idUsuarioSeguido como enteros
+          List<int> usuariosSeguidos = jsonResponse
+              .map((dynamic enlaceProducto) =>
+                  enlaceProducto[claveIdEnlaceProducto] as int)
+              .toList();
+
+          return usuariosSeguidos;
+        } else if (response.statusCode == 404) {
+          return [];
+        } else {
+          throw Exception('Error en la respuesta: ${response.statusCode}');
+        }
+      } catch (error) {
+        print("Error: $error");
+        return [];
+      }
+    } else {
+      return [];
     }
   }
 }

@@ -80,8 +80,18 @@ class MisRutas {
   // -- Rutas para la tabla enlaceProductos -- //
   static String rutaEnlaceProductos = '$rutaPrincipal/enlaceProducto';
 
+  static String rutaEnlaceProductosByEnlaceProducto =
+      '$rutaPrincipal/enlaceProductoByEnlaceProducto';
+
+  static String rutaEnlaceProductosSeguidos =
+      '$rutaPrincipal/enlaceProductoBySeguidor';
+
   // -- Rutas para la tabla enlaceServicios -- //
   static String rutaEnlaceServicios = '$rutaPrincipal/enlaceServicio';
+
+  
+  static String rutaEnlaceServiciosSeguidos =
+      '$rutaPrincipal/enlaceServicioBySeguidor';
 
   // -- Rutas para la tabla enlaceProductoImages -- //
   static String rutaEnlaceProductosImage =
@@ -171,6 +181,4 @@ class MisRutas {
   // -- Rutas para la tabla seguidores -- //
 
   static String rutaSeguidores = '$rutaPrincipal/seguidores';
-
-  static String rutaUsuariosSeguidos = '$rutaPrincipal/usuariosSeguidos';
 }

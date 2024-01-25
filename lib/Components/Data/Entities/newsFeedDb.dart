@@ -2,20 +2,27 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class NewsFeedDb {
   static Future<NewsFeedTb> getAllNewsFeed(int idUsuarioActual) async {
-    List<int> usuariosSeguidos =
-        await SeguidoresDb.getUsuariosSeguidos(idUsuarioActual);
-    print("SEGUIDOS: $usuariosSeguidos");
+    List<int> enlaceProductos =
+        await EnlaceProServicioDb.getEnlaceProServicioSeguidos(
+            idUsuarioActual, ProductoTb);
+    List<int> enlaceServicios =
+        await EnlaceProServicioDb.getEnlaceProServicioSeguidos(
+            idUsuarioActual, ServicioTb);
+
+    print("SEGUIDOS: $enlaceProductos");
 
     try {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
-        getAllEnlaceProductos(idUsuarioActual, usuariosSeguidos),
-        // getAllEnlaceServicios(idUsuarioActual),
+        getEnlaceProductosBySeguidores(idUsuarioActual, enlaceProductos)
+        // getAllEnlaceServicios(idUsuarioActual, enlaceServicios),
         // getAllPublicaciones(idUsuarioActual),
         // getAllProductReels(idUsuarioActual),
         // getAllServiceReels(idUsuarioActual),
@@ -41,37 +48,46 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllEnlaceProductos(
-      int idUsuarioActual, List<int> usuariosSeguidos) async {
-    Dio dio = Dio();
-    String url = MisRutas.rutaEnlaceProductos;
-    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
+  static Future<NewsFeedTb> getEnlaceProductosBySeguidores(
+      int idUsuarioActual, List<int> enlaceProductos) async {
+    if (enlaceProductos.isNotEmpty) {
+      Dio dio = Dio();
+      String url = MisRutas.rutaEnlaceProductosByEnlaceProducto;
 
-    try {
-      Response response = await dio.get(
-        url,
-        data: jsonEncode(data),
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
+      Map<String, dynamic> data = {
+        'idUsuario': idUsuarioActual,
+        'idEnlaceProductos': enlaceProductos
+      };
 
-      if (response.statusCode == 200) {
-        print("Dataaaa:  ${response.data}");
-        List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
-            .map((data) => NewsFeedProductosTb.fromJson(data))
-            .toList();
+      try {
+        Response response = await dio.get(
+          url,
+          data: jsonEncode(data),
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ),
+        );
 
-        return NewsFeedTb(newsFeed);
-      } else {
-        throw Exception('Failed to fetch enlaceProductos');
+        if (response.statusCode == 200) {
+          print("Dataaaa:  ${response.data}");
+          List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
+              .map((data) => NewsFeedProductosTb.fromJson(data))
+              .toList();
+
+          return NewsFeedTb(newsFeed);
+        } else {
+          throw Exception('Failed to fetch enlaceProductos');
+        }
+      } catch (error) {
+        throw Exception('Error: $error');
       }
-    } catch (error) {
-      throw Exception('Error: $error');
+    } else {
+      return NewsFeedTb([]);
     }
   }
 
-  static Future<NewsFeedTb> getAllEnlaceServicios(int idUsuarioActual) async {
+  static Future<NewsFeedTb> getAllEnlaceServicios(
+      int idUsuarioActual, List<int> enlaceServicios) async {
     Dio dio = Dio();
     String url = MisRutas.rutaEnlaceServicios;
     Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
