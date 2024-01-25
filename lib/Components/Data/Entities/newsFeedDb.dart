@@ -2,19 +2,24 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
+import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class NewsFeedDb {
-  static Future<NewsFeedTb> getAllNewsFeed(int idUsuario) async {
+  static Future<NewsFeedTb> getAllNewsFeed(int idUsuarioActual) async {
+    List<int> usuariosSeguidos =
+        await SeguidoresDb.getUsuariosSeguidos(idUsuarioActual);
+    print("SEGUIDOS: $usuariosSeguidos");
+
     try {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
-        getAllEnlaceProductos(idUsuario),
-        // getAllEnlaceServicios(idUsuario),
-        // getAllPublicaciones(idUsuario),
-        // getAllProductReels(idUsuario),
-        // getAllServiceReels(idUsuario),
-        // getAllOnlyReels(idUsuario),
+        getAllEnlaceProductos(idUsuarioActual, usuariosSeguidos),
+        // getAllEnlaceServicios(idUsuarioActual),
+        // getAllPublicaciones(idUsuarioActual),
+        // getAllProductReels(idUsuarioActual),
+        // getAllServiceReels(idUsuarioActual),
+        // getAllOnlyReels(idUsuarioActual),
       ]);
 
       // Combinar las respuestas en una sola lista de NewsFeedItem
@@ -36,10 +41,11 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllEnlaceProductos(int idUsuario) async {
+  static Future<NewsFeedTb> getAllEnlaceProductos(
+      int idUsuarioActual, List<int> usuariosSeguidos) async {
     Dio dio = Dio();
     String url = MisRutas.rutaEnlaceProductos;
-    Map<String, dynamic> data = {'idUsuario': idUsuario};
+    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
 
     try {
       Response response = await dio.get(
@@ -65,10 +71,10 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllEnlaceServicios(int idUsuario) async {
+  static Future<NewsFeedTb> getAllEnlaceServicios(int idUsuarioActual) async {
     Dio dio = Dio();
     String url = MisRutas.rutaEnlaceServicios;
-    Map<String, dynamic> data = {'idUsuario': idUsuario};
+    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
 
     try {
       Response response = await dio.get(
@@ -93,10 +99,10 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllPublicaciones(int idUsuario) async {
+  static Future<NewsFeedTb> getAllPublicaciones(int idUsuarioActual) async {
     Dio dio = Dio();
     String url = MisRutas.rutaPublicaciones;
-    Map<String, dynamic> data = {'idUsuario': idUsuario};
+    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
 
     try {
       Response response = await dio.get(
@@ -121,10 +127,10 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllProductReels(int idUsuario) async {
+  static Future<NewsFeedTb> getAllProductReels(int idUsuarioActual) async {
     Dio dio = Dio();
     String url = MisRutas.rutaProductEnlaceReels;
-    Map<String, dynamic> data = {'idUsuario': idUsuario};
+    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
 
     try {
       Response response = await dio.get(
@@ -150,10 +156,10 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllServiceReels(int idUsuario) async {
+  static Future<NewsFeedTb> getAllServiceReels(int idUsuarioActual) async {
     Dio dio = Dio();
     String url = MisRutas.rutaServiceEnlaceReels;
-    Map<String, dynamic> data = {'idUsuario': idUsuario};
+    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
 
     try {
       Response response = await dio.get(
@@ -182,10 +188,10 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllOnlyReels(int idUsuario) async {
+  static Future<NewsFeedTb> getAllOnlyReels(int idUsuarioActual) async {
     Dio dio = Dio();
     String url = MisRutas.rutaOnlyReels;
-    Map<String, dynamic> data = {'idUsuario': idUsuario};
+    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
 
     try {
       Response response = await dio.get(

@@ -31,6 +31,41 @@ class SeguidoresDb {
     }
   }
 
+  static Future<List<int>> getUsuariosSeguidos(int idUsuarioSeguidor) async {
+    Dio dio = Dio();
+    String url = '${MisRutas.rutaUsuariosSeguidos}/$idUsuarioSeguidor';
+
+    try {
+      Response response = await dio.get(
+        url,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        // Utilizar directamente la respuesta como una lista de objetos
+        List<dynamic> jsonResponse = response.data;
+
+        // Extraer los valores de idUsuarioSeguido como enteros
+        List<int> usuariosSeguidos = jsonResponse
+            .map((dynamic enlaceProducto) =>
+                enlaceProducto['idEnlaceProducto'] as int)
+            .toList();
+
+        return usuariosSeguidos;
+      } else if (response.statusCode == 404) {
+        return [];
+      } else {
+        throw Exception('Error en la respuesta: ${response.statusCode}');
+      }
+    } catch (error) {
+      throw Exception('Error en la solicitud: $error');
+    }
+  }
+
   static Future<bool> deleteSeguidor(
       int idUsuarioSeguidor, int idUsuarioSeguido) async {
     Dio dio = Dio();

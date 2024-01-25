@@ -13,8 +13,6 @@ class UsuarioDb {
 
   static Future<void> insertUsuario(UsuarioCreacionTb usuario) async {
     Dio dio = Dio();
-    //Se convierte un usuario de tipo UsuarioCreacionTb a un tipo Map<String, dynamic>
-    //De esta manera podemos convertirlo a un json ya que la api recibe en json
     Map<String, dynamic> data = usuario.toMap();
     String url = MisRutas.rutaUsuarios;
 

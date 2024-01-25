@@ -170,6 +170,7 @@ class MisRutas {
 
   // -- Rutas para la tabla seguidores -- //
 
-  static String rutaSeguidores =
-      '$rutaPrincipal/seguidores';
+  static String rutaSeguidores = '$rutaPrincipal/seguidores';
+
+  static String rutaUsuariosSeguidos = '$rutaPrincipal/usuariosSeguidos';
 }

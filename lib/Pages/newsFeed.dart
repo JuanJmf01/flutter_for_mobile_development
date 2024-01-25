@@ -10,6 +10,7 @@ import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/icons.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
+import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/showVideo.dart';
 import 'package:etfi_point/Pages/perfilPrincipal.dart';
@@ -212,7 +213,7 @@ class _NewsFeedState extends State<NewsFeed> {
 
     return FutureBuilder<NewsFeedTb>(
         future: idUsuarioActual != null
-            ? NewsFeedDb.getAllEnlaceProductos(idUsuarioActual)
+            ? NewsFeedDb.getAllNewsFeed(idUsuarioActual)
             : null,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
@@ -324,7 +325,8 @@ class _NewsFeedState extends State<NewsFeed> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           //Contenido parte superior de cada publicacion
-          contenidoParteSuperior(usuario.idUsuario, usuario.nombres),
+          contenidoParteSuperior(usuario.idUsuario, usuario.nombres,
+              urlFotoPerfil: usuario.urlFotoPerfil),
           Padding(
             padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
             child: Text(
@@ -461,8 +463,11 @@ class _NewsFeedState extends State<NewsFeed> {
 
   Widget contenidoParteSuperior(
     int idUsuario,
-    String nombreUsuario,
-  ) {
+    String nombreUsuario, {
+    String? urlFotoPerfil,
+  }) {
+    BorderRadius borderImageProfile = BorderRadius.circular(50.0);
+    double sizeImageProfile = 53.0;
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -477,13 +482,21 @@ class _NewsFeedState extends State<NewsFeed> {
       },
       child: Row(
         children: [
-          Container(
-            height: 50,
-            width: 50,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50.0),
-                color: Colors.grey.shade200),
-          ),
+          urlFotoPerfil != null && urlFotoPerfil != ''
+              ? ShowImage(
+                  networkImage: urlFotoPerfil,
+                  widthNetWork: sizeImageProfile,
+                  heightNetwork: sizeImageProfile,
+                  borderRadius: borderImageProfile,
+                  fit: BoxFit.cover,
+                )
+              : Container(
+                  height: sizeImageProfile,
+                  width: sizeImageProfile,
+                  decoration: BoxDecoration(
+                      borderRadius: borderImageProfile,
+                      color: Colors.grey.shade200),
+                ),
           Padding(
             padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
             child: Text(
