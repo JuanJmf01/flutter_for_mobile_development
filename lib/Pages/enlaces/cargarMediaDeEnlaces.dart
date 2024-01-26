@@ -67,14 +67,14 @@ class CargarMediaDeEnlaces {
     }
 
     if (idProservicio != -1) {
-      EnlaceProServicioCreacionTb enlaceProducto = EnlaceProServicioCreacionTb(
-        idProServicio: idProservicio,
+      EnlaceProductoCreacionTb enlaceProducto = EnlaceProductoCreacionTb(
+        idProducto: idProservicio,
         descripcion: descripcion,
       );
 
       int idEnlaceProServicio =
           await EnlaceProServicioDb.insertEnlaceProServicio(
-              enlaceProducto, objectTypeEnlaceProducto);
+              enlaceProducto);
 
       subirImagenes(
         idEnlaceProServicio,

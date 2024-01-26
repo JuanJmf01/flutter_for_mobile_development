@@ -2,24 +2,27 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class EnlaceProServicioDb {
-  static Future<int> insertEnlaceProServicio(
-      EnlaceProServicioCreacionTb enlaceProducto, Type objectType) async {
+  static Future<int> insertEnlaceProServicio(dynamic enlaceProServicio) async {
     Dio dio = Dio();
 
     Map<String, dynamic> data = {};
     String url = '';
 
-    if (objectType == ProductoTb) {
-      data = enlaceProducto.toMapEnlaceProducto();
+    if (enlaceProServicio is EnlaceProductoCreacionTb) {
+      data = enlaceProServicio.toMapEnlaceProducto();
       url = MisRutas.rutaEnlaceProductosByEnlaceProducto;
-    } else if (objectType == ServicioTb) {
-      data = enlaceProducto.toMapEnlaceServicio();
+    } else if (enlaceProServicio is EnlaceServicioCreacionTb) {
+      data = enlaceProServicio.toMapEnlaceServicio();
       url = MisRutas.rutaEnlaceServicios;
+    } else if (enlaceProServicio is ProductEnlaceReelCreacionTb) {
+      data = enlaceProServicio.toMap();
+      url = MisRutas.rutaProductEnlaceReels;
+    } else if (enlaceProServicio is ServiceEnlaceReelCreacionTb) {
+      data = enlaceProServicio.toMap();
+      url = MisRutas.rutaServiceEnlaceReels;
     }
 
     try {
@@ -44,74 +47,79 @@ class EnlaceProServicioDb {
     }
   }
 
-  static Future<int> insertproductEnlaceReel(
-      ProductEnlaceReelCreacionTb reel) async {
-    Dio dio = Dio();
-    Map<String, dynamic> data = reel.toMap();
-    String url = MisRutas.rutaProductEnlaceReels;
+  // static Future<int> insertproductEnlaceReel(
+  //     ProductEnlaceReelCreacionTb reel) async {
+  //   Dio dio = Dio();
+  //   Map<String, dynamic> data = reel.toMap();
+  //   String url = MisRutas.rutaProductEnlaceReels;
 
-    try {
-      Response response = await dio.post(url,
-          data: jsonEncode(data),
-          options: Options(
-            headers: {'Content-Type': 'application/json'},
-          ));
-      if (response.statusCode == 200) {
-        print('product reel insertado correctamenre');
-        int idReel = response.data;
+  //   try {
+  //     Response response = await dio.post(url,
+  //         data: jsonEncode(data),
+  //         options: Options(
+  //           headers: {'Content-Type': 'application/json'},
+  //         ));
+  //     if (response.statusCode == 200) {
+  //       print('product reel insertado correctamenre');
+  //       int idReel = response.data;
 
-        return idReel;
-      } else {
-        throw Exception(
-            'Error en la solicitud en insert product Reel: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Ha ocurrido un error $error');
-      throw Exception('Error de conexión: $error');
-    }
-  }
+  //       return idReel;
+  //     } else {
+  //       throw Exception(
+  //           'Error en la solicitud en insert product Reel: ${response.statusCode}');
+  //     }
+  //   } catch (error) {
+  //     print('Ha ocurrido un error $error');
+  //     throw Exception('Error de conexión: $error');
+  //   }
+  // }
 
-  static Future<int> insertServiceEnlaceReel(
-      ServiceEnlaceReelCreacionTb reel) async {
-    Dio dio = Dio();
-    Map<String, dynamic> data = reel.toMap();
-    String url = MisRutas.rutaServiceEnlaceReels;
+  // static Future<int> insertServiceEnlaceReel(
+  //     ServiceEnlaceReelCreacionTb reel) async {
+  //   Dio dio = Dio();
+  //   Map<String, dynamic> data = reel.toMap();
+  //   String url = MisRutas.rutaServiceEnlaceReels;
 
-    try {
-      Response response = await dio.post(url,
-          data: jsonEncode(data),
-          options: Options(
-            headers: {'Content-Type': 'application/json'},
-          ));
-      if (response.statusCode == 200) {
-        print('Service reel insertado correctamenre');
-        int idReel = response.data;
+  //   try {
+  //     Response response = await dio.post(url,
+  //         data: jsonEncode(data),
+  //         options: Options(
+  //           headers: {'Content-Type': 'application/json'},
+  //         ));
+  //     if (response.statusCode == 200) {
+  //       print('Service reel insertado correctamenre');
+  //       int idReel = response.data;
 
-        return idReel;
-      } else {
-        throw Exception(
-            'Error en la solicitud en insert service Reel: ${response.statusCode}');
-      }
-    } catch (error) {
-      print('Ha ocurrido un error $error');
-      throw Exception('Error de conexión: $error');
-    }
-  }
+  //       return idReel;
+  //     } else {
+  //       throw Exception(
+  //           'Error en la solicitud en insert service Reel: ${response.statusCode}');
+  //     }
+  //   } catch (error) {
+  //     print('Ha ocurrido un error $error');
+  //     throw Exception('Error de conexión: $error');
+  //   }
+  // }
 
-// Hacer pruebas
-  static Future<List<int>> getEnlaceProServicioSeguidos(
+  static Future<List<int>> getIdEnlaceProServicioSeguidos(
       int idUsuarioSeguidor, Type objectType) async {
     Dio dio = Dio();
 
     String url = '';
     String claveIdEnlaceProducto = '';
 
-    if (objectType == ProductoTb) {
+    if (objectType == EnlaceProductoCreacionTb) {
       url = '${MisRutas.rutaEnlaceProductosSeguidos}/$idUsuarioSeguidor';
       claveIdEnlaceProducto = 'idEnlaceProducto';
-    } else if (objectType == ServicioTb) {
+    } else if (objectType == EnlaceServicioCreacionTb) {
       url = '${MisRutas.rutaEnlaceServiciosSeguidos}/$idUsuarioSeguidor';
       claveIdEnlaceProducto = 'idEnlaceServicio';
+    } else if (objectType == ProductEnlaceReelCreacionTb) {
+      url = '${MisRutas.rutaProductEnlaceReelSeguidos}/$idUsuarioSeguidor';
+      claveIdEnlaceProducto = 'idProductEnlaceReel';
+    } else if (objectType == ServiceEnlaceReelCreacionTb) {
+      url = '${MisRutas.rutaProductEnlaceReelSeguidos}/$idUsuarioSeguidor';
+      claveIdEnlaceProducto = 'idServiceEnlaceReel';
     }
 
     if (url != '' && claveIdEnlaceProducto != '') {

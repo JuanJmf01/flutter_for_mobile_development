@@ -242,17 +242,18 @@ class _NewsFeedState extends State<NewsFeed> {
                         idProServicio: item.idProducto,
                         idUsuarioActual: idUsuarioActual,
                       );
-                      // } else if (item is NewsFeedServiciosTb) {
-                      //   return contenidoImages(
-                      //     item.descripcion ?? '',
-                      //     item.enlaceServicioImages,
-                      //     NewsFeedServiciosTb,
-                      //     index,
-                      //     likes: item.likes,
-                      //     idPublicacion: item.idEnlaceServicio,
-                      //     idProServicio: item.idServicio,
-                      //     idUsuarioActual: idUsuarioActual,
-                      //   );
+                    } else if (item is NewsFeedServiciosTb) {
+                      return contenidoImages(
+                        item.descripcion ?? '',
+                        item.enlaceServicioImages,
+                        NewsFeedServiciosTb,
+                        index,
+                        item.usuario,
+                        likes: item.likes,
+                        idPublicacion: item.idEnlaceServicio,
+                        idProServicio: item.idServicio,
+                        idUsuarioActual: idUsuarioActual,
+                      );
                       // } else if (item is NeswFeedPublicacionesTb) {
                       //   return contenidoImages(
                       //     item.descripcion ?? '',
@@ -263,17 +264,18 @@ class _NewsFeedState extends State<NewsFeed> {
                       //     idUsuarioActual: idUsuarioActual,
                       //     idPublicacion: item.idFotoPublicacion,
                       //   );
-                      // } else if (item is NeswFeedReelProductTb) {
-                      //   return contenidoReels(
-                      //     item.descripcion ?? '',
-                      //     item.urlReel,
-                      //     index,
-                      //     NeswFeedReelProductTb,
-                      //     likes: item.likes,
-                      //     idPublicacion: item.idProductEnlaceReel,
-                      //     idProServicio: item.idProducto,
-                      //     idUsuarioActual: idUsuarioActual,
-                      //   );
+                    } else if (item is NeswFeedReelProductTb) {
+                      return contenidoReels(
+                        item.descripcion ?? '',
+                        item.urlReel,
+                        index,
+                        item.usuario,
+                        NeswFeedReelProductTb,
+                        likes: item.likes,
+                        idPublicacion: item.idProductEnlaceReel,
+                        idProServicio: item.idProducto,
+                        idUsuarioActual: idUsuarioActual,
+                      );
                       // } else if (item is NeswFeedReelServiceTb) {
                       //   return contenidoReels(
                       //     item.descripcion ?? '',
@@ -513,6 +515,7 @@ class _NewsFeedState extends State<NewsFeed> {
     String descripcion,
     String urlReel,
     int index,
+    UsuarioTb usuario,
     Type objectType, {
     int? likes,
     int? idPublicacion,
@@ -524,7 +527,7 @@ class _NewsFeedState extends State<NewsFeed> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //contenidoParteSuperior(),
+          contenidoParteSuperior(usuario.idUsuario, usuario.nombres),
           Padding(
             padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 10.0),
             child: Text(

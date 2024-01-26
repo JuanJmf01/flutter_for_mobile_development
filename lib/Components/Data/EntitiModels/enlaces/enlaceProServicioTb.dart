@@ -1,27 +1,36 @@
-class EnlaceProServicioCreacionTb {
-  final int idProServicio;
+class EnlaceProductoCreacionTb {
+  final int idProducto;
   final String? descripcion;
 
-  EnlaceProServicioCreacionTb({
-    required this.idProServicio,
+  EnlaceProductoCreacionTb({
+    required this.idProducto,
     this.descripcion,
   });
 
   Map<String, dynamic> toMapEnlaceProducto() {
     return {
-      'idProducto': idProServicio,
-      'descripcion': descripcion,
-    };
-  }
-
-  Map<String, dynamic> toMapEnlaceServicio() {
-    return {
-      'idServicio': idProServicio,
+      'idProducto': idProducto,
       'descripcion': descripcion,
     };
   }
 }
 
+class EnlaceServicioCreacionTb {
+  final int idServicio;
+  final String? descripcion;
+
+  EnlaceServicioCreacionTb({
+    required this.idServicio,
+    this.descripcion,
+  });
+
+  Map<String, dynamic> toMapEnlaceServicio() {
+    return {
+      'idServicio': idServicio,
+      'descripcion': descripcion,
+    };
+  }
+}
 
 class ProductEnlaceReelCreacionTb {
   final int idProducto;

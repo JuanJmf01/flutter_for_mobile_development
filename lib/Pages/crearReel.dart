@@ -70,7 +70,7 @@ class _CrearReelState extends State<CrearReel> {
           descripcion: descripcion,
         );
 
-        EnlaceProServicioDb.insertproductEnlaceReel(reel);
+        EnlaceProServicioDb.insertEnlaceProServicio(reel);
       } else if (selectedProServicio is ServicioTb) {
         ServiceEnlaceReelCreacionTb reel = ServiceEnlaceReelCreacionTb(
           idServicio: selectedProServicio.idServicio,
@@ -79,7 +79,7 @@ class _CrearReelState extends State<CrearReel> {
           descripcion: descripcion,
         );
 
-        EnlaceProServicioDb.insertServiceEnlaceReel(reel);
+        EnlaceProServicioDb.insertEnlaceProServicio(reel);
       } else if (selectedProServicio == null) {
         int? idNegocio = await NegocioDb.checkBusinessExists(widget.idUsuario);
         if (idNegocio != null) {
