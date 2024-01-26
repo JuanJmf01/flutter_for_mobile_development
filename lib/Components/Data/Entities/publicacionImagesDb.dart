@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/publicacionImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/noEnlaces/publicacionImagesTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class PublicacionImagesDb {

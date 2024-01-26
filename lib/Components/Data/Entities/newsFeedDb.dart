@@ -1,11 +1,11 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlaces/enlaceProServicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
-import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioDb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/noEnlaces/publicacionesTb.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlaces/enlaceProServicioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/publicacionesDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class NewsFeedDb {
@@ -16,21 +16,30 @@ class NewsFeedDb {
     List<int> idsEnlaceServicios =
         await EnlaceProServicioDb.getIdEnlaceProServicioSeguidos(
             idUsuarioActual, EnlaceServicioCreacionTb);
-    List<int> idsEnlaceProductEnlaceReel =
+    List<int> idsProductEnlaceReel =
         await EnlaceProServicioDb.getIdEnlaceProServicioSeguidos(
             idUsuarioActual, ProductEnlaceReelCreacionTb);
+    List<int> idsServiceEnlaceReel =
+        await EnlaceProServicioDb.getIdEnlaceProServicioSeguidos(
+            idUsuarioActual, ServiceEnlaceReelCreacionTb);
+    List<int> idsReelsPublicacion =
+        await PublicacionesDb.getIdsPublicacionesSeguidas(
+            idUsuarioActual, ReelCreacionTb);
+    List<int> idsFotoPublicacion =
+        await PublicacionesDb.getIdsPublicacionesSeguidas(
+            idUsuarioActual, PublicacionesCreacionTb);
 
-    print("SEGUIDOS: $idsEnlaceProductEnlaceReel");
+    print("SEGUIDOS: $idsFotoPublicacion");
 
     try {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
         //getEnlaceProductosBySeguidores(idUsuarioActual, idsEnlaceProductos),
         //getAllEnlaceServicios(idUsuarioActual, idsEnlaceServicios),
-        // getAllPublicaciones(idUsuarioActual),
-        getAllProductReels(idUsuarioActual, idsEnlaceProductEnlaceReel),
-        // getAllServiceReels(idUsuarioActual),
-        // getAllOnlyReels(idUsuarioActual),
+        getFotoPublicacionesBySeguidos(idUsuarioActual, idsFotoPublicacion),
+        //getAllProductReels(idUsuarioActual, idsProductEnlaceReel),
+        //getServiceReelsBySeguidos(idUsuarioActual, idsServiceEnlaceReel),
+        //getReelsPublicacionBySeguidos(idUsuarioActual, idsReelsPublicacion),
       ]);
 
       // Combinar las respuestas en una sola lista de NewsFeedItem
@@ -52,7 +61,7 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getEnlaceProductosBySeguidores(
+  static Future<NewsFeedTb> getEnlaceProductosBySeguidos(
       int idUsuarioActual, List<int> enlaceProductos) async {
     if (enlaceProductos.isNotEmpty) {
       Dio dio = Dio();
@@ -90,7 +99,7 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllEnlaceServicios(
+  static Future<NewsFeedTb> getEnlaceServiciosBySeguidos(
       int idUsuarioActual, List<int> enlaceServicios) async {
     if (enlaceServicios.isNotEmpty) {
       Dio dio = Dio();
@@ -126,10 +135,14 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllPublicaciones(int idUsuarioActual) async {
+  static Future<NewsFeedTb> getFotoPublicacionesBySeguidos(
+      int idUsuarioActual, List<int> idsFotoPublicacion) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaPublicaciones;
-    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
+    String url = MisRutas.rutaPublicacionesByIdPublicacion;
+    Map<String, dynamic> data = {
+      'idUsuario': idUsuarioActual,
+      'idsFotosPublicacion': idsFotoPublicacion
+    };
 
     try {
       Response response = await dio.get(
@@ -157,13 +170,13 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllProductReels(
+  static Future<NewsFeedTb> getProductReelsBySeguidos(
       int idUsuarioActual, List<int> idsEnlaceProductEnlaceReel) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaProductEnlaceReels;
+    String url = MisRutas.rutaProductEnlaceReelById;
     Map<String, dynamic> data = {
       'idUsuario': idUsuarioActual,
-      'idProductoEnlaceReels': [1,2]
+      'idProductoEnlaceReels': idsEnlaceProductEnlaceReel
     };
 
     try {
@@ -190,11 +203,14 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllServiceReels(int idUsuarioActual) async {
+  static Future<NewsFeedTb> getServiceReelsBySeguidos(
+      int idUsuarioActual, List<int> idsServiceEnlaceReel) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaServiceEnlaceReels;
-    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
-
+    String url = MisRutas.rutaServiceEnlaceReelById;
+    Map<String, dynamic> data = {
+      'idUsuario': idUsuarioActual,
+      'idServicioEnlaceReels': idsServiceEnlaceReel
+    };
     try {
       Response response = await dio.get(
         url,
@@ -222,10 +238,14 @@ class NewsFeedDb {
     }
   }
 
-  static Future<NewsFeedTb> getAllOnlyReels(int idUsuarioActual) async {
+  static Future<NewsFeedTb> getReelsPublicacionBySeguidos(
+      int idUsuarioActual, List<int> idsReelsPublicacion) async {
     Dio dio = Dio();
-    String url = MisRutas.rutaOnlyReels;
-    Map<String, dynamic> data = {'idUsuario': idUsuarioActual};
+    String url = MisRutas.rutaReelByIdReelPublicacion;
+    Map<String, dynamic> data = {
+      'idUsuario': idUsuarioActual,
+      'idsReelPublicacion': idsReelsPublicacion
+    };
 
     try {
       Response response = await dio.get(
@@ -237,7 +257,7 @@ class NewsFeedDb {
       );
       if (response.statusCode == 200) {
         List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
-            .map((data) => NeswFeedOnlyReelTb.fromJsonReel(data))
+            .map((data) => NeswFeedReelPublicacionTb.fromJsonReel(data))
             .toList();
 
         return NewsFeedTb(newsFeed);

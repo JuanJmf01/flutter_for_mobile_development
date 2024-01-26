@@ -7,7 +7,7 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
-import 'package:etfi_point/Components/Data/Firebase/Storage/FirebaseImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
@@ -105,15 +105,11 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
           onAcceptMessage: 'Aceptar',
           onCancelMessage: 'Cancelar',
           onAccept: () async {
-            ImageStorageDeleteTb imageInfo = ImageStorageDeleteTb(
-              fileName: fileName,
-              idUsuario: idUsuario,
-              nombreImagen: '',
-              idFile: idProServicio!,
-            );
+            String urlDirectory =
+                'imagenes/$idUsuario/$fileName/$idProServicio';
 
             bool resultStorageImages =
-                await ImagesStorage.deleteProServicioImage(imageInfo);
+                await ImagesStorage.deleteDirectory(urlDirectory);
             if (resultStorageImages) {
               try {
                 print('Id producto: $idProServicio');

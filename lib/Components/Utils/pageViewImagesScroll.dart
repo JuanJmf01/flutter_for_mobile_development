@@ -1,6 +1,6 @@
-import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlaces/enlaceProServicioImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/noEnlaces/publicacionImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/publicacionImagesTb.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/material.dart';
 

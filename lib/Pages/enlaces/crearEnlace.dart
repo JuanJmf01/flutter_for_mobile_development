@@ -1,20 +1,20 @@
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/publicacionImagesTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/publicacionesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/noEnlaces/publicacionImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/noEnlaces/publicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/PublicacionImagesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/publicacionesDb.dart';
-import 'package:etfi_point/Components/Data/Firebase/Storage/FirebaseImagesStorage.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/publicacionesDb.dart';
+import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
-import 'package:etfi_point/Pages/enlaces/cargarMediaDeEnlaces.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/cargarMediaDeEnlaces.dart';
 import 'package:etfi_point/Pages/enlaces/paginaUno.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -59,13 +59,13 @@ class _CrearEnlaceState extends State<CrearEnlace> {
       int? idNegocio = await NegocioDb.checkBusinessExists(idUsuario);
 
       if (idNegocio != null) {
-        PublicacionesTb publicacion = PublicacionesTb(
+        PublicacionesCreacionTb publicacion = PublicacionesCreacionTb(
           idNegocio: idNegocio,
           descripcion: _descripcionController.text,
         );
 
         int idPublicacion =
-            await PublicacionesDb.insertPublicacion(publicacion);
+            await PublicacionesDb.insertFotoPublicacion(publicacion);
 
         for (var imageToUpload in imagesToUpload) {
           ImagesStorageTb image = ImagesStorageTb(

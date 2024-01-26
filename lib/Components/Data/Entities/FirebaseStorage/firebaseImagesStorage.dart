@@ -5,7 +5,7 @@ import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ImagesStorage {
-  static String definePathToSave(dynamic image) {
+  static String definePath(dynamic image) {
     String fileName = '';
     int idUsuario = -1;
     int idFile = -1;
@@ -40,18 +40,15 @@ class ImagesStorage {
       bytes = image.newImageBytes;
     }
 
-    String rutaSave = definePathToSave(image);
+    String rutaSave = definePath(image);
 
-    if (rutaSave != '' || rutaSave != null && bytes.isNotEmpty) {
+    if (rutaSave != '' && bytes.isNotEmpty) {
       final Reference ref = storage.ref().child(rutaSave).child(imageName);
       final UploadTask uploadTask = ref.putData(bytes);
 
       try {
         final TaskSnapshot snapshot = await uploadTask;
-        print('snapshot: $snapshot');
-
         final String url = await snapshot.ref.getDownloadURL();
-        print('url: $url');
 
         if (snapshot.state == TaskState.success) {
           return url;
@@ -69,19 +66,16 @@ class ImagesStorage {
 
   static Future<String> updateImage(dynamic image) async {
     late Uint8List bytes;
-    String imageName = '';
 
     if (image is ImagesStorageTb) {
-      imageName = image.imageName;
       bytes = image.newImageBytes;
     } else if (image is ImageStorageTb) {
-      imageName = image.imageName;
       bytes = image.newImageBytes;
     }
 
-    String rutaSave = definePathToSave(image);
+    String rutaSave = definePath(image);
 
-    if (rutaSave != '' || rutaSave != null && bytes.isNotEmpty) {
+    if (rutaSave != '' || bytes.isNotEmpty) {
       final Reference ref = FirebaseStorage.instance.ref().child(rutaSave);
       final UploadTask uploadTask = ref.putData(bytes);
 
@@ -113,9 +107,9 @@ class ImagesStorage {
       bytes = image.newImageBytes;
     }
 
-    String rutaSave = definePathToSave(image);
+    String rutaSave = definePath(image);
 
-    if (rutaSave != '' || rutaSave != null && bytes.isNotEmpty) {
+    if (rutaSave != '' || bytes.isNotEmpty) {
       try {
         // Obtener la lista de elementos en el directorio
         final ListResult listResult =
@@ -149,7 +143,7 @@ class ImagesStorage {
     String fileName = imageInfo.fileName;
     int idUsuario = imageInfo.idUsuario;
     int idProServicio = imageInfo.idFile;
-    String imageName = imageInfo.nombreImagen;
+    String imageName = imageInfo.imageName;
 
     try {
       final Reference ref = FirebaseStorage.instance
@@ -167,48 +161,19 @@ class ImagesStorage {
     }
   }
 
-  static Future<bool> deleteDirectory(int idUsuario, String directoryName) async {
-  try {
-    final Reference ref = FirebaseStorage.instance.ref().child('imagenes/$idUsuario/$directoryName');
-
-    // Listamos todos los elementos dentro del directorio
-    ListResult result = await ref.listAll();
-
-    // Eliminamos cada archivo dentro del directorio
-    await Future.forEach(result.items, (Reference item) async {
-      await item.delete();
-    });
-
-    // Si la eliminación se realiza sin errores, retornamos true
-    return true;
-  } catch (error) {
-    print('Error eliminando directorio: $error');
-    // Si hay un error, retornamos false
-    return false;
-  }
-}
-
-
-  static Future<bool> deleteProServicioImage(
-      ImageStorageDeleteTb imageInfo) async {
-    int idUsuario = imageInfo.idUsuario;
-    String fileName = imageInfo.fileName;
-    int idProducto = imageInfo.idFile;
-
+  static Future<bool> deleteDirectory(String urlDirectory) async {
     try {
-      final Reference ref = FirebaseStorage.instance
-          .ref()
-          .child('imagenes/$idUsuario/$fileName/$idProducto');
+      final Reference ref = FirebaseStorage.instance.ref().child(urlDirectory);
 
-      // Listar los elementos dentro del directorio
+      // Listamos todos los elementos dentro del directorio
       ListResult result = await ref.listAll();
 
-      // Eliminar cada archivo dentro del directorio
+      // Eliminamos cada archivo dentro del directorio
       await Future.forEach(result.items, (Reference item) async {
         await item.delete();
       });
 
-      // Si no hay errores al eliminar, retornamos true
+      // Si la eliminación se realiza sin errores, retornamos true
       return true;
     } catch (error) {
       print('Error eliminando directorio: $error');
@@ -216,4 +181,5 @@ class ImagesStorage {
       return false;
     }
   }
+
 }

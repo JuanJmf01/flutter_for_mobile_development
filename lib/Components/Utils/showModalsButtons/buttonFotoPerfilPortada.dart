@@ -4,9 +4,8 @@ import 'dart:typed_data';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
-import 'package:etfi_point/Components/Data/Firebase/Storage/FirebaseImagesStorage.dart';
-import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
-import 'package:etfi_point/Components/Utils/ImagesUtils/editarImagen.dart';
+import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
+import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
@@ -82,8 +81,6 @@ class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
           newImageBytes: finalImage,
           fileName: fileName,
           imageName: assingName(imageAsset.name!),
-          width: imageAsset.originalWidth!.toDouble(),
-          height: imageAsset.originalHeight!.toDouble(),
         );
 
         String urlImage = widget.isUrlPhotoAvailable
@@ -105,13 +102,14 @@ class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
     String fileName = isProfilePicture ? "fotoPerfil" : "fotoPortada";
 
     UsuarioTb newUser = await updateUser('', idUsuarioActual, isProfilePicture);
+    String urlDirectory = 'imagenes/$idUsuarioActual/$fileName';
     if (isProfilePicture) {
       if (newUser.urlFotoPerfil == '' || newUser.urlFotoPerfil == null) {
-        ImagesStorage.deleteDirectory(idUsuarioActual, fileName);
+        ImagesStorage.deleteDirectory(urlDirectory);
       }
     } else {
       if (newUser.urlFotoPortada == '' || newUser.urlFotoPortada == null) {
-        ImagesStorage.deleteDirectory(idUsuarioActual, fileName);
+        ImagesStorage.deleteDirectory(urlDirectory);
       }
     }
   }

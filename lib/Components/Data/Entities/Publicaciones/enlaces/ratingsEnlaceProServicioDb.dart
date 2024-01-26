@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/enlaces/ratingsEnlaceProServicioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlaces/ratingsEnlaceProServicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';

@@ -81,7 +81,7 @@ class MisRutas {
   static String rutaEnlaceProductos = '$rutaPrincipal/enlaceProducto';
 
   static String rutaEnlaceProductosByEnlaceProducto =
-      '$rutaPrincipal/enlaceProductoByEnlaceProducto';
+      '$rutaPrincipal/enlaceProductoByIdEnlaceProducto';
 
   static String rutaEnlaceProductosSeguidos =
       '$rutaPrincipal/enlaceProductoBySeguidor';
@@ -90,7 +90,7 @@ class MisRutas {
   static String rutaEnlaceServicios = '$rutaPrincipal/enlaceServicio';
 
   static String rutaEnlaceServicioByEnlaceServicio =
-      '$rutaPrincipal/enlaceServicioByEnlaceServicio';
+      '$rutaPrincipal/enlaceServicioByIdEnlaceServicio';
 
   static String rutaEnlaceServiciosSeguidos =
       '$rutaPrincipal/enlaceServicioBySeguidor';
@@ -105,21 +105,34 @@ class MisRutas {
 
   // -- Rutas para la tabla publicaciones -- //
   static String rutaPublicaciones = '$rutaPrincipal/publicaciones';
+  static String rutaPublicacionesByIdPublicacion =
+      '$rutaPrincipal/publicacionesByIdPublicacion';
+  static String rutaPublicacionesBySeguidor =
+      '$rutaPrincipal/publicacionesBySeguidor';
 
   // -- Rutas para la tabla publicacionImages -- //
   static String rutaPublicacionImages = '$rutaPrincipal/publicacionImages';
 
-  // -- Rutas para la tabla reels -- //
+  // -- Rutas para la tabla reelsPublicacion -- //
   static String rutaOnlyReels = '$rutaPrincipal/onlyReel';
+  static String rutaReelByIdReelPublicacion =
+      '$rutaPrincipal/onlyReelByIdOnlyReel';
+  static String rutaIdsReelsBySeguidor = '$rutaPrincipal/reelsBySeguidor';
 
   // -- Rutas para la tabla serviceEnlaceReels -- //
   static String rutaServiceEnlaceReels = '$rutaPrincipal/serviceEnlaceReels';
+
+  static String rutaServiceEnlaceReelById =
+      '$rutaPrincipal/serviceEnlaceReelsByIdServiceEnlaceReel';
+
+  static String rutaServiceEnlaceReelSeguidos =
+      '$rutaPrincipal/serviceEnlaceReelBySeguidor';
 
   // -- Rutas para la tabla productEnlaceReels -- //
   static String rutaProductEnlaceReels = '$rutaPrincipal/productEnlaceReels';
 
   static String rutaProductEnlaceReelById =
-      '$rutaPrincipal/productEnlaceReelsByEnlaceReel';
+      '$rutaPrincipal/productEnlaceReelsByIdProductEnlaceReel';
 
   static String rutaProductEnlaceReelSeguidos =
       '$rutaPrincipal/producEnlaceReelBySeguidor';

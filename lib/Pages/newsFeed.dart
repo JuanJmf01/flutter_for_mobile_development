@@ -1,11 +1,11 @@
-import 'package:etfi_point/Components/Data/EntitiModels/enlaces/ratingsEnlaceProServicioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlaces/ratingsEnlaceProServicioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/noEnlaces/ratingsPublicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/publicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
-import 'package:etfi_point/Components/Data/Entities/enlaces/ratingsEnlaceProServicioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlaces/ratingsEnlaceProServicioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/ratingsFotoAndReelPublicacionDb.dart';
 import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Data/Entities/publicacionesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/icons.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
@@ -13,7 +13,6 @@ import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:etfi_point/Components/Utils/showVideo.dart';
-import 'package:etfi_point/Pages/perfilPrincipal.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/cupertino.dart';
@@ -254,16 +253,17 @@ class _NewsFeedState extends State<NewsFeed> {
                         idProServicio: item.idServicio,
                         idUsuarioActual: idUsuarioActual,
                       );
-                      // } else if (item is NeswFeedPublicacionesTb) {
-                      //   return contenidoImages(
-                      //     item.descripcion ?? '',
-                      //     item.enlacePublicacionImages,
-                      //     NeswFeedPublicacionesTb,
-                      //     index,
-                      //     likes: item.likes,
-                      //     idUsuarioActual: idUsuarioActual,
-                      //     idPublicacion: item.idFotoPublicacion,
-                      //   );
+                    } else if (item is NeswFeedPublicacionesTb) {
+                      return contenidoImages(
+                        item.descripcion ?? '',
+                        item.enlacePublicacionImages,
+                        NeswFeedPublicacionesTb,
+                        index,
+                        item.usuario,
+                        likes: item.likes,
+                        idUsuarioActual: idUsuarioActual,
+                        idPublicacion: item.idFotoPublicacion,
+                      );
                     } else if (item is NeswFeedReelProductTb) {
                       return contenidoReels(
                         item.descripcion ?? '',
@@ -276,27 +276,29 @@ class _NewsFeedState extends State<NewsFeed> {
                         idProServicio: item.idProducto,
                         idUsuarioActual: idUsuarioActual,
                       );
-                      // } else if (item is NeswFeedReelServiceTb) {
-                      //   return contenidoReels(
-                      //     item.descripcion ?? '',
-                      //     item.urlReel,
-                      //     index,
-                      //     NeswFeedReelServiceTb,
-                      //     likes: item.likes,
-                      //     idPublicacion: item.idServiceEnlaceReel,
-                      //     idProServicio: item.idServicio,
-                      //     idUsuarioActual: idUsuarioActual,
-                      //   );
-                      // } else if (item is NeswFeedOnlyReelTb) {
-                      //   return contenidoReels(
-                      //     item.descripcion ?? '',
-                      //     item.urlReel,
-                      //     index,
-                      //     NeswFeedOnlyReelTb,
-                      //     likes: item.likes,
-                      //     idUsuarioActual: idUsuarioActual,
-                      //     idPublicacion: item.idReelPublicacion,
-                      //   );
+                    } else if (item is NeswFeedReelServiceTb) {
+                      return contenidoReels(
+                        item.descripcion ?? '',
+                        item.urlReel,
+                        index,
+                        item.usuario,
+                        NeswFeedReelServiceTb,
+                        likes: item.likes,
+                        idPublicacion: item.idServiceEnlaceReel,
+                        idProServicio: item.idServicio,
+                        idUsuarioActual: idUsuarioActual,
+                      );
+                    } else if (item is NeswFeedReelPublicacionTb) {
+                      return contenidoReels(
+                        item.descripcion ?? '',
+                        item.urlReel,
+                        index,
+                        item.usuario,
+                        NeswFeedReelPublicacionTb,
+                        likes: item.likes,
+                        idUsuarioActual: idUsuarioActual,
+                        idPublicacion: item.idReelPublicacion,
+                      );
                     }
                     return null;
                   },
@@ -388,7 +390,7 @@ class _NewsFeedState extends State<NewsFeed> {
             idPublicacion: idPublicacion,
             likes: isLiked ? 0 : 1);
 
-        PublicacionesDb.saveRating(
+        RatingsFotoAndReelPublicacionDb.saveRating(
             idPublicacion, idUsuarioActual, ratingPublicacion, objectType);
       }
     }
@@ -397,7 +399,7 @@ class _NewsFeedState extends State<NewsFeed> {
       setState(() {
         isLikedMap[index] = like;
       });
-      if (objectType == NeswFeedOnlyReelTb ||
+      if (objectType == NeswFeedReelPublicacionTb ||
           objectType == NeswFeedPublicacionesTb) {
         saveRatingPublicacion();
       } else {

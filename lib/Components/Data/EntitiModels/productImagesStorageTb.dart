@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:image_picker/image_picker.dart';
@@ -23,30 +22,26 @@ class ImageStorageTb {
   final Uint8List newImageBytes;
   final String fileName;
   final String imageName;
-  final double width;
-  final double height;
 
   ImageStorageTb({
     required this.idUsuario,
     required this.newImageBytes,
     required this.fileName,
     required this.imageName,
-    required this.width,
-    required this.height,
   });
 }
 
 class ImageStorageDeleteTb {
   final int idUsuario;
-  final String fileName;
-  final String nombreImagen;
   final int idFile;
+  final String fileName;
+  final String imageName;
 
   ImageStorageDeleteTb({
     required this.idUsuario,
-    required this.fileName,
-    required this.nombreImagen,
     required this.idFile,
+    required this.fileName,
+    required this.imageName,
   });
 }
 

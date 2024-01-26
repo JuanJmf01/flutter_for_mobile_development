@@ -1,19 +1,19 @@
 import 'dart:io';
 
-import 'package:etfi_point/Components/Data/EntitiModels/enlaces/enlaceProServicioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlaces/enlaceProServicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/publicacionesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/noEnlaces/publicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
-import 'package:etfi_point/Components/Data/Entities/enlaces/enlaceProServicioDb.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlaces/enlaceProServicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/publicacionesDb.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/publicacionesDb.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
-import 'package:etfi_point/Pages/enlaces/cargarMediaDeEnlaces.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/cargarMediaDeEnlaces.dart';
 import 'package:etfi_point/Pages/enlaces/paginaUno.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -88,7 +88,7 @@ class _CrearReelState extends State<CrearReel> {
             urlReel: urlReel,
             nombreReel: nombreReel,
           );
-          PublicacionesDb.insertOnlyReel(reel);
+          PublicacionesDb.insertReelPublicacion(reel);
         }
         fileName = 'onlyReel';
       }
