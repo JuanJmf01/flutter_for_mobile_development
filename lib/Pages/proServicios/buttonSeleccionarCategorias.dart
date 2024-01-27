@@ -16,7 +16,6 @@ class ButtonSeleccionarCategoriasProServicios extends StatelessWidget {
     return ElevatedGlobalButton(
       nameSavebutton: 'Seleccionar categorias',
       onPress: () {
-        print("ALLCATEGORIES_: $categoriasDisponibles");
         showModalBottomSheet(
           isScrollControlled: true,
           context: context,

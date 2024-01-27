@@ -1,21 +1,12 @@
-import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlaces/ratingsEnlaceProServicioTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/noEnlaces/ratingsPublicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
-import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlaces/ratingsEnlaceProServicioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/ratingsFotoAndReelPublicacionDb.dart';
 import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
-import 'package:etfi_point/Components/Utils/Icons/icons.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
-import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
-import 'package:etfi_point/Components/Utils/showVideo.dart';
+import 'package:etfi_point/Pages/NewsFeed/contenidoImages.dart';
+import 'package:etfi_point/Pages/NewsFeed/contenidoReels.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
-import 'package:etfi_point/main.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -89,7 +80,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ),
       body: TabBarView(
         controller: _tabController,
-        children: [
+        children: const [
           //Text("Solo texto"),
           TiendasQueSigo(),
           Center(child: Text('Contenido del Tab 2')),
@@ -230,74 +221,74 @@ class _NewsFeedState extends State<NewsFeed> {
                     NewsFeedItem item = items[index];
 
                     if (item is NewsFeedProductosTb) {
-                      return contenidoImages(
-                        item.descripcion ?? '',
-                        item.enlaceProductoImages,
-                        NewsFeedProductosTb,
-                        index,
-                        item.usuario,
+                      return ContenidoImages(
+                        descripcion: item.descripcion ?? '',
+                        images: item.enlaceProductoImages,
+                        objectType: NewsFeedProductosTb,
+                        index: index,
+                        usuario: item.usuario,
                         likes: item.likes,
                         idPublicacion: item.idEnlaceProducto,
                         idProServicio: item.idProducto,
                         idUsuarioActual: idUsuarioActual,
                       );
                     } else if (item is NewsFeedServiciosTb) {
-                      return contenidoImages(
-                        item.descripcion ?? '',
-                        item.enlaceServicioImages,
-                        NewsFeedServiciosTb,
-                        index,
-                        item.usuario,
+                      return ContenidoImages(
+                        descripcion: item.descripcion ?? '',
+                        images: item.enlaceServicioImages,
+                        objectType: NewsFeedServiciosTb,
+                        index: index,
+                        usuario: item.usuario,
                         likes: item.likes,
                         idPublicacion: item.idEnlaceServicio,
                         idProServicio: item.idServicio,
                         idUsuarioActual: idUsuarioActual,
                       );
                     } else if (item is NeswFeedPublicacionesTb) {
-                      return contenidoImages(
-                        item.descripcion ?? '',
-                        item.enlacePublicacionImages,
-                        NeswFeedPublicacionesTb,
-                        index,
-                        item.usuario,
+                      return ContenidoImages(
+                        descripcion: item.descripcion ?? '',
+                        images: item.enlacePublicacionImages,
+                        objectType: NewsFeedServiciosTb,
+                        index: index,
+                        usuario: item.usuario,
                         likes: item.likes,
-                        idUsuarioActual: idUsuarioActual,
                         idPublicacion: item.idFotoPublicacion,
+                        idUsuarioActual: idUsuarioActual,
                       );
                     } else if (item is NeswFeedReelProductTb) {
-                      return contenidoReels(
-                        item.descripcion ?? '',
-                        item.urlReel,
-                        index,
-                        item.usuario,
-                        NeswFeedReelProductTb,
+                      return ContenidoReels(
+                        descripcion: item.descripcion ?? '',
+                        urlReel: item.urlReel,
+                        index: index,
+                        usuario: item.usuario,
+                        objectType: NeswFeedReelProductTb,
                         likes: item.likes,
                         idPublicacion: item.idProductEnlaceReel,
                         idProServicio: item.idProducto,
                         idUsuarioActual: idUsuarioActual,
                       );
                     } else if (item is NeswFeedReelServiceTb) {
-                      return contenidoReels(
-                        item.descripcion ?? '',
-                        item.urlReel,
-                        index,
-                        item.usuario,
-                        NeswFeedReelServiceTb,
+                      return ContenidoReels(
+                        descripcion: item.descripcion ?? '',
+                        urlReel: item.urlReel,
+                        index: index,
+                        usuario: item.usuario,
+                        objectType: NeswFeedReelServiceTb,
                         likes: item.likes,
                         idPublicacion: item.idServiceEnlaceReel,
                         idProServicio: item.idServicio,
                         idUsuarioActual: idUsuarioActual,
                       );
                     } else if (item is NeswFeedReelPublicacionTb) {
-                      return contenidoReels(
-                        item.descripcion ?? '',
-                        item.urlReel,
-                        index,
-                        item.usuario,
-                        NeswFeedReelPublicacionTb,
+                      return ContenidoReels(
+                        descripcion: item.descripcion ?? '',
+                        urlReel: item.urlReel,
+                        index: index,
+                        usuario: item.usuario,
+                        objectType: NeswFeedReelPublicacionTb,
                         likes: item.likes,
-                        idUsuarioActual: idUsuarioActual,
                         idPublicacion: item.idReelPublicacion,
+                        idUsuarioActual: idUsuarioActual,
                       );
                     }
                     return null;
@@ -315,241 +306,6 @@ class _NewsFeedState extends State<NewsFeed> {
             );
           }
         });
-  }
-
-  Widget contenidoImages(String descripcion, List<dynamic> images,
-      Type objectType, int index, UsuarioTb usuario,
-      {int? likes,
-      int? idPublicacion,
-      int? idProServicio,
-      int? idUsuarioActual}) {
-    return Padding(
-      padding: EdgeInsets.only(top: paddingTopEachPublicacion),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          //Contenido parte superior de cada publicacion
-          contenidoParteSuperior(usuario.idUsuario, usuario.nombres,
-              urlFotoPerfil: usuario.urlFotoPerfil),
-          Padding(
-            padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 0.0),
-            child: Text(
-              descripcion,
-              style: TextStyle(fontSize: 16.8),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(paddingMedia, 10.0, 0.0, 0.0),
-            child: Container(
-              width: 355,
-              height: 365,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(18.0),
-              ),
-              child: PageViewImagesScroll(images: images),
-            ),
-          ),
-          filaIconos(objectType, index,
-              like: likes,
-              idPublicacion: idPublicacion,
-              idProServicio: idProServicio,
-              idUsuarioActual: idUsuarioActual)
-        ],
-      ),
-    );
-  }
-
-  Widget filaIconos(Type objectType, int index,
-      {int? like,
-      int? idPublicacion,
-      int? idProServicio,
-      int? idUsuarioActual}) {
-    bool isLiked =
-        isLikedMap[index] ?? (like == 1); // Asumimos 'false' si es nulo
-    double iconSize = 32.0;
-    double iconPaddingRight = 20.0;
-
-    void saveRatingEnlaceProServicio() {
-      print('Like: $isLiked');
-      if (idUsuarioActual != null && idPublicacion != null) {
-        RatingsEnlaceProServicioTb ratingEnlaceProducto =
-            RatingsEnlaceProServicioTb(
-                idUsuario: idUsuarioActual,
-                idEnlaceProServicio: idPublicacion,
-                likes: isLiked ? 0 : 1);
-
-        RatingsEnlaceProServicioDb.saveRating(
-            idPublicacion, idUsuarioActual, ratingEnlaceProducto, objectType);
-      }
-    }
-
-    void saveRatingPublicacion() {
-      if (idUsuarioActual != null && idPublicacion != null) {
-        RatingsPublicacionesTb ratingPublicacion = RatingsPublicacionesTb(
-            idUsuario: idUsuarioActual,
-            idPublicacion: idPublicacion,
-            likes: isLiked ? 0 : 1);
-
-        RatingsFotoAndReelPublicacionDb.saveRating(
-            idPublicacion, idUsuarioActual, ratingPublicacion, objectType);
-      }
-    }
-
-    void handleLike(bool like) {
-      setState(() {
-        isLikedMap[index] = like;
-      });
-      if (objectType == NeswFeedReelPublicacionTb ||
-          objectType == NeswFeedPublicacionesTb) {
-        saveRatingPublicacion();
-      } else {
-        saveRatingEnlaceProServicio();
-      }
-    }
-
-    return Padding(
-      padding: EdgeInsets.fromLTRB(paddingMedia, 10.0, 0.0, 0.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          isLiked == true
-              ? FutureBuilder<void>(
-                  // Use FutureBuilder para asegurar la actualización inmediata del estado
-                  future: Future<void>.delayed(Duration.zero),
-                  builder: (context, snapshot) {
-                    return ManageIcon(
-                      size: iconSize,
-                      icon: CupertinoIcons.heart_fill,
-                      color: Colors.red,
-                      paddingLeft: 10.0,
-                      paddingRight: 15.0,
-                      onTap: () => handleLike(false),
-                    );
-                  },
-                )
-              : ManageIcon(
-                  icon: CupertinoIcons.heart,
-                  size: iconSize,
-                  paddingLeft: 10.0,
-                  paddingRight: iconPaddingRight,
-                  onTap: () => handleLike(true),
-                ),
-          ManageIcon(
-            size: iconSize,
-            paddingRight: iconPaddingRight,
-            icon: CupertinoIcons.chat_bubble_text,
-          ),
-          ManageIcon(
-            size: iconSize,
-            paddingRight: iconPaddingRight,
-            icon: CupertinoIcons.paperplane,
-          ),
-          ManageIcon(
-            icon: CupertinoIcons.square,
-            paddingRight: iconPaddingRight,
-            size: iconSize,
-          ),
-          Spacer(),
-          idProServicio != null
-              ? ManageIcon(
-                  icon: CupertinoIcons.arrow_turn_up_right,
-                  size: iconSize,
-                  paddingRight: 10.0,
-                  onTap: () {
-                    navigateToServiceOrProductDetail(objectType, idProServicio);
-                  },
-                )
-              : SizedBox.shrink()
-        ],
-      ),
-    );
-  }
-
-  Widget contenidoParteSuperior(
-    int idUsuario,
-    String nombreUsuario, {
-    String? urlFotoPerfil,
-  }) {
-    BorderRadius borderImageProfile = BorderRadius.circular(50.0);
-    double sizeImageProfile = 53.0;
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Menu(
-              currentIndex: 1,
-              idUsuario: idUsuario,
-            ),
-          ),
-        );
-      },
-      child: Row(
-        children: [
-          urlFotoPerfil != null && urlFotoPerfil != ''
-              ? ShowImage(
-                  networkImage: urlFotoPerfil,
-                  widthNetWork: sizeImageProfile,
-                  heightNetwork: sizeImageProfile,
-                  borderRadius: borderImageProfile,
-                  fit: BoxFit.cover,
-                )
-              : Container(
-                  height: sizeImageProfile,
-                  width: sizeImageProfile,
-                  decoration: BoxDecoration(
-                      borderRadius: borderImageProfile,
-                      color: Colors.grey.shade200),
-                ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
-            child: Text(
-              nombreUsuario,
-              style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget contenidoReels(
-    String descripcion,
-    String urlReel,
-    int index,
-    UsuarioTb usuario,
-    Type objectType, {
-    int? likes,
-    int? idPublicacion,
-    int? idProServicio,
-    int? idUsuarioActual,
-  }) {
-    return Padding(
-      padding: EdgeInsets.only(top: paddingTopEachPublicacion),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          contenidoParteSuperior(usuario.idUsuario, usuario.nombres),
-          Padding(
-            padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 10.0),
-            child: Text(
-              descripcion,
-              style: TextStyle(fontSize: 16.8),
-            ),
-          ),
-          ShowVideo(
-            urlReel:
-                "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
-          ),
-          // Fila de iconos
-          filaIconos(objectType, index,
-              like: likes,
-              idPublicacion: idPublicacion,
-              idProServicio: idProServicio,
-              idUsuarioActual: idUsuarioActual)
-        ],
-      ),
-    );
   }
 }
 

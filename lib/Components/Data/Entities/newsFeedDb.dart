@@ -29,17 +29,17 @@ class NewsFeedDb {
         await PublicacionesDb.getIdsPublicacionesSeguidas(
             idUsuarioActual, PublicacionesCreacionTb);
 
-    print("SEGUIDOS: $idsFotoPublicacion");
+    print("SEGUIDOS: $idsEnlaceServicios");
 
     try {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
-        //getEnlaceProductosBySeguidores(idUsuarioActual, idsEnlaceProductos),
-        //getAllEnlaceServicios(idUsuarioActual, idsEnlaceServicios),
+        getEnlaceProductosBySeguidos(idUsuarioActual, idsEnlaceProductos),
+        getEnlaceServiciosBySeguidos(idUsuarioActual, idsEnlaceServicios),
         getFotoPublicacionesBySeguidos(idUsuarioActual, idsFotoPublicacion),
-        //getAllProductReels(idUsuarioActual, idsProductEnlaceReel),
-        //getServiceReelsBySeguidos(idUsuarioActual, idsServiceEnlaceReel),
-        //getReelsPublicacionBySeguidos(idUsuarioActual, idsReelsPublicacion),
+        getProductReelsBySeguidos(idUsuarioActual, idsProductEnlaceReel),
+        getServiceReelsBySeguidos(idUsuarioActual, idsServiceEnlaceReel),
+        getReelsPublicacionBySeguidos(idUsuarioActual, idsReelsPublicacion),
       ]);
 
       // Combinar las respuestas en una sola lista de NewsFeedItem
@@ -137,138 +137,154 @@ class NewsFeedDb {
 
   static Future<NewsFeedTb> getFotoPublicacionesBySeguidos(
       int idUsuarioActual, List<int> idsFotoPublicacion) async {
-    Dio dio = Dio();
-    String url = MisRutas.rutaPublicacionesByIdPublicacion;
-    Map<String, dynamic> data = {
-      'idUsuario': idUsuarioActual,
-      'idsFotosPublicacion': idsFotoPublicacion
-    };
+    if (idsFotoPublicacion.isNotEmpty) {
+      Dio dio = Dio();
+      String url = MisRutas.rutaPublicacionesByIdPublicacion;
+      Map<String, dynamic> data = {
+        'idUsuario': idUsuarioActual,
+        'idsFotosPublicacion': idsFotoPublicacion
+      };
 
-    try {
-      Response response = await dio.get(
-        url,
-        data: jsonEncode(data),
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
+      try {
+        Response response = await dio.get(
+          url,
+          data: jsonEncode(data),
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ),
+        );
 
-      if (response.statusCode == 200) {
-        List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
-            .map((data) => NeswFeedPublicacionesTb.fromJson(data))
-            .toList();
+        if (response.statusCode == 200) {
+          List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
+              .map((data) => NeswFeedPublicacionesTb.fromJson(data))
+              .toList();
 
-        return NewsFeedTb(newsFeed);
-      } else if (response.statusCode == 404) {
-        print("No hay enlacesDeServicios que mostrar");
-        return NewsFeedTb([]);
-      } else {
-        throw Exception('Failed to fetch enlaceServicios');
+          return NewsFeedTb(newsFeed);
+        } else if (response.statusCode == 404) {
+          print("No hay enlacesDeServicios que mostrar");
+          return NewsFeedTb([]);
+        } else {
+          throw Exception('Failed to fetch enlaceServicios');
+        }
+      } catch (error) {
+        throw Exception('Error: $error');
       }
-    } catch (error) {
-      throw Exception('Error: $error');
+    } else {
+      return NewsFeedTb([]);
     }
   }
 
   static Future<NewsFeedTb> getProductReelsBySeguidos(
       int idUsuarioActual, List<int> idsEnlaceProductEnlaceReel) async {
-    Dio dio = Dio();
-    String url = MisRutas.rutaProductEnlaceReelById;
-    Map<String, dynamic> data = {
-      'idUsuario': idUsuarioActual,
-      'idProductoEnlaceReels': idsEnlaceProductEnlaceReel
-    };
+    if (idsEnlaceProductEnlaceReel.isNotEmpty) {
+      Dio dio = Dio();
+      String url = MisRutas.rutaProductEnlaceReelById;
+      Map<String, dynamic> data = {
+        'idUsuario': idUsuarioActual,
+        'idProductoEnlaceReels': idsEnlaceProductEnlaceReel
+      };
 
-    try {
-      Response response = await dio.get(
-        url,
-        data: jsonEncode(data),
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
+      try {
+        Response response = await dio.get(
+          url,
+          data: jsonEncode(data),
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ),
+        );
 
-      if (response.statusCode == 200) {
-        List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
-            .map((data) => NeswFeedReelProductTb.fromJsonReelProducto(data))
-            .toList();
+        if (response.statusCode == 200) {
+          List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
+              .map((data) => NeswFeedReelProductTb.fromJsonReelProducto(data))
+              .toList();
 
-        return NewsFeedTb(newsFeed);
-      } else {
-        throw Exception('Failed to fetch enlaceProductReels');
+          return NewsFeedTb(newsFeed);
+        } else {
+          throw Exception('Failed to fetch enlaceProductReels');
+        }
+      } catch (error) {
+        print('Error: $error');
+        return NewsFeedTb([]);
       }
-    } catch (error) {
-      print('Error: $error');
+    } else {
       return NewsFeedTb([]);
     }
   }
 
   static Future<NewsFeedTb> getServiceReelsBySeguidos(
       int idUsuarioActual, List<int> idsServiceEnlaceReel) async {
-    Dio dio = Dio();
-    String url = MisRutas.rutaServiceEnlaceReelById;
-    Map<String, dynamic> data = {
-      'idUsuario': idUsuarioActual,
-      'idServicioEnlaceReels': idsServiceEnlaceReel
-    };
-    try {
-      Response response = await dio.get(
-        url,
-        data: jsonEncode(data),
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
+    if (idsServiceEnlaceReel.isNotEmpty) {
+      Dio dio = Dio();
+      String url = MisRutas.rutaServiceEnlaceReelById;
+      Map<String, dynamic> data = {
+        'idUsuario': idUsuarioActual,
+        'idServicioEnlaceReels': idsServiceEnlaceReel
+      };
+      try {
+        Response response = await dio.get(
+          url,
+          data: jsonEncode(data),
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ),
+        );
 
-      if (response.statusCode == 200) {
-        List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
-            .map((data) => NeswFeedReelServiceTb.fromJsonReelServicio(data))
-            .toList();
+        if (response.statusCode == 200) {
+          List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
+              .map((data) => NeswFeedReelServiceTb.fromJsonReelServicio(data))
+              .toList();
 
-        return NewsFeedTb(newsFeed);
-      } else if (response.statusCode == 404) {
-        print("No se encontraron filas. Vacio");
+          return NewsFeedTb(newsFeed);
+        } else if (response.statusCode == 404) {
+          print("No se encontraron filas. Vacio");
+          return NewsFeedTb([]);
+        } else {
+          throw Exception('Failed to fetch enlaceServiceReels');
+        }
+      } catch (error) {
+        print('Error: $error');
         return NewsFeedTb([]);
-      } else {
-        throw Exception('Failed to fetch enlaceServiceReels');
       }
-    } catch (error) {
-      print('Error: $error');
+    } else {
       return NewsFeedTb([]);
     }
   }
 
   static Future<NewsFeedTb> getReelsPublicacionBySeguidos(
       int idUsuarioActual, List<int> idsReelsPublicacion) async {
-    Dio dio = Dio();
-    String url = MisRutas.rutaReelByIdReelPublicacion;
-    Map<String, dynamic> data = {
-      'idUsuario': idUsuarioActual,
-      'idsReelPublicacion': idsReelsPublicacion
-    };
+    if (idsReelsPublicacion.isNotEmpty) {
+      Dio dio = Dio();
+      String url = MisRutas.rutaReelByIdReelPublicacion;
+      Map<String, dynamic> data = {
+        'idUsuario': idUsuarioActual,
+        'idsReelPublicacion': idsReelsPublicacion
+      };
 
-    try {
-      Response response = await dio.get(
-        url,
-        data: jsonEncode(data),
-        options: Options(
-          headers: {'Content-Type': 'application/json'},
-        ),
-      );
-      if (response.statusCode == 200) {
-        List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
-            .map((data) => NeswFeedReelPublicacionTb.fromJsonReel(data))
-            .toList();
+      try {
+        Response response = await dio.get(
+          url,
+          data: jsonEncode(data),
+          options: Options(
+            headers: {'Content-Type': 'application/json'},
+          ),
+        );
+        if (response.statusCode == 200) {
+          List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
+              .map((data) => NeswFeedReelPublicacionTb.fromJsonReel(data))
+              .toList();
 
-        return NewsFeedTb(newsFeed);
-      } else if (response.statusCode == 404) {
-        print("No se encontraron filas. Vacio");
-        return NewsFeedTb([]);
-      } else {
-        throw Exception('Failed to fetch onlyReels');
+          return NewsFeedTb(newsFeed);
+        } else if (response.statusCode == 404) {
+          print("No se encontraron filas. Vacio");
+          return NewsFeedTb([]);
+        } else {
+          throw Exception('Failed to fetch onlyReels');
+        }
+      } catch (error) {
+        print('Error_:: $error');
+        throw Exception('Error: $error');
       }
-    } catch (error) {
-      print('Error_:: $error');
+    } else {
       return NewsFeedTb([]);
     }
   }

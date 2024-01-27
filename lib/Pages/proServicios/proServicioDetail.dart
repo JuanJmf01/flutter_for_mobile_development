@@ -14,7 +14,7 @@ import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioGeneralDetail.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
-import 'package:etfi_point/Pages/productosGeneralForm.dart';
+import 'package:etfi_point/Pages/proServicios/productos/productosGeneralForm.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -13,7 +13,7 @@ class EnlaceProServicioDb {
 
     if (enlaceProServicio is EnlaceProductoCreacionTb) {
       data = enlaceProServicio.toMapEnlaceProducto();
-      url = MisRutas.rutaEnlaceProductosByEnlaceProducto;
+      url = MisRutas.rutaEnlaceProductos;
     } else if (enlaceProServicio is EnlaceServicioCreacionTb) {
       data = enlaceProServicio.toMapEnlaceServicio();
       url = MisRutas.rutaEnlaceServicios;
@@ -46,7 +46,6 @@ class EnlaceProServicioDb {
       throw Exception('Error de conexión: $error');
     }
   }
-
 
   static Future<List<int>> getIdEnlaceProServicioSeguidos(
       int idUsuarioSeguidor, Type objectType) async {

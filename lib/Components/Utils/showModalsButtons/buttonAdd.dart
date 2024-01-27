@@ -2,10 +2,10 @@ import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/smallButtonTopTab.dart';
-import 'package:etfi_point/Pages/crearProducto.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
 import 'package:etfi_point/Pages/enlaces/crearEnlace.dart';
 import 'package:etfi_point/Pages/crearReel.dart';
+import 'package:etfi_point/Pages/proServicios/productos/productosGeneralForm.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -51,8 +51,14 @@ class ButtonAdd extends StatelessWidget {
           SmallButtonTopTab(),
           ItemForModalButtons(
             onPress: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CrearProducto()));
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ProductosGeneralForm(
+                            titulo: 'Agregar producto',
+                            nameSavebutton: 'Crear',
+                            exitoMessage: 'Producto creado exitosamente',
+                          )));
             },
             padding: padding,
             icon: CupertinoIcons.cube_box,
