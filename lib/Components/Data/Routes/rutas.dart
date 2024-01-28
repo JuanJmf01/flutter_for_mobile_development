@@ -103,8 +103,8 @@ class MisRutas {
   static String rutaEnlaceServiciosImage =
       '$rutaPrincipal/enlaceServicioImages';
 
-  // -- Rutas para la tabla publicaciones -- //
-  static String rutaPublicaciones = '$rutaPrincipal/publicaciones';
+  // -- Rutas para la tabla fotosPublicacion -- //
+  static String rutaFotosPublicaciones = '$rutaPrincipal/publicaciones';
   static String rutaPublicacionesByIdPublicacion =
       '$rutaPrincipal/publicacionesByIdPublicacion';
   static String rutaPublicacionesBySeguidor =
@@ -202,4 +202,8 @@ class MisRutas {
   // -- Rutas para la tabla seguidores -- //
 
   static String rutaSeguidores = '$rutaPrincipal/seguidores';
+
+  // -- Rutas para las publicaciones (enlaceProductos, enlaceServicios, etc) en estas consultas actual varias tablas-- //
+
+  static String rutaEnlacesPublicaciones = '$rutaPrincipal/enlacePublicaciones';
 }

@@ -67,7 +67,7 @@ class NewsFeedServiciosTb extends NewsFeedItem {
     required this.usuario,
     required this.enlaceServicioImages,
   });
-
+ 
   factory NewsFeedServiciosTb.fromJson(Map<String, dynamic> json) {
     List<EnlaceProServicioImagesTb> enlaceServicioImagesList = [];
     if (json['enlaceServicioImages'] != null) {

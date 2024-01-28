@@ -279,18 +279,26 @@ class _NewsFeedState extends State<NewsFeed> {
                         idProServicio: item.idServicio,
                         idUsuarioActual: idUsuarioActual,
                       );
-                    } else if (item is NeswFeedReelPublicacionTb) {
-                      return ContenidoReels(
-                        descripcion: item.descripcion ?? '',
-                        urlReel: item.urlReel,
-                        index: index,
-                        usuario: item.usuario,
-                        objectType: NeswFeedReelPublicacionTb,
-                        likes: item.likes,
-                        idPublicacion: item.idReelPublicacion,
-                        idUsuarioActual: idUsuarioActual,
-                      );
-                    }
+                    } 
+                    // else if (item is NeswFeedReelPublicacionTb) {
+                    //   return ContenidoReels2(
+                    //     item: item,
+                    //     index: index,
+                    //     idUsuarioActual: idUsuarioActual,
+                    //   );
+                    // }
+                    // else if (item is NeswFeedReelPublicacionTb) {
+                    //   return ContenidoReels(
+                    //     descripcion: item.descripcion ?? '',
+                    //     urlReel: item.urlReel,
+                    //     index: index,
+                    //     usuario: item.usuario,
+                    //     objectType: NeswFeedReelPublicacionTb,
+                    //     likes: item.likes,
+                    //     idPublicacion: item.idReelPublicacion,
+                    //     idUsuarioActual: idUsuarioActual,
+                    //   );
+                    // }
                     return null;
                   },
                 ),
@@ -308,6 +316,277 @@ class _NewsFeedState extends State<NewsFeed> {
         });
   }
 }
+
+// class ContenidoReels2 extends StatelessWidget {
+//   const ContenidoReels2({
+//     super.key,
+//     required this.item,
+//     required this.index,
+//     this.idProServicio,
+//     required this.idUsuarioActual,
+//   });
+
+//   final NewsFeedItem item;
+//   final int index;
+//   final int? idProServicio;
+//   final int idUsuarioActual;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     double paddingTopEachPublicacion = 40.0;
+//     Object newItem = ({});
+
+//     if (item is NeswFeedReelPublicacionTb) {
+//       newItem = item as NeswFeedReelPublicacionTb;
+//     }
+
+//     return Padding(
+//       padding: EdgeInsets.only(top: paddingTopEachPublicacion),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           newItem is NeswFeedReelPublicacionTb
+//               ? ContenidoParteSuperior2(
+//                   idUsuario: newItem.usuario.idUsuario,
+//                   nombreUsuario: newItem.usuario.nombres)
+//               : Text(""),
+
+//           Padding(
+//             padding: EdgeInsets.fromLTRB(15.0, 8.0, 0.0, 10.0),
+//             child: Text(
+//               descripcion,
+//               style: TextStyle(fontSize: 16.8),
+//             ),
+//           ),
+//           ShowVideo(
+//             urlReel:
+//                 "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+//           ),
+//           // Fila de iconos
+//           FilaIconos(
+//             index: index,
+//             idProServicio: idProServicio,
+//             idUsuarioActual: idUsuarioActual,
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// class ContenidoParteSuperior2 extends StatelessWidget {
+//   const ContenidoParteSuperior2({
+//     super.key,
+//     required this.idUsuario,
+//     required this.nombreUsuario,
+//     this.urlFotoPerfil,
+//   });
+
+//   final int idUsuario;
+//   final String nombreUsuario;
+//   final String? urlFotoPerfil;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     BorderRadius borderImageProfile = BorderRadius.circular(50.0);
+//     double sizeImageProfile = 53.0;
+
+//     return GestureDetector(
+//       onTap: () {
+//         Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => Menu(
+//               currentIndex: 1,
+//               idUsuario: idUsuario,
+//             ),
+//           ),
+//         );
+//       },
+//       child: Row(
+//         children: [
+//           urlFotoPerfil != null && urlFotoPerfil != ''
+//               ? ShowImage(
+//                   networkImage: urlFotoPerfil,
+//                   widthNetWork: sizeImageProfile,
+//                   heightNetwork: sizeImageProfile,
+//                   borderRadius: borderImageProfile,
+//                   fit: BoxFit.cover,
+//                 )
+//               : Container(
+//                   height: sizeImageProfile,
+//                   width: sizeImageProfile,
+//                   decoration: BoxDecoration(
+//                       borderRadius: borderImageProfile,
+//                       color: Colors.grey.shade200),
+//                 ),
+//           Padding(
+//             padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+//             child: Text(
+//               nombreUsuario,
+//               style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
+//             ),
+//           )
+//         ],
+//       ),
+//     );
+//   }
+// }
+
+// class FilaIconos2 extends StatefulWidget {
+//   const FilaIconos2({
+//     super.key,
+//     required this.index,
+//     this.idProServicio,
+//     required this.idUsuarioActual,
+//   });
+
+//   final int index;
+//   final int? idProServicio;
+//   final int idUsuarioActual;
+
+//   @override
+//   State<FilaIconos2> createState() => _FilaIconosState();
+// }
+
+// class _FilaIconosState extends State<FilaIconos2> {
+//   bool isLiked = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+
+//     isLiked = widget.like == 1;
+//   }
+
+//   void saveRatingEnlaceProServicio() {
+//     print('Like: $isLiked');
+//     RatingsEnlaceProServicioTb ratingEnlaceProducto =
+//         RatingsEnlaceProServicioTb(
+//       idUsuario: widget.idUsuarioActual,
+//       idEnlaceProServicio: widget.idPublicacion,
+//       likes: isLiked ? 0 : 1,
+//     );
+
+//     RatingsEnlaceProServicioDb.saveRating(widget.idPublicacion,
+//         widget.idUsuarioActual, ratingEnlaceProducto, widget.objectType);
+//   }
+
+//   void saveRatingPublicacion() {
+//     RatingsPublicacionesTb ratingPublicacion = RatingsPublicacionesTb(
+//         idUsuario: widget.idUsuarioActual,
+//         idPublicacion: widget.idPublicacion,
+//         likes: isLiked ? 0 : 1);
+
+//     RatingsFotoAndReelPublicacionDb.saveRating(widget.idPublicacion,
+//         widget.idUsuarioActual, ratingPublicacion, widget.objectType);
+//   }
+
+//   void handleLike(bool like) {
+//     print("TIPO OBJETOI: ${widget.objectType}");
+//     if (widget.objectType == NeswFeedReelPublicacionTb ||
+//         widget.objectType == NeswFeedPublicacionesTb) {
+//       saveRatingPublicacion();
+//     } else {
+//       saveRatingEnlaceProServicio();
+//     }
+//     setState(() {
+//       isLiked = like;
+//     });
+//   }
+
+//   void navigateToServiceOrProductDetail(Type objectType, int idProServicio) {
+//     if (objectType == NewsFeedProductosTb ||
+//         objectType == NeswFeedReelProductTb) {
+//       navigateToProductDetail(idProServicio);
+//     } else if (objectType == NewsFeedServiciosTb ||
+//         objectType == NeswFeedReelServiceTb) {
+//       navigateToServiceDetail(idProServicio);
+//     }
+//   }
+
+//   void navigateToServiceDetail(int idServicio) {
+//     ServicioDb.getServicio(idServicio).then((servicio) {
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => ProServicioDetail(proServicio: servicio),
+//         ),
+//       );
+//     });
+//   }
+
+//   void navigateToProductDetail(int idProducto) {
+//     ProductoDb.getProducto(idProducto).then((producto) {
+//       Navigator.push(
+//         context,
+//         MaterialPageRoute(
+//           builder: (context) => ProServicioDetail(proServicio: producto),
+//         ),
+//       );
+//     });
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     //bool isLiked = isLikedMap[index] ?? (like == 1); // Asumimos 'false' si es nulo
+//     double iconSize = 32.0;
+//     double iconPaddingRight = 20.0;
+//     double paddingMedia = 20.0;
+
+//     return Padding(
+//       padding: EdgeInsets.fromLTRB(paddingMedia, 10.0, 0.0, 0.0),
+//       child: Row(
+//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//         children: [
+//           isLiked == true
+//               ? ManageIcon(
+//                   size: iconSize,
+//                   icon: CupertinoIcons.heart_fill,
+//                   color: Colors.red,
+//                   paddingLeft: 10.0,
+//                   paddingRight: 15.0,
+//                   onTap: () => handleLike(false),
+//                 )
+//               : ManageIcon(
+//                   icon: CupertinoIcons.heart,
+//                   size: iconSize,
+//                   paddingLeft: 10.0,
+//                   paddingRight: iconPaddingRight,
+//                   onTap: () => handleLike(true),
+//                 ),
+//           ManageIcon(
+//             size: iconSize,
+//             paddingRight: iconPaddingRight,
+//             icon: CupertinoIcons.chat_bubble_text,
+//           ),
+//           ManageIcon(
+//             size: iconSize,
+//             paddingRight: iconPaddingRight,
+//             icon: CupertinoIcons.paperplane,
+//           ),
+//           ManageIcon(
+//             icon: CupertinoIcons.square,
+//             paddingRight: iconPaddingRight,
+//             size: iconSize,
+//           ),
+//           Spacer(),
+//           widget.idProServicio != null
+//               ? ManageIcon(
+//                   icon: CupertinoIcons.arrow_turn_up_right,
+//                   size: iconSize,
+//                   paddingRight: 10.0,
+//                   onTap: () {
+//                     navigateToServiceOrProductDetail(
+//                         widget.objectType, widget.idProServicio!);
+//                   },
+//                 )
+//               : SizedBox.shrink()
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class HorizontalList extends StatelessWidget {
   const HorizontalList({super.key});

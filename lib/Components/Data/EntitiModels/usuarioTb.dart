@@ -17,6 +17,18 @@ class UsuarioTb {
     this.urlFotoPortada,
   });
 
+  Map<String, dynamic> getPropertiesMap() {
+    return {
+      'idUsuario': idUsuario,
+      'nombres': nombres,
+      'apellidos': apellidos,
+      'email': email,
+      'numeroCelular': numeroCelular,
+      'urlFotoPerfil': urlFotoPerfil,
+      'urlFotoPortada': urlFotoPortada,
+    };
+  }
+
   factory UsuarioTb.fromJson(Map<String, dynamic> json) {
     return UsuarioTb(
       idUsuario: json['idUsuario'],

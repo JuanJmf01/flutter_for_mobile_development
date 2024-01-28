@@ -2,6 +2,7 @@ import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
+import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
@@ -17,55 +18,39 @@ class MisServicios extends StatefulWidget {
 }
 
 class _MisServiciosState extends State<MisServicios> {
-  List<ServicioTb> servicios = [];
+
+  Future<List<Object>> getServicios(int idUsuario, int idUsuarioActual) async {
+    List<ServicioTb> servicios = [];
+
+    widget.idUsuario == idUsuarioActual
+        ? servicios = await context
+            .read<ProServiciosProvider>()
+            .obtenerServiciosByNegocio(idUsuarioActual)
+        : servicios = await ServicioDb.getServiciosByNegocio(widget.idUsuario);
+
+    return servicios;
+  }
 
   @override
   Widget build(BuildContext context) {
     int idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
 
-    return FutureBuilder(
-        future: widget.idUsuario == idUsuarioActual
-            ? context
-                .read<ProServiciosProvider>()
-                .obtenerServiciosByNegocio(idUsuarioActual)
-            : ServicioDb.getServiciosByNegocio(widget.idUsuario),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Text('Error al cargar los servicios');
-          } else if (snapshot.hasData) {
-            servicios = snapshot.data!;
-            return Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GridView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 1,
-                        crossAxisSpacing: 0.0,
-                        mainAxisSpacing: 15.0,
-                        mainAxisExtent: 150,
-                      ),
-                      itemCount: servicios.length,
-                      itemBuilder: (BuildContext context, index) {
-                        return IndividulService(
-                          servicio: servicios[index],
-                          index: index,
-                        );
-                      }),
-                ),
-              ],
-            );
-          } else {
-            return Text('No se encontraron los servicios');
-          }
-        });
+    return FutureGridViewProfile(
+      idUsuario: widget.idUsuario,
+      future: () => getServicios(widget.idUsuario, idUsuarioActual),
+      bodyItemBuilder: (int index, Object item) => IndividulService(
+        servicio: item as ServicioTb,
+        index: index,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 1,
+        crossAxisSpacing: 0.0,
+        mainAxisSpacing: 15.0,
+        mainAxisExtent: 150,
+      ),
+    );
   }
 }
 

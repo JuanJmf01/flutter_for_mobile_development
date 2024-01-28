@@ -1,12 +1,16 @@
+import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlacePublicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/seguidoresTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicacionesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
-import 'package:etfi_point/Components/Utils/MisProductos.dart';
+import 'package:etfi_point/Components/Utils/misProductos.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
+import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonFotoPerfilPortada.dart';
+import 'package:etfi_point/Pages/enlaces/enlacesPublicaciones.dart';
 import 'package:etfi_point/Pages/proServicios/misServicios.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -275,7 +279,9 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                 idUsuarioActual: idUsuarioActual,
               )
             : tabIndex == 2
-                ? ContenidoEnlaces()
+                ? ContenidoEnlaces(
+                    idUsuario: widget.idUsuario,
+                  )
                 : SizedBox();
   }
 
@@ -585,7 +591,9 @@ class _ContenidoProServiciosState extends State<ContenidoProServicios>
 }
 
 class ContenidoEnlaces extends StatefulWidget {
-  const ContenidoEnlaces({super.key});
+  const ContenidoEnlaces({super.key, required this.idUsuario});
+
+  final int idUsuario;
 
   @override
   State<ContenidoEnlaces> createState() => _ContenidoEnlacesState();
@@ -606,6 +614,8 @@ class _ContenidoEnlacesState extends State<ContenidoEnlaces>
     //   print("INDEX: $currentIndex");
     // });
   }
+
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -635,13 +645,14 @@ class _ContenidoEnlacesState extends State<ContenidoEnlaces>
           Expanded(
             child: TabBarView(
               controller: _tabController,
-              children: const [
+              children: [
                 SingleChildScrollView(
                   child: SingleChildScrollView(
-                    child: Center(
-                      child: Text('Contenido de la pestaña 4 y otras imágenes'),
-                    ),
-                  ),
+                      child: Column(
+                    children: [
+                      EnlacesPublicaciones(idUsuario: widget.idUsuario)
+                    ],
+                  )),
                 ),
                 SingleChildScrollView(
                   child: SingleChildScrollView(
@@ -662,5 +673,14 @@ class _ContenidoEnlacesState extends State<ContenidoEnlaces>
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+}
+
+class EnlaceImagePublicaciones extends StatelessWidget {
+  const EnlaceImagePublicaciones({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
   }
 }

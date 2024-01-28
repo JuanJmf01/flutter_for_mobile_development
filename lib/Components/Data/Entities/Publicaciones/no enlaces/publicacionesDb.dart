@@ -12,7 +12,7 @@ class PublicacionesDb {
     Dio dio = Dio();
 
     Map<String, dynamic> data = publicacion.toMap();
-    String url = MisRutas.rutaPublicaciones;
+    String url = MisRutas.rutaFotosPublicaciones;
 
     try {
       Response response = await dio.post(url,

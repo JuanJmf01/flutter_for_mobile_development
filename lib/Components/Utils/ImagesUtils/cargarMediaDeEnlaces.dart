@@ -67,22 +67,33 @@ class CargarMediaDeEnlaces {
     }
 
     if (idProservicio != -1) {
-      EnlaceProductoCreacionTb enlaceProducto = EnlaceProductoCreacionTb(
-        idProducto: idProservicio,
-        descripcion: descripcion,
-      );
+      int idEnlaceProServicio = -1;
+      if (isProduct) {
+        EnlaceProductoCreacionTb enlaceProducto = EnlaceProductoCreacionTb(
+          idProducto: idProservicio,
+          descripcion: descripcion,
+        );
+        idEnlaceProServicio =
+            await EnlaceProServicioDb.insertEnlaceProServicio(enlaceProducto);
+      } else {
+        EnlaceServicioCreacionTb enlaceServicio = EnlaceServicioCreacionTb(
+          idServicio: idProservicio,
+          descripcion: descripcion,
+        );
 
-      int idEnlaceProServicio =
-          await EnlaceProServicioDb.insertEnlaceProServicio(
-              enlaceProducto);
+        idEnlaceProServicio =
+            await EnlaceProServicioDb.insertEnlaceProServicio(enlaceServicio);
+      }
 
-      subirImagenes(
-        idEnlaceProServicio,
-        isProduct,
-        objectTypeEnlaceProducto,
-        idUsuario,
-        imagesToUpload,
-      );
+      idEnlaceProServicio != -1
+          ? subirImagenes(
+              idEnlaceProServicio,
+              isProduct,
+              objectTypeEnlaceProducto,
+              idUsuario,
+              imagesToUpload,
+            )
+          : null;
     } else {
       print("Error al asignar el idProServicio en enlaceProducto");
     }

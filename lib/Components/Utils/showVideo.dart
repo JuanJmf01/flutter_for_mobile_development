@@ -4,16 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-// Center(
-//   child: Icon(
-//     _controller.value.isPlaying
-//         ? Icons.pause
-//         : Icons.play_arrow,
-//     size: 50.0,
-//     color: Colors.white,
-//   ),
-// ),
-
 class ShowVideo extends StatefulWidget {
   const ShowVideo({
     super.key,
@@ -98,7 +88,7 @@ class _ShowVideoState extends State<ShowVideo> {
                     child: Stack(
                       children: [
                         VideoPlayer(_controller),
-                        //Aqui podriamos mostrar un icono de pausa o despausa algo asi:
+                        //Aqui podriamos mostrar un icono de pausa o despausa
                       ],
                     ),
                   ),
