@@ -1032,102 +1032,102 @@ class _ProductosRelacionadosState extends State<ProductosRelacionados> {
   }
 }
 
-class StaticBottomNavigator extends StatefulWidget {
-  const StaticBottomNavigator({super.key});
+// class StaticBottomNavigator extends StatefulWidget {
+//   const StaticBottomNavigator({super.key});
 
-  @override
-  State<StaticBottomNavigator> createState() => _StaticBottomNavigatorState();
-}
+//   @override
+//   State<StaticBottomNavigator> createState() => _StaticBottomNavigatorState();
+// }
 
-class _StaticBottomNavigatorState extends State<StaticBottomNavigator> {
-  @override
-  void initState() {
-    super.initState();
-  }
+// class _StaticBottomNavigatorState extends State<StaticBottomNavigator> {
+//   @override
+//   void initState() {
+//     super.initState();
+//   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 57.0,
-      color: Colors.white60,
-      child: Row(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 0.0),
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(3.0, 0, 7.0, 0.0),
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      Icons.store_outlined,
-                      color: Colors.black,
-                      size: 31,
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: 35.0,
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(
-                      CupertinoIcons.bubble_right,
-                      size: 29,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[100],
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 35,
-                      vertical: 13.0,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(17),
-                    ),
-                  ),
-                  child: const Text(
-                    'Comprar',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontSize: 17.5,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-                  child: Container(
-                    width: 55,
-                    height: 47,
-                    decoration: BoxDecoration(
-                      color: Colors.pink[100],
-                      borderRadius: BorderRadius.circular(17),
-                    ),
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(
-                        CupertinoIcons.cart,
-                        color: Colors.pink,
-                        size: 27,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       height: 57.0,
+//       color: Colors.white60,
+//       child: Row(
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.only(left: 0.0),
+//             child: Row(
+//               children: [
+//                 Padding(
+//                   padding: const EdgeInsets.fromLTRB(3.0, 0, 7.0, 0.0),
+//                   child: IconButton(
+//                     onPressed: () {},
+//                     icon: const Icon(
+//                       Icons.store_outlined,
+//                       color: Colors.black,
+//                       size: 31,
+//                     ),
+//                   ),
+//                 ),
+//                 SizedBox(
+//                   width: 35.0,
+//                   child: IconButton(
+//                     onPressed: () {},
+//                     icon: const Icon(
+//                       CupertinoIcons.bubble_right,
+//                       size: 29,
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           Expanded(
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 ElevatedButton(
+//                   onPressed: () {},
+//                   style: ElevatedButton.styleFrom(
+//                     backgroundColor: Colors.blue[100],
+//                     padding: const EdgeInsets.symmetric(
+//                       horizontal: 35,
+//                       vertical: 13.0,
+//                     ),
+//                     shape: RoundedRectangleBorder(
+//                       borderRadius: BorderRadius.circular(17),
+//                     ),
+//                   ),
+//                   child: const Text(
+//                     'Comprar',
+//                     style: TextStyle(
+//                       color: Colors.blue,
+//                       fontSize: 17.5,
+//                     ),
+//                   ),
+//                 ),
+//                 Padding(
+//                   padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+//                   child: Container(
+//                     width: 55,
+//                     height: 47,
+//                     decoration: BoxDecoration(
+//                       color: Colors.pink[100],
+//                       borderRadius: BorderRadius.circular(17),
+//                     ),
+//                     child: IconButton(
+//                       onPressed: () {},
+//                       icon: const Icon(
+//                         CupertinoIcons.cart,
+//                         color: Colors.pink,
+//                         size: 27,
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }

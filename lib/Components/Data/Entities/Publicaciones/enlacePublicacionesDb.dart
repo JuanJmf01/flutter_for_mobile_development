@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlacePublicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
-import 'package:etfi_point/Pages/NewsFeed/newsFeed.dart';
 
 /// En esta clase se realizan las consultas relacionadas a los enlaces
 /// de productos y enlaces de servicios. Genericamente; 'enlacePublicaciones'

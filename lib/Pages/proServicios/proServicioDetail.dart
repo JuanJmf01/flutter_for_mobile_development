@@ -245,7 +245,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                                           ],
                                         ),
                                       ),
-                                      const StaticBottomNavigator()
+                                      //const StaticBottomNavigator()
                                     ],
                                   )
                                 : Text("ERROR ID PROSERVICIO NO ENCONTRADO");

@@ -6,27 +6,31 @@ import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/r
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/icons.dart';
+import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
+import 'package:etfi_point/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+
 
 class FilaIconos extends StatefulWidget {
   const FilaIconos({
     super.key,
-    required this.objectType,
     required this.index,
-    required this.like,
-    required this.idPublicacion,
     this.idProServicio,
     required this.idUsuarioActual,
+    required this.objectType,
+    required this.like,
+    required this.idPublicacion,
   });
 
-  final Type objectType;
   final int index;
-  final int like;
-  final int idPublicacion;
   final int? idProServicio;
   final int idUsuarioActual;
+  final Type objectType;
+  final int like;
+  final int idPublicacion;
 
   @override
   State<FilaIconos> createState() => _FilaIconosState();
@@ -165,6 +169,87 @@ class _FilaIconosState extends State<FilaIconos> {
                   },
                 )
               : SizedBox.shrink()
+        ],
+      ),
+    );
+  }
+}
+
+
+class ContenidoParteSuperior extends StatelessWidget {
+  const ContenidoParteSuperior({
+    super.key,
+    required this.idUsuario,
+    required this.nombreUsuario,
+    this.urlFotoPerfil,
+    this.descripcion,
+  });
+
+  final int idUsuario;
+  final String nombreUsuario;
+  final String? urlFotoPerfil;
+  final String? descripcion;
+
+  @override
+  Widget build(BuildContext context) {
+    BorderRadius borderImageProfile = BorderRadius.circular(50.0);
+    double sizeImageProfile = 53.0;
+    //print("DESCRIPTION: $descripcion");
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => Menu(
+              currentIndex: 1,
+              idUsuario: idUsuario,
+            ),
+          ),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              urlFotoPerfil != null && urlFotoPerfil != ''
+                  ? ShowImage(
+                      networkImage: urlFotoPerfil,
+                      widthNetWork: sizeImageProfile,
+                      heightNetwork: sizeImageProfile,
+                      borderRadius: borderImageProfile,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      height: sizeImageProfile,
+                      width: sizeImageProfile,
+                      decoration: BoxDecoration(
+                          borderRadius: borderImageProfile,
+                          color: Colors.grey.shade200),
+                    ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+                child: Text(
+                  nombreUsuario,
+                  style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
+                ),
+              )
+            ],
+          ),
+          descripcion != null && descripcion != ''
+              ? Padding(
+                  padding:
+                      EdgeInsets.fromLTRB(sizeImageProfile / 2, 8.0, 0.0, 10.0),
+                  child: Text(
+                    descripcion ?? '',
+                    style: TextStyle(fontSize: 16.8),
+                  ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.only(bottom: 10.0),
+                  child: SizedBox.shrink(),
+                )
         ],
       ),
     );

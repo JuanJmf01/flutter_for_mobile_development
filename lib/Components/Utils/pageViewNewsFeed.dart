@@ -17,9 +17,23 @@ class PageViewNewsFeed extends StatelessWidget {
         if (item is EnlacePublicacionesTb) {
           return const ImagePublicacion();
         } else if (item is NeswFeedReelProductTb) {
-          // Mostrar video, descripcionVideo, like, likes, comentarios, datos usuario
+          return GestureDetector(
+            
+          );
         }
       },
+    );
+  }
+}
+
+
+class VideoFullScree extends StatelessWidget {
+  const VideoFullScree({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Text(""),
     );
   }
 }
@@ -35,7 +49,7 @@ class ImagePublicacion extends StatelessWidget {
           Container(
               height: MediaQuery.of(context).size.height * 0.8,
               child: Container(
-                width: 200.0,
+                width: double.infinity,
                 height: 200.0,
                 color: Colors.black,
               )),
