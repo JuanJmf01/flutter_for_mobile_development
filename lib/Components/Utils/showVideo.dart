@@ -1,4 +1,6 @@
 import 'package:chewie/chewie.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
+import 'package:etfi_point/Components/Utils/pageViewNewsFeed.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -8,9 +10,11 @@ class ShowVideo extends StatefulWidget {
   const ShowVideo({
     super.key,
     required this.urlReel,
+    required this.items,
   });
 
   final String urlReel;
+  final List<NewsFeedItem> items;
 
   @override
   State<ShowVideo> createState() => _ShowVideoState();
@@ -25,6 +29,7 @@ class _ShowVideoState extends State<ShowVideo> {
   void initState() {
     super.initState();
     _initializeVideoPlayer();
+
   }
 
   void _initializeVideoPlayer() {
@@ -70,11 +75,15 @@ class _ShowVideoState extends State<ShowVideo> {
                 if (mounted) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) => ShowVideoFullScreen(
-                        urlReel: widget.urlReel,
-                        savedPosition: _savedPosition,
-                      ),
-                    ),
+                        builder: (context) =>
+                            PageViewNewsFeed(newsFeedItems: widget.items)
+
+                        // ShowVideoFullScreen(
+                        //   urlReel: widget.urlReel,
+                        //   savedPosition: _savedPosition,
+                        //   items: widget.items,
+                        // ),
+                        ),
                   );
                 }
               },
@@ -110,11 +119,15 @@ class _ShowVideoState extends State<ShowVideo> {
 
 class ShowVideoFullScreen extends StatefulWidget {
   const ShowVideoFullScreen(
-      {Key? key, required this.urlReel, this.savedPosition})
+      {Key? key,
+      required this.urlReel,
+      this.savedPosition,
+      required this.items})
       : super(key: key);
 
   final String urlReel;
   final Duration? savedPosition;
+  final List<NewsFeedItem> items;
 
   @override
   State<ShowVideoFullScreen> createState() => _ShowVideoFullScreenState();
@@ -306,7 +319,6 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
                       : Center(child: CircularProgressIndicator());
                 },
               ),
-              // Otros widgets adicionales
               if (_liked) Center(child: Icon(Icons.favorite)),
               if (_isVideoPaused) // Mostrar el botón de pausa si está pausado
                 const Positioned.fill(

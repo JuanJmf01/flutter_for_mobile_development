@@ -8,12 +8,10 @@ class ContenidoReels extends StatelessWidget {
   const ContenidoReels({
     Key? key,
     required this.item,
-    required this.index,
     required this.idUsuarioActual,
   }) : super(key: key);
 
   final NewsFeedItem item;
-  final int index;
   final int idUsuarioActual;
 
   @override
@@ -30,6 +28,8 @@ class ContenidoReels extends StatelessWidget {
     if (newItem is NeswFeedReelPublicacionTb ||
         newItem is NeswFeedReelServiceTb ||
         newItem is NeswFeedReelProductTb) {
+      List<NewsFeedItem> items = [];
+      items.add(newItem);
       return Padding(
         padding: EdgeInsets.only(top: paddingTopEachPublicacion),
         child: Column(
@@ -46,10 +46,10 @@ class ContenidoReels extends StatelessWidget {
               ShowVideo(
                 urlReel:
                     "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
+                items: items,
               ),
             if (newItem != null)
               FilaIconos(
-                index: index,
                 idUsuarioActual: idUsuarioActual,
                 objectType: newItem.runtimeType,
                 like: RecoverFieldsUtiliti.getLikePublicacion(newItem),

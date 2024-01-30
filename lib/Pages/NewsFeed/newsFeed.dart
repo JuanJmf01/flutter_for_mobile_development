@@ -224,7 +224,6 @@ class _NewsFeedState extends State<NewsFeed> {
                         item is NeswFeedPublicacionesTb) {
                       return ContenidoImages(
                         item: item,
-                        index: index,
                         idUsuarioActual: idUsuarioActual,
                       );
                     } else if (item is NeswFeedReelServiceTb ||
@@ -232,7 +231,6 @@ class _NewsFeedState extends State<NewsFeed> {
                         item is NeswFeedReelProductTb) {
                       return ContenidoReels(
                         item: item,
-                        index: index,
                         idUsuarioActual: idUsuarioActual,
                       );
                     }

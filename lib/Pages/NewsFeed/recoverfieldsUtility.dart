@@ -82,6 +82,23 @@ class RecoverFieldsUtiliti {
     return null;
   }
 
+  static String? getUrlImage(dynamic newItem) {
+    if (newItem is NewsFeedProductosTb) {
+      if (newItem.enlaceProductoImages.isNotEmpty) {
+        return newItem.enlaceProductoImages[0].urlImage;
+      }
+    } else if (newItem is NewsFeedServiciosTb) {
+      if (newItem.enlaceServicioImages.isNotEmpty) {
+        return newItem.enlaceServicioImages[0].urlImage;
+      }
+    } else if (newItem is NeswFeedPublicacionesTb) {
+      if (newItem.enlacePublicacionImages.isNotEmpty) {
+        return newItem.enlacePublicacionImages[0].urlImage;
+      }
+    }
+    return null;
+  }
+
   static int? getIdPublicacion(dynamic newItem) {
     if (newItem is NewsFeedProductosTb) {
       return newItem.idEnlaceProducto;

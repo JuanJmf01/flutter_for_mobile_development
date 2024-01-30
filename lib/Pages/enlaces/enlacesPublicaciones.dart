@@ -1,9 +1,9 @@
-import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlacePublicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicacionesDb.dart';
 import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
 import 'package:etfi_point/Components/Utils/pageViewNewsFeed.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
+import 'package:etfi_point/Pages/NewsFeed/recoverfieldsUtility.dart';
 import 'package:flutter/material.dart';
 
 class EnlacesPublicaciones extends StatelessWidget {
@@ -15,9 +15,9 @@ class EnlacesPublicaciones extends StatelessWidget {
   Widget build(BuildContext context) {
     List<NewsFeedItem> enlacesPublicacion = ([]);
 
-    Future<List<NewsFeedItem>> enlacesPublicaciones2(int idUsuario) async {
+    Future<List<NewsFeedItem>> enlacesPublicaciones(int idUsuario) async {
       NewsFeedTb enlacePublicaciones =
-          await EnlacePublicacionesDb.getEnlacePublicaciones(idUsuario);
+          await EnlacePublicacionesDb.getAllNewsFeed(idUsuario);
 
       List<NewsFeedItem> items = enlacePublicaciones.newsFeed;
       enlacesPublicacion = items;
@@ -30,10 +30,9 @@ class EnlacesPublicaciones extends StatelessWidget {
 
     return FutureGridViewProfile(
       idUsuario: idUsuario,
-      future: () => enlacesPublicaciones2(idUsuario),
+      future: () => enlacesPublicaciones(idUsuario),
       bodyItemBuilder: (int index, Object item) => IndividulEnlace(
-          enlacePublicacion: item as EnlacePublicacionesTb,
-          enlacesPublicacion: enlacesPublicacion),
+          enlacePublicacion: item, enlacesPublicacion: enlacesPublicacion),
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -47,6 +46,7 @@ class EnlacesPublicaciones extends StatelessWidget {
   }
 }
 
+// tener en cuenta ambos required this.enlacePublicacion, required this.enlacesPublicacion. Ver posivilidad de implementar GestureDetector en EnlacesPublicaciones y evitar el uso de enlacesPublicacion
 class IndividulEnlace extends StatelessWidget {
   const IndividulEnlace({
     super.key,
@@ -54,19 +54,21 @@ class IndividulEnlace extends StatelessWidget {
     required this.enlacesPublicacion,
   });
 
-  final EnlacePublicacionesTb enlacePublicacion;
+  final dynamic enlacePublicacion;
   final List<NewsFeedItem> enlacesPublicacion;
 
   @override
   Widget build(BuildContext context) {
     BorderRadius borderImage = BorderRadius.circular(6.0);
+    RecoverFieldsUtiliti.getUrlImage(enlacePublicacion);
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) =>
-                  PageViewNewsFeed(newsFeedItems: enlacesPublicacion)),
+            builder: (context) =>
+                PageViewNewsFeed(newsFeedItems: enlacesPublicacion),
+          ),
         );
       },
       child: Container(
@@ -76,7 +78,8 @@ class IndividulEnlace extends StatelessWidget {
         ),
         child: ShowImage(
           borderRadius: borderImage,
-          networkImage: enlacePublicacion.enlaceProServicioImages[0].urlImage,
+          //networkImage: enlacePublicacion.enlaceProServicioImages[0].urlImage,
+          networkImage: RecoverFieldsUtiliti.getUrlImage(enlacePublicacion),
           fit: BoxFit.cover,
           height: 150.0,
           width: 150.0,

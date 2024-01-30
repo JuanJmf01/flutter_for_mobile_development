@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 class FilaIconos extends StatefulWidget {
   const FilaIconos({
     super.key,
-    required this.index,
     this.idProServicio,
     required this.idUsuarioActual,
     required this.objectType,
@@ -25,7 +24,6 @@ class FilaIconos extends StatefulWidget {
     required this.idPublicacion,
   });
 
-  final int index;
   final int? idProServicio;
   final int idUsuarioActual;
   final Type objectType;

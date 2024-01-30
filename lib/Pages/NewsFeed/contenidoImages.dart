@@ -8,12 +8,10 @@ class ContenidoImages extends StatelessWidget {
   const ContenidoImages({
     super.key,
     required this.item,
-    required this.index,
     required this.idUsuarioActual,
   });
 
   final NewsFeedItem item;
-  final int index;
   final int idUsuarioActual;
 
   @override
@@ -58,7 +56,6 @@ class ContenidoImages extends StatelessWidget {
               ),
             ),
             FilaIconos(
-              index: index,
               idUsuarioActual: idUsuarioActual,
               objectType: newItem.runtimeType,
               like: RecoverFieldsUtiliti.getLikePublicacion(newItem),

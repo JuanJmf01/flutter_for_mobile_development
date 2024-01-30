@@ -49,7 +49,8 @@ class ShowImage extends StatelessWidget {
                 ? showAssetImage(imageAsset!)
                 : networkImage != null && networkImage != ''
                     ? Image.network(
-                        networkImage!, //Poner una imagen por defecto
+                        //networkImage!, //Poner una imagen por defecto
+                        "https://img.freepik.com/foto-gratis/resumen-bombilla-creativa-sobre-fondo-azul-brillante-ia-generativa_188544-8090.jpg?size=626&ext=jpg&ga=GA1.1.1880011253.1704585600&semt=sph",
                         width: widthNetWork,
                         height: heightNetwork,
                         fit: fit,
