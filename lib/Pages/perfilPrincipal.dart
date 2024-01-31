@@ -1,13 +1,10 @@
-import 'package:etfi_point/Components/Data/EntitiModels/Publicaciones/enlacePublicacionesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/seguidoresTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
-import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicacionesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/misProductos.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
-import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonFotoPerfilPortada.dart';
 import 'package:etfi_point/Pages/enlaces/enlacesPublicaciones.dart';
@@ -32,10 +29,10 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late UsuarioPrincipalProfileTb usuarioPrincipal;
-  late Future<UsuarioPrincipalProfileTb> _usuarioProfileFuture;
+  Future<UsuarioPrincipalProfileTb?>? _usuarioProfileFuture;
 
   UsuarioTb? updatedUserProfile;
-  late int idUsuarioActual;
+  int? idUsuarioActual;
 
   @override
   void initState() {
@@ -52,9 +49,12 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
     _usuarioProfileFuture = _fetchUsuarioProfile();
   }
 
-  Future<UsuarioPrincipalProfileTb> _fetchUsuarioProfile() async {
+  Future<UsuarioPrincipalProfileTb?>? _fetchUsuarioProfile() async {
     idUsuarioActual = Provider.of<UsuarioProvider>(context).idUsuarioActual;
-    return UsuarioDb.getUsuarioProfile(idUsuarioActual, widget.idUsuario);
+    if (idUsuarioActual != null) {
+      return UsuarioDb.getUsuarioProfile(idUsuarioActual!, widget.idUsuario);
+    }
+    return null;
   }
 
   void _updateCircleTabs() {
@@ -108,7 +108,7 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
     _updateCircleTabs();
 
     return Scaffold(
-      body: FutureBuilder<UsuarioPrincipalProfileTb>(
+      body: FutureBuilder<UsuarioPrincipalProfileTb?>(
         future: _usuarioProfileFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -271,12 +271,12 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   }
 
   Widget _buildTabContent(int tabIndex) {
-    return tabIndex == 0
+    return tabIndex == 0 && idUsuarioActual != null
         ? ContenidoProServicios(idUsuario: widget.idUsuario)
         : tabIndex == 1
             ? PerfilCentral(
                 usuarioProfile: usuarioPrincipal,
-                idUsuarioActual: idUsuarioActual,
+                idUsuarioActual: idUsuarioActual!,
               )
             : tabIndex == 2
                 ? ContenidoEnlaces(
@@ -614,8 +614,6 @@ class _ContenidoEnlacesState extends State<ContenidoEnlaces>
     //   print("INDEX: $currentIndex");
     // });
   }
-
- 
 
   @override
   Widget build(BuildContext context) {

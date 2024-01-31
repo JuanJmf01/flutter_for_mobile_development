@@ -18,26 +18,31 @@ class MisServicios extends StatefulWidget {
 }
 
 class _MisServiciosState extends State<MisServicios> {
+  Future<List<Object>> getServicios(int idUsuario,
+      {int? idUsuarioActual}) async {
+    if (idUsuarioActual != null) {
+      List<ServicioTb> servicios = [];
 
-  Future<List<Object>> getServicios(int idUsuario, int idUsuarioActual) async {
-    List<ServicioTb> servicios = [];
+      widget.idUsuario == idUsuarioActual
+          ? servicios = await context
+              .read<ProServiciosProvider>()
+              .obtenerServiciosByNegocio(idUsuarioActual)
+          : servicios =
+              await ServicioDb.getServiciosByNegocio(widget.idUsuario);
 
-    widget.idUsuario == idUsuarioActual
-        ? servicios = await context
-            .read<ProServiciosProvider>()
-            .obtenerServiciosByNegocio(idUsuarioActual)
-        : servicios = await ServicioDb.getServiciosByNegocio(widget.idUsuario);
-
-    return servicios;
+      return servicios;
+    }
+    return [];
   }
 
   @override
   Widget build(BuildContext context) {
-    int idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
+    int? idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
 
     return FutureGridViewProfile(
       idUsuario: widget.idUsuario,
-      future: () => getServicios(widget.idUsuario, idUsuarioActual),
+      future: () =>
+          getServicios(widget.idUsuario, idUsuarioActual: idUsuarioActual),
       bodyItemBuilder: (int index, Object item) => IndividulService(
         servicio: item as ServicioTb,
         index: index,

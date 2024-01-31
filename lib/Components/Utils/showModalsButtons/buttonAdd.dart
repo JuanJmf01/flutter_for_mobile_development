@@ -43,7 +43,8 @@ class ButtonAdd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    int? idUsuarioActual =
+        Provider.of<UsuarioProvider>(context).idUsuarioActual;
     return GlobalButtonBase(
       itemsColumn: Column(
         mainAxisSize: MainAxisSize.min,
@@ -82,7 +83,9 @@ class ButtonAdd extends StatelessWidget {
           ),
           ItemForModalButtons(
             onPress: () {
-              irANuevoVinculo(idUsuario, context);
+              idUsuarioActual != null
+                  ? irANuevoVinculo(idUsuarioActual, context)
+                  : print("Manage logueo");
             },
             padding: padding,
             icon: CupertinoIcons.photo_on_rectangle,
@@ -91,7 +94,9 @@ class ButtonAdd extends StatelessWidget {
           ),
           ItemForModalButtons(
             onPress: () {
-              irANuevoReel(idUsuario, context);
+              idUsuarioActual != null
+                  ? irANuevoReel(idUsuarioActual, context)
+                  : print("Manage logueo");
             },
             padding: padding,
             icon: CupertinoIcons.rectangle_3_offgrid,

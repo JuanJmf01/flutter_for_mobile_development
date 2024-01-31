@@ -22,25 +22,31 @@ class MisProductos extends StatefulWidget {
 }
 
 class _MisProductosState extends State<MisProductos> {
-  Future<List<Object>> getServicios(int idUsuario, int idUsuarioActual) async {
-    List<ProductoTb> productos = [];
+  Future<List<Object>> getProductos(int idUsuario,
+      {int? idUsuarioActual}) async {
+    if (idUsuarioActual != null) {
+      List<ProductoTb> productos = [];
 
-    widget.idUsuario == idUsuarioActual
-        ? productos = await context
-            .read<ProServiciosProvider>()
-            .obtenerProductosByNegocio(idUsuarioActual)
-        : productos = await ProductoDb.getProductosByNegocio(widget.idUsuario);
+      widget.idUsuario == idUsuarioActual
+          ? productos = await context
+              .read<ProServiciosProvider>()
+              .obtenerProductosByNegocio(idUsuarioActual)
+          : productos =
+              await ProductoDb.getProductosByNegocio(widget.idUsuario);
 
-    return productos;
+      return productos;
+    }
+    return [];
   }
 
   @override
   Widget build(BuildContext context) {
-    int idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
+    int? idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
 
     return FutureGridViewProfile(
       idUsuario: widget.idUsuario,
-      future: () => getServicios(widget.idUsuario, idUsuarioActual),
+      future: () =>
+          getProductos(widget.idUsuario, idUsuarioActual: idUsuarioActual),
       bodyItemBuilder: (int index, Object item) =>
           IndividualProduct(producto: item as ProductoTb),
       physics: const NeverScrollableScrollPhysics(),

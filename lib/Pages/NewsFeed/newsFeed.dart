@@ -10,32 +10,12 @@ import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Home extends StatefulWidget {
+class Home extends StatelessWidget {
   const Home({super.key});
-
-  @override
-  State<Home> createState() => _HomeState();
-}
-
-class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         actions: [
           Container(
@@ -59,39 +39,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             ),
           )
         ],
-        bottom: PreferredSize(
-          preferredSize:
-              Size.fromHeight(30.0), // Ajusta la altura de la pestaña
-
-          child: TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(
-                text: 'Tiendas que sigo',
-              ),
-              Tab(text: 'Todas las tiendas'),
-            ],
-            labelStyle: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight
-                    .w500), // Cambia el tamaño del texto de la pestaña activa
-          ),
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children: const [
-          //Text("Solo texto"),
-          TiendasQueSigo(),
-          Center(child: Text('Contenido del Tab 2')),
-        ],
-      ),
+      body: NewsFeed(),
     );
   }
 }
 
-class TiendasQueSigo extends StatelessWidget {
-  const TiendasQueSigo({Key? key});
+class NewsFeed extends StatelessWidget {
+  const NewsFeed({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +55,7 @@ class TiendasQueSigo extends StatelessWidget {
         SliverList(
           delegate: SliverChildListDelegate([
             Historias(),
-            NewsFeed(),
+            NewsFeedContent(),
             // Otros elementos si es necesario
           ]),
         ),
@@ -148,14 +103,14 @@ class Historias extends StatelessWidget {
   }
 }
 
-class NewsFeed extends StatefulWidget {
-  const NewsFeed({super.key});
+class NewsFeedContent extends StatefulWidget {
+  const NewsFeedContent({super.key});
 
   @override
-  State<NewsFeed> createState() => _NewsFeedState();
+  State<NewsFeedContent> createState() => _NewsFeedContentState();
 }
 
-class _NewsFeedState extends State<NewsFeed> {
+class _NewsFeedContentState extends State<NewsFeedContent> {
   double paddingTopEachPublicacion = 40.0;
   double paddingMedia = 20.0;
   Map<int, bool> isLikedMap = {};
@@ -222,17 +177,25 @@ class _NewsFeedState extends State<NewsFeed> {
                     if (item is NewsFeedServiciosTb ||
                         item is NewsFeedProductosTb ||
                         item is NeswFeedPublicacionesTb) {
-                      return ContenidoImages(
-                        item: item,
-                        idUsuarioActual: idUsuarioActual,
-                      );
+                      if (idUsuarioActual != null) {
+                        return ContenidoImages(
+                          item: item,
+                          idUsuarioActual: idUsuarioActual,
+                        );
+                      } else {
+                        return Text("Manage logueo");
+                      }
                     } else if (item is NeswFeedReelServiceTb ||
                         item is NeswFeedReelPublicacionTb ||
                         item is NeswFeedReelProductTb) {
-                      return ContenidoReels(
-                        item: item,
-                        idUsuarioActual: idUsuarioActual,
-                      );
+                      if (idUsuarioActual != null) {
+                        return ContenidoReels(
+                          item: item,
+                          idUsuarioActual: idUsuarioActual,
+                        );
+                      } else {
+                        return Text("Manage logueo");
+                      }
                     }
                     return null;
                   },
@@ -251,7 +214,6 @@ class _NewsFeedState extends State<NewsFeed> {
         });
   }
 }
-
 
 class HorizontalList extends StatelessWidget {
   const HorizontalList({super.key});

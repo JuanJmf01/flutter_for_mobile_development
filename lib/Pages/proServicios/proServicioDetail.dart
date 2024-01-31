@@ -191,7 +191,6 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
               }),
         ],
       ),
-      backgroundColor: Colors.grey[300],
       body: FutureBuilder<dynamic>(
         future: proServicioDynamic(),
         builder: (context, snapshot) {

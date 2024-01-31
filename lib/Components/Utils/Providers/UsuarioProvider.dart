@@ -6,15 +6,15 @@ import 'package:flutter/foundation.dart';
 
 class UsuarioProvider extends ChangeNotifier {
   // VERIFICAR LA OPCION DE UTILIZAR UNA VERIABLE ENTERA PARA ID NEGOCIO ACTUAL EN CASO DE QUE EL UISAURIO ACTUAL TENGA UN NEGOCIO
-  late int _idUsuarioActual;
-  late UsuarioTb _usuarioActual;
+  int? _idUsuarioActual;
+  UsuarioTb? _usuarioActual;
 
-  int get idUsuarioActual => _idUsuarioActual;
-  UsuarioTb get usuarioActual => _usuarioActual;
+  int? get idUsuarioActual => _idUsuarioActual;
+  UsuarioTb? get usuarioActual => _usuarioActual;
 
-  Future<int> obtenerIdUsuarioActual() async {
-    print('se llama a obtenerIdUsuario');
+  Future<int?> obtenerIdUsuarioActual() async {
     if (FirebaseAuth.instance.currentUser != null) {
+      print('se llama a obtenerIdUsuario');
       String? email = FirebaseAuth.instance.currentUser?.email;
       if (email != null) {
         try {
@@ -34,6 +34,7 @@ class UsuarioProvider extends ChangeNotifier {
         }
       }
     }
-    throw Exception('Error al obtener el idUsuario');
+    print("Wl usuario no esta logueado");
+    return null;
   }
 }

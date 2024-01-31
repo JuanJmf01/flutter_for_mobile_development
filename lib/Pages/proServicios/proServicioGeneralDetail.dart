@@ -285,10 +285,11 @@ class _FastDescriptionState extends State<FastDescription> {
       child: Container(
         margin: const EdgeInsets.only(bottom: 10.0),
         decoration: BoxDecoration(
-            borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(20.0),
-                bottomRight: Radius.circular(20.0)),
-            color: Colors.grey.shade100),
+          borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(20.0),
+              bottomRight: Radius.circular(20.0)),
+          //color: Colors.grey.shade100,
+        ),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(3.0, 7.0, 20.0, 15.0),
           child: Column(
@@ -345,7 +346,7 @@ class _FastDescriptionState extends State<FastDescription> {
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Container(
                           height: 20,
-                          color: Colors.grey,
+                          //color: Colors.grey,
                           margin: const EdgeInsets.only(left: 0.0),
                         ),
                       ),
@@ -739,161 +740,156 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
 
     return SliverToBoxAdapter(
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
-            color: Colors.grey.shade100),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.all(15.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
-                    child: SwitchIcon(
-                      isChecked: isChecked,
-                      onChanged: (value) {
-                        setState(() {
-                          isChecked = value;
-                        });
-                        print(isChecked);
-                      },
-                    ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: EdgeInsets.all(15.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                  child: SwitchIcon(
+                    isChecked: isChecked,
+                    onChanged: (value) {
+                      setState(() {
+                        isChecked = value;
+                      });
+                      print(isChecked);
+                    },
                   ),
-                  Text('Modificar'),
-                ],
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(16.0,
-                  productSecondaryImages.isNotEmpty ? 0.0 : 20.0, 0.0, 0.0),
-              child: const Text(
-                'Descripcion detallada',
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 22,
                 ),
+                Text('Modificar'),
+              ],
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+                16.0, productSecondaryImages.isNotEmpty ? 0.0 : 20.0, 0.0, 0.0),
+            child: const Text(
+              'Descripcion detallada',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 22,
               ),
             ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                  isChecked ? 8.0 : 16, 23.0, isChecked ? 8.0 : 30, 30.0),
-              child: isChecked
-                  ? GeneralInputs(
-                      verticalPadding: 15.0,
-                      controller: _descripcionDetalldaController,
-                      labelText: 'Agrega una descripcion detalla del producto',
-                      color: Colors.grey.shade200,
-                      keyboardType: TextInputType.multiline,
-                      minLines: 3,
-                      maxLines: 40,
-                    )
-                  : Text(
-                      descripcionDetalladaAux != null &&
-                              descripcionDetalladaAux!.isNotEmpty
-                          ? descripcionDetalladaAux!
-                          : 'No hay descripcion que mostrar',
-                      style: TextStyle(
-                        color: Colors.grey[800],
-                        fontSize: 16,
-                      ),
-                    ),
-            ),
-            allProductImages.items.isNotEmpty
-                ? Column(
-                    children: [
-                      for (var image in allProductImages.items)
-                        Column(
-                          children: [
-                            Container(
-                                child: image is ProservicioImagesTb
-                                    ? ShowImage(
-                                        networkImage: image.urlImage,
-                                        //height: 200,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                      )
-                                    : image is ProServicioImageToUpload ||
-                                            image is ProServicioImageToUpdate
-                                        // Si image is ProServicioImageToUpload entt image.newImage, de lo contrario si image is ProServicioImageToUpdate entt image.newImage
-                                        ? ShowImage(
-                                            imageAsset: image
-                                                    is ProServicioImageToUpload
-                                                ? image.newImage
-                                                : image is ProServicioImageToUpdate
-                                                    ? image.newImage
-                                                    : null,
-                                            widthAsset: double.infinity,
-                                          )
-                                        : SizedBox.shrink()),
-                            isChecked
-                                ? Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      createCustomButton(
-                                        () {
-                                          if (idUsuario != null) {
-                                            eliminarImagen(image, idUsuario);
-                                          }
-                                        },
-                                        image is ProservicioImagesTb
-                                            ? 'Eliminar'
-                                            : 'Descartar',
-                                        color: image is ProservicioImagesTb
-                                            ? Colors.red.shade700
-                                            : Colors.lightGreen.shade500,
-                                      ),
-                                      createCustomButton(
-                                        //onPress
-                                        () {
-                                          editarImagenes(image);
-                                        },
-                                        'Editar',
-                                      ),
-                                    ],
-                                  )
-                                : SizedBox.shrink()
-                          ],
-                        )
-                    ],
+          ),
+          Padding(
+            padding: EdgeInsets.fromLTRB(
+                isChecked ? 8.0 : 16, 23.0, isChecked ? 8.0 : 30, 30.0),
+            child: isChecked
+                ? GeneralInputs(
+                    verticalPadding: 15.0,
+                    controller: _descripcionDetalldaController,
+                    labelText: 'Agrega una descripcion detalla del producto',
+                    color: Colors.grey.shade200,
+                    keyboardType: TextInputType.multiline,
+                    minLines: 3,
+                    maxLines: 40,
                   )
-                : Center(
-                    child: Text('Aqui puedes agregar imagenes del producto'),
+                : Text(
+                    descripcionDetalladaAux != null &&
+                            descripcionDetalladaAux!.isNotEmpty
+                        ? descripcionDetalladaAux!
+                        : 'No hay descripcion que mostrar',
+                    style: TextStyle(
+                      color: Colors.grey[800],
+                      fontSize: 16,
+                    ),
                   ),
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: IconButton(
-                  onPressed: () async {
-                    agregarImagenes();
-                  },
-                  icon: Icon(CupertinoIcons.add_circled,
-                      size: 40, color: Colors.grey.shade600),
+          ),
+          allProductImages.items.isNotEmpty
+              ? Column(
+                  children: [
+                    for (var image in allProductImages.items)
+                      Column(
+                        children: [
+                          Container(
+                              child: image is ProservicioImagesTb
+                                  ? ShowImage(
+                                      networkImage: image.urlImage,
+                                      //height: 200,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : image is ProServicioImageToUpload ||
+                                          image is ProServicioImageToUpdate
+                                      // Si image is ProServicioImageToUpload entt image.newImage, de lo contrario si image is ProServicioImageToUpdate entt image.newImage
+                                      ? ShowImage(
+                                          imageAsset: image
+                                                  is ProServicioImageToUpload
+                                              ? image.newImage
+                                              : image is ProServicioImageToUpdate
+                                                  ? image.newImage
+                                                  : null,
+                                          widthAsset: double.infinity,
+                                        )
+                                      : SizedBox.shrink()),
+                          isChecked
+                              ? Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    createCustomButton(
+                                      () {
+                                        if (idUsuario != null) {
+                                          eliminarImagen(image, idUsuario);
+                                        }
+                                      },
+                                      image is ProservicioImagesTb
+                                          ? 'Eliminar'
+                                          : 'Descartar',
+                                      color: image is ProservicioImagesTb
+                                          ? Colors.red.shade700
+                                          : Colors.lightGreen.shade500,
+                                    ),
+                                    createCustomButton(
+                                      //onPress
+                                      () {
+                                        editarImagenes(image);
+                                      },
+                                      'Editar',
+                                    ),
+                                  ],
+                                )
+                              : SizedBox.shrink()
+                        ],
+                      )
+                  ],
+                )
+              : Center(
+                  child: Text('Aqui puedes agregar imagenes del producto'),
                 ),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                onPressed: () async {
+                  agregarImagenes();
+                },
+                icon: Icon(CupertinoIcons.add_circled,
+                    size: 40, color: Colors.grey.shade600),
               ),
             ),
-            ElevatedGlobalButton(
-                paddingLeft: 8.0,
-                paddingTop: 10,
-                paddingRight: 8.0,
-                paddingBottom: 25,
-                fontSize: 20.0,
-                borderRadius: BorderRadius.circular(3.5),
-                nameSavebutton: 'Guardar cambios',
-                heightSizeBox: 50,
-                widthSizeBox: double.infinity,
-                onPress: () {
-                  if (idUsuario != null) insertProServicioImage(idUsuario);
-                  if (idUsuario != null) {
-                    updateSecondaryImage(idUsuario);
-                  }
-                  updateDescripcionDetallada();
-                }),
-          ],
-        ),
+          ),
+          ElevatedGlobalButton(
+              paddingLeft: 8.0,
+              paddingTop: 10,
+              paddingRight: 8.0,
+              paddingBottom: 25,
+              fontSize: 20.0,
+              borderRadius: BorderRadius.circular(3.5),
+              nameSavebutton: 'Guardar cambios',
+              heightSizeBox: 50,
+              widthSizeBox: double.infinity,
+              onPress: () {
+                if (idUsuario != null) insertProServicioImage(idUsuario);
+                if (idUsuario != null) {
+                  updateSecondaryImage(idUsuario);
+                }
+                updateDescripcionDetallada();
+              }),
+        ],
       ),
     );
   }

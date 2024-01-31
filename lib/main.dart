@@ -56,31 +56,39 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    obtenerIdUsuarioAsincrono();
-
     // Retrasa la llamada a checkUserSignedIn usando Future.delayed
     Future.delayed(Duration.zero, () {
       context.read<LoginProvider>().checkUserSignedIn();
       print('Una vez SE EJECUTA');
     });
+
+    obtenerIdUsuarioAsincrono();
   }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        // theme: ThemeData(
-        //   appBarTheme: AppBarTheme(
-        //       color: Colors.grey.shade200 // Cambia el color de fondo del AppBar
-        //       ),
-        //   tabBarTheme: const TabBarTheme(
-        //     labelColor:
-        //         Colors.black, // Cambia el color del texto de la pestaña activa
-        //     unselectedLabelColor: Colors
-        //         .grey, // Cambia el color del texto de las pestañas inactivas
-        //   ),
-        // ),
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          appBarTheme: const AppBarTheme(
+            titleTextStyle: TextStyle(
+                color: Colors.black, // Color del texto del título del AppBar
+                fontSize: 18,
+                fontWeight: FontWeight.w500,
+                letterSpacing: 0.3),
+            iconTheme: IconThemeData(
+              color: Colors
+                  .black, // Color de los iconos en las acciones del AppBar
+            ),
+            elevation:
+                0, // Establece la elevación en cero para quitar la línea inferior del AppBar
+            color: Colors.white, // Color AppBar
+          ),
+          scaffoldBackgroundColor:
+              Colors.white, // Color de fondo de la pantalla
+        ),
         title: "Mi app",
-        home: FutureBuilder<int>(
+        home: FutureBuilder<int?>(
           future: context.read<UsuarioProvider>().obtenerIdUsuarioActual(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -88,7 +96,7 @@ class _MyAppState extends State<MyApp> {
             } else if (snapshot.hasError) {
               return Text('Error al cargar idUsuario');
             } else if (snapshot.hasData) {
-              int idUsuarioActual = snapshot.data!;
+              int? idUsuarioActual = snapshot.data;
               return Menu(currentIndex: 0, idUsuario: idUsuarioActual);
             } else {
               return Text('No se encontro idUsuario');
@@ -102,19 +110,18 @@ class Menu extends StatefulWidget {
   const Menu({
     super.key,
     required this.currentIndex,
-    required this.idUsuario,
+    this.idUsuario,
   });
 
   final int currentIndex;
-  final int idUsuario;
+  final int? idUsuario;
 
   @override
   State<Menu> createState() => _MenuState();
 }
 
 class _MenuState extends State<Menu> {
-  late int idUsuarioActual;
-
+  int? idUsuarioActual;
   int _currentIndex = 0;
 
   // Lista de clases (páginas) correspondientes a cada pestaña
@@ -123,27 +130,31 @@ class _MenuState extends State<Menu> {
   @override
   void initState() {
     super.initState();
+
+    idUsuarioActual = widget.idUsuario;
+
     _currentIndex = widget.currentIndex;
     _loadPages();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    idUsuarioActual = _fetchUsuarioProfile();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   //idUsuarioActual = _fetchUsuarioProfile();
+  // }
 
-  int _fetchUsuarioProfile() {
-    return idUsuarioActual =
-        Provider.of<UsuarioProvider>(context).idUsuarioActual;
-  }
+  // int _fetchUsuarioProfile() {
+  //   return idUsuarioActual =
+  //       Provider.of<UsuarioProvider>(context).idUsuarioActual;
+  // }
 
   void _loadPages() {
     _pages = [
       Home(),
-      PerfilPrincipal(
-        idUsuario: widget.idUsuario,
-      ),
+      if (idUsuarioActual != null)
+        PerfilPrincipal(
+          idUsuario: idUsuarioActual!,
+        ),
       CleanClass(),
       ShoppingCart(),
       Filtros(),
@@ -175,12 +186,8 @@ class _MenuState extends State<Menu> {
   Widget _buildBottomNavigationBar() {
     // Lista de iconos para las pestañas
     List<IconData> _icons = [
-      _currentIndex == 0
-          // || _currentIndex == 1 && widget.idUsuario != idUsuarioActual
-          ? CupertinoIcons.house_fill
-          : CupertinoIcons.house,
-      _currentIndex == 1
-          //&& widget.idUsuario == idUsuarioActual
+      _currentIndex == 0 ? CupertinoIcons.house_fill : CupertinoIcons.house,
+      _currentIndex == 1 && idUsuarioActual != null
           ? CupertinoIcons.bag_fill
           : CupertinoIcons.bag,
       CupertinoIcons.add,

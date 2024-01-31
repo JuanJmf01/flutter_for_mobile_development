@@ -43,6 +43,7 @@ class _PageViewNewsFeedState extends State<PageViewNewsFeed> {
           autoPlay: true,
           looping: true,
           showControls: false, // Oculta los controles del reproductor
+          //aspectRatio: MediaQuery.of(context).size.aspectRatio,
         );
       } else {
         //Controlador en caso de un item diferente a video
@@ -69,8 +70,12 @@ class _PageViewNewsFeedState extends State<PageViewNewsFeed> {
           if (item is NewsFeedProductosTb ||
               item is NewsFeedServiciosTb ||
               item is NeswFeedPublicacionesTb) {
-            return ContenidoImages(
-                item: item, idUsuarioActual: idUsuarioActual);
+            if (idUsuarioActual != null) {
+              return ContenidoImages(
+                  item: item, idUsuarioActual: idUsuarioActual);
+            } else {
+              return Text("Manage logueo");
+            }
           } else if (item is NeswFeedReelProductTb ||
               item is NeswFeedReelServiceTb ||
               item is NeswFeedReelPublicacionTb) {
@@ -79,6 +84,7 @@ class _PageViewNewsFeedState extends State<PageViewNewsFeed> {
               chewieController: _videoControllers[index],
             );
           }
+          return null;
         },
       ),
     );
@@ -94,20 +100,6 @@ class _PageViewNewsFeedState extends State<PageViewNewsFeed> {
   }
 }
 
-class ManageVideo extends StatefulWidget {
-  const ManageVideo({super.key});
-
-  @override
-  State<ManageVideo> createState() => _ManageVideoState();
-}
-
-class _ManageVideoState extends State<ManageVideo> {
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}
-
 class VideoFullScreen extends StatefulWidget {
   const VideoFullScreen(
       {super.key, required this.videoItem, required this.chewieController});
@@ -120,6 +112,16 @@ class VideoFullScreen extends StatefulWidget {
 }
 
 class _VideoFullScreeState extends State<VideoFullScreen> {
+  late ChewieController currentController;
+  bool _isVideoPaused = false; // Variable para controlar el estado de pausa
+
+  @override
+  void initState() {
+    super.initState();
+
+    currentController = widget.chewieController;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -127,49 +129,52 @@ class _VideoFullScreeState extends State<VideoFullScreen> {
       body: SafeArea(
         top: false,
         bottom: false,
-        child: Stack(
-          children: [
-            // Reproducción del video con restricciones explícitas
-            SizedBox(
-              child: Chewie(
-                controller: widget.chewieController,
+        child: GestureDetector(
+          onTap: () {
+            if (currentController.videoPlayerController.value.isPlaying) {
+              currentController.pause();
+              setState(() {
+                _isVideoPaused = true;
+              });
+            } else {
+              currentController.play();
+              setState(() {
+                _isVideoPaused = false;
+              });
+            }
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Reproducción del video con restricciones explícitas
+              SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Chewie(
+                  controller: currentController,
+                ),
               ),
-            ),
-            // Otros elementos superpuestos en la parte inferior e inferior derecha
-            OptionsScreen2(),
-            OptionsScreen()
-          ],
+              // Otros elementos superpuestos en la parte inferior e inferior derecha
+              OptionsScreen2(),
+              OptionsScreen()
+            ],
+          ),
         ),
       ),
     );
   }
 }
 
-class ImagePublicacion extends StatelessWidget {
-  const ImagePublicacion({super.key});
+class pageViewEnlaceImages extends StatefulWidget {
+  const pageViewEnlaceImages({super.key});
 
   @override
+  State<pageViewEnlaceImages> createState() => _pageViewEnlaceImagesState();
+}
+
+class _pageViewEnlaceImagesState extends State<pageViewEnlaceImages> {
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-              height: MediaQuery.of(context).size.height * 0.8,
-              child: Container(
-                width: double.infinity,
-                height: 200.0,
-                color: Colors.black,
-              )),
-          Container(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
-              'Descripción de la imagen...',
-              style: TextStyle(fontSize: 18.0),
-            ),
-          ),
-        ],
-      ),
-    );
+    return const Placeholder();
   }
 }
 

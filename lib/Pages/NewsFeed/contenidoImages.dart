@@ -70,3 +70,86 @@ class ContenidoImages extends StatelessWidget {
     }
   }
 }
+
+class ContenidoImages2 extends StatefulWidget {
+  const ContenidoImages2({super.key});
+
+  @override
+  State<ContenidoImages2> createState() => _ContenidoImages2State();
+}
+
+class _ContenidoImages2State extends State<ContenidoImages2> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 18),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 16)
+                .copyWith(right: 0),
+            child: Row(
+              children: [
+                const CircleAvatar(
+                  radius: 15,
+                  backgroundColor: Colors.grey,
+                ),
+                const Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("My Username"),
+                      ],
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(Icons.more_vert),
+                )
+              ],
+            ),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.35,
+            width: double.infinity,
+          ),
+          Row(
+            children: [
+              IconButton(onPressed: () {}, icon: const Icon(Icons.favorite)),
+              IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.comment_bank_outlined)),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.send)),
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: IconButton(
+                      onPressed: () {}, icon: const Icon(Icons.bookmark)),
+                ),
+              )
+            ],
+          ),
+          Container(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("1.12 likes"),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text("Esta son los coentarioself,eof")
+                )
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}

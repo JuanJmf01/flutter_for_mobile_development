@@ -17,7 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
-class ButtonFotoPerfilPortada extends StatefulWidget {
+class ButtonFotoPerfilPortada extends StatelessWidget {
   const ButtonFotoPerfilPortada({
     super.key,
     required this.verFoto,
@@ -35,20 +35,9 @@ class ButtonFotoPerfilPortada extends StatefulWidget {
   final bool isUrlPhotoAvailable;
   final void Function(UsuarioTb) onProfileUpdated;
 
-  @override
-  State<ButtonFotoPerfilPortada> createState() =>
-      _ButtonFotoPerfilPortadaState();
-}
-
-class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
   final EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 10.0);
 
   final Color colorIcons = Colors.black54;
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   Future<UsuarioTb> updateUser(
       urlImage, idUsuarioActual, isProfilePicture) async {
@@ -57,7 +46,7 @@ class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
       idUsuarioActual,
       isProfilePicture,
     );
-    widget.onProfileUpdated(updatedUser);
+    onProfileUpdated(updatedUser);
 
     return updatedUser;
   }
@@ -67,8 +56,6 @@ class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
 
     if (imageAsset != null) {
       File tempFile = await FileTemporal.convertToTempFile(image: imageAsset);
-
-      bool isProfilePicture = widget.isProfilePicture;
 
       Uint8List? finalImage = isProfilePicture
           ? await EditarImagen.editCircularImage(tempFile)
@@ -83,7 +70,7 @@ class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
           imageName: assingName(imageAsset.name!),
         );
 
-        String urlImage = widget.isUrlPhotoAvailable
+        String urlImage = isUrlPhotoAvailable
             ? await ImagesStorage.updateImageByPosition(image, 0)
             : await ImagesStorage.cargarImage(image);
 
@@ -97,8 +84,6 @@ class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
   }
 
   void deleteProfileOrPerfilImage(int idUsuarioActual) async {
-    bool isProfilePicture = widget.isProfilePicture;
-
     String fileName = isProfilePicture ? "fotoPerfil" : "fotoPortada";
 
     UsuarioTb newUser = await updateUser('', idUsuarioActual, isProfilePicture);
@@ -127,24 +112,28 @@ class _ButtonFotoPerfilPortadaState extends State<ButtonFotoPerfilPortada> {
           ItemForModalButtons(
             onPress: () {},
             padding: padding,
-            textItem: widget.verFoto,
+            textItem: verFoto,
           ),
           ItemForModalButtons(
             onPress: () {
-              insertProfileOrPerfilImage(idUsuarioActual);
-              Navigator.pop(context);
+              if (idUsuarioActual != null) {
+                insertProfileOrPerfilImage(idUsuarioActual);
+                Navigator.pop(context);
+              }
             },
             padding: padding,
-            textItem: widget.cambiarFoto,
+            textItem: cambiarFoto,
           ),
-          widget.eliminarFoto != null
+          eliminarFoto != null
               ? ItemForModalButtons(
                   onPress: () {
-                    deleteProfileOrPerfilImage(idUsuarioActual);
-                    Navigator.pop(context);
+                    if (idUsuarioActual != null) {
+                      deleteProfileOrPerfilImage(idUsuarioActual);
+                      Navigator.pop(context);
+                    }
                   },
                   padding: padding,
-                  textItem: widget.eliminarFoto!,
+                  textItem: eliminarFoto!,
                 )
               : const SizedBox.shrink()
         ],
