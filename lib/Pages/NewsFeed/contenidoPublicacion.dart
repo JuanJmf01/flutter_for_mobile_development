@@ -7,12 +7,11 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/icons.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
+import 'package:etfi_point/Pages/perfilPrincipal.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-
 
 class FilaIconos extends StatefulWidget {
   const FilaIconos({
@@ -95,7 +94,10 @@ class _FilaIconosState extends State<FilaIconos> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProServicioDetail(proServicio: servicio),
+          builder: (context) => ProServicioDetail(
+            proServicio: servicio,
+            nameContexto: "servicio",
+          ),
         ),
       );
     });
@@ -106,7 +108,10 @@ class _FilaIconosState extends State<FilaIconos> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProServicioDetail(proServicio: producto),
+          builder: (context) => ProServicioDetail(
+            proServicio: producto,
+            nameContexto: "producto",
+          ),
         ),
       );
     });
@@ -173,7 +178,6 @@ class _FilaIconosState extends State<FilaIconos> {
   }
 }
 
-
 class ContenidoParteSuperior extends StatelessWidget {
   const ContenidoParteSuperior({
     super.key,
@@ -196,12 +200,13 @@ class ContenidoParteSuperior extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => Menu(
               currentIndex: 1,
               idUsuario: idUsuario,
+              ejecutarIdActual: false,
             ),
           ),
         );

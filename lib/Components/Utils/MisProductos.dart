@@ -75,7 +75,7 @@ class _IndividualProductState extends State<IndividualProduct> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProServicioDetail(proServicio: widget.producto),
+        builder: (context) => ProServicioDetail(proServicio: widget.producto, nameContexto: "producto",),
       ),
     );
   }

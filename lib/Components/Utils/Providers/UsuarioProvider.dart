@@ -28,13 +28,22 @@ class UsuarioProvider extends ChangeNotifier {
             print("IdUsuario es null en UsuarioProvider");
           }
         } catch (e) {
-          // Manejo de errores
+          // Manej  o de errores
           print('Error al obtener el idUsuario o usuario no inicia sesión: $e');
           throw Exception('Error al obtener el idUsuario');
         }
       }
+    } else {
+      print("Wl usuario no esta logueado");
+      if (_idUsuarioActual != null) {
+        _idUsuarioActual = null;
+        notifyListeners();
+      }
+      if (_usuarioActual != null) {
+        _usuarioActual = null;
+        notifyListeners();
+      }
     }
-    print("Wl usuario no esta logueado");
     return null;
   }
 }

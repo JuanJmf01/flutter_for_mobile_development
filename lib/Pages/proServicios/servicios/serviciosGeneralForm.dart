@@ -321,15 +321,11 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
       },
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
-          iconTheme: IconThemeData(color: Colors.black, size: 30),
-          toolbarHeight: 60,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 widget.titulo,
-                style: TextStyle(color: Colors.black),
               ),
               GlobalTextButton(
                 onPressed: () {
@@ -342,11 +338,10 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                 textButton: 'Guardar',
                 fontSizeTextButton: 19,
                 letterSpacing: 0.3,
-              )
+              ),
             ],
           ),
         ),
-        backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
         body: Column(
           children: [
             Expanded(

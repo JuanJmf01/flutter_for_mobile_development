@@ -371,15 +371,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       },
       child: Scaffold(
         appBar: AppBar(
-            backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
-            iconTheme: IconThemeData(color: Colors.black, size: 30),
-            toolbarHeight: 60,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
                   widget.titulo,
-                  style: TextStyle(color: Colors.black),
                 ),
                 GlobalTextButton(
                   onPressed: () {
@@ -393,7 +389,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                 )
               ],
             )),
-        backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
         body: Column(
           children: [
             Expanded(

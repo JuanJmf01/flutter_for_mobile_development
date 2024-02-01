@@ -947,7 +947,7 @@ class _SummaryReviewsState extends State<SummaryReviews> {
         margin: const EdgeInsets.only(top: 12.0),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
-            color: Colors.grey.shade200),
+            color: Colors.grey.shade100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -955,14 +955,14 @@ class _SummaryReviewsState extends State<SummaryReviews> {
               padding: const EdgeInsets.fromLTRB(10.0, 10.0, 17.0, 0.0),
               child: TextButton(
                 onPressed: navigateToReviewsAndOpinions,
-                child: Row(
+                child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       'Calificaciones y opiniones',
-                      style: TextStyle(color: color, fontSize: 18),
+                      style: TextStyle(fontSize: 18),
                     ),
-                    const Icon(
+                    Icon(
                       Icons.arrow_forward,
                       size: 26,
                     ),
@@ -988,7 +988,6 @@ class _SummaryReviewsState extends State<SummaryReviews> {
               child: GlobalTextButton(
                 onPressed: navigateToReviewsAndOpinions,
                 textButton: 'Todas las calificaciones',
-                color: color,
                 fontSizeTextButton: 17,
               ),
             ),

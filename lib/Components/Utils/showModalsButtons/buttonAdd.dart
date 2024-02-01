@@ -52,14 +52,18 @@ class ButtonAdd extends StatelessWidget {
           SmallButtonTopTab(),
           ItemForModalButtons(
             onPress: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ProductosGeneralForm(
-                            titulo: 'Agregar producto',
-                            nameSavebutton: 'Crear',
-                            exitoMessage: 'Producto creado exitosamente',
-                          )));
+              if (idUsuarioActual != null) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ProductosGeneralForm(
+                              titulo: 'Agregar producto',
+                              nameSavebutton: 'Crear',
+                              exitoMessage: 'Producto creado exitosamente',
+                            )));
+              } else {
+                print("Manage logueo");
+              }
             },
             padding: padding,
             icon: CupertinoIcons.cube_box,
@@ -68,13 +72,17 @@ class ButtonAdd extends StatelessWidget {
           ),
           ItemForModalButtons(
             onPress: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ServiciosGeneralForm(
-                            titulo: "Agregar servicio",
-                            nameSaveButton: "Agregasr",
-                          )));
+              if (idUsuarioActual != null) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ServiciosGeneralForm(
+                              titulo: "Agregar servicio",
+                              nameSaveButton: "Agregasr",
+                            )));
+              } else {
+                print("Manage logueo");
+              }
             },
             padding: padding,
             icon: CupertinoIcons.heart_circle,

@@ -1,10 +1,13 @@
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
+import 'package:etfi_point/Pages/NewsFeed/newsFeed.dart';
+import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -43,26 +46,29 @@ class _ButtonLoginState extends State<ButtonLogin> {
 
   void logInWithGoogle(BuildContext context) async {
     try {
-      UserCredential userCredential = await Auth.signInWithGoogle();
-      final email = userCredential.user?.email;
-      print(email);
-      bool userExists = await UsuarioDb.ifExistsUserByEmail(email!);
-      if (!userExists) {
-        newUser(userCredential);
-      }
+      UserCredential? userCredential = await Auth.signInWithGoogle();
+      String? email = userCredential?.user?.email;
+      if (email != null && userCredential != null) {
+        bool userExists = await UsuarioDb.ifExistsUserByEmail(email);
 
-      if (context.mounted) {
-        context.read<LoginProvider>().checkUserSignedIn();
-        //context.read<UsuarioProvider>().obtenerIdUsuario();
+        if (!userExists) {
+          newUser(userCredential);
+        }
 
-        //Navigator.pop(context);
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) => Menu(
-        //             index: 1,
-        //           )),
-        // );
+        if (context.mounted) {
+          context.read<LoginProvider>().checkUserSignedIn();
+          context.read<UsuarioProvider>().obtenerIdUsuarioActual();
+          print("Entra a leerlo Funciona");
+
+          // if (mounted) {
+          //   Navigator.pop(context);
+          //   Navigator.pushReplacement(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (context) => const Home()),
+          //   );
+          // }
+        }
       }
     } catch (error, stacktrace) {
       print('Error al iniciar sesion con google $stacktrace');

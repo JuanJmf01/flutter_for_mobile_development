@@ -134,7 +134,7 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProServicioDetail(proServicio: servicio),
+          builder: (context) => ProServicioDetail(proServicio: servicio, nameContexto: "servicio",),
         ),
       );
     });
@@ -145,7 +145,7 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProServicioDetail(proServicio: producto),
+          builder: (context) => ProServicioDetail(proServicio: producto, nameContexto: "producto",),
         ),
       );
     });
@@ -159,9 +159,13 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
     return FutureBuilder<NewsFeedTb>(
         future: idUsuarioActual != null
             ? NewsFeedDb.getAllNewsFeed(idUsuarioActual)
-            : null,
+            : null, //En caso de que no existe idUsuarioActual debemos mostrar NewsFeed publicas de cualquier otra cuenta
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasData) {
             NewsFeedTb newsFeed = snapshot.data!;
             List<NewsFeedItem> items = newsFeed.newsFeed;
             if (items.isNotEmpty) {
@@ -207,9 +211,7 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
           } else if (snapshot.hasError) {
             return const Text('Error al obtener los datos');
           } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
+            return const Center(child: Text("No hay newsFeed que mostrar"));
           }
         });
   }

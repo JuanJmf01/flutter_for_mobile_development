@@ -75,7 +75,7 @@ class _IndividulServiceState extends State<IndividulService> {
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ProServicioDetail(proServicio: widget.servicio),
+        builder: (context) => ProServicioDetail(proServicio: widget.servicio, nameContexto: "servicio",),
       ),
     );
   }

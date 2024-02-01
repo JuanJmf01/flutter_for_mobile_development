@@ -1,3 +1,4 @@
+import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,27 +11,29 @@ class Auth {
   ///
   /// Returns:
   ///   a Future<UserCredential>.
-  static Future<UserCredential> signInWithGoogle() async {
+  static Future<UserCredential?> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth =
-          await googleUser?.authentication;
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
 
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth?.accessToken,
-        idToken: googleAuth?.idToken,
-      );
+        // Create a new credential
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
 
-      // Once signed in, return the UserCredential
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+        // Once signed in, return the UserCredential
+        return await FirebaseAuth.instance.signInWithCredential(credential);
+      }
+      return null;
     } catch (error) {
       print('Error al iniciar sesión con Google: $error');
-      throw Exception(
-          'Error al iniciar sesión con Google'); // Lanza una excepción en caso de error
+      return null;
     }
   }
 
@@ -41,7 +44,7 @@ class Auth {
   ///   The method is returning the current user, which is of type User.
   static User? getCurrentUser() {
     User? user = FirebaseAuth.instance.currentUser;
-    
+
     return user;
   }
 
@@ -56,7 +59,7 @@ class Auth {
     return user != null;
   }
 
-/// The `signOut` function is responsible for signing out the currently authenticated user.
+  /// The `signOut` function is responsible for signing out the currently authenticated user.
   static signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     GoogleSignIn _googleSignIn = GoogleSignIn();
@@ -65,6 +68,7 @@ class Auth {
       await _googleSignIn.disconnect();
       if (context.mounted) {
         context.read<LoginProvider>().checkUserSignedIn();
+        context.read<UsuarioProvider>().obtenerIdUsuarioActual();
       }
       print('Sesión cerrada correctamente');
     } catch (error) {

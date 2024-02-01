@@ -43,14 +43,14 @@ class ButtonMenu extends StatelessWidget {
                               await Auth.signOut(context);
                               if (context.mounted) {
                                 Navigator.of(context).pop();
-                                //Navigator.pop(context);
-                                // Navigator.pushReplacement(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //       builder: (context) => Menu(
-                                //             currentIndex: 0,
-                                //           )),
-                                // );
+                                Navigator.pop(context);
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Menu(
+                                            currentIndex: 0,
+                                          )),
+                                );
                               }
                             },
                             onCancel: () {

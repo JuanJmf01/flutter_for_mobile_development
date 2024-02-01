@@ -16,6 +16,8 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
+import 'package:flutter/material.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -49,6 +51,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  int? idUsuarioActual;
+
   Future<void> obtenerIdUsuarioAsincrono() async {
     await context.read<UsuarioProvider>().obtenerIdUsuarioActual();
   }
@@ -96,10 +100,16 @@ class _MyAppState extends State<MyApp> {
             } else if (snapshot.hasError) {
               return Text('Error al cargar idUsuario');
             } else if (snapshot.hasData) {
-              int? idUsuarioActual = snapshot.data;
-              return Menu(currentIndex: 0, idUsuario: idUsuarioActual);
+              idUsuarioActual = snapshot.data;
+              return Menu(
+                currentIndex: 0,
+                idUsuario: idUsuarioActual,
+              );
             } else {
-              return Text('No se encontro idUsuario');
+              return Menu(
+                currentIndex: 0,
+                idUsuario: idUsuarioActual,
+              );
             }
           },
         ));
@@ -107,14 +117,15 @@ class _MyAppState extends State<MyApp> {
 }
 
 class Menu extends StatefulWidget {
-  const Menu({
-    super.key,
-    required this.currentIndex,
-    this.idUsuario,
-  });
+  const Menu(
+      {super.key,
+      required this.currentIndex,
+      this.idUsuario,
+      this.ejecutarIdActual});
 
   final int currentIndex;
   final int? idUsuario;
+  final bool? ejecutarIdActual;
 
   @override
   State<Menu> createState() => _MenuState();
@@ -134,31 +145,26 @@ class _MenuState extends State<Menu> {
     idUsuarioActual = widget.idUsuario;
 
     _currentIndex = widget.currentIndex;
-    _loadPages();
+    _loadPages(
+      idUsuarioActualPage: idUsuarioActual,
+    );
   }
 
-  // @override
-  // void didChangeDependencies() {
-  //   super.didChangeDependencies();
-  //   //idUsuarioActual = _fetchUsuarioProfile();
-  // }
+  //Se ejecuta despues del initState
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.ejecutarIdActual != null) {
+      _fetchUsuarioProfile(widget.ejecutarIdActual!);
+    }
+  }
 
-  // int _fetchUsuarioProfile() {
-  //   return idUsuarioActual =
-  //       Provider.of<UsuarioProvider>(context).idUsuarioActual;
-  // }
-
-  void _loadPages() {
-    _pages = [
-      Home(),
-      if (idUsuarioActual != null)
-        PerfilPrincipal(
-          idUsuario: idUsuarioActual!,
-        ),
-      CleanClass(),
-      ShoppingCart(),
-      Filtros(),
-    ];
+  void _fetchUsuarioProfile(bool ejecutarIdUsuarioActual) {
+    if (ejecutarIdUsuarioActual) {
+      idUsuarioActual =
+          Provider.of<UsuarioProvider>(context, listen: false).idUsuarioActual;
+      _loadPages(idUsuarioActualPage: idUsuarioActual);
+    }
   }
 
   void mostrarModal(BuildContext context) {
@@ -175,6 +181,20 @@ class _MenuState extends State<Menu> {
     );
   }
 
+  void _loadPages({int? idUsuarioActualPage}) {
+    _pages = [
+      Home(),
+      idUsuarioActualPage != null
+          ? PerfilPrincipal(
+              idUsuario: idUsuarioActual!,
+            )
+          : Filtros(), //Mostrar mensaje de usuario no loguado e invitar a loguearse
+      CleanClass(),
+      ShoppingCart(),
+      Filtros(),
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -187,9 +207,7 @@ class _MenuState extends State<Menu> {
     // Lista de iconos para las pestañas
     List<IconData> _icons = [
       _currentIndex == 0 ? CupertinoIcons.house_fill : CupertinoIcons.house,
-      _currentIndex == 1 && idUsuarioActual != null
-          ? CupertinoIcons.bag_fill
-          : CupertinoIcons.bag,
+      _currentIndex == 1 ? CupertinoIcons.bag_fill : CupertinoIcons.bag,
       CupertinoIcons.add,
       _currentIndex == 3
           ? CupertinoIcons.cart_fill
@@ -203,7 +221,12 @@ class _MenuState extends State<Menu> {
       type: BottomNavigationBarType.fixed,
       currentIndex: _currentIndex,
       onTap: (index) {
-        if (index == 2) {
+        if (index == 1) {
+          _fetchUsuarioProfile(true);
+          setState(() {
+            _currentIndex = index;
+          });
+        } else if (index == 2) {
           mostrarModal(context);
         } else {
           setState(() {

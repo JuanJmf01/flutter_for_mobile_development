@@ -9,7 +9,8 @@ class ConfirmationDialog extends StatelessWidget {
   final String? onCancelMessage;
   final IconData? icon;
 
-  ConfirmationDialog({
+  const ConfirmationDialog({
+    super.key,
     this.titulo,
     required this.message,
     required this.onAccept,

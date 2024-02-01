@@ -1,5 +1,4 @@
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
@@ -19,9 +18,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ProServicioDetail extends StatefulWidget {
-  const ProServicioDetail({super.key, required this.proServicio});
+  const ProServicioDetail(
+      {super.key, required this.proServicio, required this.nameContexto});
 
   final dynamic proServicio;
+  final String nameContexto;
 
   @override
   _ProServicioDetailState createState() => _ProServicioDetailState();
@@ -141,11 +142,11 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
 
     if (widget.proServicio is ProductoTb) {
       fileName = MisRutasFirebase.forProducts;
-      idProServicio = widget.proServicio.idProducto;
+      idProServicio = (widget.proServicio as ProductoTb).idProducto;
       objectType = ProductoTb;
     } else if (widget.proServicio is ServicioTb) {
       fileName = MisRutasFirebase.forServicios;
-      idProServicio = widget.proServicio.idServicio;
+      idProServicio = (widget.proServicio as ServicioTb).idServicio;
       objectType = ServicioTb;
     }
 
@@ -157,7 +158,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
     int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Detalle del servicio'),
+        title: Text('Detalle del ${widget.nameContexto}'),
         actions: [
           IconButton(
             icon: Icon(Icons.edit),
