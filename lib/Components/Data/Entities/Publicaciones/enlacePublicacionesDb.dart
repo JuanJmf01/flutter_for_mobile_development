@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
@@ -7,13 +9,13 @@ import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 ///
 
 class EnlacePublicacionesDb {
-  static Future<NewsFeedTb> getAllNewsFeed(int idUsuarioActual) async {
+  static Future<NewsFeedTb> getAllNewsFeed(
+      int idUsuarioActual) async {
     try {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
         getEnlaceProductosByUsuario(idUsuarioActual),
         getEnlaceServiciosByUsuario(idUsuarioActual),
-        
       ]);
 
       // Combinar las respuestas en una sola lista de NewsFeedItem
@@ -35,17 +37,20 @@ class EnlacePublicacionesDb {
     }
   }
 
-  
-
   static Future<NewsFeedTb> getEnlaceProductosByUsuario(
       int idUsuarioActual) async {
     Dio dio = Dio();
-    String url =
-        '${MisRutas.rutaEnlaceProductos}/$idUsuarioActual';
+    String url = MisRutas.rutaEnlaceProductos;
+
+    Map<String, dynamic> data = {
+      'idUsuario': idUsuarioActual,
+      'offSet': 0,
+    };
 
     try {
       Response response = await dio.get(
         url,
+        data: jsonEncode(data),
         options: Options(
           headers: {'Content-Type': 'application/json'},
         ),
@@ -66,13 +71,10 @@ class EnlacePublicacionesDb {
     }
   }
 
-
-  
   static Future<NewsFeedTb> getEnlaceServiciosByUsuario(
       int idUsuarioActual) async {
     Dio dio = Dio();
-    String url =
-        '${MisRutas.rutaEnlaceServicios}/$idUsuarioActual';
+    String url = '${MisRutas.rutaEnlaceServicios}/$idUsuarioActual';
 
     try {
       Response response = await dio.get(

@@ -29,7 +29,6 @@ class _ShowVideoState extends State<ShowVideo> {
   void initState() {
     super.initState();
     _initializeVideoPlayer();
-
   }
 
   void _initializeVideoPlayer() {
@@ -75,15 +74,15 @@ class _ShowVideoState extends State<ShowVideo> {
                 if (mounted) {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                        builder: (context) =>
-                            PageViewNewsFeed(newsFeedItems: widget.items)
+                      builder: (context) =>
+                          // PageViewNewsFeed(newsFeedItems: widget.items)
 
-                        // ShowVideoFullScreen(
-                        //   urlReel: widget.urlReel,
-                        //   savedPosition: _savedPosition,
-                        //   items: widget.items,
-                        // ),
-                        ),
+                          ShowVideoFullScreen(
+                        urlReel: widget.urlReel,
+                        savedPosition: _savedPosition,
+                        items: widget.items,
+                      ),
+                    ),
                   );
                 }
               },

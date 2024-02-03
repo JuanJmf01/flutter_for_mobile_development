@@ -1,5 +1,7 @@
+import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/seguidoresTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
+import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicacionesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/misProductos.dart';
@@ -30,6 +32,8 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   late TabController _tabController;
   late UsuarioPrincipalProfileTb usuarioPrincipal;
   Future<UsuarioPrincipalProfileTb?>? _usuarioProfileFuture;
+  ScrollController _scrollController = ScrollController();
+  List<NewsFeedItem> enlacesPublicacion = [];
 
   UsuarioTb? updatedUserProfile;
   int? idUsuarioActual;
@@ -41,6 +45,13 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
     _tabController = TabController(length: 3, vsync: this, initialIndex: 1);
     _tabController.addListener(_handleTabSelection);
     _updateCircleTabs();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        print('Llegaste al final de la página');
+      }
+    });
   }
 
   @override
@@ -126,141 +137,135 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
               updatedUrlFotoPerfil = updatedUserProfile!.urlFotoPerfil;
               updatedUrlFotoPortada = updatedUserProfile!.urlFotoPortada;
             }
-
-            return DefaultTabController(
-              length: 3,
-              child: NestedScrollView(
-                headerSliverBuilder:
-                    (BuildContext context, bool innerBoxIsScrolled) {
-                  return [
-                    SliverAppBar(
-                      expandedHeight: screenHeight * 0.4,
-                      floating: false,
-                      pinned: true,
-                      flexibleSpace: FlexibleSpaceBar(
-                        background: Stack(
-                          children: [
-                            // Contenedor de la foto de portada
-                            GestureDetector(
-                              onTap: () {
-                                showModalButtonFotoPerfilPortada(
-                                  "portada",
-                                  false,
-                                  urlPhoto:
-                                      urlFotoPortada ?? updatedUrlFotoPortada,
-                                );
-                              },
-                              child: Container(
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  borderRadius: const BorderRadius.only(
-                                    topLeft: Radius.circular(10.0),
-                                    topRight: Radius.circular(10.0),
+            return CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverAppBar(
+                  expandedHeight: screenHeight * 0.4,
+                  floating: false,
+                  pinned: true,
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Stack(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showModalButtonFotoPerfilPortada(
+                              "portada",
+                              false,
+                              urlPhoto: urlFotoPortada ?? updatedUrlFotoPortada,
+                            );
+                          },
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(10.0),
+                                topRight: Radius.circular(10.0),
+                              ),
+                              color: Colors.grey.shade200,
+                            ),
+                            child: Stack(
+                              children: [
+                                if ((urlFotoPortada != null &&
+                                        urlFotoPortada.isNotEmpty) ||
+                                    (updatedUrlFotoPortada != null &&
+                                        updatedUrlFotoPortada.isNotEmpty))
+                                  ShowImage(
+                                    networkImage: '',
+                                    //updatedUrlFotoPortada ?? urlFotoPortada,
+                                    fit: BoxFit.cover,
+                                    widthNetWork: double.infinity,
+                                    heightNetwork: screenHeight * 0.5,
                                   ),
-                                  color: Colors.grey.shade200,
-                                ),
-                                child: Stack(
-                                  children: [
-                                    if ((urlFotoPortada != null &&
-                                            urlFotoPortada.isNotEmpty) ||
-                                        (updatedUrlFotoPortada != null &&
-                                            updatedUrlFotoPortada.isNotEmpty))
-                                      ShowImage(
-                                        networkImage: updatedUrlFotoPortada ??
-                                            urlFotoPortada,
-                                        fit: BoxFit.cover,
-                                        widthNetWork: double.infinity,
-                                        heightNetwork: screenHeight * 0.5,
+                                Positioned(
+                                  left: 16.0,
+                                  bottom: 16.0,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      showModalButtonFotoPerfilPortada(
+                                        "perfil",
+                                        true,
+                                        urlPhoto: updatedUrlFotoPerfil ??
+                                            urlFotoPerfil,
+                                      );
+                                    },
+                                    child: Container(
+                                      width: 105.0,
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.circular(50.0),
+                                        color: Colors.grey.shade300,
                                       ),
-                                    Positioned(
-                                      left: 16.0,
-                                      bottom: 16.0,
-                                      child: GestureDetector(
-                                          onTap: () {
-                                            showModalButtonFotoPerfilPortada(
-                                              "perfil",
-                                              true,
-                                              urlPhoto: updatedUrlFotoPerfil ??
-                                                  urlFotoPerfil,
-                                            );
-                                          },
-                                          child: Container(
-                                            width: 105.0,
-                                            decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(50.0),
-                                                color: Colors.grey.shade300),
-                                            child: (urlFotoPerfil != null &&
-                                                        urlFotoPerfil != '') ||
-                                                    (updatedUrlFotoPerfil !=
-                                                            null &&
-                                                        updatedUrlFotoPerfil !=
-                                                            '')
-                                                ? ShowImage(
-                                                    networkImage:
-                                                        updatedUrlFotoPerfil ??
-                                                            urlFotoPerfil,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            50.0),
-                                                    heightNetwork: 105.0,
-                                                    widthNetWork: 105.0,
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : CircleAvatar(
-                                                    radius: 52.5,
-                                                    backgroundColor:
-                                                        Colors.grey.shade300,
-                                                  ),
-                                          )),
+                                      child: (urlFotoPerfil != null &&
+                                                  urlFotoPerfil != '') ||
+                                              (updatedUrlFotoPerfil != null &&
+                                                  updatedUrlFotoPerfil != '')
+                                          ? ShowImage(
+                                              networkImage:
+                                                  updatedUrlFotoPerfil ??
+                                                      urlFotoPerfil,
+                                              borderRadius:
+                                                  BorderRadius.circular(50.0),
+                                              heightNetwork: 105.0,
+                                              widthNetWork: 105.0,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : CircleAvatar(
+                                              radius: 52.5,
+                                              backgroundColor:
+                                                  Colors.grey.shade300,
+                                            ),
                                     ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            // Contenedor de los Tabs superpuesto
-                            Positioned(
-                              top: 0,
-                              left: 0,
-                              right: 0,
-                              child: Container(
-                                height: 60,
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 0.0),
-                                child: Padding(
-                                  padding: const EdgeInsets.only(top: 6.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      for (int index = 0; index < 3; index++)
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 20.0),
-                                          child: CircleTab(
-                                            index: index,
-                                            tabController: _tabController,
-                                          ),
-                                        ),
-                                    ],
                                   ),
                                 ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            height: 60,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 0.0),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 6.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  for (int index = 0; index < 3; index++)
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: CircleTab(
+                                        index: index,
+                                        tabController: _tabController,
+                                      ),
+                                    ),
+                                ],
                               ),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ];
-                },
-                body: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildTabContent(0),
-                    _buildTabContent(1),
-                    _buildTabContent(2),
-                  ],
+                  ),
                 ),
-              ),
+                if (_tabController.index == 0)
+                  ContenidoProServicios(
+                    idUsuario: widget.idUsuario,
+                  ),
+                if (_tabController.index == 1 && idUsuarioActual != null)
+                  PerfilCentral(
+                      usuarioProfile: usuarioPrincipal,
+                      idUsuarioActual: idUsuarioActual!),
+                if (_tabController.index == 2)
+                  ContenidoEnlaces(
+                    idUsuario: widget.idUsuario,
+                  ),
+              ],
             );
           } else {
             return Text('No se encontraron los productos');
@@ -268,21 +273,6 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
         },
       ),
     );
-  }
-
-  Widget _buildTabContent(int tabIndex) {
-    return tabIndex == 0 && idUsuarioActual != null
-        ? ContenidoProServicios(idUsuario: widget.idUsuario)
-        : tabIndex == 1
-            ? PerfilCentral(
-                usuarioProfile: usuarioPrincipal,
-                idUsuarioActual: idUsuarioActual!,
-              )
-            : tabIndex == 2
-                ? ContenidoEnlaces(
-                    idUsuario: widget.idUsuario,
-                  )
-                : SizedBox();
   }
 
   @override
@@ -373,6 +363,7 @@ List<CircleTabData> _circleTabs = [
   CircleTabData(false),
 ];
 
+//Permitir idUsuarioActual como null, para que el usuario visitante (aunque no este loguado) pueda ver los demas perfiles
 class PerfilCentral extends StatefulWidget {
   const PerfilCentral({
     super.key,
@@ -421,34 +412,52 @@ class _PerfilCentralState extends State<PerfilCentral> {
   @override
   Widget build(BuildContext context) {
     UsuarioPrincipalProfileTb usuario = widget.usuarioProfile;
-    return Padding(
-      padding: EdgeInsets.all(8.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                usuario.nombres,
-                style: TextStyle(fontSize: 21, fontWeight: FontWeight.w500),
-              ),
-              Padding(
-                padding: EdgeInsets.only(right: 8.0, top: 5.0),
-                child: Row(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(right: 20.0),
-                      child: Column(
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  usuario.nombres,
+                  style: TextStyle(fontSize: 21, fontWeight: FontWeight.w500),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 8.0, top: 5.0),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 20.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              seguidores.toString(),
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 18),
+                            ),
+                            Text(
+                              "Seguidores",
+                              style: TextStyle(
+                                  color: Colors.grey.shade600,
+                                  fontSize: 14.0,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Column(
                         children: [
                           Text(
-                            seguidores.toString(),
+                            usuario.siguiendo.toString(),
                             style: TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 18),
                           ),
                           Text(
-                            "Seguidores",
+                            "Siguiendo",
                             style: TextStyle(
                                 color: Colors.grey.shade600,
                                 fontSize: 14.0,
@@ -456,62 +465,46 @@ class _PerfilCentralState extends State<PerfilCentral> {
                           ),
                         ],
                       ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(top: 10.0),
+                  child: Container(
+                    width: MediaQuery.of(context).size.width *
+                        0.47, // Establece el ancho máximo al 40%
+                    child: const Text(
+                      "Descripción previa del perfil de cierto usuario 🍟🍾il de cierto usuario 🍟🍾il de cierto usuario 🍟🍾",
+                      style: TextStyle(fontSize: 14.6),
                     ),
-                    Column(
-                      children: [
-                        Text(
-                          usuario.siguiendo.toString(),
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 18),
-                        ),
-                        Text(
-                          "Siguiendo",
-                          style: TextStyle(
-                              color: Colors.grey.shade600,
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              )
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 10.0),
-                child: Container(
-                  width: MediaQuery.of(context).size.width *
-                      0.47, // Establece el ancho máximo al 40%
-                  child: const Text(
-                    "Descripción previa del perfil de cierto usuario 🍟🍾il de cierto usuario 🍟🍾il de cierto usuario 🍟🍾",
-                    style: TextStyle(fontSize: 14.6),
                   ),
                 ),
-              ),
-              widget.idUsuarioActual != usuario.idUsuario
-                  ? ElevatedGlobalButton(
-                      nameSavebutton: esSeguidor ? "Siguiendo" : "Seguir",
-                      borderRadius: BorderRadius.circular(12.0),
-                      heightSizeBox: 35.0,
-                      widthSizeBox: 115.0,
-                      backgroundColor:
-                          esSeguidor ? Colors.grey.shade300 : Colors.blue,
-                      colorNameSaveButton:
-                          esSeguidor ? Colors.black : Colors.white,
-                      onPress: () {
-                        insertSeguidor(
-                            widget.idUsuarioActual, usuario.idUsuario);
-                      },
-                    )
-                  : SizedBox.shrink()
-            ],
-          ),
-        ],
+                widget.idUsuarioActual != usuario.idUsuario
+                    ? ElevatedGlobalButton(
+                        nameSavebutton: esSeguidor ? "Siguiendo" : "Seguir",
+                        borderRadius: BorderRadius.circular(12.0),
+                        heightSizeBox: 35.0,
+                        widthSizeBox: 115.0,
+                        backgroundColor:
+                            esSeguidor ? Colors.grey.shade300 : Colors.blue,
+                        colorNameSaveButton:
+                            esSeguidor ? Colors.black : Colors.white,
+                        onPress: () {
+                          insertSeguidor(
+                              widget.idUsuarioActual, usuario.idUsuario);
+                        },
+                      )
+                    : SizedBox.shrink()
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -534,15 +527,21 @@ class _ContenidoProServiciosState extends State<ContenidoProServicios>
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+
+    _tabController.addListener(_handleTabSelection);
+  }
+
+  void _handleTabSelection() {
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
+    return SliverList(
+      delegate: SliverChildListDelegate(
+        [
           Padding(
-            padding: const EdgeInsets.only(bottom: 10.0),
+            padding: const EdgeInsets.only(bottom: 0.0),
             child: TabBar(
               controller: _tabController,
               tabs: const [
@@ -561,23 +560,11 @@ class _ContenidoProServiciosState extends State<ContenidoProServicios>
               ],
             ),
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                SingleChildScrollView(
-                  child: Column(
-                    children: [MisProductos(idUsuario: widget.idUsuario)],
-                  ),
-                ),
-                SingleChildScrollView(
-                  child: Column(
-                    children: [MisServicios(idUsuario: widget.idUsuario)],
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _tabController.index == 0
+              ? MisProductos(idUsuario: widget.idUsuario)
+              : _tabController.index == 1
+                  ? MisServicios(idUsuario: widget.idUsuario)
+                  : SizedBox.shrink()
         ],
       ),
     );
@@ -602,66 +589,57 @@ class ContenidoEnlaces extends StatefulWidget {
 class _ContenidoEnlacesState extends State<ContenidoEnlaces>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  List<NewsFeedItem> enlacesPublicacion = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_handleTabSelection);
 
-    // Oyente para cada cambio de pestaña en el tabBar
-    // _tabController.addListener(() {
-    //   final currentIndex = _tabController.index;
-    //   print("INDEX: $currentIndex");
-    // });
+    enlacesPublicaciones();
+  }
+
+  void _handleTabSelection() {
+    setState(() {});
+  }
+
+  Future<List<NewsFeedItem>> enlacesPublicaciones() async {
+    NewsFeedTb enlacePublicaciones =
+        await EnlacePublicacionesDb.getAllNewsFeed(widget.idUsuario);
+    List<NewsFeedItem> items = enlacePublicaciones.newsFeed;
+    enlacesPublicacion.addAll(items);
+    return items;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(bottom: 10.0),
-            child: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(
-                  icon: Icon(
-                    CupertinoIcons.cube_box_fill,
-                    color: Colors.black,
-                  ),
+    return SliverList(
+      delegate: SliverChildListDelegate(
+        [
+          TabBar(
+            //mirar si al eliminar se deja de renderizar el estado
+            controller: _tabController,
+            tabs: const [
+              Tab(
+                icon: Icon(
+                  CupertinoIcons.cube_box_fill,
+                  color: Colors.black,
                 ),
-                Tab(
-                  icon: Icon(
-                    CupertinoIcons.heart_circle_fill,
-                    color: Colors.black,
-                  ),
+              ),
+              Tab(
+                icon: Icon(
+                  CupertinoIcons.heart_circle_fill,
+                  color: Colors.black,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                SingleChildScrollView(
-                  child: SingleChildScrollView(
-                      child: Column(
-                    children: [
-                      EnlacesPublicaciones(idUsuario: widget.idUsuario)
-                    ],
-                  )),
-                ),
-                SingleChildScrollView(
-                  child: SingleChildScrollView(
-                    child: Center(
-                      child: Text('Contenido de la pestaña 4 y otras imágenes'),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _tabController.index == 0
+              ? EnlacesPublicaciones(idUsuario: widget.idUsuario)
+              : _tabController.index == 1
+                  ? Text("Pepe")
+                  : SizedBox.shrink()
         ],
       ),
     );

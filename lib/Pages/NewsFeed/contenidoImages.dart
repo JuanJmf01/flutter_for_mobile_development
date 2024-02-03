@@ -13,10 +13,11 @@ class ContenidoImages extends StatelessWidget {
 
   final NewsFeedItem item;
   final int idUsuarioActual;
+  
 
   @override
   Widget build(BuildContext context) {
-    double paddingTopEachPublicacion = 40.0;
+    double paddingBottomEachPublicacion = 40.0;
     double paddingMedia = 20.0;
 
     dynamic newItem;
@@ -31,7 +32,7 @@ class ContenidoImages extends StatelessWidget {
         newItem is NewsFeedServiciosTb ||
         newItem is NeswFeedPublicacionesTb) {
       return Padding(
-        padding: EdgeInsets.only(top: paddingTopEachPublicacion),
+        padding: EdgeInsets.only(bottom: paddingBottomEachPublicacion),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -141,10 +142,9 @@ class _ContenidoImages2State extends State<ContenidoImages2> {
               children: [
                 Text("1.12 likes"),
                 Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text("Esta son los coentarioself,eof")
-                )
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text("Esta son los coentarioself,eof"))
               ],
             ),
           )

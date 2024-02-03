@@ -16,7 +16,87 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter/material.dart';
+
+// void main() {
+//   runApp(MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: Text('GridView.builder Example'),
+//         ),
+//         body: MyGridView(),
+//       ),
+//     );
+//   }
+// }
+
+// class MyGridView extends StatefulWidget {
+//   @override
+//   _MyGridViewState createState() => _MyGridViewState();
+// }
+
+// class _MyGridViewState extends State<MyGridView> {
+//   ScrollController _scrollController = ScrollController();
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     _scrollController.addListener(_onScroll);
+//   }
+
+//   @override
+//   void dispose() {
+//     _scrollController.dispose();
+//     super.dispose();
+//   }
+
+//   void _onScroll() {
+//     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
+//       // El usuario ha llegado al final de la página, realiza la acción deseada aquí
+//       // Por ejemplo, puedes cargar más elementos o mostrar un mensaje.
+//       print('Llegaste al final de la página');
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return NotificationListener<ScrollNotification>(
+//       onNotification: (ScrollNotification scrollInfo) {
+//         if (scrollInfo is ScrollEndNotification) {
+//           _onScroll();
+//         }
+//         return false;
+//       },
+//       child: GridView.builder(
+//         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+//           crossAxisCount: 2, // Puedes ajustar este valor según tus necesidades
+//           crossAxisSpacing: 8.0,
+//           mainAxisSpacing: 8.0,
+//         ),
+//         itemCount: 20,
+//         controller: _scrollController,
+//         itemBuilder: (BuildContext context, int index) {
+//           return Card(
+//             color: Colors.blue,
+//             child: Center(
+//               child: Text(
+//                 'Elemento $index',
+//                 style: TextStyle(color: Colors.white),
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+// }
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

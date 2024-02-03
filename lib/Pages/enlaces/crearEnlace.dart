@@ -97,11 +97,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
         _focusScopeNode.unfocus();
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
         appBar: AppBar(
-          backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
-          iconTheme: IconThemeData(color: Colors.black, size: 25),
-          toolbarHeight: 60,
           //automaticallyImplyLeading: automaticallyImplyLeading, // Habilitar boton para retroceder
           title: Row(
             mainAxisAlignment: MainAxisAlignment.end,
