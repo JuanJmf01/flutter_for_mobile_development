@@ -4,13 +4,14 @@ import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicacionesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
-import 'package:etfi_point/Components/Utils/misProductos.dart';
+import 'package:etfi_point/Pages/proServicios/productos/misProductos.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonFotoPerfilPortada.dart';
-import 'package:etfi_point/Pages/enlaces/enlacesPublicaciones.dart';
-import 'package:etfi_point/Pages/proServicios/misServicios.dart';
+import 'package:etfi_point/Pages/enlaces/enlacesImagePublicaciones.dart';
+import 'package:etfi_point/Pages/enlaces/enlacesReelPublicaciones.dart';
+import 'package:etfi_point/Pages/proServicios/servicios/misServicios.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -589,27 +590,16 @@ class ContenidoEnlaces extends StatefulWidget {
 class _ContenidoEnlacesState extends State<ContenidoEnlaces>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  List<NewsFeedItem> enlacesPublicacion = [];
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(_handleTabSelection);
-
-    enlacesPublicaciones();
   }
 
   void _handleTabSelection() {
     setState(() {});
-  }
-
-  Future<List<NewsFeedItem>> enlacesPublicaciones() async {
-    NewsFeedTb enlacePublicaciones =
-        await EnlacePublicacionesDb.getAllNewsFeed(widget.idUsuario);
-    List<NewsFeedItem> items = enlacePublicaciones.newsFeed;
-    enlacesPublicacion.addAll(items);
-    return items;
   }
 
   @override
@@ -636,9 +626,9 @@ class _ContenidoEnlacesState extends State<ContenidoEnlaces>
             ],
           ),
           _tabController.index == 0
-              ? EnlacesPublicaciones(idUsuario: widget.idUsuario)
+              ? EnlacesImagePublicaciones(idUsuario: widget.idUsuario)
               : _tabController.index == 1
-                  ? Text("Pepe")
+                  ? EnlacesReelPublicaciones()
                   : SizedBox.shrink()
         ],
       ),

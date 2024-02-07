@@ -10,11 +10,12 @@ class ShowVideo extends StatefulWidget {
   const ShowVideo({
     super.key,
     required this.urlReel,
-    required this.items,
+    //required this.items,
+    this.items,
   });
 
   final String urlReel;
-  final List<NewsFeedItem> items;
+  final List<NewsFeedItem>? items;
 
   @override
   State<ShowVideo> createState() => _ShowVideoState();
@@ -68,22 +69,24 @@ class _ShowVideoState extends State<ShowVideo> {
       child: _controller.value.isInitialized
           ? GestureDetector(
               onTap: () async {
-                _savedPosition =
-                    await _controller.position; // Guarda la posición actual
+                if (widget.items != null) {
+                  _savedPosition =
+                      await _controller.position; // Guarda la posición actual
 
-                if (mounted) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          // PageViewNewsFeed(newsFeedItems: widget.items)
+                  if (mounted) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            // PageViewNewsFeed(newsFeedItems: widget.items)
 
-                          ShowVideoFullScreen(
-                        urlReel: widget.urlReel,
-                        savedPosition: _savedPosition,
-                        items: widget.items,
+                            ShowVideoFullScreen(
+                          urlReel: widget.urlReel,
+                          savedPosition: _savedPosition,
+                          items: widget.items!,
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  }
                 }
               },
               child: Container(

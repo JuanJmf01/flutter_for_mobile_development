@@ -472,8 +472,6 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                         controller: _nombreController,
                         textLabelOutside: 'Nombre',
                         labelText: "Nombre",
-                        horizontalPadding: horizontalPadding,
-                        verticalPadding: verticalPadding,
                         color: colorTextField,
                       ),
                       Row(
@@ -481,7 +479,6 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                           Expanded(
                             child: GeneralInputs(
                               controller: _precioController,
-                              horizontalPadding: 16.0,
                               textLabelOutside:
                                   !isChecked ? 'Precio' : 'Precio antes',
                               labelText: 'Agrega un precio',
@@ -497,8 +494,6 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                               ? Expanded(
                                   child: GeneralInputs(
                                     controller: _precioConDescuentoController,
-                                    horizontalPadding: 16.0,
-                                    verticalPadding: 15.0,
                                     textLabelOutside: 'Precio con descuento',
                                     color: const Color.fromARGB(11, 0, 0, 0),
                                     keyboardType: TextInputType.number,
@@ -511,8 +506,6 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                       isChecked
                           ? GeneralInputs(
                               controller: _descuentoController,
-                              horizontalPadding: 16.0,
-                              verticalPadding: 15.0,
                               textLabelOutside: 'Descuento',
                               labelText:
                                   'Agrega un valor del 1 al 100 para el descuento',
@@ -524,8 +517,6 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                         controller: _descripcionController,
                         textLabelOutside: 'Descripcion',
                         labelText: "Descripcion",
-                        horizontalPadding: horizontalPadding,
-                        verticalPadding: verticalPadding,
                         color: colorTextField,
                         keyboardType: TextInputType.multiline,
                         minLines: 3,

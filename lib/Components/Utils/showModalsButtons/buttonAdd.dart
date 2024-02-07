@@ -5,6 +5,7 @@ import 'package:etfi_point/Components/Utils/showModalsButtons/smallButtonTopTab.
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
 import 'package:etfi_point/Pages/enlaces/crearEnlace.dart';
 import 'package:etfi_point/Pages/crearReel.dart';
+import 'package:etfi_point/Pages/proServicios/productos/productoGeneralForm.dart';
 import 'package:etfi_point/Pages/proServicios/productos/productosGeneralForm.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
@@ -56,11 +57,13 @@ class ButtonAdd extends StatelessWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const ProductosGeneralForm(
-                              titulo: 'Agregar producto',
-                              nameSavebutton: 'Crear',
-                              exitoMessage: 'Producto creado exitosamente',
-                            )));
+                        builder: (context) =>
+                            // const ProductoGeneralForm(
+                            //   titulo: 'Agregar producto',
+                            //   nameSavebutton: 'Crear',
+                            //   exitoMessage: 'Producto creado exitosamente',
+                            // ),
+                            ProductoGeneralForm()));
               } else {
                 print("Manage logueo");
               }

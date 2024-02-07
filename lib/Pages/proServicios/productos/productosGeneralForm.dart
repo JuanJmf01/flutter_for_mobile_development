@@ -293,7 +293,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
     double precioInicial = double.tryParse(_precioController.text) ?? 0.0;
     double descuento = double.tryParse(_descuentoController.text) ?? 0.0;
 
-    // Asegúrate de que el descuento esté dentro del rango de 1 a 100
+    // Asegurarse de que el descuento esté dentro del rango de 1 a 100
     if (descuento < 0) {
       descuento = 0;
       _descuentoController.text = '0';
@@ -302,13 +302,13 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       _descuentoController.text = '100';
     }
 
-    // Calcula el nuevo precio
+    // Calcular el nuevo precio
     double nuevoPrecio = precioInicial - (precioInicial * (descuento / 100.0));
     _precioConDescuentoController.text = nuevoPrecio.toString();
   }
 
   void guardar(int idUsuario) async {
-    //--- Se asigna cada String de los campso de texto a una variable ---//
+    //--- Se asigna cada String de los campos de texto a una variable ---//
     final nombreProducto = _nombreController.text;
     double precio = double.tryParse(_precioController.text) ?? 0.0;
     final descripcion = _descripcionController.text;
@@ -321,7 +321,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
     if (_producto?.idProducto == null) {
       //-- Creamos el producto --//
-
       productoCreacion = ProductoCreacionTb(
         idNegocio: idNegocio,
         nombreProducto: nombreProducto,
@@ -371,24 +370,25 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
       },
       child: Scaffold(
         appBar: AppBar(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  widget.titulo,
-                ),
-                GlobalTextButton(
-                  onPressed: () {
-                    if (idUsuario != null && isUserSignedIn) {
-                      guardar(idUsuario);
-                    }
-                  },
-                  textButton: 'Guardar',
-                  fontSizeTextButton: 19,
-                  letterSpacing: 0.3,
-                )
-              ],
-            )),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                widget.titulo,
+              ),
+              GlobalTextButton(
+                onPressed: () {
+                  if (idUsuario != null && isUserSignedIn) {
+                    guardar(idUsuario);
+                  }
+                },
+                textButton: 'Guardar',
+                fontSizeTextButton: 19,
+                letterSpacing: 0.3,
+              )
+            ],
+          ),
+        ),
         body: Column(
           children: [
             Expanded(
@@ -537,8 +537,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
                       GeneralInputs(
                           controller: _nombreController,
-                          horizontalPadding: 16.0,
-                          verticalPadding: 15.0,
                           textLabelOutside: 'Nombre',
                           labelText: 'Agrega un nombre',
                           color: colorTextField),
@@ -548,7 +546,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                           Expanded(
                             child: GeneralInputs(
                               controller: _precioController,
-                              horizontalPadding: 16.0,
                               textLabelOutside:
                                   !isChecked ? 'Precio' : 'Precio antes',
                               labelText: 'Agrega un precio',
@@ -564,8 +561,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                               ? Expanded(
                                   child: GeneralInputs(
                                     controller: _precioConDescuentoController,
-                                    horizontalPadding: 16.0,
-                                    verticalPadding: 15.0,
                                     textLabelOutside: 'Precio despues',
                                     color: const Color.fromARGB(11, 0, 0, 0),
                                     keyboardType: TextInputType.number,
@@ -579,8 +574,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                       isChecked
                           ? GeneralInputs(
                               controller: _descuentoController,
-                              horizontalPadding: 16.0,
-                              verticalPadding: 15.0,
                               textLabelOutside: '% Descuento',
                               labelText:
                                   'Agrega un valor de 0% a 100% para el descuento',
@@ -591,8 +584,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
                       GeneralInputs(
                         controller: _descripcionController,
-                        verticalPadding: 15.0,
-                        horizontalPadding: 16.0,
                         textLabelOutside: 'Descripcion',
                         labelText: 'Agrega una descripción',
                         color: colorTextField,
@@ -602,7 +593,6 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
                       GeneralInputs(
                         controller: _cantidadDisponibleController,
-                        horizontalPadding: 16.0,
                         textLabelOutside: 'Cantidad',
                         labelText: 'Agrega una cantidad disponible',
                         color: colorTextField,

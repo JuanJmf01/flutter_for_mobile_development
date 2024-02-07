@@ -9,13 +9,16 @@ import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 ///
 
 class EnlacePublicacionesDb {
-  static Future<NewsFeedTb> getAllNewsFeed(
+
+    // EnlacePublicacionesImages 
+
+  static Future<NewsFeedTb> getAllEnlacePublicacionesImages(
       int idUsuarioActual) async {
     try {
       // Ejecutar ambas llamadas en paralelo utilizando Future.wait
       final List<NewsFeedTb> results = await Future.wait([
         getEnlaceProductosByUsuario(idUsuarioActual),
-        getEnlaceServiciosByUsuario(idUsuarioActual),
+        //getEnlaceServiciosByUsuario(idUsuarioActual),
       ]);
 
       // Combinar las respuestas en una sola lista de NewsFeedItem
@@ -36,7 +39,7 @@ class EnlacePublicacionesDb {
       throw Exception('Error fetching enlaces: $error');
     }
   }
-
+  
   static Future<NewsFeedTb> getEnlaceProductosByUsuario(
       int idUsuarioActual) async {
     Dio dio = Dio();
@@ -72,7 +75,7 @@ class EnlacePublicacionesDb {
   }
 
   static Future<NewsFeedTb> getEnlaceServiciosByUsuario(
-      int idUsuarioActual) async {
+      int idUsuarioActual, String url) async {
     Dio dio = Dio();
     String url = '${MisRutas.rutaEnlaceServicios}/$idUsuarioActual';
 
@@ -99,24 +102,11 @@ class EnlacePublicacionesDb {
     }
   }
 
-  // static Future<NewsFeedTb> getEnlacePublicaciones(int idUsuario) async {
-  //   Dio dio = Dio();
-  //   try {
-  //     Response response =
-  //         await dio.get('${MisRutas.rutaEnlacesPublicaciones}/$idUsuario');
 
-  //     if (response.statusCode == 200) {
-  //       List<NewsFeedItem> newsFeed = (response.data as List<dynamic>)
-  //           .map((data) => EnlacePublicacionesTb.fromJson(data))
-  //           .toList();
-  //       return NewsFeedTb(newsFeed);
-  //     } else {
-  //       print('Error: ${response.statusCode}');
-  //       return NewsFeedTb([]);
-  //     }
-  //   } catch (error) {
-  //     print('Error: $error');
-  //     return NewsFeedTb([]);
-  //   }
-  // }
+  // EnlacePublicacionesReels 
+
+
+
+
+
 }

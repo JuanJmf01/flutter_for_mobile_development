@@ -780,7 +780,6 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                 isChecked ? 8.0 : 16, 23.0, isChecked ? 8.0 : 30, 30.0),
             child: isChecked
                 ? GeneralInputs(
-                    verticalPadding: 15.0,
                     controller: _descripcionDetalldaController,
                     labelText: 'Agrega una descripcion detalla del producto',
                     color: Colors.grey.shade200,

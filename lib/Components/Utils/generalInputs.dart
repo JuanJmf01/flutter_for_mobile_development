@@ -13,9 +13,9 @@ class GeneralInputs extends StatelessWidget {
     this.inputFormatters,
     this.minLines,
     this.maxLines,
-    this.horizontalPadding,
-    this.verticalPadding,
+    this.padding,
     this.enable,
+    this.borderInput,
   });
 
   final TextEditingController controller;
@@ -27,16 +27,14 @@ class GeneralInputs extends StatelessWidget {
   final List<TextInputFormatter>? inputFormatters;
   final int? minLines;
   final int? maxLines;
-  final double? horizontalPadding;
-  final double? verticalPadding;
+  final EdgeInsetsGeometry? padding;
   final bool? enable;
+  final BoxBorder? borderInput;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(
-          horizontal: horizontalPadding ?? 0.0,
-          vertical: verticalPadding ?? 0.0),
+      padding: padding ?? const EdgeInsets.all(0.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -56,8 +54,7 @@ class GeneralInputs extends StatelessWidget {
             decoration: BoxDecoration(
                 color: color, // Cuadro blanco
                 borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(
-                    width: 1.0, color: colorBorder ?? Colors.grey.shade400)),
+                border: borderInput),
             child: TextField(
               enabled: enable ?? true,
               controller: controller,
@@ -65,7 +62,9 @@ class GeneralInputs extends StatelessWidget {
               maxLines: maxLines,
               decoration: InputDecoration(
                 labelText: labelText,
-                border: InputBorder.none, // Sin borde
+                border: borderInput != null
+                    ? InputBorder.none
+                    : const UnderlineInputBorder(),
                 contentPadding: const EdgeInsets.fromLTRB(
                     15.0, 7.0, 0.0, 7.0), // Ajustar el padding
               ),
@@ -78,3 +77,9 @@ class GeneralInputs extends StatelessWidget {
     );
   }
 }
+
+
+// Border.all(
+//                 width: 1.0,
+//                 color: colorBorder ?? Colors.grey.shade400,
+//               ),

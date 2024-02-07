@@ -6,23 +6,23 @@ import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Pages/NewsFeed/recoverfieldsUtility.dart';
 import 'package:flutter/material.dart';
 
-class EnlacesPublicaciones extends StatefulWidget {
-  const EnlacesPublicaciones({Key? key, required this.idUsuario})
+class EnlacesImagePublicaciones extends StatefulWidget {
+  const EnlacesImagePublicaciones({Key? key, required this.idUsuario})
       : super(key: key);
 
   final int idUsuario;
 
   @override
-  State<EnlacesPublicaciones> createState() => _EnlacesPublicacionesState();
+  State<EnlacesImagePublicaciones> createState() =>
+      _EnlacesImagePublicacionesState();
 }
 
-class _EnlacesPublicacionesState extends State<EnlacesPublicaciones> {
+class _EnlacesImagePublicacionesState extends State<EnlacesImagePublicaciones> {
   List<NewsFeedItem> enlacesPublicacion = [];
-
 
   Future<List<NewsFeedItem>> enlacesPublicaciones(int idUsuario) async {
     NewsFeedTb enlacePublicaciones =
-        await EnlacePublicacionesDb.getAllNewsFeed(idUsuario);
+        await EnlacePublicacionesDb.getAllEnlacePublicacionesImages(idUsuario);
     List<NewsFeedItem> items = enlacePublicaciones.newsFeed;
     enlacesPublicacion.addAll(items);
     return items;
@@ -30,7 +30,7 @@ class _EnlacesPublicacionesState extends State<EnlacesPublicaciones> {
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width * 0.31;
+    double screenWidth = MediaQuery.of(context).size.width * 0.33;
     return FutureGridViewProfile(
       idUsuario: widget.idUsuario,
       future: () => enlacesPublicaciones(widget.idUsuario),
@@ -44,7 +44,7 @@ class _EnlacesPublicacionesState extends State<EnlacesPublicaciones> {
             ),
           );
         },
-        child: IndividulEnlace(enlacePublicacion: item),
+        child: IndividualEnlace(enlacePublicacion: item),
       ),
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -59,8 +59,8 @@ class _EnlacesPublicacionesState extends State<EnlacesPublicaciones> {
   }
 }
 
-class IndividulEnlace extends StatelessWidget {
-  const IndividulEnlace({
+class IndividualEnlace extends StatelessWidget {
+  const IndividualEnlace({
     super.key,
     required this.enlacePublicacion,
   });
@@ -81,8 +81,6 @@ class IndividulEnlace extends StatelessWidget {
         //networkImage: enlacePublicacion.enlaceProServicioImages[0].urlImage,
         networkImage: RecoverFieldsUtiliti.getUrlImage(enlacePublicacion),
         fit: BoxFit.cover,
-        height: 150.0,
-        width: 150.0,
       ),
     );
   }
