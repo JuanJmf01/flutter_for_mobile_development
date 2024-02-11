@@ -6,7 +6,6 @@ import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons
 import 'package:etfi_point/Pages/enlaces/crearEnlace.dart';
 import 'package:etfi_point/Pages/crearReel.dart';
 import 'package:etfi_point/Pages/proServicios/productos/productoGeneralForm.dart';
-import 'package:etfi_point/Pages/proServicios/productos/productosGeneralForm.dart';
 import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +49,7 @@ class ButtonAdd extends StatelessWidget {
       itemsColumn: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SmallButtonTopTab(),
+          const SmallButtonTopTab(),
           ItemForModalButtons(
             onPress: () {
               if (idUsuarioActual != null) {
@@ -63,7 +62,7 @@ class ButtonAdd extends StatelessWidget {
                             //   nameSavebutton: 'Crear',
                             //   exitoMessage: 'Producto creado exitosamente',
                             // ),
-                            ProductoGeneralForm()));
+                            const ProductoGeneralForm()));
               } else {
                 print("Manage logueo");
               }

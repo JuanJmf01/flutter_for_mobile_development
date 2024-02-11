@@ -129,8 +129,8 @@ class _CrearReelState extends State<CrearReel> {
       },
       child: Scaffold(
         appBar: AppBar(
-            backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
-            iconTheme: IconThemeData(color: Colors.black, size: 25),
+            backgroundColor: const Color.fromRGBO(240, 245, 251, 1.0),
+            iconTheme: const IconThemeData(color: Colors.black, size: 25),
             toolbarHeight: 60,
             //automaticallyImplyLeading: automaticallyImplyLeading,
             title: GlobalTextButton(
@@ -143,9 +143,9 @@ class _CrearReelState extends State<CrearReel> {
               fontSizeTextButton: fontSize,
               letterSpacing: letterSpacing,
             )),
-        backgroundColor: Color.fromRGBO(240, 245, 251, 1.0),
+        backgroundColor: const Color.fromRGBO(240, 245, 251, 1.0),
         body: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: paginaPrincipal(),
         ),
       ),
@@ -180,7 +180,7 @@ class _CrearReelState extends State<CrearReel> {
               ],
             ),
             Padding(
-              padding: EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
+              padding: const EdgeInsets.fromLTRB(20.0, 0.0, 0.0, 0.0),
               child: GeneralInputs(
                 controller: _descripcionController,
                 labelText: 'Agrega una descripción',
@@ -285,7 +285,7 @@ class _CrearReelState extends State<CrearReel> {
                           color: Colors.black,
                         ),
                         Spacer(),
-                        const Icon(
+                        Icon(
                           CupertinoIcons.forward,
                           size: 30.0,
                         ),
@@ -300,7 +300,7 @@ class _CrearReelState extends State<CrearReel> {
                                     selectedProServicio is ProductoTb
                                 ? Text(
                                     selectedProServicio.nombre,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 15.5,
                                         fontWeight: FontWeight.w500),
                                   )
@@ -311,7 +311,7 @@ class _CrearReelState extends State<CrearReel> {
                                   selectedProServicio = null;
                                 });
                               },
-                              child: Icon(
+                              child: const Icon(
                                 CupertinoIcons.xmark,
                                 size: 19.0,
                               ),

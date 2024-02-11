@@ -165,7 +165,7 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
   ServicioTb? assingValuesToInputs() {
     ServicioTb? servicio = _servicio;
     if (servicio != null) {
-      _nombreController.text = servicio!.nombre;
+      _nombreController.text = servicio.nombre;
       _precioController.text = (servicio.precio).toStringAsFixed(0);
       _descripcionController.text = servicio.descripcion ?? '';
       _descuentoController.text = servicio.descuento.toString();
@@ -368,7 +368,7 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                                 });
                               },
                             )
-                          : SizedBox.shrink(),
+                          : const SizedBox.shrink(),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: GlobalTextButton(
@@ -397,7 +397,7 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            GlobalDivider(),
+                            const GlobalDivider(),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   20.0, 25.0, 0.0, 10.0),
@@ -431,12 +431,12 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                                         }
                                       });
                                     },
-                                    child: Text('Editar')),
+                                    child: const Text('Editar')),
                                 ElevatedButton(
                                     onPressed: () {
                                       agregarDesdeGaleria();
                                     },
-                                    child: Text('Agregar dede galeria')),
+                                    child: const Text('Agregar dede galeria')),
                               ],
                             )
                           ],

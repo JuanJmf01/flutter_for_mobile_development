@@ -31,7 +31,7 @@ class _SwitchIconState extends State<SwitchIcon> {
         }
       },
       child: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         width: 50,
         height: 25,
         decoration: BoxDecoration(
@@ -41,14 +41,14 @@ class _SwitchIconState extends State<SwitchIcon> {
         child: Stack(
           children: [
             AnimatedPositioned(
-              duration: Duration(milliseconds: 200),
+              duration: const Duration(milliseconds: 200),
               curve: Curves.easeInOut,
               left: isChecked ? 25 : 0,
               right: isChecked ? 0 : 25,
               child: Container(
                 width: 25,
                 height: 25,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: Colors.white,
                 ),

@@ -32,7 +32,7 @@ class FutureGridViewProfile extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           } else if (snapshot.hasError) {
-            return Text('Error al cargar los... ');
+            return const Text('Error al cargar los... ');
           } else if (snapshot.hasData) {
             items = snapshot.data!;
             return Column(
@@ -51,7 +51,7 @@ class FutureGridViewProfile extends StatelessWidget {
               ],
             );
           } else {
-            return Text('No se encontraron los... ');
+            return const Text('No se encontraron los... ');
           }
         });
   }

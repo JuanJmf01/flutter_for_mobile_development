@@ -60,9 +60,9 @@ class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
                   ],
                 );
               } else if (snapshot.hasError) {
-                return Text('Error al obtener los datos');
+                return const Text('Error al obtener los datos');
               } else {
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               }
@@ -182,7 +182,7 @@ class GeneralReviews extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(0.0, barSpacing, 10.0, 0.0),
+                      padding: const EdgeInsets.fromLTRB(0.0, barSpacing, 10.0, 0.0),
                       child: Container(
                         width: barWidth,
                         height: barHeight,
@@ -205,10 +205,10 @@ class GeneralReviews extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: barSpacing),
+                      padding: const EdgeInsets.only(top: barSpacing),
                       child: Text(
                         formatVotes(starCount),
-                        style: TextStyle(fontSize: 12.0),
+                        style: const TextStyle(fontSize: 12.0),
                       ),
                     ),
                   ],
@@ -341,7 +341,7 @@ class CajaDeFiltros extends StatelessWidget {
 }
 
 class Comments extends StatefulWidget {
-  Comments({
+  const Comments({
     Key? key,
     required this.selectIndex,
     required this.idProServicio,
@@ -490,9 +490,9 @@ class _CommentsState extends State<Comments> {
             },
           );
         } else if (snapshot.hasError) {
-          return Text('Error al obtener los datos');
+          return const Text('Error al obtener los datos');
         } else {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(),
           );
         }

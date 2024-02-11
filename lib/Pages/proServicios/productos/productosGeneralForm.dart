@@ -420,7 +420,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                 });
                               },
                             )
-                          : SizedBox.shrink(),
+                          : const SizedBox.shrink(),
                       _producto?.idProducto == null
                           ? Align(
                               alignment: Alignment.centerLeft,
@@ -456,7 +456,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            GlobalDivider(),
+                            const GlobalDivider(),
                             Padding(
                               padding: const EdgeInsets.fromLTRB(
                                   20.0, 25.0, 0.0, 10.0),
@@ -493,12 +493,12 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                         }
                                       });
                                     },
-                                    child: Text('Editar')),
+                                    child: const Text('Editar')),
                                 ElevatedButton(
                                     onPressed: () {
                                       agregarDesdeGaleria();
                                     },
-                                    child: Text('Agregar dede galeria')),
+                                    child: const Text('Agregar dede galeria')),
                               ],
                             )
                           ],

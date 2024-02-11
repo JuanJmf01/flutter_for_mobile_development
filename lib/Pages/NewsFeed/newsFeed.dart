@@ -21,13 +21,13 @@ class Home extends StatelessWidget {
           Container(
             margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
             child: IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               onPressed: () {
                 // UTILIZAR  LA CLASE globalButtonBase EN LA CLASE ButtonMenu
                 showModalBottomSheet(
                   isScrollControlled: true,
                   context: context,
-                  builder: (BuildContext context) => ButtonMenu(),
+                  builder: (BuildContext context) => const ButtonMenu(),
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(10.0),
@@ -40,7 +40,7 @@ class Home extends StatelessWidget {
           )
         ],
       ),
-      body: NewsFeed(),
+      body: const NewsFeed(),
     );
   }
 }
@@ -55,7 +55,7 @@ class NewsFeed extends StatelessWidget {
         SliverList(
           delegate: SliverChildListDelegate([
             Historias(),
-            NewsFeedContent(),
+            const NewsFeedContent(),
             // Otros elementos si es necesario
           ]),
         ),
@@ -187,7 +187,7 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
                           idUsuarioActual: idUsuarioActual,
                         );
                       } else {
-                        return Text("Manage logueo");
+                        return const Text("Manage logueo");
                       }
                     } else if (item is NeswFeedReelServiceTb ||
                         item is NeswFeedReelPublicacionTb ||
@@ -198,7 +198,7 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
                           idUsuarioActual: idUsuarioActual,
                         );
                       } else {
-                        return Text("Manage logueo");
+                        return const Text("Manage logueo");
                       }
                     }
                     return null;
@@ -206,7 +206,7 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
                 ),
               );
             } else {
-              return Text('La lista está vacía');
+              return const Text('La lista está vacía');
             }
           } else if (snapshot.hasError) {
             return const Text('Error al obtener los datos');
@@ -222,19 +222,19 @@ class HorizontalList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 255,
       child: ListView.separated(
-        padding: EdgeInsets.all(15.0),
+        padding: const EdgeInsets.all(15.0),
         scrollDirection: Axis.horizontal,
         itemCount: 6,
-        separatorBuilder: (context, _) => SizedBox(width: 12),
+        separatorBuilder: (context, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) => buildCard(),
       ),
     );
   }
 
-  Widget buildCard() => Container(
+  Widget buildCard() => SizedBox(
         width: 200,
         //color: Colors.redAccent.shade200,
         child: Column(
@@ -259,7 +259,7 @@ class HorizontalList extends StatelessWidget {
                       // )
                     ))),
             const Padding(
-              padding: const EdgeInsets.only(top: 10.0),
+              padding: EdgeInsets.only(top: 10.0),
               child: Text(
                 'Prueba title',
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700),

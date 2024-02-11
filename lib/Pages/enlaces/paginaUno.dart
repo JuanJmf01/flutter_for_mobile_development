@@ -64,7 +64,7 @@ class _PaginaUnoState extends State<PaginaUno> {
                             }
                           },
                           child: Container(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: isProducto
                                 ? const Icon(
                                     CupertinoIcons.cube_box_fill,
@@ -87,7 +87,7 @@ class _PaginaUnoState extends State<PaginaUno> {
                             }
                           },
                           child: Container(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: !isProducto
                                 ? const Icon(
                                     CupertinoIcons.heart_circle_fill,
@@ -110,7 +110,7 @@ class _PaginaUnoState extends State<PaginaUno> {
                           ? "¿Qué producto deseas enlazar?"
                           : "¿Qué servicio deseas enlazar?",
                       style:
-                          TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
+                          const TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -146,7 +146,7 @@ class _PaginaUnoState extends State<PaginaUno> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             ShowImage(
-                              padding: EdgeInsets.all(6.0),
+                              padding: const EdgeInsets.all(6.0),
                               networkImage: proServicio.urlImage,
                               borderRadius: BorderRadius.circular(15.0),
                               fit: BoxFit.fill,

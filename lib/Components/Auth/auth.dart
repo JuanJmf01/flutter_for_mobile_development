@@ -62,10 +62,10 @@ class Auth {
   /// The `signOut` function is responsible for signing out the currently authenticated user.
   static signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
-    GoogleSignIn _googleSignIn = GoogleSignIn();
+    GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {
-      await _googleSignIn.disconnect();
+      await googleSignIn.disconnect();
       if (context.mounted) {
         context.read<LoginProvider>().checkUserSignedIn();
         context.read<UsuarioProvider>().obtenerIdUsuarioActual();

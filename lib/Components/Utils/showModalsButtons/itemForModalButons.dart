@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ItemForModalButtons extends StatelessWidget {
@@ -30,10 +29,10 @@ class ItemForModalButtons extends StatelessWidget {
                 icon,
                 color: colorIcon,
               ),
-              SizedBox(width: 10.0),
+              const SizedBox(width: 10.0),
               Text(
                 textItem,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 16),

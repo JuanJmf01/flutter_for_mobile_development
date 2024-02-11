@@ -63,7 +63,7 @@ class _PageViewNewsFeedState extends State<PageViewNewsFeed> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Enlaces"),
+        title: const Text("Enlaces"),
       ),
       body: ListView.builder(
         scrollDirection: Axis.vertical,
@@ -77,7 +77,7 @@ class _PageViewNewsFeedState extends State<PageViewNewsFeed> {
               return ContenidoImages(
                   item: item, idUsuarioActual: idUsuarioActual);
             } else {
-              return Text("Manage logueo");
+              return const Text("Manage logueo");
             }
           }
           //  else if (item is NeswFeedReelProductTb ||

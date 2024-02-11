@@ -123,7 +123,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
           ),
         ),
         body: Padding(
-          padding: EdgeInsets.all(8.0),
+          padding: const EdgeInsets.all(8.0),
           child: paginaPrincipal(),
         ),
       ),
@@ -167,7 +167,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
           //       : const SizedBox.shrink(),
           // ),
           Padding(
-            padding: EdgeInsets.only(left: 20.0),
+            padding: const EdgeInsets.only(left: 20.0),
             child: GestureDetector(
               onTap: () async {
                 if (imagesToUpload.isEmpty) {
@@ -191,7 +191,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
                 ),
                 child: imagesToUpload.isNotEmpty
                     ? PageViewImagesScroll(images: imagesToUpload)
-                    : Center(
+                    : const Center(
                         child: Icon(CupertinoIcons.add),
                       ),
               ),
@@ -224,7 +224,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
                         color: Colors.black,
                       ),
                       Spacer(),
-                      const Icon(
+                      Icon(
                         CupertinoIcons.forward,
                         size: 30.0,
                       ),
@@ -239,7 +239,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
                                   selectedProServicio is ProductoTb
                               ? Text(
                                   selectedProServicio.nombre,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                       fontSize: 15.5,
                                       fontWeight: FontWeight.w500),
                                 )
@@ -250,7 +250,7 @@ class _CrearEnlaceState extends State<CrearEnlace> {
                                 selectedProServicio = null;
                               });
                             },
-                            child: Icon(
+                            child: const Icon(
                               CupertinoIcons.xmark,
                               size: 19.0,
                             ),

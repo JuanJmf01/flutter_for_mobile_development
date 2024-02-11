@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class ShoppingCart extends StatefulWidget {
-  ShoppingCart({super.key, this.idUsuario});
+  const ShoppingCart({super.key, this.idUsuario});
 
   final int? idUsuario;
 
@@ -70,7 +70,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
                       ),
                     ],
                   )
-                : Text('Debes iniciar sesion'),
+                : const Text('Debes iniciar sesion'),
           );
   }
 }
@@ -175,7 +175,7 @@ class _HorizontalProductState extends State<HorizontalProduct> {
                 itemCount: shoppingCartProducts.length,
                 itemBuilder: (BuildContext context, int index) {
                   return Padding(
-                    padding: EdgeInsets.all(7.0),
+                    padding: const EdgeInsets.all(7.0),
                     child: IntrinsicHeight(
                       child: Container(
                         padding: const EdgeInsets.symmetric(vertical: 7.0),
@@ -286,7 +286,7 @@ class IncreaseAndDecrease extends StatelessWidget {
       child: Row(
         children: [
           myWidget ?? const SizedBox.shrink(),
-          Spacer(),
+          const Spacer(),
           createButtonPress(
             () {
               disminuir();

@@ -52,7 +52,7 @@ class _PageViewImagesScrollState extends State<PageViewImagesScroll> {
                           borderRadius: BorderRadius.circular(18.0),
                           fit: BoxFit.cover,
                         )
-                      : SizedBox.shrink();
+                      : const SizedBox.shrink();
             },
           ),
         ),

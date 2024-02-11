@@ -42,7 +42,7 @@ class _IndividulServiceState extends State<IndividulService> {
     double borderCircular = 18.0;
 
     return Container(
-        padding: EdgeInsets.all(0.0),
+        padding: const EdgeInsets.all(0.0),
         //height: 140,
         //width: double.infinity,
         decoration: BoxDecoration(
@@ -56,14 +56,14 @@ class _IndividulServiceState extends State<IndividulService> {
                   createBodyServicio(servicio),
                   servicio.oferta == 1
                       ? createContainerOferta(index, borderCircular)
-                      : SizedBox.shrink()
+                      : const SizedBox.shrink()
                 ],
               )
             : Row(
                 children: [
                   servicio.oferta == 1
                       ? createContainerOferta(index, borderCircular)
-                      : SizedBox.shrink(),
+                      : const SizedBox.shrink(),
                   createBodyServicio(servicio),
                   createImage(servicio, borderCircular)
                 ],
@@ -114,8 +114,8 @@ class _IndividulServiceState extends State<IndividulService> {
                               fontSize: 17),
                         ),
                   )
-                : SizedBox.shrink(),
-            Spacer(),
+                : const SizedBox.shrink(),
+            const Spacer(),
             Text(
               servicio.nombre,
               style: Theme.of(context).textTheme.titleMedium!.merge(

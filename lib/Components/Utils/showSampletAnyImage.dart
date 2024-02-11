@@ -58,7 +58,7 @@ class ShowSampleAnyImage extends StatelessWidget {
               ),
             );
           } else {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           }
         },
       );

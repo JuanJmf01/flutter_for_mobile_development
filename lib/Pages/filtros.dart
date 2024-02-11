@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Filtros extends StatefulWidget {
@@ -25,7 +24,7 @@ class _FiltrosState extends State<Filtros> {
           child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
+          const DrawerHeader(
             child: Center(
               child: Text('Categorias'),
             ),
@@ -44,7 +43,7 @@ class _FiltrosState extends State<Filtros> {
                   isSelected ? Icons.check_circle : Icons.panorama_fish_eye,
                   size: 19,
                 ),
-                label: Text(
+                label: const Text(
                   'data',
                   style: TextStyle(fontSize: 17),
                 ),

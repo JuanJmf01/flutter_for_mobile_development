@@ -7,7 +7,6 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/icons.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
-import 'package:etfi_point/Pages/perfilPrincipal.dart';
 import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/cupertino.dart';
@@ -160,7 +159,7 @@ class _FilaIconosState extends State<FilaIconos> {
             paddingRight: iconPaddingRight,
             size: iconSize,
           ),
-          Spacer(),
+          const Spacer(),
           widget.idProServicio != null
               ? ManageIcon(
                   icon: CupertinoIcons.arrow_turn_up_right,
@@ -171,7 +170,7 @@ class _FilaIconosState extends State<FilaIconos> {
                         widget.objectType, widget.idProServicio!);
                   },
                 )
-              : SizedBox.shrink()
+              : const SizedBox.shrink()
         ],
       ),
     );
@@ -232,10 +231,10 @@ class ContenidoParteSuperior extends StatelessWidget {
                           color: Colors.grey.shade200),
                     ),
               Padding(
-                padding: EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
+                padding: const EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
                 child: Text(
                   nombreUsuario,
-                  style: TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
+                  style: const TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
                 ),
               )
             ],
@@ -246,11 +245,11 @@ class ContenidoParteSuperior extends StatelessWidget {
                       EdgeInsets.fromLTRB(sizeImageProfile / 2, 8.0, 0.0, 10.0),
                   child: Text(
                     descripcion ?? '',
-                    style: TextStyle(fontSize: 16.8),
+                    style: const TextStyle(fontSize: 16.8),
                   ),
                 )
-              : Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
+              : const Padding(
+                  padding: EdgeInsets.only(bottom: 10.0),
                   child: SizedBox.shrink(),
                 )
         ],

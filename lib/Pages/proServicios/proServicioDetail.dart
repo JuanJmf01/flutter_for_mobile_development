@@ -83,7 +83,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
           await ProductImageDb.getProductSecondaryImages(idProServicio!);
     } else if (fileName == MisRutasFirebase.forServicios &&
         idProServicio != null) {
-      print("LLEGA 2: ${idProServicio}");
+      print("LLEGA 2: $idProServicio");
       productSecondaryImagesAux =
           await ServiceImageDb.getServiceSecondaryImages(idProServicio!);
     }
@@ -161,7 +161,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
         title: Text('Detalle del ${widget.nameContexto}'),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit),
+            icon: const Icon(Icons.edit),
             onPressed: () async {
               await Navigator.push<int>(
                 context,
@@ -178,13 +178,13 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                               titulo: "EditarProducto",
                               nameSavebutton: "Actualizar ",
                               exitoMessage: "Actualizado correctamente")
-                          : SizedBox.shrink(),
+                          : const SizedBox.shrink(),
                 ),
               );
             },
           ),
           IconButton(
-              icon: Icon(Icons.delete),
+              icon: const Icon(Icons.delete),
               onPressed: () {
                 if (idUsuario != null && idProServicio != null) {
                   eliminarProServicio(idUsuario);
@@ -248,7 +248,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                                       //const StaticBottomNavigator()
                                     ],
                                   )
-                                : Text("ERROR ID PROSERVICIO NO ENCONTRADO");
+                                : const Text("ERROR ID PROSERVICIO NO ENCONTRADO");
                           } else if (snapshot.hasError) {
                             return const Text('Error al obtener los datos');
                           } else {

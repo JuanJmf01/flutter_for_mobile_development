@@ -6,8 +6,6 @@ import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
-import 'package:etfi_point/Pages/NewsFeed/newsFeed.dart';
-import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -27,8 +25,8 @@ class _ButtonLoginState extends State<ButtonLogin> {
 
   void newUser(UserCredential credenciales) async {
     final user = credenciales.user;
-    var name;
-    var emailAdress;
+    String? name;
+    String? emailAdress;
 
     if (user != null) {
       for (final providerProfile in user.providerData) {
@@ -37,11 +35,13 @@ class _ButtonLoginState extends State<ButtonLogin> {
       }
     }
 
-    UsuarioCreacionTb usuario =
-        UsuarioCreacionTb(nombres: name, email: emailAdress);
-    await UsuarioDb.insertUsuario(usuario);
+    if (emailAdress != null) {
+      UsuarioCreacionTb usuario =
+          UsuarioCreacionTb(nombres: name, email: emailAdress);
+      await UsuarioDb.insertUsuario(usuario);
 
-    print('Creando usuario antes de pedir id: $usuario');
+      print('Creando usuario antes de pedir id: $usuario');
+    }
   }
 
   void logInWithGoogle(BuildContext context) async {
@@ -93,7 +93,7 @@ class _ButtonLoginState extends State<ButtonLogin> {
       itemsColumn: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          LineForDropdownButton(),
+          const LineForDropdownButton(),
           //const SizedBox(height: 10.0),
           Padding(
             padding: const EdgeInsets.only(top: 40.0),

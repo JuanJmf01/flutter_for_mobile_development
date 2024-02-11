@@ -67,7 +67,7 @@ class ContenidoImages extends StatelessWidget {
         ),
       );
     } else {
-      return SizedBox.shrink();
+      return const SizedBox.shrink();
     }
   }
 }
@@ -109,7 +109,7 @@ class _ContenidoImages2State extends State<ContenidoImages2> {
                 ),
                 IconButton(
                   onPressed: () {},
-                  icon: Icon(Icons.more_vert),
+                  icon: const Icon(Icons.more_vert),
                 )
               ],
             ),
@@ -135,16 +135,16 @@ class _ContenidoImages2State extends State<ContenidoImages2> {
             ],
           ),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("1.12 likes"),
+                const Text("1.12 likes"),
                 Container(
                     width: double.infinity,
                     padding: const EdgeInsets.only(top: 8),
-                    child: Text("Esta son los coentarioself,eof"))
+                    child: const Text("Esta son los coentarioself,eof"))
               ],
             ),
           )

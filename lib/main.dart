@@ -178,7 +178,7 @@ class _MyAppState extends State<MyApp> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Text('Error al cargar idUsuario');
+              return const Text('Error al cargar idUsuario');
             } else if (snapshot.hasData) {
               idUsuarioActual = snapshot.data;
               return Menu(
@@ -251,7 +251,7 @@ class _MenuState extends State<Menu> {
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      builder: (BuildContext context) => ButtonAdd(),
+      builder: (BuildContext context) => const ButtonAdd(),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(10.0),
@@ -263,15 +263,15 @@ class _MenuState extends State<Menu> {
 
   void _loadPages({int? idUsuarioActualPage}) {
     _pages = [
-      Home(),
+      const Home(),
       idUsuarioActualPage != null
           ? PerfilPrincipal(
               idUsuario: idUsuarioActual!,
             )
-          : Filtros(), //Mostrar mensaje de usuario no loguado e invitar a loguearse
-      CleanClass(),
-      ShoppingCart(),
-      Filtros(),
+          : const Filtros(), //Mostrar mensaje de usuario no loguado e invitar a loguearse
+      const CleanClass(),
+      const ShoppingCart(),
+      const Filtros(),
     ];
   }
 
@@ -285,7 +285,7 @@ class _MenuState extends State<Menu> {
 
   Widget _buildBottomNavigationBar() {
     // Lista de iconos para las pestañas
-    List<IconData> _icons = [
+    List<IconData> icons = [
       _currentIndex == 0 ? CupertinoIcons.house_fill : CupertinoIcons.house,
       _currentIndex == 1 ? CupertinoIcons.bag_fill : CupertinoIcons.bag,
       CupertinoIcons.add,
@@ -314,12 +314,12 @@ class _MenuState extends State<Menu> {
           });
         }
       },
-      items: _icons.map((icon) {
+      items: icons.map((icon) {
         return BottomNavigationBarItem(
           icon: Icon(
             icon,
             size: 26.0,
-            color: _currentIndex == _icons.indexOf(icon)
+            color: _currentIndex == icons.indexOf(icon)
                 ? Colors.black
                 : Colors.grey.shade700,
           ),
@@ -344,27 +344,33 @@ class SearchPage extends StatelessWidget {
 }
 
 class FavoritePage extends StatelessWidget {
+  const FavoritePage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('Página de favoritos'),
     );
   }
 }
 
 class NotificationsPage extends StatelessWidget {
+  const NotificationsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('Página de notificaciones'),
     );
   }
 }
 
 class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Text('Página de perfil'),
     );
   }

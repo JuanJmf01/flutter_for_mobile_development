@@ -7,6 +7,8 @@ class RegisterBusiness extends StatelessWidget {
   final TextEditingController facebookController = TextEditingController();
   final TextEditingController instagramController = TextEditingController();
 
+  RegisterBusiness({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

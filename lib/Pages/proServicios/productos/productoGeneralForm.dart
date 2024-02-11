@@ -1,10 +1,7 @@
-import 'dart:io';
 
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
-import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
@@ -43,7 +40,7 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
-            icon: Icon(Icons.arrow_back),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () {
               if (pageController == 1) {
                 Navigator.of(context).pop();
@@ -107,7 +104,7 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
                       });
                     },
                   )
-                : Text("Ninguna coincide"),
+                : const Text("Ninguna coincide"),
       ),
     );
   }
@@ -334,7 +331,7 @@ class _SelectImagesState extends State<SelectImages> {
                     }
                   },
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           ArrowTextButton(
             textButton: "Agregar mas imagenes",
             horizontalPaggin: horizontalPadding,
@@ -368,7 +365,7 @@ class _SelectImagesState extends State<SelectImages> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                GlobalDivider(),
+                const GlobalDivider(),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(20.0, 25.0, 0.0, 10.0),
                   child: Text(

@@ -69,7 +69,7 @@ class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
                 onImageSelected: (selectedImage) {
                   print('mostrar la imagen grande');
                 })
-            : SizedBox.shrink()
+            : const SizedBox.shrink()
         // child: Padding(
         //   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
         //   child: Container(
@@ -284,8 +284,8 @@ class _FastDescriptionState extends State<FastDescription> {
     return SliverToBoxAdapter(
       child: Container(
         margin: const EdgeInsets.only(bottom: 10.0),
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
               bottomLeft: Radius.circular(20.0),
               bottomRight: Radius.circular(20.0)),
           //color: Colors.grey.shade100,
@@ -717,7 +717,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
             objectToDelete: 'La imagen',
           );
         } else {
-          return SizedBox.shrink();
+          return const SizedBox.shrink();
         }
       },
     );
@@ -744,12 +744,12 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Padding(
-                  padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                  padding: const EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
                   child: SwitchIcon(
                     isChecked: isChecked,
                     onChanged: (value) {
@@ -760,7 +760,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                     },
                   ),
                 ),
-                Text('Modificar'),
+                const Text('Modificar'),
               ],
             ),
           ),
@@ -824,7 +824,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                                                   : null,
                                           widthAsset: double.infinity,
                                         )
-                                      : SizedBox.shrink()),
+                                      : const SizedBox.shrink()),
                           isChecked
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -851,12 +851,12 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                                     ),
                                   ],
                                 )
-                              : SizedBox.shrink()
+                              : const SizedBox.shrink()
                         ],
                       )
                   ],
                 )
-              : Center(
+              : const Center(
                   child: Text('Aqui puedes agregar imagenes del producto'),
                 ),
           Center(
@@ -1016,9 +1016,9 @@ class _ProductosRelacionadosState extends State<ProductosRelacionados> {
 
   @override
   Widget build(BuildContext context) {
-    return SliverToBoxAdapter(
+    return const SliverToBoxAdapter(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
+        padding: EdgeInsets.symmetric(horizontal: 10.0, vertical: 10.0),
         //child: RowProducts(productos: widget.productos),
         child: Text('Llamar a los productos'),
       ),

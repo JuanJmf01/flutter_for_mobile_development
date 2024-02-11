@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:image_cropper/image_cropper.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
 
 class EditarImagen {
   static Future<Uint8List?> editImage(

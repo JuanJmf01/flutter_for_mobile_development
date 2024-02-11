@@ -1,4 +1,3 @@
-import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:flutter/material.dart';
@@ -154,7 +153,7 @@ class _CategoriesListState extends State<CategoriesList> {
                                 color: Colors.white,
                                 size: 19,
                               )
-                            : SizedBox.shrink())
+                            : const SizedBox.shrink())
                   ],
                 ),
               ),

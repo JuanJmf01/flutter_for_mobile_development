@@ -108,7 +108,7 @@ class ButtonFotoPerfilPortada extends StatelessWidget {
       itemsColumn: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          SmallButtonTopTab(),
+          const SmallButtonTopTab(),
           ItemForModalButtons(
             onPress: () {},
             padding: padding,

@@ -100,7 +100,7 @@ class _MyImageListState extends State<MyImageList> {
                                   //     image.urlImage,
                                   //     fit: widget.fit ?? BoxFit.contain,
                                   //   )
-                                  : SizedBox.shrink()),
+                                  : const SizedBox.shrink()),
                     ),
                   ),
                 )),

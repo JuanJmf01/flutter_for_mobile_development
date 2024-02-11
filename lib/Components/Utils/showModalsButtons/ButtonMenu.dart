@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 // UTILIZAR  LA CLASE globalButtonBase
 
 class ButtonMenu extends StatelessWidget {
-  ButtonMenu({super.key});
+  const ButtonMenu({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class ButtonMenu extends StatelessWidget {
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Menu(
+                                      builder: (context) => const Menu(
                                             currentIndex: 0,
                                           )),
                                 );
@@ -81,7 +81,7 @@ class ButtonMenu extends StatelessWidget {
                           : Icons.login_outlined,
                       color: Colors.white,
                     ),
-                    SizedBox(width: 7.0),
+                    const SizedBox(width: 7.0),
                     Text(
                       isUserSignedIn ? 'Cerrar sesion' : 'Iniciar Sesion',
                       style: const TextStyle(

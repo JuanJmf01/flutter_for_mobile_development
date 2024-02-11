@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class RoundedSearchBar extends StatelessWidget {
   final TextEditingController controller;
 
-  RoundedSearchBar({required this.controller});
+  const RoundedSearchBar({super.key, required this.controller});
 
   @override
   Widget build(BuildContext context) {

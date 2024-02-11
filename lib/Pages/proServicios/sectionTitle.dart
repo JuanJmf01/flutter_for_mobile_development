@@ -19,7 +19,7 @@ class SectionTitle extends StatelessWidget {
           padding: padding,
           child: Text(
             title,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),

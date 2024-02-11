@@ -1,7 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/seguidoresTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
-import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicacionesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Pages/proServicios/productos/misProductos.dart';
@@ -33,7 +32,7 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   late TabController _tabController;
   late UsuarioPrincipalProfileTb usuarioPrincipal;
   Future<UsuarioPrincipalProfileTb?>? _usuarioProfileFuture;
-  ScrollController _scrollController = ScrollController();
+  final ScrollController _scrollController = ScrollController();
   List<NewsFeedItem> enlacesPublicacion = [];
 
   UsuarioTb? updatedUserProfile;
@@ -126,7 +125,7 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Text('Error al cargar el usuario');
+            return const Text('Error al cargar el usuario');
           } else if (snapshot.hasData) {
             usuarioPrincipal = snapshot.data!;
             String? urlFotoPerfil = usuarioPrincipal.urlFotoPerfil;
@@ -269,7 +268,7 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
               ],
             );
           } else {
-            return Text('No se encontraron los productos');
+            return const Text('No se encontraron los productos');
           }
         },
       ),
@@ -415,7 +414,7 @@ class _PerfilCentralState extends State<PerfilCentral> {
     UsuarioPrincipalProfileTb usuario = widget.usuarioProfile;
     return SliverToBoxAdapter(
       child: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -425,19 +424,19 @@ class _PerfilCentralState extends State<PerfilCentral> {
               children: [
                 Text(
                   usuario.nombres,
-                  style: TextStyle(fontSize: 21, fontWeight: FontWeight.w500),
+                  style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w500),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(right: 8.0, top: 5.0),
+                  padding: const EdgeInsets.only(right: 8.0, top: 5.0),
                   child: Row(
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(right: 20.0),
+                        padding: const EdgeInsets.only(right: 20.0),
                         child: Column(
                           children: [
                             Text(
                               seguidores.toString(),
-                              style: TextStyle(
+                              style: const TextStyle(
                                   fontWeight: FontWeight.w600, fontSize: 18),
                             ),
                             Text(
@@ -454,7 +453,7 @@ class _PerfilCentralState extends State<PerfilCentral> {
                         children: [
                           Text(
                             usuario.siguiendo.toString(),
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontWeight: FontWeight.w600, fontSize: 18),
                           ),
                           Text(
@@ -476,8 +475,8 @@ class _PerfilCentralState extends State<PerfilCentral> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Padding(
-                  padding: EdgeInsets.only(top: 10.0),
-                  child: Container(
+                  padding: const EdgeInsets.only(top: 10.0),
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width *
                         0.47, // Establece el ancho máximo al 40%
                     child: const Text(
@@ -501,7 +500,7 @@ class _PerfilCentralState extends State<PerfilCentral> {
                               widget.idUsuarioActual, usuario.idUsuario);
                         },
                       )
-                    : SizedBox.shrink()
+                    : const SizedBox.shrink()
               ],
             ),
           ],
@@ -565,7 +564,7 @@ class _ContenidoProServiciosState extends State<ContenidoProServicios>
               ? MisProductos(idUsuario: widget.idUsuario)
               : _tabController.index == 1
                   ? MisServicios(idUsuario: widget.idUsuario)
-                  : SizedBox.shrink()
+                  : const SizedBox.shrink()
         ],
       ),
     );
@@ -628,8 +627,8 @@ class _ContenidoEnlacesState extends State<ContenidoEnlaces>
           _tabController.index == 0
               ? EnlacesImagePublicaciones(idUsuario: widget.idUsuario)
               : _tabController.index == 1
-                  ? EnlacesReelPublicaciones()
-                  : SizedBox.shrink()
+                  ? const EnlacesReelPublicaciones()
+                  : const SizedBox.shrink()
         ],
       ),
     );

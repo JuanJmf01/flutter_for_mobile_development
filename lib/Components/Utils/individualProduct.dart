@@ -78,7 +78,7 @@ class _IndividualProductState extends State<IndividualProduct> {
                 _navigateToProductDetail(producto.idProducto);
               },
               child: ShowImage(
-                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
+                padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(borderCircularProduct),
                   topRight: Radius.circular(borderCircularProduct),
@@ -143,7 +143,7 @@ class _IndividualProductState extends State<IndividualProduct> {
                       color: const Color(0xFFC59400),
                     ),
                   )
-                : SizedBox.shrink()
+                : const SizedBox.shrink()
           ],
         ),
       ),
@@ -222,7 +222,7 @@ class IndividualProductSample extends StatelessWidget {
                           ),
                         ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 40.0,
                   )
                 ],

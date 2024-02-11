@@ -1,6 +1,5 @@
 import 'package:chewie/chewie.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Utils/pageViewNewsFeed.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -90,7 +89,7 @@ class _ShowVideoState extends State<ShowVideo> {
                 }
               },
               child: Container(
-                padding: EdgeInsets.only(left: 20.0),
+                padding: const EdgeInsets.only(left: 20.0),
                 width: double.infinity,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(20.0),
@@ -290,7 +289,7 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
                       ? Stack(
                           fit: StackFit.expand,
                           children: [
-                            Container(
+                            SizedBox(
                               width: MediaQuery.of(context)
                                   .size
                                   .width, // Ancho igual al de la pantalla
@@ -298,7 +297,7 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
                                   Chewie(controller: chewieControllers[index]),
                             ),
                             AnimatedPositioned(
-                              duration: Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                               bottom: 0,
                               left: 0,
                               right: 0,
@@ -318,10 +317,10 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
                             ),
                           ],
                         )
-                      : Center(child: CircularProgressIndicator());
+                      : const Center(child: CircularProgressIndicator());
                 },
               ),
-              if (_liked) Center(child: Icon(Icons.favorite)),
+              if (_liked) const Center(child: Icon(Icons.favorite)),
               if (_isVideoPaused) // Mostrar el botón de pausa si está pausado
                 const Positioned.fill(
                   child: Center(
@@ -332,8 +331,8 @@ class _ShowVideoFullScreenState extends State<ShowVideoFullScreen> {
                     ),
                   ),
                 ),
-              OptionsScreen(),
-              OptionsScreen2(),
+              const OptionsScreen(),
+              const OptionsScreen2(),
             ],
           ),
         ),

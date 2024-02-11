@@ -43,13 +43,13 @@ class GeneralInputs extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(16.0, 0.0, 0.0, 4.5),
                   child: Text(
                     textLabelOutside!,
-                    style: TextStyle(
+                    style: const TextStyle(
                         color: Colors.black54,
                         fontSize: 17.2,
                         letterSpacing: 0.6),
                   ),
                 )
-              : SizedBox.shrink(),
+              : const SizedBox.shrink(),
           Container(
             decoration: BoxDecoration(
               color: color, // Cuadro blanco
