@@ -373,9 +373,7 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                widget.titulo,
-              ),
+              Text(widget.titulo),
               GlobalTextButton(
                 onPressed: () {
                   if (idUsuario != null && isUserSignedIn) {
@@ -536,10 +534,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                       ),
 
                       GeneralInputs(
-                          controller: _nombreController,
-                          textLabelOutside: 'Nombre',
-                          labelText: 'Agrega un nombre',
-                          color: colorTextField),
+                        controller: _nombreController,
+                        textLabelOutside: 'Nombre',
+                        labelText: 'Agrega un nombre',
+                        color: colorTextField,
+                      ),
 
                       Row(
                         children: [
