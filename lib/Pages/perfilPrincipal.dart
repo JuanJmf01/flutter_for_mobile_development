@@ -174,8 +174,8 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                                     networkImage: '',
                                     //updatedUrlFotoPortada ?? urlFotoPortada,
                                     fit: BoxFit.cover,
-                                    widthNetWork: double.infinity,
-                                    heightNetwork: screenHeight * 0.5,
+                                    widthImage: double.infinity,
+                                    heightImage: screenHeight * 0.5,
                                   ),
                                 Positioned(
                                   left: 16.0,
@@ -206,8 +206,8 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
                                                       urlFotoPerfil,
                                               borderRadius:
                                                   BorderRadius.circular(50.0),
-                                              heightNetwork: 105.0,
-                                              widthNetWork: 105.0,
+                                              heightImage: 105.0,
+                                              widthImage: 105.0,
                                               fit: BoxFit.cover,
                                             )
                                           : CircleAvatar(
@@ -424,7 +424,8 @@ class _PerfilCentralState extends State<PerfilCentral> {
               children: [
                 Text(
                   usuario.nombres,
-                  style: const TextStyle(fontSize: 21, fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                      fontSize: 21, fontWeight: FontWeight.w500),
                 ),
                 Padding(
                   padding: const EdgeInsets.only(right: 8.0, top: 5.0),

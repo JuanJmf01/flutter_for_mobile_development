@@ -218,8 +218,8 @@ class ContenidoParteSuperior extends StatelessWidget {
               urlFotoPerfil != null && urlFotoPerfil != ''
                   ? ShowImage(
                       networkImage: urlFotoPerfil,
-                      widthNetWork: sizeImageProfile,
-                      heightNetwork: sizeImageProfile,
+                      widthImage: sizeImageProfile,
+                      heightImage: sizeImageProfile,
                       borderRadius: borderImageProfile,
                       fit: BoxFit.cover,
                     )

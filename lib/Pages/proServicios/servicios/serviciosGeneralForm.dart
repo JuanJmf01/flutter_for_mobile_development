@@ -410,10 +410,10 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
                                 ),
                               ),
                             ),
-                            ShowSampleAnyImage(
-                              imageBytes: principalImageBytes,
-                              imageAsset: principalImage,
-                            ),
+                            // ShowSampleAnyImage(
+                            //   imageBytes: principalImageBytes,
+                            //   imageAsset: principalImage,
+                            // ),
                             Row(
                               children: [
                                 ElevatedButton(

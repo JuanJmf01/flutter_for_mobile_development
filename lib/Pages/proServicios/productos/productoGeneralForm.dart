@@ -1,11 +1,15 @@
+import 'dart:io';
 
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
+import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
+import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
-import 'package:etfi_point/Components/Utils/showSampletAnyImage.dart';
+import 'package:etfi_point/Components/Utils/individualProduct.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,7 +25,7 @@ class ProductoGeneralForm extends StatefulWidget {
 class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   int pageController = 1;
-  final TextEditingController _nombreController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _discountController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
@@ -30,6 +34,17 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
   Asset? principalImage;
   String? urlPrincipalImage;
   Uint8List? principalImageBytes;
+
+  double textToDouble() {
+    try {
+      String text = _priceController.text;
+      double price = double.parse(text);
+      return price;
+    } catch (e) {
+      print('Error: $e');
+      return 0.0;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +88,7 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
         body: pageController == 1
             ? SingleChildScrollView(
                 child: ProductDetail(
-                  nameController: _nombreController,
+                  nameController: _nameController,
                   precioController: _priceController,
                   discountController: _discountController,
                   descripcionController: _descripcionController,
@@ -103,6 +118,9 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
                         myImageList.items.addAll(newImageList);
                       });
                     },
+                    nombreProducto: _nameController.text,
+                    precioProducto: textToDouble(),
+                    descuentoProducto: _discountController.text,
                   )
                 : const Text("Ninguna coincide"),
       ),
@@ -274,6 +292,10 @@ class SelectImages extends StatefulWidget {
     this.principalImageBytes,
     required this.onUpdatedImages,
     required this.onSelectedImageList,
+    this.idProducto,
+    required this.nombreProducto,
+    required this.precioProducto,
+    this.descuentoProducto,
   });
 
   final ImageList myImageList;
@@ -285,6 +307,10 @@ class SelectImages extends StatefulWidget {
       String? newUrlPrincipalImage,
       Uint8List? newPrincipalImageBytes}) onUpdatedImages;
   final Function(List<ProServicioImageToUpload>) onSelectedImageList;
+  final int? idProducto;
+  final String nombreProducto;
+  final double precioProducto;
+  final String? descuentoProducto;
 
   @override
   State<SelectImages> createState() => _SelectImagesState();
@@ -292,10 +318,39 @@ class SelectImages extends StatefulWidget {
 
 class _SelectImagesState extends State<SelectImages> {
   @override
+  void initState() {
+    super.initState();
+
+    checkIfImagesExist();
+  }
+
+  void checkIfImagesExist() async {
+    if (widget.myImageList.items.isEmpty) {
+      selectImages();
+    }
+  }
+
+  void selectImages() async {
+    List<ProServicioImageToUpload> selectedImagesAux =
+        await CrudImages.agregarImagenes();
+    widget.onSelectedImageList(selectedImagesAux);
+    if (widget.idProducto == null && selectedImagesAux.isNotEmpty) {
+      if (widget.principalImage == null) {
+        widget.onUpdatedImages(
+          newPrincipalImage: selectedImagesAux[0].newImage,
+        );
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    Asset? principalImage = widget.principalImage;
+    String? urlPrincipalImage = widget.urlPrincipalImage;
     Uint8List? principalImageBytes = widget.principalImageBytes;
     double horizontalPadding = 18.0;
     double verticalPadding = 20.0;
+    ImageList myImageList = widget.myImageList;
 
     return SingleChildScrollView(
       child: Column(
@@ -307,13 +362,13 @@ class _SelectImagesState extends State<SelectImages> {
             ),
             title: "Selección de imagenes",
           ),
-          widget.myImageList.items.isNotEmpty
+          myImageList.items.isNotEmpty
               ? MyImageList(
-                  imageList: widget.myImageList,
+                  imageList: myImageList,
                   padding: const EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
                   maxHeight: 260,
-                  principalImage: widget.principalImage,
-                  urlPrincipalImage: widget.urlPrincipalImage,
+                  principalImage: principalImage,
+                  urlPrincipalImage: urlPrincipalImage,
                   onImageSelected: (selectedImage) {
                     if (principalImageBytes != null) {
                       widget.onUpdatedImages(newPrincipalImageBytes: null);
@@ -333,35 +388,15 @@ class _SelectImagesState extends State<SelectImages> {
                 )
               : const SizedBox.shrink(),
           ArrowTextButton(
-            textButton: "Agregar mas imagenes",
+            textButton: myImageList.items.isEmpty
+                ? 'Agregar imagenes'
+                : 'Agregar mas imagenes',
             horizontalPaggin: horizontalPadding,
+            paddingTop: verticalPadding * 1.5,
+            paddingBottom: verticalPadding / 4,
+            onTap: () => selectImages(),
           ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: GlobalTextButton(
-              onPressed: () async {
-                List<ProServicioImageToUpload> selectedImagesAux =
-                    await CrudImages.agregarImagenes();
-                widget.onSelectedImageList(selectedImagesAux);
-                // if (producto?.idProducto == null &&
-                //     selectedImagesAux.isNotEmpty) {
-                //   if (widget.principalImage == null) {
-                //     widget.onUpdatedImages(
-                //       newPrincipalImage: selectedImagesAux[0].newImage,
-                //     );
-                //   }
-                // }
-              },
-              padding: widget.myImageList.items.isNotEmpty
-                  ? const EdgeInsets.only(left: .0, top: 10.0)
-                  : const EdgeInsets.fromLTRB(0.0, 40.0, 20.0, 0.0),
-              fontWeightTextButton: FontWeight.w700,
-              letterSpacing: 0.7,
-              fontSizeTextButton: 17.5,
-              textButton: 'Agregar imagen(es)',
-            ),
-          ),
-          if (widget.principalImage != null || widget.urlPrincipalImage != null)
+          if (principalImage != null || principalImageBytes != null)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -377,14 +412,56 @@ class _SelectImagesState extends State<SelectImages> {
                     ),
                   ),
                 ),
-                ShowSampleAnyImage(
-                  urlImage: widget.urlPrincipalImage,
-                  imageBytes: principalImageBytes,
-                  imageAsset: widget.principalImage,
+                // ShowSampleAnyImage(
+                //   urlImage: urlPrincipalImage,
+                //   imageBytes: principalImageBytes,
+                //   imageAsset: principalImage,
+                // ),
+                Padding(
+                  padding: EdgeInsets.only(left: horizontalPadding * 2),
+                  child: IndividualProduct(
+                    urlImage: urlPrincipalImage,
+                    imageAsset: principalImage,
+                    imageBytes: principalImageBytes,
+                    precio: widget.precioProducto,
+                    oferta: 0,
+                    descuento: 0,
+                    nombre: widget.nombreProducto,
+                  ),
                 ),
                 ArrowTextButton(
+                  onTap: () async {
+                    File tempFile = await FileTemporal.convertToTempFile(
+                        urlImage: urlPrincipalImage, image: principalImage);
+                    Uint8List? croppedBytes =
+                        await EditarImagen.editImage(tempFile, 2.3, 2);
+                    if (croppedBytes != null) {
+                      print("Entro");
+                      widget.onUpdatedImages(
+                        newPrincipalImageBytes:
+                            Uint8List.fromList(croppedBytes),
+                      );
+                    }
+                  },
                   textButton: "Recortar",
                   horizontalPaggin: horizontalPadding,
+                ),
+                ArrowTextButton(
+                  onTap: () async {
+                    Asset? imagesAsset = await getImageAsset();
+
+                    if (imagesAsset != null) {
+                      widget.onUpdatedImages(
+                        newPrincipalImage: imagesAsset,
+                        newUrlPrincipalImage: null,
+                      );
+                    }
+                  },
+                  textButton: "Seleccionar otra imagen",
+                  horizontalPaggin: horizontalPadding,
+                ),
+                const SizedBox(
+                  height: 80.0,
                 )
               ],
             ),
@@ -398,33 +475,50 @@ class ArrowTextButton extends StatelessWidget {
   const ArrowTextButton({
     super.key,
     required this.textButton,
+    required this.onTap,
     this.fontSizeTextButton,
     this.fontWeightTextButton,
     this.horizontalPaggin,
+    this.paddingTop,
+    this.paddingBottom,
     this.color,
   });
 
   final String textButton;
+  final VoidCallback onTap;
   final double? fontSizeTextButton;
   final FontWeight? fontWeightTextButton;
   final double? horizontalPaggin;
+  final double? paddingTop;
+  final double? paddingBottom;
   final Color? color;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: horizontalPaggin ?? 0.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          GlobalTextButton(
-            textButton: textButton,
-            fontSizeTextButton: fontSizeTextButton ?? 18,
-            fontWeightTextButton: fontWeightTextButton ?? FontWeight.w500,
-            color: color ?? Colors.grey.shade800,
-          ),
-          const Icon(CupertinoIcons.chevron_forward, size: 30,)
-        ],
+      padding: EdgeInsets.fromLTRB(
+        horizontalPaggin ?? 0.0,
+        paddingTop ?? 0.0,
+        horizontalPaggin ?? 0.0,
+        paddingBottom ?? 0.0,
+      ),
+      child: GestureDetector(
+        onTap: onTap,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GlobalTextButton(
+              textButton: textButton,
+              fontSizeTextButton: fontSizeTextButton ?? 18,
+              fontWeightTextButton: fontWeightTextButton ?? FontWeight.w500,
+              color: color ?? Colors.grey.shade800,
+            ),
+            const Icon(
+              CupertinoIcons.chevron_forward,
+              size: 30,
+            )
+          ],
+        ),
       ),
     );
   }

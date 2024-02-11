@@ -42,8 +42,8 @@ class _PageViewImagesScrollState extends State<PageViewImagesScroll> {
                   ? ShowImage(
                       imageAsset: image.newImage,
                       borderRadius: BorderRadius.circular(20.0),
-                      heightAsset: 340,
-                      widthAsset: 360,
+                      heightImage: 340,
+                      widthImage: 360,
                     )
                   : image is EnlaceProServicioImagesTb ||
                           image is PublicacionImagesTb

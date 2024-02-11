@@ -469,11 +469,11 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
                                 ),
                               ),
                             ),
-                            ShowSampleAnyImage(
-                              urlImage: urlPrincipalImage,
-                              imageBytes: principalImageBytes,
-                              imageAsset: principalImage,
-                            ),
+                            // ShowSampleAnyImage(
+                            //   urlImage: urlPrincipalImage,
+                            //   imageBytes: principalImageBytes,
+                            //   imageAsset: principalImage,
+                            // ),
                             Row(
                               children: [
                                 ElevatedButton(

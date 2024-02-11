@@ -822,7 +822,7 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                                               : image is ProServicioImageToUpdate
                                                   ? image.newImage
                                                   : null,
-                                          widthAsset: double.infinity,
+                                          widthImage: double.infinity,
                                         )
                                       : const SizedBox.shrink()),
                           isChecked

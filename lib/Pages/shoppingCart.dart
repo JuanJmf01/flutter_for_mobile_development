@@ -209,7 +209,7 @@ class _HorizontalProductState extends State<HorizontalProduct> {
                                 height: 115,
                                 width: 135,
                                 color: Colors.grey,
-                                heightAsset: 20,
+                                heightImage: 20,
                                 fit: BoxFit.fill,
                                 borderRadius: BorderRadius.circular(20.0),
                               ),

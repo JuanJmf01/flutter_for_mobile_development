@@ -296,6 +296,8 @@ class _MenuState extends State<Menu> {
     ];
 
     return BottomNavigationBar(
+      backgroundColor: Colors.white,
+      elevation: 0,
       showSelectedLabels: false,
       showUnselectedLabels: false,
       type: BottomNavigationBarType.fixed,
