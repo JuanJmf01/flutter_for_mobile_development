@@ -10,34 +10,31 @@ import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/p
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/cargarMediaDeEnlaces.dart';
+import 'package:etfi_point/Components/providers/proServiciosProvider.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/enlaces/paginaUno.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CrearEnlace extends StatefulWidget {
+class CrearEnlace extends ConsumerStatefulWidget {
   const CrearEnlace({super.key, required this.idUsuario});
 
   final int idUsuario;
 
   @override
-  State<CrearEnlace> createState() => _CrearEnlaceState();
+  CrearEnlaceState createState() => CrearEnlaceState();
 }
 
-class _CrearEnlaceState extends State<CrearEnlace> {
+class CrearEnlaceState extends ConsumerState<CrearEnlace> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final TextEditingController _descripcionController = TextEditingController();
 
   List<ProServicioImageToUpload> imagesToUpload = [];
-
-  //int indicePagina = 1;
-
-  //bool automaticallyImplyLeading = true;
   bool isProducto = true;
 
   dynamic selectedProServicio;
@@ -48,9 +45,37 @@ class _CrearEnlaceState extends State<CrearEnlace> {
     });
   }
 
+  void selectEnlace(int idUsuarioActual) async {
+    final List<ProductoTb> productos;
+    final List<ServicioTb> servicios;
+
+    final productosFuture =
+        ref.read(productosByNegocioProvider(idUsuarioActual).future);
+    productos = await productosFuture;
+
+    final serviciosFuture =
+        ref.read(serviciosByNegocioProvider(idUsuarioActual).future);
+    servicios = await serviciosFuture;
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PaginaUno(
+            callback: updateSelectedProServicio,
+            productos: productos,
+            servicios: servicios,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    //bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    final isUserSignedIn = ref.watch(userStateProvider);
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     double fontSize = 19.0;
     double letterSpacing = 0.3;
@@ -124,13 +149,13 @@ class _CrearEnlaceState extends State<CrearEnlace> {
         ),
         body: Padding(
           padding: const EdgeInsets.all(8.0),
-          child: paginaPrincipal(),
+          child: paginaPrincipal(idUsuarioActual: idUsuarioActual),
         ),
       ),
     );
   }
 
-  Widget paginaPrincipal() {
+  Widget paginaPrincipal({int? idUsuarioActual}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -204,13 +229,11 @@ class _CrearEnlaceState extends State<CrearEnlace> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            PaginaUno(callback: updateSelectedProServicio),
-                      ),
-                    );
+                    if (idUsuarioActual != null) {
+                      selectEnlace(idUsuarioActual);
+                    } else {
+                      print("id usuario actual null");
+                    }
                   },
                   child: const Row(
                     children: [

@@ -16,7 +16,6 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
@@ -26,15 +25,16 @@ import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
-import 'package:etfi_point/Components/Utils/showSampletAnyImage.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/buttonSeleccionarCategorias.dart';
 import 'package:etfi_point/Screens/proServicios/sectionTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
-class ServiciosGeneralForm extends StatefulWidget {
+class ServiciosGeneralForm extends ConsumerStatefulWidget {
   const ServiciosGeneralForm({
     super.key,
     this.servicio,
@@ -47,10 +47,10 @@ class ServiciosGeneralForm extends StatefulWidget {
   final String nameSaveButton;
 
   @override
-  State<ServiciosGeneralForm> createState() => _ServiciosGeneralFormState();
+  ServiciosGeneralFormState createState() => ServiciosGeneralFormState();
 }
 
-class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
+class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
 
   final TextEditingController _nombreController = TextEditingController();
@@ -305,13 +305,17 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
   @override
   Widget build(BuildContext context) {
     bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    //int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
-    categoriasDisponibles =
-        Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
-    categoriasSeleccionadas =
-        Provider.of<SubCategoriaSeleccionadaProvider>(context)
-            .subCategoriasSeleccionadas;
+    // categoriasDisponibles =
+    //     Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
+    // categoriasSeleccionadas =
+    //     Provider.of<SubCategoriaSeleccionadaProvider>(context)
+    //         .subCategoriasSeleccionadas;
+
+    categoriasDisponibles = [];
+    categoriasSeleccionadas = [];
     Color colorTextField = Colors.white;
     double horizontalPadding = 16.0;
     double verticalPadding = 15.0;
@@ -330,9 +334,9 @@ class _ServiciosGeneralFormState extends State<ServiciosGeneralForm> {
               GlobalTextButton(
                 onPressed: () {
                   print("PRESS");
-                  if (idUsuario != null && isUserSignedIn) {
+                  if (idUsuarioActual != null && isUserSignedIn) {
                     print("Entra");
-                    guardar(idUsuario);
+                    guardar(idUsuarioActual);
                   }
                 },
                 textButton: 'Guardar',

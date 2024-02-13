@@ -16,18 +16,18 @@ import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Icons/switch.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/reviewsAndOpinions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:provider/provider.dart';
 
 class SliverAppBarDetail extends StatefulWidget {
   const SliverAppBarDetail({
@@ -415,7 +415,7 @@ class _FastDescriptionState extends State<FastDescription> {
   }
 }
 
-class AdvancedDescription extends StatefulWidget {
+class AdvancedDescription extends ConsumerStatefulWidget {
   const AdvancedDescription({
     super.key,
     this.descripcionDetallada,
@@ -430,10 +430,10 @@ class AdvancedDescription extends StatefulWidget {
   final List<ProservicioImagesTb> productSecondaryImagesAux;
 
   @override
-  State<AdvancedDescription> createState() => _AdvancedDescriptionState();
+  AdvancedDescriptionState createState() => AdvancedDescriptionState();
 }
 
-class _AdvancedDescriptionState extends State<AdvancedDescription> {
+class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
   List<ProservicioImagesTb> productSecondaryImages = [];
   ImageList allProductImages = ImageList([]);
   bool isChecked = true;
@@ -737,7 +737,8 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    //int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     return SliverToBoxAdapter(
       child: Column(
@@ -831,8 +832,9 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
                                   children: [
                                     createCustomButton(
                                       () {
-                                        if (idUsuario != null) {
-                                          eliminarImagen(image, idUsuario);
+                                        if (idUsuarioActual != null) {
+                                          eliminarImagen(
+                                              image, idUsuarioActual);
                                         }
                                       },
                                       image is ProservicioImagesTb
@@ -882,9 +884,10 @@ class _AdvancedDescriptionState extends State<AdvancedDescription> {
               heightSizeBox: 50,
               widthSizeBox: double.infinity,
               onPress: () {
-                if (idUsuario != null) insertProServicioImage(idUsuario);
-                if (idUsuario != null) {
-                  updateSecondaryImage(idUsuario);
+                if (idUsuarioActual != null)
+                  insertProServicioImage(idUsuarioActual);
+                if (idUsuarioActual != null) {
+                  updateSecondaryImage(idUsuarioActual);
                 }
                 updateDescripcionDetallada();
               }),

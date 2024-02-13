@@ -9,15 +9,15 @@ import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioGeneralDetail.dart';
 import 'package:etfi_point/Screens/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:etfi_point/Screens/proServicios/productos/productosGeneralForm.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ProServicioDetail extends StatefulWidget {
+class ProServicioDetail extends ConsumerStatefulWidget {
   const ProServicioDetail(
       {super.key, required this.proServicio, required this.nameContexto});
 
@@ -25,10 +25,10 @@ class ProServicioDetail extends StatefulWidget {
   final String nameContexto;
 
   @override
-  _ProServicioDetailState createState() => _ProServicioDetailState();
+  ProServicioDetailState createState() => ProServicioDetailState();
 }
 
-class _ProServicioDetailState extends State<ProServicioDetail> {
+class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
   int? idProServicio;
   String fileName = "";
   List<ProservicioImagesTb> productSecondaryImages = [];
@@ -155,7 +155,9 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    //int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalle del ${widget.nameContexto}'),
@@ -186,8 +188,8 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
           IconButton(
               icon: const Icon(Icons.delete),
               onPressed: () {
-                if (idUsuario != null && idProServicio != null) {
-                  eliminarProServicio(idUsuario);
+                if (idUsuarioActual != null && idProServicio != null) {
+                  eliminarProServicio(idUsuarioActual);
                 }
               }),
         ],
@@ -203,7 +205,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                   if (snapshot.hasData) {
                     final productosRelacionados = snapshot.data!;
                     return FutureBuilder<bool>(
-                        future: existeOrNotUserRatingByProServicio(idUsuario),
+                        future: existeOrNotUserRatingByProServicio(idUsuarioActual),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             bool result = snapshot.data!;
@@ -223,7 +225,7 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                                               proServicio: proServicio,
                                               ifExistOrNotUserRatingByProServicio:
                                                   result,
-                                              idUsuario: idUsuario!,
+                                              idUsuario: idUsuarioActual!,
                                               objectType: objectType!,
                                             ),
                                             AdvancedDescription(
@@ -248,7 +250,8 @@ class _ProServicioDetailState extends State<ProServicioDetail> {
                                       //const StaticBottomNavigator()
                                     ],
                                   )
-                                : const Text("ERROR ID PROSERVICIO NO ENCONTRADO");
+                                : const Text(
+                                    "ERROR ID PROSERVICIO NO ENCONTRADO");
                           } else if (snapshot.hasError) {
                             return const Text('Error al obtener los datos');
                           } else {

@@ -1,20 +1,22 @@
 import 'package:etfi_point/Components/Auth/auth.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonLogin.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // UTILIZAR  LA CLASE globalButtonBase
 
-class ButtonMenu extends StatelessWidget {
+class ButtonMenu extends ConsumerWidget {
   const ButtonMenu({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+  Widget build(BuildContext context, WidgetRef ref) {
+    //bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    final isUserSignedIn = ref.watch(userStateProvider);
+
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey[800], // Gris tirando a oscuro

@@ -1,33 +1,36 @@
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
 import 'package:etfi_point/Components/Utils/individualService.dart';
+import 'package:etfi_point/Components/providers/proServiciosProvider.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MisServicios extends StatefulWidget {
+class MisServicios extends ConsumerStatefulWidget {
   const MisServicios({super.key, required this.idUsuario});
 
   final int idUsuario;
 
   @override
-  State<MisServicios> createState() => _MisServiciosState();
+  MisServiciosState createState() => MisServiciosState();
 }
 
-class _MisServiciosState extends State<MisServicios> {
+class MisServiciosState extends ConsumerState<MisServicios> {
   Future<List<Object>> getServicios(int idUsuario,
       {int? idUsuarioActual}) async {
     if (idUsuarioActual != null) {
-      List<ServicioTb> servicios = [];
+      final List<Object> servicios;
 
-      widget.idUsuario == idUsuarioActual
-          ? servicios = await context
-              .read<ProServiciosProvider>()
-              .obtenerServiciosByNegocio(idUsuarioActual)
-          : servicios =
-              await ServicioDb.getServiciosByNegocio(widget.idUsuario);
+      if (widget.idUsuario == idUsuarioActual) {
+        final serviciosFuture =
+            ref.read(serviciosByNegocioProvider(idUsuario).future);
+        servicios = await serviciosFuture;
+
+        //ref.read(isInitServiciosProvider.notifier).update((state) => true);
+      } else {
+        servicios = await ServicioDb.getServiciosByNegocio(widget.idUsuario);
+      }
 
       return servicios;
     }
@@ -36,7 +39,8 @@ class _MisServiciosState extends State<MisServicios> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
+    //int? idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     return FutureGridViewProfile(
       idUsuario: widget.idUsuario,
@@ -57,4 +61,3 @@ class _MisServiciosState extends State<MisServicios> {
     );
   }
 }
-

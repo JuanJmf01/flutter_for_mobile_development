@@ -15,6 +15,32 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+//   runApp(
+//     const ProviderScope(
+//       child: MyApp(),
+//     ),
+//   );
+// }
+
+// class MyApp extends ConsumerWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   Widget build(BuildContext context, WidgetRef ref) {
+//     final isDarkMode = ref.watch(appThemeColorProvider);
+
+//     return MaterialApp(
+//       title: 'Riverpod Providers',
+//       debugShowCheckedModeBanner: false,
+//       theme: AppTheme(isDarkmode: isDarkMode).getTheme(),
+//       home: const Home2(),
+//     );
+//   }
+// }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -32,39 +58,37 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(appThemeColorProvider);
 
+    Future<int?> obtenerIdUsuarioAsincrono() async {
+      return ref.watch(getCurrentUserProvider).value;
+    }
+
     return MaterialApp(
       title: 'Riverpod Providers',
       debugShowCheckedModeBanner: false,
       theme: AppTheme(isDarkmode: isDarkMode).getTheme(),
-      home: const Home2(),
+      home: FutureBuilder<int?>(
+        future: obtenerIdUsuarioAsincrono(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Text('Error al cargar idUsuario');
+          } else if (snapshot.hasData) {
+            int idUsuarioActual = snapshot.data!;
+            return Menu(
+              currentIndex: 0,
+              idUsuario: idUsuarioActual,
+            );
+          } else {
+            return const Menu(
+              currentIndex: 0,
+            );
+          }
+        },
+      ),
     );
   }
 }
-
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
-//   runApp(
-//     MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider<LoginProvider>(
-//           create: (_) => LoginProvider(),
-//         ),
-//         ChangeNotifierProvider<UsuarioProvider>(
-//           create: (_) => UsuarioProvider(),
-//         ),
-//         ChangeNotifierProvider<ShoppingCartProvider>(
-//             create: (_) => ShoppingCartProvider()),
-//         ChangeNotifierProvider<SubCategoriaSeleccionadaProvider>(
-//             create: (_) => SubCategoriaSeleccionadaProvider()),
-//         ChangeNotifierProvider<ProServiciosProvider>(
-//             create: (_) => ProServiciosProvider())
-//       ],
-//       child: const MyApp(),
-//     ),
-//   );
-// }
 
 // class MyApp extends StatefulWidget {
 //   const MyApp({super.key});
@@ -76,24 +100,25 @@ class MyApp extends ConsumerWidget {
 // class _MyAppState extends State<MyApp> {
 //   int? idUsuarioActual;
 
-//   Future<void> obtenerIdUsuarioAsincrono() async {
-//     await context.read<UsuarioProvider>().obtenerIdUsuarioActual();
-//   }
+//   // Future<void> obtenerIdUsuarioAsincrono() async {
+//   //   await context.read<UsuarioProvider>().obtenerIdUsuarioActual();
+//   // }
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     // Retrasa la llamada a checkUserSignedIn usando Future.delayed
-//     Future.delayed(Duration.zero, () {
-//       context.read<LoginProvider>().checkUserSignedIn();
-//       print('Una vez SE EJECUTA');
-//     });
+//   // @override
+//   // void initState() {
+//   //   super.initState();
+//   //   // Retrasa la llamada a checkUserSignedIn usando Future.delayed
+//   //   Future.delayed(Duration.zero, () {
+//   //     context.read<LoginProvider>().checkUserSignedIn();
+//   //     print('Una vez SE EJECUTA');
+//   //   });
 
-//     obtenerIdUsuarioAsincrono();
-//   }
+//   //   obtenerIdUsuarioAsincrono();
+//   // }
 
 //   @override
 //   Widget build(BuildContext context) {
+
 //     return MaterialApp(
 //         debugShowCheckedModeBanner: false,
 //         theme: ThemeData(
@@ -165,6 +190,8 @@ class _MenuState extends State<Menu> {
   void initState() {
     super.initState();
 
+    print("id inicial usuaeio: ${widget.idUsuario}");
+
     idUsuarioActual = widget.idUsuario;
 
     _currentIndex = widget.currentIndex;
@@ -213,7 +240,9 @@ class _MenuState extends State<Menu> {
             )
           : const Filtros(), //Mostrar mensaje de usuario no loguado e invitar a loguearse
       const CleanClass(),
-      const ShoppingCart(),
+      const Center(
+        child: Text("Widget vacio"),
+      ),
       const Filtros(),
     ];
   }

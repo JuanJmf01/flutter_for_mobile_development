@@ -7,17 +7,17 @@ import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/smallButtonTopTab.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:provider/provider.dart';
 
-class ButtonFotoPerfilPortada extends StatelessWidget {
+class ButtonFotoPerfilPortada extends ConsumerWidget {
   const ButtonFotoPerfilPortada({
     super.key,
     required this.verFoto,
@@ -100,9 +100,10 @@ class ButtonFotoPerfilPortada extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    int? idUsuarioActual =
-        Provider.of<UsuarioProvider>(context).idUsuarioActual;
+  Widget build(BuildContext context, WidgetRef ref) {
+    //int? idUsuarioActual = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     return GlobalButtonBase(
       itemsColumn: Column(

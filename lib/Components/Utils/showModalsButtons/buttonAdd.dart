@@ -1,26 +1,26 @@
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/smallButtonTopTab.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/enlaces/crearEnlace.dart';
 import 'package:etfi_point/Screens/crearReel.dart';
 import 'package:etfi_point/Screens/proServicios/productos/productoGeneralForm.dart';
 import 'package:etfi_point/Screens/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ButtonAdd extends StatelessWidget {
+class ButtonAdd extends ConsumerWidget {
   const ButtonAdd({super.key});
 
   final EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 10.0);
   final Color colorIcons = Colors.black54;
 
   void irANuevoVinculo(int idUsuario, BuildContext context) {
-    context
-        .read<ProServiciosProvider>()
-        .obtenerProServiciosByNegocio(idUsuario);
+    // context
+    //     .read<ProServiciosProvider>()
+    //     .obtenerProServiciosByNegocio(idUsuario);
+
     Navigator.push(
         context,
         MaterialPageRoute(
@@ -30,21 +30,22 @@ class ButtonAdd extends StatelessWidget {
   }
 
   void irANuevoReel(int idUsuario, BuildContext context) {
-    context
-        .read<ProServiciosProvider>()
-        .obtenerProServiciosByNegocio(idUsuario);
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CrearReel(
-                  idUsuario: idUsuario,
-                )));
+      context,
+      MaterialPageRoute(
+        builder: (context) => CrearReel(
+          idUsuario: idUsuario,
+        ),
+      ),
+    );
   }
 
   @override
-  Widget build(BuildContext context) {
-    int? idUsuarioActual =
-        Provider.of<UsuarioProvider>(context).idUsuarioActual;
+  Widget build(BuildContext context, WidgetRef ref) {
+    // int? idUsuarioActual =
+    //     Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
+
     return GlobalButtonBase(
       itemsColumn: Column(
         mainAxisSize: MainAxisSize.min,

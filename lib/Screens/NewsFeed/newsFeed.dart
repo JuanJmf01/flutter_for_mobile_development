@@ -2,13 +2,13 @@ import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/NewsFeed/contenidoImages.dart';
 import 'package:etfi_point/Screens/NewsFeed/contenidoReels.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -103,14 +103,14 @@ class Historias extends StatelessWidget {
   }
 }
 
-class NewsFeedContent extends StatefulWidget {
+class NewsFeedContent extends ConsumerStatefulWidget {
   const NewsFeedContent({super.key});
 
   @override
-  State<NewsFeedContent> createState() => _NewsFeedContentState();
+  NewsFeedContentState createState() => NewsFeedContentState();
 }
 
-class _NewsFeedContentState extends State<NewsFeedContent> {
+class NewsFeedContentState extends ConsumerState<NewsFeedContent> {
   double paddingTopEachPublicacion = 40.0;
   double paddingMedia = 20.0;
   Map<int, bool> isLikedMap = {};
@@ -134,7 +134,10 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProServicioDetail(proServicio: servicio, nameContexto: "servicio",),
+          builder: (context) => ProServicioDetail(
+            proServicio: servicio,
+            nameContexto: "servicio",
+          ),
         ),
       );
     });
@@ -145,7 +148,10 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProServicioDetail(proServicio: producto, nameContexto: "producto",),
+          builder: (context) => ProServicioDetail(
+            proServicio: producto,
+            nameContexto: "producto",
+          ),
         ),
       );
     });
@@ -153,8 +159,9 @@ class _NewsFeedContentState extends State<NewsFeedContent> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuarioActual =
-        Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    //int? idUsuarioActual =
+    //Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     return FutureBuilder<NewsFeedTb>(
         future: idUsuarioActual != null

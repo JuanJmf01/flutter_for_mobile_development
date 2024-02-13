@@ -3,8 +3,8 @@ import 'package:etfi_point/Components/Data/EntitiModels/seguidoresTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/seguidoresDb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/productos/misProductos.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonFotoPerfilPortada.dart';
@@ -13,9 +13,9 @@ import 'package:etfi_point/Screens/enlaces/enlacesReelPublicaciones.dart';
 import 'package:etfi_point/Screens/proServicios/servicios/misServicios.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PerfilPrincipal extends StatefulWidget {
+class PerfilPrincipal extends ConsumerStatefulWidget {
   const PerfilPrincipal({
     super.key,
     required this.idUsuario,
@@ -24,10 +24,10 @@ class PerfilPrincipal extends StatefulWidget {
   final int idUsuario;
 
   @override
-  State<PerfilPrincipal> createState() => _PerfilPrincipalState();
+  PerfilPrincipalState createState() => PerfilPrincipalState();
 }
 
-class _PerfilPrincipalState extends State<PerfilPrincipal>
+class PerfilPrincipalState extends ConsumerState<PerfilPrincipal>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late UsuarioPrincipalProfileTb usuarioPrincipal;
@@ -61,7 +61,8 @@ class _PerfilPrincipalState extends State<PerfilPrincipal>
   }
 
   Future<UsuarioPrincipalProfileTb?>? _fetchUsuarioProfile() async {
-    idUsuarioActual = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    //idUsuarioActual = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    idUsuarioActual = ref.watch(getCurrentUserProvider).value;
     if (idUsuarioActual != null) {
       return UsuarioDb.getUsuarioProfile(idUsuarioActual!, widget.idUsuario);
     }

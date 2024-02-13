@@ -1,31 +1,37 @@
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
-import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PaginaUno extends StatefulWidget {
-  const PaginaUno({super.key, required this.callback});
+class PaginaUno extends ConsumerStatefulWidget {
+  const PaginaUno({
+    super.key,
+    required this.callback,
+    required this.productos,
+    required this.servicios,
+  });
 
   final Function(dynamic) callback;
+  final List<ProductoTb> productos;
+  final List<ServicioTb> servicios;
 
   @override
-  State<PaginaUno> createState() => _PaginaUnoState();
+  PaginaUnoState createState() => PaginaUnoState();
 }
 
-class _PaginaUnoState extends State<PaginaUno> {
+class PaginaUnoState extends ConsumerState<PaginaUno> {
   bool isProducto = false;
   int selectedItemIndex = -1;
   dynamic selectedProServicio;
 
   @override
   Widget build(BuildContext context) {
-    final proServiciosProvider = context.watch<ProServiciosProvider>();
+    //final proServiciosProvider = context.watch<ProServiciosProvider>();
 
-    List<ServicioTb> servicios = proServiciosProvider.serviciosByNegocio;
-    List<ProductoTb> productos = proServiciosProvider.productosByNegocio;
+    //List<ServicioTb> servicios = proServiciosProvider.serviciosByNegocio;
+    //List<ProductoTb> productos = proServiciosProvider.productosByNegocio;
 
     return Scaffold(
       appBar: AppBar(
@@ -109,8 +115,8 @@ class _PaginaUnoState extends State<PaginaUno> {
                       isProducto
                           ? "¿Qué producto deseas enlazar?"
                           : "¿Qué servicio deseas enlazar?",
-                      style:
-                          const TextStyle(fontSize: 19, fontWeight: FontWeight.w500),
+                      style: const TextStyle(
+                          fontSize: 19, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -119,8 +125,9 @@ class _PaginaUnoState extends State<PaginaUno> {
             SliverList(
               delegate: SliverChildBuilderDelegate(
                 (BuildContext context, int index) {
-                  dynamic proServicio =
-                      isProducto ? productos[index] : servicios[index];
+                  dynamic proServicio = isProducto
+                      ? widget.productos[index]
+                      : widget.servicios[index];
                   final bool isSelect = index == selectedItemIndex;
                   return GestureDetector(
                     onTap: () {
@@ -178,7 +185,9 @@ class _PaginaUnoState extends State<PaginaUno> {
                     ),
                   );
                 },
-                childCount: isProducto ? productos.length : servicios.length,
+                childCount: isProducto
+                    ? widget.productos.length
+                    : widget.servicios.length,
               ),
             ),
           ],

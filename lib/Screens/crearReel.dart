@@ -8,29 +8,30 @@ import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlaces/enlaceProServicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/publicacionesDb.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/cargarMediaDeEnlaces.dart';
+import 'package:etfi_point/Components/providers/proServiciosProvider.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/enlaces/paginaUno.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
-class CrearReel extends StatefulWidget {
+class CrearReel extends ConsumerStatefulWidget {
   const CrearReel({super.key, required this.idUsuario});
 
   final int idUsuario;
 
   @override
-  State<CrearReel> createState() => _CrearReelState();
+  CrearReelState createState() => CrearReelState();
 }
 
-class _CrearReelState extends State<CrearReel> {
+class CrearReelState extends ConsumerState<CrearReel> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final TextEditingController _descripcionController = TextEditingController();
 
@@ -116,9 +117,36 @@ class _CrearReelState extends State<CrearReel> {
     }
   }
 
+  void selectEnlace(int idUsuarioActual) async {
+    final List<ProductoTb> productos;
+    final List<ServicioTb> servicios;
+
+    final productosFuture =
+        ref.read(productosByNegocioProvider(idUsuarioActual).future);
+    productos = await productosFuture;
+
+    final serviciosFuture =
+        ref.read(serviciosByNegocioProvider(idUsuarioActual).future);
+    servicios = await serviciosFuture;
+
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PaginaUno(
+            callback: updateSelectedProServicio,
+            productos: productos,
+            servicios: servicios,
+          ),
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    //bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    final isUserSignedIn = ref.watch(userStateProvider);
 
     double fontSize = 19.0;
     double letterSpacing = 0.3;
@@ -152,7 +180,7 @@ class _CrearReelState extends State<CrearReel> {
     );
   }
 
-  Widget paginaPrincipal() {
+  Widget paginaPrincipal({int? idUsuarioActual}) {
     return SingleChildScrollView(
       child: Container(
         color: Colors.white,
@@ -265,13 +293,11 @@ class _CrearReelState extends State<CrearReel> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              PaginaUno(callback: updateSelectedProServicio),
-                        ),
-                      );
+                      if (idUsuarioActual != null) {
+                        selectEnlace(idUsuarioActual);
+                      } else {
+                        print("id usuario actual null");
+                      }
                     },
                     child: const Row(
                       children: [

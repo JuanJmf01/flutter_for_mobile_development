@@ -1,15 +1,15 @@
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/Utils/constants/productos.dart';
 import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
 import 'package:etfi_point/Components/Utils/individualProduct.dart';
+import 'package:etfi_point/Components/providers/proServiciosProvider.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MisProductos extends StatefulWidget {
+class MisProductos extends ConsumerStatefulWidget {
   const MisProductos({
     super.key,
     required this.idUsuario,
@@ -18,21 +18,24 @@ class MisProductos extends StatefulWidget {
   final int idUsuario;
 
   @override
-  State<MisProductos> createState() => _MisProductosState();
+  MisProductosState createState() => MisProductosState();
 }
 
-class _MisProductosState extends State<MisProductos> {
+class MisProductosState extends ConsumerState<MisProductos> {
   Future<List<Object>> getProductos(int idUsuario,
       {int? idUsuarioActual}) async {
     if (idUsuarioActual != null) {
-      List<ProductoTb> productos = [];
+      final List<ProductoTb> productos;
 
-      widget.idUsuario == idUsuarioActual
-          ? productos = await context
-              .read<ProServiciosProvider>()
-              .obtenerProductosByNegocio(idUsuarioActual)
-          : productos =
-              await ProductoDb.getProductosByNegocio(widget.idUsuario);
+      if (widget.idUsuario == idUsuarioActual) {
+        final productosFuture =
+            ref.read(productosByNegocioProvider(idUsuario).future);
+        productos = await productosFuture;
+
+        //ref.read(isInitProductosProvider.notifier).update((state) => true);
+      } else {
+        productos = await ProductoDb.getProductosByNegocio(widget.idUsuario);
+      }
 
       return productos;
     }
@@ -54,7 +57,9 @@ class _MisProductosState extends State<MisProductos> {
 
   @override
   Widget build(BuildContext context) {
-    int? idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
+    //int? idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
+
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     return FutureGridViewProfile(
       idUsuario: widget.idUsuario,

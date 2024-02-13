@@ -8,7 +8,7 @@ class Home2 extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isUserLogged = ref.watch(userStateProvider);
+    final isUserSignedIn = ref.watch(userStateProvider);
     final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     return Scaffold(
@@ -30,7 +30,7 @@ class Home2 extends ConsumerWidget {
             ),
             ElevatedButton(
               onPressed: () {
-                if (isUserLogged) {
+                if (isUserSignedIn) {
                   print("Logueado : $idUsuarioActual");
                 } else {
                   print("No logueado");

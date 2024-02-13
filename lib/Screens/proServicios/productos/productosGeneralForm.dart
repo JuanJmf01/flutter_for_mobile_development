@@ -23,18 +23,17 @@ import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
-import 'package:etfi_point/Components/Utils/showSampletAnyImage.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/buttonSeleccionarCategorias.dart';
 import 'package:etfi_point/Screens/proServicios/sectionTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:provider/provider.dart';
 
-class ProductosGeneralForm extends StatefulWidget {
+class ProductosGeneralForm extends ConsumerStatefulWidget {
   const ProductosGeneralForm({
     super.key,
     this.producto,
@@ -51,10 +50,10 @@ class ProductosGeneralForm extends StatefulWidget {
   final String exitoMessage;
 
   @override
-  State<ProductosGeneralForm> createState() => _ProductosGeneralFormState();
+  ProductosGeneralFormState createState() => ProductosGeneralFormState();
 }
 
-class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
+class ProductosGeneralFormState extends ConsumerState<ProductosGeneralForm> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   final TextEditingController _nombreController = TextEditingController();
   final TextEditingController _precioController = TextEditingController();
@@ -354,14 +353,19 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
 
   @override
   Widget build(BuildContext context) {
-    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
-    int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    //bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    //int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
+    final isUserSignedIn = ref.watch(userStateProvider);
+    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
-    categoriasSeleccionadas =
-        Provider.of<SubCategoriaSeleccionadaProvider>(context)
-            .subCategoriasSeleccionadas;
-    categoriasDisponibles =
-        Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
+    // categoriasSeleccionadas =
+    //     Provider.of<SubCategoriaSeleccionadaProvider>(context)
+    //         .subCategoriasSeleccionadas;
+    // categoriasDisponibles =
+    //     Provider.of<SubCategoriaSeleccionadaProvider>(context).allSubCategorias;
+
+    categoriasSeleccionadas = [];
+    categoriasDisponibles = [];
 
     Color colorTextField = Colors.white;
     return GestureDetector(
@@ -376,8 +380,8 @@ class _ProductosGeneralFormState extends State<ProductosGeneralForm> {
               Text(widget.titulo),
               GlobalTextButton(
                 onPressed: () {
-                  if (idUsuario != null && isUserSignedIn) {
-                    guardar(idUsuario);
+                  if (idUsuarioActual != null && isUserSignedIn) {
+                    guardar(idUsuarioActual);
                   }
                 },
                 textButton: 'Guardar',
