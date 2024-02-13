@@ -31,7 +31,9 @@ class ProServicioDetail extends ConsumerStatefulWidget {
 class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
   int? idProServicio;
   String fileName = "";
-  List<ProservicioImagesTb> productSecondaryImages = [];
+  String urlImage = '';
+  ImageList proServiceSecondaryImagesList = ImageList([]);
+  List<ProservicioImagesTb> proServiceSecondaryImages = [];
   Type? objectType;
 
   Future<dynamic> proServicioDynamic() async {
@@ -91,7 +93,8 @@ class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
     print("IMAGENES: $productSecondaryImagesAux");
 
     setState(() {
-      productSecondaryImages = productSecondaryImagesAux;
+      proServiceSecondaryImagesList = ImageList(productSecondaryImagesAux);
+      proServiceSecondaryImages.addAll(productSecondaryImagesAux);
     });
   }
 
@@ -144,10 +147,12 @@ class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
       fileName = MisRutasFirebase.forProducts;
       idProServicio = (widget.proServicio as ProductoTb).idProducto;
       objectType = ProductoTb;
+      urlImage = (widget.proServicio as ProductoTb).urlImage;
     } else if (widget.proServicio is ServicioTb) {
       fileName = MisRutasFirebase.forServicios;
       idProServicio = (widget.proServicio as ServicioTb).idServicio;
       objectType = ServicioTb;
+      urlImage = (widget.proServicio as ServicioTb).urlImage;
     }
 
     getListSecondaryProServiciosImages();
@@ -205,7 +210,8 @@ class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
                   if (snapshot.hasData) {
                     final productosRelacionados = snapshot.data!;
                     return FutureBuilder<bool>(
-                        future: existeOrNotUserRatingByProServicio(idUsuarioActual),
+                        future:
+                            existeOrNotUserRatingByProServicio(idUsuarioActual),
                         builder: (context, snapshot) {
                           if (snapshot.hasData) {
                             bool result = snapshot.data!;
@@ -216,10 +222,10 @@ class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
                                         child: CustomScrollView(
                                           slivers: [
                                             SliverAppBarDetail(
-                                              urlImage: proServicio.urlImage,
+                                              urlImage: urlImage,
                                               idProServicio: idProServicio!,
                                               productSecondaryImagesAux:
-                                                  productSecondaryImages,
+                                                  proServiceSecondaryImagesList,
                                             ),
                                             FastDescription(
                                               proServicio: proServicio,
@@ -233,7 +239,7 @@ class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
                                               idProServicio: idProServicio!,
                                               fileName: fileName,
                                               productSecondaryImagesAux:
-                                                  productSecondaryImages,
+                                                  proServiceSecondaryImages,
                                             ),
                                             objectType != null
                                                 ? SummaryReviews(

@@ -6,19 +6,12 @@ import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Screens/NewsFeed/recoverfieldsUtility.dart';
 import 'package:flutter/material.dart';
 
-class EnlacesImagePublicaciones extends StatefulWidget {
-  const EnlacesImagePublicaciones({Key? key, required this.idUsuario})
-      : super(key: key);
+class EnlacesImagePublicaciones extends StatelessWidget {
+  EnlacesImagePublicaciones({super.key, required this.idUsuario});
 
   final int idUsuario;
 
-  @override
-  State<EnlacesImagePublicaciones> createState() =>
-      _EnlacesImagePublicacionesState();
-}
-
-class _EnlacesImagePublicacionesState extends State<EnlacesImagePublicaciones> {
-  List<NewsFeedItem> enlacesPublicacion = [];
+  final List<NewsFeedItem> enlacesPublicacion = [];
 
   Future<List<NewsFeedItem>> enlacesPublicaciones(int idUsuario) async {
     NewsFeedTb enlacePublicaciones =
@@ -32,8 +25,8 @@ class _EnlacesImagePublicacionesState extends State<EnlacesImagePublicaciones> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width * 0.33;
     return FutureGridViewProfile(
-      idUsuario: widget.idUsuario,
-      future: () => enlacesPublicaciones(widget.idUsuario),
+      idUsuario: idUsuario,
+      future: () => enlacesPublicaciones(idUsuario),
       bodyItemBuilder: (int index, Object item) => GestureDetector(
         onTap: () {
           Navigator.push(

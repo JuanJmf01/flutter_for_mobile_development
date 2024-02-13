@@ -1,51 +1,57 @@
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Utils/showVideo.dart';
+import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
 import 'package:etfi_point/Screens/NewsFeed/contenidoPublicacion.dart';
 import 'package:etfi_point/Screens/NewsFeed/recoverfieldsUtility.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
-class ContenidoReels extends StatelessWidget {
-  const ContenidoReels({
-    Key? key,
+class ImagePostContent extends StatelessWidget {
+  const ImagePostContent({
+    super.key,
     required this.item,
     required this.idUsuarioActual,
-  }) : super(key: key);
+  });
 
   final NewsFeedItem item;
   final int idUsuarioActual;
 
   @override
   Widget build(BuildContext context) {
+    double paddingBottomEachPublicacion = 40.0;
+    double paddingMedia = 20.0;
+
     dynamic newItem;
 
-    if (item is NeswFeedReelPublicacionTb ||
-        item is NeswFeedReelServiceTb ||
-        item is NeswFeedReelProductTb) {
+    if (item is NeswFeedPublicacionesTb ||
+        item is NewsFeedProductosTb ||
+        item is NewsFeedServiciosTb) {
       newItem = item;
     }
 
-    if (newItem is NeswFeedReelPublicacionTb ||
-        newItem is NeswFeedReelServiceTb ||
-        newItem is NeswFeedReelProductTb) {
-      List<NewsFeedItem> items = [];
-      items.add(newItem);
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (newItem != null)
+    if (newItem is NewsFeedProductosTb ||
+        newItem is NewsFeedServiciosTb ||
+        newItem is NeswFeedPublicacionesTb) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: paddingBottomEachPublicacion),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            //Contenido parte superior de cada publicacion
             ContenidoParteSuperior(
               idUsuario: RecoverFieldsUtiliti.getIdUsuario(newItem)!,
               nombreUsuario: RecoverFieldsUtiliti.getNombreUsuario(newItem)!,
               descripcion:
                   RecoverFieldsUtiliti.getDescripcionPublicacion(newItem),
             ),
-          if (newItem != null)
-            ShowVideo(
-              urlReel:
-                  "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
-              items: items,
+
+            Padding(
+              padding: EdgeInsets.fromLTRB(paddingMedia, 0.0, 0.0, 0.0),
+              child: SizedBox(
+                width: 355,
+                height: 365,
+                child: PageViewImagesScroll(
+                    images: RecoverFieldsUtiliti.getImagesPublicacion(newItem)),
+              ),
             ),
-          if (newItem != null)
             FilaIconos(
               idUsuarioActual: idUsuarioActual,
               objectType: newItem.runtimeType,
@@ -53,7 +59,8 @@ class ContenidoReels extends StatelessWidget {
               idProServicio: RecoverFieldsUtiliti.getIdProServicio(newItem),
               idPublicacion: RecoverFieldsUtiliti.getIdPublicacion(newItem)!,
             ),
-        ],
+          ],
+        ),
       );
     } else {
       return const SizedBox.shrink();

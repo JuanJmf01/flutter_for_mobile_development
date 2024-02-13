@@ -5,7 +5,7 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 
 typedef ImageSelectedCallback = void Function(dynamic selectedImage);
 
-class MyImageList extends StatefulWidget {
+class MyImageList extends StatelessWidget {
   const MyImageList({
     super.key,
     required this.imageList,
@@ -26,24 +26,19 @@ class MyImageList extends StatefulWidget {
   final ImageSelectedCallback onImageSelected; // Nueva línea
 
   @override
-  State<MyImageList> createState() => _MyImageListState();
-}
-
-class _MyImageListState extends State<MyImageList> {
-  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: widget.padding ?? EdgeInsets.zero,
+      padding: padding ?? EdgeInsets.zero,
       child: Container(
         constraints: BoxConstraints(
-          maxHeight: widget.maxHeight ??
-              260, // Altura máxima para la lista de imágenes
+          maxHeight:
+              maxHeight ?? 260, // Altura máxima para la lista de imágenes
         ),
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: widget.imageList.items.length,
+          itemCount: imageList.items.length,
           itemBuilder: (BuildContext context, int index) {
-            final image = widget.imageList.items[index];
+            final image = imageList.items[index];
             double originalWidth;
             double originalHeight;
             double desiredWidth = 600.0;
@@ -57,9 +52,9 @@ class _MyImageListState extends State<MyImageList> {
               desiredWidth = 600.0;
               desiredHeight = desiredWidth * (originalHeight / originalWidth);
 
-              isSelected = widget.principalImage == image.newImage;
+              isSelected = principalImage == image.newImage;
             } else if (image is ProservicioImagesTb && isSelected == false) {
-              isSelected = widget.urlPrincipalImage == image.urlImage;
+              isSelected = urlPrincipalImage == image.urlImage;
             }
 
             return Column(
@@ -70,11 +65,9 @@ class _MyImageListState extends State<MyImageList> {
                   child: GestureDetector(
                     onTap: () {
                       if (image is ProServicioImageToUpload) {
-                        setState(() {
-                          widget.onImageSelected(image.newImage);
-                        });
+                        onImageSelected(image.newImage);
                       } else if (image is ProservicioImagesTb) {
-                        widget.onImageSelected(image.urlImage);
+                        onImageSelected(image.urlImage);
                       }
                     },
                     child: Container(
@@ -94,7 +87,7 @@ class _MyImageListState extends State<MyImageList> {
                               : image is ProservicioImagesTb
                                   ? ShowImage(
                                       networkImage: image.urlImage,
-                                      fit: widget.fit ?? BoxFit.contain,
+                                      fit: fit ?? BoxFit.contain,
                                     )
                                   // ? Image.network(
                                   //     image.urlImage,

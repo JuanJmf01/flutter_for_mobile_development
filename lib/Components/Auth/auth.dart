@@ -1,9 +1,5 @@
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:provider/provider.dart';
 
 class Auth {
   /// The function `signInWithGoogle` signs in a user using their Google account credentials and returns
@@ -60,19 +56,16 @@ class Auth {
   }
 
   /// The `signOut` function is responsible for signing out the currently authenticated user.
-  static signOut(BuildContext context) async {
+  static Future<bool> signOt() async {
     await FirebaseAuth.instance.signOut();
     GoogleSignIn googleSignIn = GoogleSignIn();
-
     try {
       await googleSignIn.disconnect();
-      if (context.mounted) {
-        context.read<LoginProvider>().checkUserSignedIn();
-        context.read<UsuarioProvider>().obtenerIdUsuarioActual();
-      }
       print('Sesión cerrada correctamente');
+      return true;
     } catch (error) {
       print('Error al cerrar sesión: $error');
+      return false;
     }
   }
 }

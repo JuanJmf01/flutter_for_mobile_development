@@ -3,24 +3,20 @@ import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 
-class IndividulService extends StatefulWidget {
+class IndividulService extends StatelessWidget {
   const IndividulService(
       {super.key, required this.servicio, required this.index});
 
   final ServicioTb servicio;
   final int index;
 
-  @override
-  State<IndividulService> createState() => _IndividulServiceState();
-}
-
-class _IndividulServiceState extends State<IndividulService> {
-  Future<void> _navigateToServiceDetail(int idService) async {
+  Future<void> _navigateToServiceDetail(
+      int idService, BuildContext context) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ProServicioDetail(
-          proServicio: widget.servicio,
+          proServicio: servicio,
           nameContexto: "servicio",
         ),
       ),
@@ -37,8 +33,6 @@ class _IndividulServiceState extends State<IndividulService> {
 
   @override
   Widget build(BuildContext context) {
-    ServicioTb servicio = widget.servicio;
-    int index = widget.index;
     double borderCircular = 18.0;
 
     return Container(
@@ -52,7 +46,7 @@ class _IndividulServiceState extends State<IndividulService> {
         child: index % 2 == 0
             ? Row(
                 children: [
-                  createImage(servicio, borderCircular),
+                  createImage(servicio, borderCircular, context),
                   createBodyServicio(servicio),
                   servicio.oferta == 1
                       ? createContainerOferta(index, borderCircular)
@@ -65,23 +59,21 @@ class _IndividulServiceState extends State<IndividulService> {
                       ? createContainerOferta(index, borderCircular)
                       : const SizedBox.shrink(),
                   createBodyServicio(servicio),
-                  createImage(servicio, borderCircular)
+                  createImage(servicio, borderCircular, context)
                 ],
               ));
   }
 
-  Widget createImage(ServicioTb servicio, double borderCircular) {
+  Widget createImage(
+      ServicioTb servicio, double borderCircular, BuildContext context) {
     return InkWell(
       onTap: () {
-        _navigateToServiceDetail(servicio.idServicio);
+        _navigateToServiceDetail(servicio.idServicio, context);
       },
       child: ShowImage(
         height: double.infinity,
         width: 180,
         fit: BoxFit.cover,
-        // borderRadius: const BorderRadius.only(
-        //     topRight: Radius.circular(20),
-        //     bottomRight: Radius.circular(20.0)),
         borderRadius: BorderRadius.circular(borderCircular),
         networkImage: servicio.urlImage,
       ),
@@ -97,30 +89,25 @@ class _IndividulServiceState extends State<IndividulService> {
           children: [
             Text(
               "\$${servicio.precio}",
-              style: Theme.of(context).textTheme.titleSmall!.merge(
-                    const TextStyle(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 20.5,
-                    ),
-                  ),
+              style: const TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20.5,
+              ),
             ),
             servicio.oferta == 1 && servicio.descuento != null
                 ? Text(
                     "\$${priceWithDesc(servicio.precio, servicio.descuento!)}",
-                    style: Theme.of(context).textTheme.titleSmall!.merge(
-                          TextStyle(
-                              fontWeight: FontWeight.w700,
-                              color: Colors.grey.shade500,
-                              fontSize: 17),
-                        ),
+                    style: TextStyle(
+                      fontWeight: FontWeight.w700,
+                      color: Colors.grey.shade500,
+                      fontSize: 17,
+                    ),
                   )
                 : const SizedBox.shrink(),
             const Spacer(),
             Text(
               servicio.nombre,
-              style: Theme.of(context).textTheme.titleMedium!.merge(
-                    const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
-                  ),
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
             ),
           ],
         ),

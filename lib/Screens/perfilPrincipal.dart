@@ -313,7 +313,7 @@ class CircleTab extends StatelessWidget {
   }
 }
 
-class CircleContainer extends StatefulWidget {
+class CircleContainer extends StatelessWidget {
   const CircleContainer({
     super.key,
     required this.isSelected,
@@ -324,18 +324,13 @@ class CircleContainer extends StatefulWidget {
   final VoidCallback onTap;
 
   @override
-  State<CircleContainer> createState() => _CircleContainerState();
-}
-
-class _CircleContainerState extends State<CircleContainer> {
-  @override
   Widget build(BuildContext context) {
     Color containerColor =
-        widget.isSelected ? Colors.grey.shade700 : Colors.grey.shade400;
-    double containerSize = widget.isSelected ? 45.0 : 40.0;
+        isSelected ? Colors.grey.shade700 : Colors.grey.shade400;
+    double containerSize = isSelected ? 45.0 : 40.0;
 
     return InkWell(
-      onTap: widget.onTap,
+      onTap: onTap,
       child: Container(
         width: containerSize,
         height: containerSize,

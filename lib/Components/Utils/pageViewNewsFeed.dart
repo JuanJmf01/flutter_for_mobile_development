@@ -1,6 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
-import 'package:etfi_point/Screens/NewsFeed/contenidoImages.dart';
+import 'package:etfi_point/Screens/NewsFeed/imagePostContent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -27,7 +27,7 @@ class PageViewNewsFeed extends ConsumerWidget {
               item is NewsFeedServiciosTb ||
               item is NeswFeedPublicacionesTb) {
             if (idUsuarioActual != null) {
-              return ContenidoImages(
+              return ImagePostContent(
                   item: item, idUsuarioActual: idUsuarioActual);
             } else {
               return const Text("Manage logueo");

@@ -29,7 +29,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
-class SliverAppBarDetail extends StatefulWidget {
+class SliverAppBarDetail extends StatelessWidget {
   const SliverAppBarDetail({
     super.key,
     required this.urlImage,
@@ -39,121 +39,20 @@ class SliverAppBarDetail extends StatefulWidget {
 
   final String urlImage;
   final int idProServicio;
-  final List<ProservicioImagesTb> productSecondaryImagesAux;
-
-  @override
-  State<SliverAppBarDetail> createState() => _SliverAppBarDetailState();
-}
-
-class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
-  //List<dynamic> allProductImages = [];
-  ImageList? myImageList;
-
-  @override
-  void initState() {
-    super.initState();
-
-    if (myImageList == null) {
-      myImageList = ImageList(widget.productSecondaryImagesAux);
-    } else {
-      myImageList!.items.addAll(widget.productSecondaryImagesAux);
-    }
-  }
+  final ImageList productSecondaryImagesAux;
 
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
-        child: myImageList != null
-            ? MyImageList(
-                imageList: myImageList!,
-                onImageSelected: (selectedImage) {
-                  print('mostrar la imagen grande');
-                })
-            : const SizedBox.shrink()
-        // child: Padding(
-        //   padding: const EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 0.0),
-        //   child: Container(
-        //     constraints: const BoxConstraints(
-        //       maxHeight: 260, // Altura máxima para la lista de imágenes
-        //     ),
-        //     child: ListView.builder(
-        //       scrollDirection: Axis.horizontal,
-        //       itemCount: allProductImages.length,
-        //       itemBuilder: (BuildContext context, int index) {
-        //         final image = allProductImages[index]!;
-        //         double originalWidth = image.width;
-        //         double originalHeight = image.height;
-        //         double desiredWidth = 600.0;
-        //         double desiredHeight =
-        //             desiredWidth * (originalHeight / originalWidth);
-
-        //         return Column(
-        //           children: [
-        //             Expanded(
-        //               child: Padding(
-        //                 padding: index == 0
-        //                     ? const EdgeInsets.fromLTRB(40.0, 7.0, 10.0, 0.0)
-        //                     : const EdgeInsets.fromLTRB(0.0, 7.0, 7.0, 0.0),
-        //                 child: Container(
-        //                   decoration: BoxDecoration(
-        //                     borderRadius: BorderRadius.circular(20.0),
-        //                   ),
-        //                   child: ClipRRect(
-        //                     borderRadius: BorderRadius.circular(16.0),
-        //                     child: Image.network(
-        //                       image.urlImage,
-        //                       fit: BoxFit.contain,
-        //                       //height: desiredHeight,
-        //                     ),
-        //                   ),
-        //                 ),
-        //               ),
-        //             ),
-        //           ],
-        //         );
-        //       },
-        //     ),
-        //   ),
-        // ),
-        );
+      child: MyImageList(
+        imageList: productSecondaryImagesAux,
+        onImageSelected: (selectedImage) {
+          print('mostrar la imagen grande');
+        },
+      ),
+    );
   }
 }
-
-// class SliverAppBarDetail extends StatefulWidget {
-//   const SliverAppBarDetail({super.key, required this.urlImage});
-
-//   final String urlImage;
-
-//   @override
-//   State<SliverAppBarDetail> createState() => _SliverAppBarDetailState();
-// }
-
-// class _SliverAppBarDetailState extends State<SliverAppBarDetail> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return SliverAppBar(
-//       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-//       elevation: 0,
-//       pinned: true,
-//       centerTitle: false,
-//       stretch: true,
-//       expandedHeight: 350.0,
-//       leading: IconButton(
-//         icon: const Icon(Icons.arrow_back),
-//         color: Colors.black,
-//         onPressed: () {
-//           Navigator.pop(context);
-//         },
-//       ),
-//       flexibleSpace: FlexibleSpaceBar(
-//           stretchModes: const [StretchMode.zoomBackground],
-//           background: ShowImage(
-//             networkImage: widget.urlImage,
-//             fit: BoxFit.cover,
-//           )),
-//     );
-//   }
-// }
 
 class FastDescription extends StatefulWidget {
   const FastDescription({
@@ -884,8 +783,9 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
               heightSizeBox: 50,
               widthSizeBox: double.infinity,
               onPress: () {
-                if (idUsuarioActual != null)
+                if (idUsuarioActual != null) {
                   insertProServicioImage(idUsuarioActual);
+                }
                 if (idUsuarioActual != null) {
                   updateSecondaryImage(idUsuarioActual);
                 }
@@ -914,7 +814,7 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
   }
 }
 
-class SummaryReviews extends StatefulWidget {
+class SummaryReviews extends StatelessWidget {
   const SummaryReviews({
     super.key,
     required this.idProServicio,
@@ -924,18 +824,13 @@ class SummaryReviews extends StatefulWidget {
   final int idProServicio;
   final Type objectType;
 
-  @override
-  State<SummaryReviews> createState() => _SummaryReviewsState();
-}
-
-class _SummaryReviewsState extends State<SummaryReviews> {
-  void navigateToReviewsAndOpinions() {
+  void navigateToReviewsAndOpinions(BuildContext context) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ReviewsAndOpinions(
-          idProServicio: widget.idProServicio,
-          objectType: widget.objectType,
+          idProServicio: idProServicio,
+          objectType: objectType,
         ),
       ),
     );
@@ -956,7 +851,7 @@ class _SummaryReviewsState extends State<SummaryReviews> {
             Padding(
               padding: const EdgeInsets.fromLTRB(10.0, 10.0, 17.0, 0.0),
               child: TextButton(
-                onPressed: navigateToReviewsAndOpinions,
+                onPressed: () => navigateToReviewsAndOpinions(context),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -973,9 +868,8 @@ class _SummaryReviewsState extends State<SummaryReviews> {
               ),
             ),
             Comments(
-              idProServicio: widget.idProServicio,
+              idProServicio: idProServicio,
               selectIndex: 0,
-              maxCommentsToShow: 3,
               paddingOutsideHorizontal: 5.0,
               paddingOutsideVertical: 0.0,
               containerPadding: 10.0,
@@ -984,11 +878,11 @@ class _SummaryReviewsState extends State<SummaryReviews> {
               fontSizeDescription: 16,
               fontSizeName: 17,
               fontSizeStarts: 21,
-              objectType: widget.objectType,
+              objectType: objectType,
             ),
             Center(
               child: GlobalTextButton(
-                onPressed: navigateToReviewsAndOpinions,
+                onPressed: () => navigateToReviewsAndOpinions(context),
                 textButton: 'Todas las calificaciones',
                 fontSizeTextButton: 17,
               ),
@@ -1000,22 +894,10 @@ class _SummaryReviewsState extends State<SummaryReviews> {
   }
 }
 
-class ProductosRelacionados extends StatefulWidget {
+class ProductosRelacionados extends StatelessWidget {
   const ProductosRelacionados({super.key, required this.proServicios});
 
   final List<dynamic> proServicios;
-
-  @override
-  State<ProductosRelacionados> createState() => _ProductosRelacionadosState();
-}
-
-class _ProductosRelacionadosState extends State<ProductosRelacionados> {
-  @override
-  void initState() {
-    super.initState();
-
-    //print(widget.productos);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1028,103 +910,3 @@ class _ProductosRelacionadosState extends State<ProductosRelacionados> {
     );
   }
 }
-
-// class StaticBottomNavigator extends StatefulWidget {
-//   const StaticBottomNavigator({super.key});
-
-//   @override
-//   State<StaticBottomNavigator> createState() => _StaticBottomNavigatorState();
-// }
-
-// class _StaticBottomNavigatorState extends State<StaticBottomNavigator> {
-//   @override
-//   void initState() {
-//     super.initState();
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       height: 57.0,
-//       color: Colors.white60,
-//       child: Row(
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.only(left: 0.0),
-//             child: Row(
-//               children: [
-//                 Padding(
-//                   padding: const EdgeInsets.fromLTRB(3.0, 0, 7.0, 0.0),
-//                   child: IconButton(
-//                     onPressed: () {},
-//                     icon: const Icon(
-//                       Icons.store_outlined,
-//                       color: Colors.black,
-//                       size: 31,
-//                     ),
-//                   ),
-//                 ),
-//                 SizedBox(
-//                   width: 35.0,
-//                   child: IconButton(
-//                     onPressed: () {},
-//                     icon: const Icon(
-//                       CupertinoIcons.bubble_right,
-//                       size: 29,
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//           Expanded(
-//             child: Row(
-//               mainAxisAlignment: MainAxisAlignment.end,
-//               children: [
-//                 ElevatedButton(
-//                   onPressed: () {},
-//                   style: ElevatedButton.styleFrom(
-//                     backgroundColor: Colors.blue[100],
-//                     padding: const EdgeInsets.symmetric(
-//                       horizontal: 35,
-//                       vertical: 13.0,
-//                     ),
-//                     shape: RoundedRectangleBorder(
-//                       borderRadius: BorderRadius.circular(17),
-//                     ),
-//                   ),
-//                   child: const Text(
-//                     'Comprar',
-//                     style: TextStyle(
-//                       color: Colors.blue,
-//                       fontSize: 17.5,
-//                     ),
-//                   ),
-//                 ),
-//                 Padding(
-//                   padding: const EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-//                   child: Container(
-//                     width: 55,
-//                     height: 47,
-//                     decoration: BoxDecoration(
-//                       color: Colors.pink[100],
-//                       borderRadius: BorderRadius.circular(17),
-//                     ),
-//                     child: IconButton(
-//                       onPressed: () {},
-//                       icon: const Icon(
-//                         CupertinoIcons.cart,
-//                         color: Colors.pink,
-//                         size: 27,
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

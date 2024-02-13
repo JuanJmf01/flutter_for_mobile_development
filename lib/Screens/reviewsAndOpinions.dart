@@ -18,7 +18,8 @@ class _ReviewsAndOpinionsState extends State<ReviewsAndOpinions> {
   int selectIndex = 0;
 
   Future<List<int>> obtenerStarCounts() async {
-    return await RatingsDb.getStarCounts(widget.idProServicio, widget.objectType);
+    return await RatingsDb.getStarCounts(
+        widget.idProServicio, widget.objectType);
   }
 
   void onRatingSelected(int index) {
@@ -182,7 +183,8 @@ class GeneralReviews extends StatelessWidget {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(0.0, barSpacing, 10.0, 0.0),
+                      padding:
+                          const EdgeInsets.fromLTRB(0.0, barSpacing, 10.0, 0.0),
                       child: Container(
                         width: barWidth,
                         height: barHeight,
@@ -345,7 +347,6 @@ class Comments extends StatefulWidget {
     Key? key,
     required this.selectIndex,
     required this.idProServicio,
-    this.maxCommentsToShow,
     required this.paddingOutsideHorizontal,
     required this.paddingOutsideVertical,
     required this.containerPadding,
@@ -359,7 +360,6 @@ class Comments extends StatefulWidget {
 
   final int selectIndex;
   final int idProServicio;
-  final int? maxCommentsToShow;
   final double paddingOutsideHorizontal;
   final double paddingOutsideVertical;
   final double containerPadding;
@@ -380,22 +380,12 @@ class _CommentsState extends State<Comments> {
 
   List<Map<String, dynamic>> reviews = [];
   List<Map<String, dynamic>> reviewsAux = [];
-  int? maxCommentsToShow;
-
-  @override
-  void initState() {
-    super.initState();
-
-    maxCommentsToShow = widget.maxCommentsToShow;
-  }
 
   @override
   void didUpdateWidget(Comments oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.selectIndex != widget.selectIndex) {
       selectIndex = widget.selectIndex;
-
-      //print(selectIndex);
     }
   }
 
@@ -435,9 +425,9 @@ class _CommentsState extends State<Comments> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           reviews = snapshot.data!;
-          if (maxCommentsToShow != null && maxCommentsToShow! > 0) {
-            reviews = reviews.take(maxCommentsToShow!).toList();
-          }
+          //if (maxCommentsToShow != null && maxCommentsToShow! > 0) {
+          reviews = reviews.take(3).toList();
+          //}
           return ListView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),

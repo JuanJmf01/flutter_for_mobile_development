@@ -9,7 +9,7 @@ import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MisProductos extends ConsumerStatefulWidget {
+class MisProductos extends ConsumerWidget {
   const MisProductos({
     super.key,
     required this.idUsuario,
@@ -17,24 +17,17 @@ class MisProductos extends ConsumerStatefulWidget {
 
   final int idUsuario;
 
-  @override
-  MisProductosState createState() => MisProductosState();
-}
-
-class MisProductosState extends ConsumerState<MisProductos> {
-  Future<List<Object>> getProductos(int idUsuario,
+  Future<List<Object>> getProductos(int idUsuario, WidgetRef ref,
       {int? idUsuarioActual}) async {
     if (idUsuarioActual != null) {
       final List<ProductoTb> productos;
 
-      if (widget.idUsuario == idUsuarioActual) {
+      if (idUsuario == idUsuarioActual) {
         final productosFuture =
             ref.read(productosByNegocioProvider(idUsuario).future);
         productos = await productosFuture;
-
-        //ref.read(isInitProductosProvider.notifier).update((state) => true);
       } else {
-        productos = await ProductoDb.getProductosByNegocio(widget.idUsuario);
+        productos = await ProductoDb.getProductosByNegocio(idUsuario);
       }
 
       return productos;
@@ -43,7 +36,7 @@ class MisProductosState extends ConsumerState<MisProductos> {
   }
 
   Future<void> _navigateToProductDetail(
-      int productId, ProductoTb producto) async {
+      int productId, ProductoTb producto, BuildContext context) async {
     await Navigator.push(
       context,
       MaterialPageRoute(
@@ -56,23 +49,21 @@ class MisProductosState extends ConsumerState<MisProductos> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     //int? idUsuarioActual = context.watch<UsuarioProvider>().idUsuarioActual;
 
     final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     return FutureGridViewProfile(
-      idUsuario: widget.idUsuario,
+      idUsuario: idUsuario,
       future: () =>
-          getProductos(widget.idUsuario, idUsuarioActual: idUsuarioActual),
+          getProductos(idUsuario, ref, idUsuarioActual: idUsuarioActual),
       bodyItemBuilder: (int index, Object item) {
         ProductoTb producto = item as ProductoTb;
         return IndividualProduct(
           urlImage: producto.urlImage,
-          onTap: () => _navigateToProductDetail(
-            producto.idProducto,
-            producto,
-          ),
+          onTap: () =>
+              _navigateToProductDetail(producto.idProducto, producto, context),
           precio: producto.precio,
           oferta: producto.oferta,
           descuento: producto.descuento,
@@ -88,5 +79,44 @@ class MisProductosState extends ConsumerState<MisProductos> {
         mainAxisExtent: MyProducts.height,
       ),
     );
+
+    // Column(
+    //   children: [
+    //     Padding(
+    //       padding: EdgeInsets.all(10.0 ?? 8.0),
+    //       child: productosAsync.when(
+    //         data: (productos) {
+    //           return GridView.builder(
+    //             physics: const NeverScrollableScrollPhysics(),
+    //             shrinkWrap: true,
+    //             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+    //               crossAxisCount: 2,
+    //               crossAxisSpacing: MyProducts.width,
+    //               mainAxisSpacing: 20.0,
+    //               mainAxisExtent: MyProducts.height,
+    //             ),
+    //             itemCount: productos.length,
+    //             itemBuilder: (BuildContext context, index) {
+    //               ProductoTb producto = productos[index];
+    //               return IndividualProduct(
+    //                 urlImage: producto.urlImage,
+    //                 onTap: () => _navigateToProductDetail(
+    //                   producto.idProducto,
+    //                   producto,
+    //                 ),
+    //                 precio: producto.precio,
+    //                 oferta: producto.oferta,
+    //                 descuento: producto.descuento,
+    //                 nombre: producto.nombre,
+    //               );
+    //             },
+    //           );
+    //         },
+    //         error: (_, __) => const Text('No se pudo cargar el nombre'),
+    //         loading: () => const CircularProgressIndicator(),
+    //       ),
+    //     )
+    //   ],
+    // );
   }
 }

@@ -1,12 +1,9 @@
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
-import 'package:etfi_point/Screens/NewsFeed/contenidoImages.dart';
+import 'package:etfi_point/Screens/NewsFeed/imagePostContent.dart';
 import 'package:etfi_point/Screens/NewsFeed/contenidoReels.dart';
-import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -67,7 +64,7 @@ class NewsFeed extends StatelessWidget {
 class Historias extends StatelessWidget {
   Historias({super.key});
 
-  final List<String> UserStories = [
+  final List<String> userStories = [
     'Item 1',
     'Item 2',
     'Item 3',
@@ -84,7 +81,7 @@ class Historias extends StatelessWidget {
       height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: UserStories.length,
+        itemCount: userStories.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
             padding: const EdgeInsets.fromLTRB(2.0, 10.0, 0, 5.0),
@@ -94,7 +91,7 @@ class Historias extends StatelessWidget {
                 color: Colors.grey.shade300,
               ),
               width: 120,
-              child: Center(child: Text(UserStories[index])),
+              child: Center(child: Text(userStories[index])),
             ),
           );
         },
@@ -103,65 +100,12 @@ class Historias extends StatelessWidget {
   }
 }
 
-class NewsFeedContent extends ConsumerStatefulWidget {
+class NewsFeedContent extends ConsumerWidget {
   const NewsFeedContent({super.key});
 
   @override
-  NewsFeedContentState createState() => NewsFeedContentState();
-}
-
-class NewsFeedContentState extends ConsumerState<NewsFeedContent> {
-  double paddingTopEachPublicacion = 40.0;
-  double paddingMedia = 20.0;
-  Map<int, bool> isLikedMap = {};
-
-  void heart() {
-    print("Funciona");
-  }
-
-  void navigateToServiceOrProductDetail(Type objectType, int idProServicio) {
-    if (objectType == NewsFeedProductosTb ||
-        objectType == NeswFeedReelProductTb) {
-      navigateToProductDetail(idProServicio);
-    } else if (objectType == NewsFeedServiciosTb ||
-        objectType == NeswFeedReelServiceTb) {
-      navigateToServiceDetail(idProServicio);
-    }
-  }
-
-  void navigateToServiceDetail(int idServicio) {
-    ServicioDb.getServicio(idServicio).then((servicio) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProServicioDetail(
-            proServicio: servicio,
-            nameContexto: "servicio",
-          ),
-        ),
-      );
-    });
-  }
-
-  void navigateToProductDetail(int idProducto) {
-    ProductoDb.getProducto(idProducto).then((producto) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ProServicioDetail(
-            proServicio: producto,
-            nameContexto: "producto",
-          ),
-        ),
-      );
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    //int? idUsuarioActual =
-    //Provider.of<UsuarioProvider>(context).idUsuarioActual;
-    final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
+  Widget build(BuildContext context, WidgetRef ref) {
+    int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
     return FutureBuilder<NewsFeedTb>(
         future: idUsuarioActual != null
@@ -189,7 +133,7 @@ class NewsFeedContentState extends ConsumerState<NewsFeedContent> {
                         item is NewsFeedProductosTb ||
                         item is NeswFeedPublicacionesTb) {
                       if (idUsuarioActual != null) {
-                        return ContenidoImages(
+                        return ImagePostContent(
                           item: item,
                           idUsuarioActual: idUsuarioActual,
                         );

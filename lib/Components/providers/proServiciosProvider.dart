@@ -6,7 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final productosByNegocioProvider = FutureProvider.family<List<ProductoTb>, int>(
   (ref, idUsuario) async {
-    return await ProductoDb.getProductosByNegocio(idUsuario);
+    final productos = await ProductoDb.getProductosByNegocio(idUsuario);
+    return productos;
   },
 );
 
@@ -15,7 +16,3 @@ final serviciosByNegocioProvider = FutureProvider.family<List<ServicioTb>, int>(
     return ServicioDb.getServiciosByNegocio(idUsuario);
   },
 );
-
-
-// final isInitProductosProvider = StateProvider<bool>((ref) => false);
-// final isInitServiciosProvider = StateProvider<bool>((ref) => false);

@@ -5,8 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PaginaUno extends ConsumerStatefulWidget {
-  const PaginaUno({
+class SelectEnlace extends ConsumerStatefulWidget {
+  const SelectEnlace({
     super.key,
     required this.callback,
     required this.productos,
@@ -21,7 +21,7 @@ class PaginaUno extends ConsumerStatefulWidget {
   PaginaUnoState createState() => PaginaUnoState();
 }
 
-class PaginaUnoState extends ConsumerState<PaginaUno> {
+class PaginaUnoState extends ConsumerState<SelectEnlace> {
   bool isProducto = false;
   int selectedItemIndex = -1;
   dynamic selectedProServicio;

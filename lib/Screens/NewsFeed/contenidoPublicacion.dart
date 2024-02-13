@@ -195,6 +195,8 @@ class ContenidoParteSuperior extends StatelessWidget {
   Widget build(BuildContext context) {
     BorderRadius borderImageProfile = BorderRadius.circular(50.0);
     double sizeImageProfile = 53.0;
+    double paddingTopEachPublicacion = 40.0;
+
     //print("DESCRIPTION: $descripcion");
 
     return GestureDetector(
@@ -205,54 +207,57 @@ class ContenidoParteSuperior extends StatelessWidget {
             builder: (context) => Menu(
               currentIndex: 1,
               idUsuario: idUsuario,
-              ejecutarIdActual: false,
             ),
           ),
         );
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              urlFotoPerfil != null && urlFotoPerfil != ''
-                  ? ShowImage(
-                      networkImage: urlFotoPerfil,
-                      widthImage: sizeImageProfile,
-                      heightImage: sizeImageProfile,
-                      borderRadius: borderImageProfile,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(
-                      height: sizeImageProfile,
-                      width: sizeImageProfile,
-                      decoration: BoxDecoration(
-                          borderRadius: borderImageProfile,
-                          color: Colors.grey.shade200),
-                    ),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
-                child: Text(
-                  nombreUsuario,
-                  style: const TextStyle(fontSize: 16.5, fontWeight: FontWeight.w500),
-                ),
-              )
-            ],
-          ),
-          descripcion != null && descripcion != ''
-              ? Padding(
-                  padding:
-                      EdgeInsets.fromLTRB(sizeImageProfile / 2, 8.0, 0.0, 10.0),
+      child: Padding(
+        padding: EdgeInsets.only(top: paddingTopEachPublicacion),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                urlFotoPerfil != null && urlFotoPerfil != ''
+                    ? ShowImage(
+                        networkImage: urlFotoPerfil,
+                        widthImage: sizeImageProfile,
+                        heightImage: sizeImageProfile,
+                        borderRadius: borderImageProfile,
+                        fit: BoxFit.cover,
+                      )
+                    : Container(
+                        height: sizeImageProfile,
+                        width: sizeImageProfile,
+                        decoration: BoxDecoration(
+                            borderRadius: borderImageProfile,
+                            color: Colors.grey.shade200),
+                      ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(5.0, 0.0, 0.0, 7.0),
                   child: Text(
-                    descripcion ?? '',
-                    style: const TextStyle(fontSize: 16.8),
+                    nombreUsuario,
+                    style: const TextStyle(
+                        fontSize: 16.5, fontWeight: FontWeight.w500),
                   ),
                 )
-              : const Padding(
-                  padding: EdgeInsets.only(bottom: 10.0),
-                  child: SizedBox.shrink(),
-                )
-        ],
+              ],
+            ),
+            descripcion != null && descripcion != ''
+                ? Padding(
+                    padding: EdgeInsets.fromLTRB(
+                        sizeImageProfile / 2, 8.0, 0.0, 10.0),
+                    child: Text(
+                      descripcion ?? '',
+                      style: const TextStyle(fontSize: 16.8),
+                    ),
+                  )
+                : const Padding(
+                    padding: EdgeInsets.only(bottom: 10.0),
+                    child: SizedBox.shrink(),
+                  )
+          ],
+        ),
       ),
     );
   }

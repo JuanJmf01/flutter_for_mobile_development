@@ -15,7 +15,7 @@ import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/cargarMediaDeEnlaces.dart';
 import 'package:etfi_point/Components/providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
-import 'package:etfi_point/Screens/enlaces/paginaUno.dart';
+import 'package:etfi_point/Screens/enlaces/selectEnlace.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -133,7 +133,7 @@ class CrearReelState extends ConsumerState<CrearReel> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => PaginaUno(
+          builder: (context) => SelectEnlace(
             callback: updateSelectedProServicio,
             productos: productos,
             servicios: servicios,

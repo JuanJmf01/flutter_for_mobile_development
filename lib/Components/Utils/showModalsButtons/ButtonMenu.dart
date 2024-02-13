@@ -42,7 +42,13 @@ class ButtonMenu extends ConsumerWidget {
                             onAcceptMessage: 'Aceptar',
                             onCancelMessage: 'Cancelar',
                             onAccept: () async {
-                              await Auth.signOut(context);
+                              bool result = await Auth.signOt();
+                              if (result) {
+                                ref
+                                    .read(userStateProvider.notifier)
+                                    .update((state) => false);
+                                    
+                              }
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                                 Navigator.pop(context);
