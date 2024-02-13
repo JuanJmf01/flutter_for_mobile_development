@@ -5,7 +5,7 @@ import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart'
 import 'package:etfi_point/Components/Utils/constants/productos.dart';
 import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
 import 'package:etfi_point/Components/Utils/individualProduct.dart';
-import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
+import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

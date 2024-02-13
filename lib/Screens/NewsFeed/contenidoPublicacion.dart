@@ -7,7 +7,7 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/icons.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
-import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
+import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:etfi_point/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

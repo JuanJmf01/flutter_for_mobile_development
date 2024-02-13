@@ -1,200 +1,143 @@
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/shoppingCartProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonAdd.dart';
-import 'package:etfi_point/Pages/NewsFeed/newsFeed.dart';
-import 'package:etfi_point/Pages/filtros.dart';
-import 'package:etfi_point/Pages/perfilPrincipal.dart';
-import 'package:etfi_point/Pages/shoppingCart.dart';
+import 'package:etfi_point/Components/providers/stateProviders.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
+import 'package:etfi_point/Screens/NewsFeed/newsFeed.dart';
+import 'package:etfi_point/Screens/filtros.dart';
+import 'package:etfi_point/Screens/perfilPrincipal.dart';
+import 'package:etfi_point/Screens/shoppingCart.dart';
+import 'package:etfi_point/config/router/app_router.dart';
+import 'package:etfi_point/config/theme/appTheme.dart';
 import 'package:etfi_point/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
-
-
-// void main() {
-//   runApp(MyApp());
-// }
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: Scaffold(
-//         appBar: AppBar(
-//           title: Text('GridView.builder Example'),
-//         ),
-//         body: MyGridView(),
-//       ),
-//     );
-//   }
-// }
-
-// class MyGridView extends StatefulWidget {
-//   @override
-//   _MyGridViewState createState() => _MyGridViewState();
-// }
-
-// class _MyGridViewState extends State<MyGridView> {
-//   ScrollController _scrollController = ScrollController();
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _scrollController.addListener(_onScroll);
-//   }
-
-//   @override
-//   void dispose() {
-//     _scrollController.dispose();
-//     super.dispose();
-//   }
-
-//   void _onScroll() {
-//     if (_scrollController.position.pixels == _scrollController.position.maxScrollExtent) {
-//       // El usuario ha llegado al final de la página, realiza la acción deseada aquí
-//       // Por ejemplo, puedes cargar más elementos o mostrar un mensaje.
-//       print('Llegaste al final de la página');
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return NotificationListener<ScrollNotification>(
-//       onNotification: (ScrollNotification scrollInfo) {
-//         if (scrollInfo is ScrollEndNotification) {
-//           _onScroll();
-//         }
-//         return false;
-//       },
-//       child: GridView.builder(
-//         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-//           crossAxisCount: 2, // Puedes ajustar este valor según tus necesidades
-//           crossAxisSpacing: 8.0,
-//           mainAxisSpacing: 8.0,
-//         ),
-//         itemCount: 20,
-//         controller: _scrollController,
-//         itemBuilder: (BuildContext context, int index) {
-//           return Card(
-//             color: Colors.blue,
-//             child: Center(
-//               child: Text(
-//                 'Elemento $index',
-//                 style: TextStyle(color: Colors.white),
-//               ),
-//             ),
-//           );
-//         },
-//       ),
-//     );
-//   }
-// }
-
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider<LoginProvider>(
-          create: (_) => LoginProvider(),
-        ),
-        ChangeNotifierProvider<UsuarioProvider>(
-          create: (_) => UsuarioProvider(),
-        ),
-        ChangeNotifierProvider<ShoppingCartProvider>(
-            create: (_) => ShoppingCartProvider()),
-        ChangeNotifierProvider<SubCategoriaSeleccionadaProvider>(
-            create: (_) => SubCategoriaSeleccionadaProvider()),
-        ChangeNotifierProvider<ProServiciosProvider>(
-            create: (_) => ProServiciosProvider())
-      ],
-      child: const MyApp(),
+    const ProviderScope(
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(appThemeColorProvider);
 
-class _MyAppState extends State<MyApp> {
-  int? idUsuarioActual;
-
-  Future<void> obtenerIdUsuarioAsincrono() async {
-    await context.read<UsuarioProvider>().obtenerIdUsuarioActual();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    // Retrasa la llamada a checkUserSignedIn usando Future.delayed
-    Future.delayed(Duration.zero, () {
-      context.read<LoginProvider>().checkUserSignedIn();
-      print('Una vez SE EJECUTA');
-    });
-
-    obtenerIdUsuarioAsincrono();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          appBarTheme: const AppBarTheme(
-            titleTextStyle: TextStyle(
-                color: Colors.black, // Color del texto del título del AppBar
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.3),
-            iconTheme: IconThemeData(
-              color: Colors
-                  .black, // Color de los iconos en las acciones del AppBar
-            ),
-            elevation:
-                0, // Establece la elevación en cero para quitar la línea inferior del AppBar
-            color: Colors.white, // Color AppBar
-          ),
-          scaffoldBackgroundColor:
-              Colors.white, // Color de fondo de la pantalla
-        ),
-        title: "Mi app",
-        home: FutureBuilder<int?>(
-          future: context.read<UsuarioProvider>().obtenerIdUsuarioActual(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return const Text('Error al cargar idUsuario');
-            } else if (snapshot.hasData) {
-              idUsuarioActual = snapshot.data;
-              return Menu(
-                currentIndex: 0,
-                idUsuario: idUsuarioActual,
-              );
-            } else {
-              return Menu(
-                currentIndex: 0,
-                idUsuario: idUsuarioActual,
-              );
-            }
-          },
-        ));
+      title: 'Riverpod Providers',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme(isDarkmode: isDarkMode).getTheme(),
+      home: const Home2(),
+    );
   }
 }
+
+// void main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+//   runApp(
+//     MultiProvider(
+//       providers: [
+//         ChangeNotifierProvider<LoginProvider>(
+//           create: (_) => LoginProvider(),
+//         ),
+//         ChangeNotifierProvider<UsuarioProvider>(
+//           create: (_) => UsuarioProvider(),
+//         ),
+//         ChangeNotifierProvider<ShoppingCartProvider>(
+//             create: (_) => ShoppingCartProvider()),
+//         ChangeNotifierProvider<SubCategoriaSeleccionadaProvider>(
+//             create: (_) => SubCategoriaSeleccionadaProvider()),
+//         ChangeNotifierProvider<ProServiciosProvider>(
+//             create: (_) => ProServiciosProvider())
+//       ],
+//       child: const MyApp(),
+//     ),
+//   );
+// }
+
+// class MyApp extends StatefulWidget {
+//   const MyApp({super.key});
+
+//   @override
+//   State<MyApp> createState() => _MyAppState();
+// }
+
+// class _MyAppState extends State<MyApp> {
+//   int? idUsuarioActual;
+
+//   Future<void> obtenerIdUsuarioAsincrono() async {
+//     await context.read<UsuarioProvider>().obtenerIdUsuarioActual();
+//   }
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Retrasa la llamada a checkUserSignedIn usando Future.delayed
+//     Future.delayed(Duration.zero, () {
+//       context.read<LoginProvider>().checkUserSignedIn();
+//       print('Una vez SE EJECUTA');
+//     });
+
+//     obtenerIdUsuarioAsincrono();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//         debugShowCheckedModeBanner: false,
+//         theme: ThemeData(
+//           appBarTheme: const AppBarTheme(
+//             titleTextStyle: TextStyle(
+//                 color: Colors.black, // Color del texto del título del AppBar
+//                 fontSize: 18,
+//                 fontWeight: FontWeight.w500,
+//                 letterSpacing: 0.3),
+//             iconTheme: IconThemeData(
+//               color: Colors
+//                   .black, // Color de los iconos en las acciones del AppBar
+//             ),
+//             elevation:
+//                 0, // Establece la elevación en cero para quitar la línea inferior del AppBar
+//             color: Colors.white, // Color AppBar
+//           ),
+//           scaffoldBackgroundColor:
+//               Colors.white, // Color de fondo de la pantalla
+//         ),
+//         title: "Mi app",
+//         home: FutureBuilder<int?>(
+//           future: context.read<UsuarioProvider>().obtenerIdUsuarioActual(),
+//           builder: (context, snapshot) {
+//             if (snapshot.connectionState == ConnectionState.waiting) {
+//               return const Center(child: CircularProgressIndicator());
+//             } else if (snapshot.hasError) {
+//               return const Text('Error al cargar idUsuario');
+//             } else if (snapshot.hasData) {
+//               idUsuarioActual = snapshot.data;
+//               return Menu(
+//                 currentIndex: 0,
+//                 idUsuario: idUsuarioActual,
+//               );
+//             } else {
+//               return Menu(
+//                 currentIndex: 0,
+//                 idUsuario: idUsuarioActual,
+//               );
+//             }
+//           },
+//         ));
+//   }
+// }
 
 class Menu extends StatefulWidget {
   const Menu(
@@ -240,11 +183,11 @@ class _MenuState extends State<Menu> {
   }
 
   void _fetchUsuarioProfile(bool ejecutarIdUsuarioActual) {
-    if (ejecutarIdUsuarioActual) {
-      idUsuarioActual =
-          Provider.of<UsuarioProvider>(context, listen: false).idUsuarioActual;
-      _loadPages(idUsuarioActualPage: idUsuarioActual);
-    }
+    // if (ejecutarIdUsuarioActual) {
+    //   idUsuarioActual =
+    //       Provider.of<UsuarioProvider>(context, listen: false).idUsuarioActual;
+    //   _loadPages(idUsuarioActualPage: idUsuarioActual);
+    // }
   }
 
   void mostrarModal(BuildContext context) {

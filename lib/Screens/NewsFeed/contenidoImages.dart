@@ -1,7 +1,7 @@
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
-import 'package:etfi_point/Pages/NewsFeed/contenidoPublicacion.dart';
-import 'package:etfi_point/Pages/NewsFeed/recoverfieldsUtility.dart';
+import 'package:etfi_point/Screens/NewsFeed/contenidoPublicacion.dart';
+import 'package:etfi_point/Screens/NewsFeed/recoverfieldsUtility.dart';
 import 'package:flutter/material.dart';
 
 class ContenidoImages extends StatelessWidget {

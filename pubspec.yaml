@@ -51,6 +51,7 @@ dependencies:
   video_player: ^2.7.2
   chewie: ^1.7.4
   visibility_detector: ^0.4.0+2
+  flutter_riverpod: ^2.4.10
   #flutter_advanced_networkimage_2: ^2.0.1
 
 dev_dependencies:

@@ -15,7 +15,7 @@ import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/cargarMediaDeEnlaces.dart';
-import 'package:etfi_point/Pages/enlaces/paginaUno.dart';
+import 'package:etfi_point/Screens/enlaces/paginaUno.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

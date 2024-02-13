@@ -1,7 +1,7 @@
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Utils/showVideo.dart';
-import 'package:etfi_point/Pages/NewsFeed/contenidoPublicacion.dart';
-import 'package:etfi_point/Pages/NewsFeed/recoverfieldsUtility.dart';
+import 'package:etfi_point/Screens/NewsFeed/contenidoPublicacion.dart';
+import 'package:etfi_point/Screens/NewsFeed/recoverfieldsUtility.dart';
 import 'package:flutter/cupertino.dart';
 
 class ContenidoReels extends StatelessWidget {

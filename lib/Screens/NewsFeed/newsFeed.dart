@@ -4,9 +4,9 @@ import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
-import 'package:etfi_point/Pages/NewsFeed/contenidoImages.dart';
-import 'package:etfi_point/Pages/NewsFeed/contenidoReels.dart';
-import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
+import 'package:etfi_point/Screens/NewsFeed/contenidoImages.dart';
+import 'package:etfi_point/Screens/NewsFeed/contenidoReels.dart';
+import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

@@ -1,6 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
-import 'package:etfi_point/Pages/proServicios/proServicioDetail.dart';
+import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 
 class IndividulService extends StatefulWidget {

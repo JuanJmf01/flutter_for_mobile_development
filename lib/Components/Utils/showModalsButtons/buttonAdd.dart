@@ -3,10 +3,10 @@ import 'package:etfi_point/Components/Utils/Providers/proServiciosProvider.dart'
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/smallButtonTopTab.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
-import 'package:etfi_point/Pages/enlaces/crearEnlace.dart';
-import 'package:etfi_point/Pages/crearReel.dart';
-import 'package:etfi_point/Pages/proServicios/productos/productoGeneralForm.dart';
-import 'package:etfi_point/Pages/proServicios/servicios/serviciosGeneralForm.dart';
+import 'package:etfi_point/Screens/enlaces/crearEnlace.dart';
+import 'package:etfi_point/Screens/crearReel.dart';
+import 'package:etfi_point/Screens/proServicios/productos/productoGeneralForm.dart';
+import 'package:etfi_point/Screens/proServicios/servicios/serviciosGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';

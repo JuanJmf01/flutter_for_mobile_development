@@ -1,6 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Pages/NewsFeed/contenidoImages.dart';
+import 'package:etfi_point/Screens/NewsFeed/contenidoImages.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 

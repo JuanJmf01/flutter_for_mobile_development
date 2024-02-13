@@ -3,7 +3,7 @@ import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicac
 import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
 import 'package:etfi_point/Components/Utils/pageViewNewsFeed.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
-import 'package:etfi_point/Pages/NewsFeed/recoverfieldsUtility.dart';
+import 'package:etfi_point/Screens/NewsFeed/recoverfieldsUtility.dart';
 import 'package:flutter/material.dart';
 
 class EnlacesImagePublicaciones extends StatefulWidget {
