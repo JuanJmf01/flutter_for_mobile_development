@@ -3,7 +3,6 @@ import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/buttonLogin.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
-import 'package:etfi_point/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -47,18 +46,10 @@ class ButtonMenu extends ConsumerWidget {
                                 ref
                                     .read(userStateProvider.notifier)
                                     .update((state) => false);
-                                    
                               }
                               if (context.mounted) {
                                 Navigator.of(context).pop();
                                 Navigator.pop(context);
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const Menu(
-                                            currentIndex: 0,
-                                          )),
-                                );
                               }
                             },
                             onCancel: () {

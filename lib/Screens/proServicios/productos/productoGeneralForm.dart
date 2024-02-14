@@ -1,22 +1,34 @@
+import 'dart:async';
 import 'dart:io';
 
+import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
+import 'package:etfi_point/Components/Utils/buttonSeleccionarCategorias.dart';
+import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/individualProduct.dart';
+import 'package:etfi_point/Components/providers/categoriasProvider.dart';
+import 'package:etfi_point/Screens/proServicios/sectionTitle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProductoGeneralForm extends StatefulWidget {
-  const ProductoGeneralForm({Key? key}) : super(key: key);
+  const ProductoGeneralForm({super.key, this.producto});
+
+  final ProductoTb? producto;
 
   @override
   State<ProductoGeneralForm> createState() => _ProductoGeneralFormState();
@@ -25,15 +37,23 @@ class ProductoGeneralForm extends StatefulWidget {
 class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   int pageController = 1;
+
+  // variables for first page
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
   final TextEditingController _discountController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
 
+  // variables for second page
+
   ImageList myImageList = ImageList([]);
   Asset? principalImage;
   String? urlPrincipalImage;
   Uint8List? principalImageBytes;
+
+  // variables for third page
+  List<CategoriaTb> categoriasDisponibles = [];
+  List<SubCategoriaTb> categoriasSeleccionadas = [];
 
   double textToDouble() {
     try {
@@ -43,6 +63,22 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
     } catch (e) {
       print('Error: $e');
       return 0.0;
+    }
+  }
+
+  Future<void> selectImages() async {
+    List<ProServicioImageToUpload> selectedImagesAux =
+        await CrudImages.agregarImagenes();
+
+    setState(() {
+      myImageList.items.addAll(selectedImagesAux);
+    });
+    if (widget.producto?.idProducto == null && selectedImagesAux.isNotEmpty) {
+      if (principalImage == null) {
+        setState(() {
+          principalImage = selectedImagesAux[0].newImage;
+        });
+      }
     }
   }
 
@@ -74,7 +110,26 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
                 textButton: "Siguiente",
                 fontSizeTextButton: 17,
                 letterSpacing: 0.3,
-                onPressed: () {
+                onPressed: () async {
+                  if (pageController == 1 && myImageList.items.isEmpty) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      },
+                      barrierDismissible: false,
+                    );
+
+                    Timer(const Duration(milliseconds: 200), () async {
+                      await selectImages();
+                      if (mounted) {
+                        Navigator.of(context).pop();
+                      }
+                    });
+                  }
+
                   setState(() {
                     if (pageController >= 1 && pageController <= 3) {
                       pageController += 1;
@@ -122,8 +177,49 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
                     precioProducto: textToDouble(),
                     descuentoProducto: _discountController.text,
                   )
-                : const Text("Ninguna coincide"),
+                : pageController == 3
+                    ? SelectCategories(
+                        url: MisRutas.rutaCategorias2,
+                      )
+                    : SizedBox.shrink(),
       ),
+    );
+  }
+}
+
+class SelectCategories extends ConsumerStatefulWidget {
+  const SelectCategories({
+    super.key,
+    required this.url,
+  });
+
+  final String url;
+
+  @override
+  SelectCategoriesState createState() => SelectCategoriesState();
+}
+
+class SelectCategoriesState extends ConsumerState<SelectCategories> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final allCategories = ref.watch(getAllCategoriasProvider(widget.url));
+
+    return Column(
+      children: [
+        const SectionTitle(title: "Categorias seleccionadas"),
+        allCategories.when(
+          data: (categoriasDisponibles) => ButtonSeleccionarCategorias(
+            categoriasDisponibles: categoriasDisponibles,
+          ),
+          error: (_, __) => const Text('No se pudieron cargar las categorias'),
+          loading: () => const CircularProgressIndicator(),
+        )
+      ],
     );
   }
 }
@@ -164,7 +260,7 @@ class _ProductDetailState extends State<ProductDetail> {
         padding: EdgeInsets.symmetric(horizontal: horizontalPaddgin),
         child: Column(
           children: [
-            PageTitle(
+            SectionTitle(
                 padding: EdgeInsets.fromLTRB(
                     0.0, verticalPaddgin / 2, 0.0, verticalPaddgin * 1.5),
                 title: "Detalle de producto"),
@@ -199,7 +295,7 @@ class _ProductDetailState extends State<ProductDetail> {
             GeneralInputs(
               controller: widget.nameController,
               textLabelOutside: 'Nombre',
-              labelText: 'Nombre',
+              //labelText: 'Nombre',
               borderInput: borderInput,
             ),
             Padding(
@@ -208,14 +304,14 @@ class _ProductDetailState extends State<ProductDetail> {
                 children: [
                   enOferta
                       ? Expanded(
-                          child: DiscountInput(
+                          child: discountInput(
                             borderInput,
                             EdgeInsets.only(right: mediumPadding),
                           ),
                         )
                       : SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
-                          child: DiscountInput(
+                          child: discountInput(
                             borderInput,
                             EdgeInsets.only(right: mediumPadding * 4),
                           ),
@@ -268,7 +364,7 @@ class _ProductDetailState extends State<ProductDetail> {
     );
   }
 
-  Widget DiscountInput(BoxBorder borderInput, EdgeInsets padding) {
+  Widget discountInput(BoxBorder borderInput, EdgeInsets padding) {
     return GeneralInputs(
       controller: widget.precioController,
       textLabelOutside: 'Precio',
@@ -317,18 +413,18 @@ class SelectImages extends StatefulWidget {
 }
 
 class _SelectImagesState extends State<SelectImages> {
-  @override
-  void initState() {
-    super.initState();
+  // @override
+  // void initState() {
+  //   super.initState();
 
-    checkIfImagesExist();
-  }
+  //   checkIfImagesExist();
+  // }
 
-  void checkIfImagesExist() async {
-    if (widget.myImageList.items.isEmpty) {
-      selectImages();
-    }
-  }
+  // void checkIfImagesExist() async {
+  //   if (widget.myImageList.items.isEmpty) {
+  //     selectImages();
+  //   }
+  // }
 
   void selectImages() async {
     List<ProServicioImageToUpload> selectedImagesAux =
@@ -355,7 +451,7 @@ class _SelectImagesState extends State<SelectImages> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          PageTitle(
+          SectionTitle(
             padding: EdgeInsets.only(
               right: horizontalPadding,
               top: verticalPadding / 2,
@@ -519,32 +615,6 @@ class ArrowTextButton extends StatelessWidget {
             )
           ],
         ),
-      ),
-    );
-  }
-}
-
-class PageTitle extends StatelessWidget {
-  const PageTitle({super.key, required this.padding, required this.title});
-
-  final EdgeInsets padding;
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
       ),
     );
   }

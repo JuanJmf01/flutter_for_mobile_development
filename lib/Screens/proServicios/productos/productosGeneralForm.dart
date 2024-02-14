@@ -616,14 +616,15 @@ class ProductosGeneralFormState extends ConsumerState<ProductosGeneralForm> {
 
                       //Categorias seleccionadas
                       Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(35.0, 20.0, 20.0, 25.0),
-                          child: CategoriesList(
-                            onlyShow: false,
-                            elementos: categoriasSeleccionadas,
-                            marginContainer: const EdgeInsets.all(5.0),
-                            paddingContainer: const EdgeInsets.all(12.0),
-                          )),
+                        padding:
+                            const EdgeInsets.fromLTRB(35.0, 20.0, 20.0, 25.0),
+                        child: CategoriesList(
+                          onlyShow: false,
+                          elementos: categoriasSeleccionadas,
+                          marginContainer: const EdgeInsets.all(5.0),
+                          paddingContainer: const EdgeInsets.all(12.0),
+                        ),
+                      ),
 
                       ButtonSeleccionarCategoriasProServicios(
                         categoriasDisponibles: categoriasDisponibles,

@@ -9,10 +9,10 @@ final userStateProvider = StateProvider<bool>((ref) {
 });
 
 final getCurrentUserProvider = FutureProvider<int?>((ref) async {
-  User? firebaseUser = Auth.getCurrentUser();
-  print("FIREBASE USER: ${firebaseUser?.email}");
-  if (firebaseUser != null) {
-    String? email = firebaseUser.email;
+  bool result = ref.watch(userStateProvider);
+  if (result) {
+    User? firebaseUser = Auth.getCurrentUser();
+    String? email = firebaseUser?.email;
     if (email != null) {
       UsuarioTb? user = await UsuarioDb.getUsuarioByCorreo(email);
       if (user != null) {

@@ -1,7 +1,6 @@
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 class CategoriesList extends StatefulWidget {
   const CategoriesList({
@@ -50,16 +49,16 @@ class _CategoriesListState extends State<CategoriesList> {
   }
 
   void generarSeleccionadas() async {
-    await context
-        .read<SubCategoriaSeleccionadaProvider>()
-        .generarSeleccionados(widget.elementos);
+    // await context
+    //     .read<SubCategoriaSeleccionadaProvider>()
+    //     .generarSeleccionados(widget.elementos);
   }
 
-  void defSubCategoriasActuales(){
-     if (widget.elementos.isNotEmpty && widget.categoriasSeleccionadas != null) {
-      context
-          .read<SubCategoriaSeleccionadaProvider>()
-          .definirSubCategoriasActuales(widget.elementos);
+  void defSubCategoriasActuales() {
+    if (widget.elementos.isNotEmpty && widget.categoriasSeleccionadas != null) {
+      // context
+      //     .read<SubCategoriaSeleccionadaProvider>()
+      //     .definirSubCategoriasActuales(widget.elementos);
     }
   }
 
@@ -75,12 +74,11 @@ class _CategoriesListState extends State<CategoriesList> {
     defSubCategoriasActuales();
 
     delete = widget.delete ?? false;
-
   }
 
   @override
   Widget build(BuildContext context) {
-    isBlue = context.watch<SubCategoriaSeleccionadaProvider>().isBlue;
+    //isBlue = context.watch<SubCategoriaSeleccionadaProvider>().isBlue;
 
     return Padding(
       padding: widget.padding ?? const EdgeInsets.all(0.0),
@@ -95,15 +93,15 @@ class _CategoriesListState extends State<CategoriesList> {
                   toggleColor(index);
                   if (isBlue[index] == false) {
                     setState(() {
-                      context
-                          .read<SubCategoriaSeleccionadaProvider>()
-                          .eliminarSelectedSubCate(elemento);
+                      // context
+                      //     .read<SubCategoriaSeleccionadaProvider>()
+                      //     .eliminarSelectedSubCate(elemento);
                     });
                   } else {
                     setState(() {
-                      context
-                          .read<SubCategoriaSeleccionadaProvider>()
-                          .agregarSubCategoria(elemento);
+                      // context
+                      //     .read<SubCategoriaSeleccionadaProvider>()
+                      //     .agregarSubCategoria(elemento);
                     });
                   }
                 }
@@ -112,7 +110,7 @@ class _CategoriesListState extends State<CategoriesList> {
                 margin: widget.marginContainer,
                 padding: widget.paddingContainer,
                 decoration: BoxDecoration(
-                  color: widget.onlyShow
+                  color: widget.onlyShow && isBlue.isNotEmpty
                       ? isBlue[index]
                           ? Colors.blue
                           : Colors.white
@@ -131,7 +129,7 @@ class _CategoriesListState extends State<CategoriesList> {
                       style: TextStyle(
                           fontSize: widget.sizeTextCategoria ?? 16,
                           fontWeight: FontWeight.w600,
-                          color: widget.onlyShow
+                          color: widget.onlyShow && isBlue.isNotEmpty
                               ? isBlue[index]
                                   ? Colors.white
                                   : Colors.black
@@ -142,9 +140,9 @@ class _CategoriesListState extends State<CategoriesList> {
                           setState(() {
                             widget.elementos.remove(elemento);
                             subCateSelected.remove(elemento);
-                            context
-                                .read<SubCategoriaSeleccionadaProvider>()
-                                .eliminarSelectedSubCate(elemento);
+                            // context
+                            //     .read<SubCategoriaSeleccionadaProvider>()
+                            //     .eliminarSelectedSubCate(elemento);
                           });
                         },
                         child: delete

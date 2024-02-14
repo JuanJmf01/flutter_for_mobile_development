@@ -1,12 +1,12 @@
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
+import 'package:etfi_point/Components/providers/categoriasProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ButtonSeleccionarCategorias extends StatefulWidget {
+class ButtonSeleccionarCategorias extends ConsumerStatefulWidget {
   const ButtonSeleccionarCategorias({
     super.key,
     required this.categoriasDisponibles,
@@ -15,16 +15,16 @@ class ButtonSeleccionarCategorias extends StatefulWidget {
   final List<CategoriaTb> categoriasDisponibles;
 
   @override
-  State<ButtonSeleccionarCategorias> createState() =>
-      _ButtonSeleccionarCategoriasState();
+  ButtonSeleccionarCategoriasState createState() =>
+      ButtonSeleccionarCategoriasState();
 }
 
-class _ButtonSeleccionarCategoriasState
-    extends State<ButtonSeleccionarCategorias>
+class ButtonSeleccionarCategoriasState
+    extends ConsumerState<ButtonSeleccionarCategorias>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  List<SubCategoriaTb> categoriasSeleccionadas = [];
+  //List<SubCategoriaTb> categoriasSeleccionadas = [];
 
   @override
   void initState() {
@@ -32,7 +32,6 @@ class _ButtonSeleccionarCategoriasState
 
     _tabController =
         TabController(length: widget.categoriasDisponibles.length, vsync: this);
-
 
     // // Oyente para cada cambio de pestaña en el tabBar
     // _tabController.addListener(() {
@@ -55,9 +54,10 @@ class _ButtonSeleccionarCategoriasState
 
   @override
   Widget build(BuildContext context) {
-    categoriasSeleccionadas =
-        Provider.of<SubCategoriaSeleccionadaProvider>(context)
-            .subCategoriasSeleccionadas;
+    // categoriasSeleccionadas =
+    //     Provider.of<SubCategoriaSeleccionadaProvider>(context)
+    //         .subCategoriasSeleccionadas;
+    final categoriasSeleccionadas = ref.watch(subCategoriasSeleccionadas);
 
     return Container(
       height: 630,

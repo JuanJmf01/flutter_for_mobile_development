@@ -1,26 +1,25 @@
 import 'package:etfi_point/Components/Data/EntitiModels/usuarioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/usuarioDb.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
-import 'package:etfi_point/Components/Utils/Providers/UsuarioProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/lineForDropdownButton.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
+import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:etfi_point/Components/Auth/auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ButtonLogin extends StatefulWidget {
+class ButtonLogin extends ConsumerStatefulWidget {
   const ButtonLogin({super.key, this.titulo});
 
   final String? titulo;
 
   @override
-  State<ButtonLogin> createState() => _ButtonLoginState();
+  ButtonLoginState createState() => ButtonLoginState();
 }
 
-class _ButtonLoginState extends State<ButtonLogin> {
+class ButtonLoginState extends ConsumerState<ButtonLogin> {
   bool _isPressed = false;
 
   void newUser(UserCredential credenciales) async {
@@ -56,18 +55,8 @@ class _ButtonLoginState extends State<ButtonLogin> {
         }
 
         if (context.mounted) {
-          context.read<LoginProvider>().checkUserSignedIn();
-          context.read<UsuarioProvider>().obtenerIdUsuarioActual();
-          print("Entra a leerlo Funciona");
-
-          // if (mounted) {
-          //   Navigator.pop(context);
-          //   Navigator.pushReplacement(
-          //     context,
-          //     MaterialPageRoute(
-          //         builder: (context) => const Home()),
-          //   );
-          // }
+          ref.read(userStateProvider.notifier).update((state) => true);
+          Navigator.of(context).pop();
         }
       }
     } catch (error, stacktrace) {
