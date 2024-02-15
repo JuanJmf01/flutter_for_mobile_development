@@ -1,22 +1,21 @@
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
+import 'package:etfi_point/Components/providers/categoriasProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CategoriesList extends StatefulWidget {
-  const CategoriesList({
-    super.key,
-    this.padding,
-    required this.elementos,
-    this.categoriasSeleccionadas,
-    required this.marginContainer,
-    required this.paddingContainer,
-    this.color,
-    this.sizeTextCategoria,
-    this.colorTextCategoria,
-    required this.onlyShow,
-    this.delete,
-    this.seleccionSubCategorias,
-  });
+class CategoriesList extends ConsumerStatefulWidget {
+  const CategoriesList(
+      {super.key,
+      this.padding,
+      required this.elementos,
+      this.categoriasSeleccionadas,
+      required this.marginContainer,
+      required this.paddingContainer,
+      this.color,
+      this.sizeTextCategoria,
+      this.colorTextCategoria,
+      required this.onlyShow,
+      this.delete});
 
   final EdgeInsets? padding;
   final List<SubCategoriaTb> elementos;
@@ -28,30 +27,25 @@ class CategoriesList extends StatefulWidget {
   final Color? colorTextCategoria;
   final bool onlyShow;
   final bool? delete;
-  final bool? seleccionSubCategorias;
 
   @override
-  State<CategoriesList> createState() => _CategoriesListState();
+  CategoriesListState createState() => CategoriesListState();
 }
 
-class _CategoriesListState extends State<CategoriesList> {
-  List<bool> isBlue = [];
+class CategoriesListState extends ConsumerState<CategoriesList> {
   List<SubCategoriaTb> elementos = [];
   List<SubCategoriaTb> subCateSelected = [];
   List<SubCategoriaTb> subCategoriasActuales = [];
-
-  bool delete = false;
-
-  void toggleColor(int index) {
-    setState(() {
-      isBlue[index] = !isBlue[index];
-    });
-  }
 
   void generarSeleccionadas() async {
     // await context
     //     .read<SubCategoriaSeleccionadaProvider>()
     //     .generarSeleccionados(widget.elementos);
+    List<bool> isBlue = ref.read(generarSeleccionados);
+    print("BOLLSS : $isBlue");
+
+    final subCategoriesByIndice = ref.read(subCategoriesByIndiceProvider);
+    print("SELECCIONMADAS 2: $subCategoriesByIndice");
   }
 
   void defSubCategoriasActuales() {
@@ -72,13 +66,13 @@ class _CategoriesListState extends State<CategoriesList> {
     }
     generarSeleccionadas();
     defSubCategoriasActuales();
-
-    delete = widget.delete ?? false;
   }
 
   @override
   Widget build(BuildContext context) {
     //isBlue = context.watch<SubCategoriaSeleccionadaProvider>().isBlue;
+    final isBlue = ref.watch(generarSeleccionados);
+    print("Mensaje : $isBlue");
 
     return Padding(
       padding: widget.padding ?? const EdgeInsets.all(0.0),
@@ -89,22 +83,21 @@ class _CategoriesListState extends State<CategoriesList> {
             int index = widget.elementos.indexOf(elemento);
             return GestureDetector(
               onTap: () {
-                if (widget.onlyShow) {
-                  toggleColor(index);
-                  if (isBlue[index] == false) {
-                    setState(() {
-                      // context
-                      //     .read<SubCategoriaSeleccionadaProvider>()
-                      //     .eliminarSelectedSubCate(elemento);
-                    });
-                  } else {
-                    setState(() {
-                      // context
-                      //     .read<SubCategoriaSeleccionadaProvider>()
-                      //     .agregarSubCategoria(elemento);
-                    });
-                  }
-                }
+                if (widget.onlyShow && isBlue.isNotEmpty) {
+                  //toggleColor(index);
+                  print("Colr : $isBlue");
+                  print("index: $index");
+
+                  //if (isBlue[index] == false) {
+                    // context
+                    //     .read<SubCategoriaSeleccionadaProvider>()
+                    //     .eliminarSelectedSubCate(elemento);
+                  //} else {
+                    // context
+                    //     .read<SubCategoriaSeleccionadaProvider>()
+                    //     .agregarSubCategoria(elemento);
+                  //}
+                } else if (isBlue.isNotEmpty) {}
               },
               child: Container(
                 margin: widget.marginContainer,
@@ -135,23 +128,22 @@ class _CategoriesListState extends State<CategoriesList> {
                                   : Colors.black
                               : widget.colorTextCategoria ?? Colors.white),
                     ),
-                    GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            widget.elementos.remove(elemento);
-                            subCateSelected.remove(elemento);
-                            // context
-                            //     .read<SubCategoriaSeleccionadaProvider>()
-                            //     .eliminarSelectedSubCate(elemento);
-                          });
-                        },
-                        child: delete
-                            ? const Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 19,
-                              )
-                            : const SizedBox.shrink())
+                    widget.delete != null && widget.delete == true
+                        ? GestureDetector(
+                            onTap: () {
+                              //widget.elementos.remove(elemento);
+                              //subCateSelected.remove(elemento);
+                              // context
+                              //     .read<SubCategoriaSeleccionadaProvider>()
+                              //     .eliminarSelectedSubCate(elemento);
+                            },
+                            child: const Icon(
+                              Icons.close,
+                              color: Colors.white,
+                              size: 19,
+                            ),
+                          )
+                        : SizedBox.shrink()
                   ],
                 ),
               ),

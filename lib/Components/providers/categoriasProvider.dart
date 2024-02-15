@@ -8,7 +8,28 @@ final getAllCategoriasProvider =
   return CategoriaDb.getAllCategorias(url);
 });
 
-
-final subCategoriasSeleccionadas = StateProvider<List<SubCategoriaTb>>((ref) {
+final subCategoriasSelectedProvider =
+    StateProvider<List<SubCategoriaTb>>((ref) {
   return [];
+});
+
+final subCategoriesByIndiceProvider =
+    StateProvider<List<SubCategoriaTb>>((ref) {
+  return [];
+});
+
+final generarSeleccionados = StateProvider<List<bool>>((ref) {
+  final subCategoriesSelected = ref.watch(subCategoriasSelectedProvider);
+
+  final subCategoriesByIndice = ref.watch(subCategoriesByIndiceProvider);
+
+  List<bool> isSelected = subCategoriesByIndice.map((elemento) {
+    return subCategoriesSelected.contains(elemento);
+  }).toList();
+
+
+  print("bools 2 $subCategoriesSelected");
+  print("bools 3 $subCategoriesByIndice");
+
+  return isSelected;
 });
