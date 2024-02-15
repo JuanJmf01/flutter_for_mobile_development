@@ -33,45 +33,21 @@ class CategoriesList extends ConsumerStatefulWidget {
 }
 
 class CategoriesListState extends ConsumerState<CategoriesList> {
-  List<SubCategoriaTb> elementos = [];
-  List<SubCategoriaTb> subCateSelected = [];
-  List<SubCategoriaTb> subCategoriasActuales = [];
+  List<bool> isBlue = [];
 
-  void generarSeleccionadas() async {
-    // await context
-    //     .read<SubCategoriaSeleccionadaProvider>()
-    //     .generarSeleccionados(widget.elementos);
-    List<bool> isBlue = ref.read(generarSeleccionados);
-    print("BOLLSS : $isBlue");
+  void deleteSubCategorie(SubCategoriaTb elemento) {
+    final subCategoriasSelected = ref.read(subCategoriasSelectedProvider);
 
-    final subCategoriesByIndice = ref.read(subCategoriesByIndiceProvider);
-    print("SELECCIONMADAS 2: $subCategoriesByIndice");
-  }
-
-  void defSubCategoriasActuales() {
-    if (widget.elementos.isNotEmpty && widget.categoriasSeleccionadas != null) {
-      // context
-      //     .read<SubCategoriaSeleccionadaProvider>()
-      //     .definirSubCategoriasActuales(widget.elementos);
-    }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    //inicializarElementos();
-    elementos = widget.elementos;
-    if (widget.categoriasSeleccionadas != null) {
-      subCateSelected = widget.categoriasSeleccionadas!;
-    }
-    generarSeleccionadas();
-    defSubCategoriasActuales();
+    final updatedList = subCategoriasSelected
+        .where((element) => element.idSubCategoria != elemento.idSubCategoria)
+        .toList();
+    ref.read(subCategoriasSelectedProvider.notifier).state = updatedList;
   }
 
   @override
   Widget build(BuildContext context) {
-    //isBlue = context.watch<SubCategoriaSeleccionadaProvider>().isBlue;
-    final isBlue = ref.watch(generarSeleccionados);
+    isBlue = ref.read(generarSeleccionados);
+
     print("Mensaje : $isBlue");
 
     return Padding(
@@ -84,20 +60,18 @@ class CategoriesListState extends ConsumerState<CategoriesList> {
             return GestureDetector(
               onTap: () {
                 if (widget.onlyShow && isBlue.isNotEmpty) {
-                  //toggleColor(index);
-                  print("Colr : $isBlue");
-                  print("index: $index");
+                  if (isBlue[index] == true) {
+                    deleteSubCategorie(elemento);
+                  } else {
+                    final subCategoriasSelected =
+                        ref.read(subCategoriasSelectedProvider);
 
-                  //if (isBlue[index] == false) {
-                    // context
-                    //     .read<SubCategoriaSeleccionadaProvider>()
-                    //     .eliminarSelectedSubCate(elemento);
-                  //} else {
-                    // context
-                    //     .read<SubCategoriaSeleccionadaProvider>()
-                    //     .agregarSubCategoria(elemento);
-                  //}
-                } else if (isBlue.isNotEmpty) {}
+                    final subCategorias = [...subCategoriasSelected, elemento];
+                    ref
+                        .read(subCategoriasSelectedProvider.notifier)
+                        .update((state) => subCategorias);
+                  }
+                }
               },
               child: Container(
                 margin: widget.marginContainer,
@@ -131,11 +105,7 @@ class CategoriesListState extends ConsumerState<CategoriesList> {
                     widget.delete != null && widget.delete == true
                         ? GestureDetector(
                             onTap: () {
-                              //widget.elementos.remove(elemento);
-                              //subCateSelected.remove(elemento);
-                              // context
-                              //     .read<SubCategoriaSeleccionadaProvider>()
-                              //     .eliminarSelectedSubCate(elemento);
+                              deleteSubCategorie(elemento);
                             },
                             child: const Icon(
                               Icons.close,

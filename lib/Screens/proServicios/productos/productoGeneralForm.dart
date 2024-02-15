@@ -112,22 +112,22 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
                 letterSpacing: 0.3,
                 onPressed: () async {
                   if (pageController == 1 && myImageList.items.isEmpty) {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      },
-                      barrierDismissible: false,
-                    );
+                    // showDialog(
+                    //   context: context,
+                    //   builder: (BuildContext context) {
+                    //     return const Center(
+                    //       child: CircularProgressIndicator(),
+                    //     );
+                    //   },
+                    //   barrierDismissible: false,
+                    // );
 
-                    Timer(const Duration(milliseconds: 200), () async {
-                      await selectImages();
-                      if (mounted) {
-                        Navigator.of(context).pop();
-                      }
-                    });
+                    // Timer(const Duration(milliseconds: 200), () async {
+                    //   await selectImages();
+                    //   if (mounted) {
+                    //     Navigator.of(context).pop();
+                    //   }
+                    // });
                   }
 
                   setState(() {

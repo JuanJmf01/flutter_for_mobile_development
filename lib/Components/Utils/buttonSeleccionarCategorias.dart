@@ -36,6 +36,7 @@ class ButtonSeleccionarCategoriasState
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Código a ejecutar después de que se haya construido el árbol de widgets
       _printSubcategorias(initialIndex);
+      setState(() {});
     });
   }
 
@@ -47,14 +48,10 @@ class ButtonSeleccionarCategoriasState
     ref
         .read(subCategoriesByIndiceProvider.notifier)
         .update((state) => selectedSubcategorias);
-
   }
 
   @override
   Widget build(BuildContext context) {
-    // categoriasSeleccionadas =
-    //     Provider.of<SubCategoriaSeleccionadaProvider>(context)
-    //         .subCategoriasSeleccionadas;
     final subCategoriesSelected = ref.watch(subCategoriasSelectedProvider);
 
     print("SELECCIONMADAS 1: $subCategoriesSelected");
@@ -71,6 +68,7 @@ class ButtonSeleccionarCategoriasState
           ),
           TabBar(
             controller: _tabController,
+            isScrollable: true,
             onTap: _printSubcategorias,
             tabs: widget.categoriasDisponibles
                 .map((categoria) => Tab(text: categoria.nombre))
@@ -79,6 +77,8 @@ class ButtonSeleccionarCategoriasState
           Expanded(
             child: TabBarView(
               controller: _tabController,
+              physics:
+                  const NeverScrollableScrollPhysics(), // Evita el desplazamiento horizontal
               children: widget.categoriasDisponibles
                   .map(
                     (categoria) => CategoriesList(
