@@ -3,39 +3,19 @@ import 'package:etfi_point/Components/providers/categoriasProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class CategoriesList extends ConsumerStatefulWidget {
-  const CategoriesList(
-      {super.key,
-      this.padding,
-      required this.elementos,
-      this.categoriasSeleccionadas,
-      required this.marginContainer,
-      required this.paddingContainer,
-      this.color,
-      this.sizeTextCategoria,
-      this.colorTextCategoria,
-      required this.onlyShow,
-      this.delete});
+class CategoriesList extends ConsumerWidget {
+  const CategoriesList({
+    super.key,
+    this.padding,
+    required this.elementos,
+    required this.deleteOption,
+  });
 
   final EdgeInsets? padding;
   final List<SubCategoriaTb> elementos;
-  final List<SubCategoriaTb>? categoriasSeleccionadas;
-  final EdgeInsets marginContainer;
-  final EdgeInsets paddingContainer;
-  final Color? color;
-  final double? sizeTextCategoria;
-  final Color? colorTextCategoria;
-  final bool onlyShow;
-  final bool? delete;
+  final bool deleteOption;
 
-  @override
-  CategoriesListState createState() => CategoriesListState();
-}
-
-class CategoriesListState extends ConsumerState<CategoriesList> {
-  List<bool> isBlue = [];
-
-  void deleteSubCategorie(SubCategoriaTb elemento) {
+  void deleteSubCategorie(SubCategoriaTb elemento, WidgetRef ref) {
     final subCategoriasSelected = ref.read(subCategoriasSelectedProvider);
 
     final updatedList = subCategoriasSelected
@@ -45,23 +25,21 @@ class CategoriesListState extends ConsumerState<CategoriesList> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    isBlue = ref.read(generarSeleccionados);
-
-    print("Mensaje : $isBlue");
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isBlue = ref.read(generarSeleccionados);
 
     return Padding(
-      padding: widget.padding ?? const EdgeInsets.all(0.0),
+      padding: padding ?? const EdgeInsets.all(0.0),
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: Alignment.topLeft,
         child: Wrap(
-          children: widget.elementos.map((elemento) {
-            int index = widget.elementos.indexOf(elemento);
+          children: elementos.map((elemento) {
+            int index = elementos.indexOf(elemento);
             return GestureDetector(
               onTap: () {
-                if (widget.onlyShow && isBlue.isNotEmpty) {
-                  if (isBlue[index] == true) {
-                    deleteSubCategorie(elemento);
+                if (!deleteOption && isBlue.isNotEmpty) {
+                  if (isBlue[index]) {
+                    deleteSubCategorie(elemento, ref);
                   } else {
                     final subCategoriasSelected =
                         ref.read(subCategoriasSelectedProvider);
@@ -74,14 +52,14 @@ class CategoriesListState extends ConsumerState<CategoriesList> {
                 }
               },
               child: Container(
-                margin: widget.marginContainer,
-                padding: widget.paddingContainer,
+                margin: const EdgeInsets.all(5.0),
+                padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
-                  color: widget.onlyShow && isBlue.isNotEmpty
+                  color: !deleteOption && isBlue.isNotEmpty
                       ? isBlue[index]
                           ? Colors.blue
                           : Colors.white
-                      : widget.color ?? Colors.blue,
+                      : Colors.blue,
                   borderRadius: BorderRadius.circular(30),
                   border: Border.all(
                     color: Colors.grey.shade300,
@@ -94,18 +72,18 @@ class CategoriesListState extends ConsumerState<CategoriesList> {
                     Text(
                       elemento.nombre,
                       style: TextStyle(
-                          fontSize: widget.sizeTextCategoria ?? 16,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: widget.onlyShow && isBlue.isNotEmpty
+                          color: !deleteOption && isBlue.isNotEmpty
                               ? isBlue[index]
                                   ? Colors.white
                                   : Colors.black
-                              : widget.colorTextCategoria ?? Colors.white),
+                              : Colors.white),
                     ),
-                    widget.delete != null && widget.delete == true
+                    deleteOption
                         ? GestureDetector(
                             onTap: () {
-                              deleteSubCategorie(elemento);
+                              deleteSubCategorie(elemento, ref);
                             },
                             child: const Icon(
                               Icons.close,
@@ -113,7 +91,7 @@ class CategoriesListState extends ConsumerState<CategoriesList> {
                               size: 19,
                             ),
                           )
-                        : SizedBox.shrink()
+                        : const SizedBox.shrink()
                   ],
                 ),
               ),

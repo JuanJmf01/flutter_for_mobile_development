@@ -5,33 +5,27 @@ import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.d
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
-import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
-import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
-import 'package:etfi_point/Screens/proServicios/buttonSeleccionarCategorias.dart';
 import 'package:etfi_point/Screens/proServicios/sectionTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:provider/provider.dart';
 
 class ProductosGeneralForm extends ConsumerStatefulWidget {
   const ProductosGeneralForm({
@@ -88,16 +82,16 @@ class ProductosGeneralFormState extends ConsumerState<ProductosGeneralForm> {
     }
     ProductoTb? producto = assingValuesToInputs();
 
-    CategoriaDb.obtenerCategorias(
-      context,
-      MisRutas.rutaCategorias2,
-    );
+    // CategoriaDb.obtenerCategorias(
+    //   context,
+    //   MisRutas.rutaCategorias2,
+    // );
 
-    if (widget.producto != null) {
-      context
-          .read<SubCategoriaSeleccionadaProvider>()
-          .obtenerSubCategoriasSeleccionadas(producto!.idProducto, ProductoTb);
-    }
+    // if (widget.producto != null) {
+    //   context
+    //       .read<SubCategoriaSeleccionadaProvider>()
+    //       .obtenerSubCategoriasSeleccionadas(producto!.idProducto, ProductoTb);
+    // }
 
     _precioController.addListener(() {
       newPrice();
@@ -615,20 +609,20 @@ class ProductosGeneralFormState extends ConsumerState<ProductosGeneralForm> {
                       ),
 
                       //Categorias seleccionadas
-                      Padding(
-                        padding:
-                            const EdgeInsets.fromLTRB(35.0, 20.0, 20.0, 25.0),
-                        child: CategoriesList(
-                          onlyShow: false,
-                          elementos: categoriasSeleccionadas,
-                          marginContainer: const EdgeInsets.all(5.0),
-                          paddingContainer: const EdgeInsets.all(12.0),
-                        ),
-                      ),
+                      // Padding(
+                      //   padding:
+                      //       const EdgeInsets.fromLTRB(35.0, 20.0, 20.0, 25.0),
+                      //   child: CategoriesList(
+                      //     onlyShow: false,
+                      //     elementos: categoriasSeleccionadas,
+                      //     marginContainer: const EdgeInsets.all(5.0),
+                      //     paddingContainer: const EdgeInsets.all(12.0),
+                      //   ),
+                      // ),
 
-                      ButtonSeleccionarCategoriasProServicios(
-                        categoriasDisponibles: categoriasDisponibles,
-                      ),
+                      // ButtonSeleccionarCategoriasProServicios(
+                      //   categoriasDisponibles: categoriasDisponibles,
+                      // ),
                       const SizedBox(height: 100.0)
                     ],
                   ),

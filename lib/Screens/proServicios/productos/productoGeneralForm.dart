@@ -7,22 +7,13 @@ import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
-import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
-import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
-import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
-import 'package:etfi_point/Components/Utils/buttonSeleccionarCategorias.dart';
-import 'package:etfi_point/Components/Utils/categoriesList.dart';
-import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
-import 'package:etfi_point/Components/Utils/individualProduct.dart';
-import 'package:etfi_point/Components/providers/categoriasProvider.dart';
+import 'package:etfi_point/Screens/proServicios/proServicioGeneralForm.dart';
 import 'package:etfi_point/Screens/proServicios/sectionTitle.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProductoGeneralForm extends StatefulWidget {
@@ -122,7 +113,7 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
                     //   barrierDismissible: false,
                     // );
 
-                    // Timer(const Duration(milliseconds: 200), () async {
+                    // Timer(const Duration(milliseconds: 100), () async {
                     //   await selectImages();
                     //   if (mounted) {
                     //     Navigator.of(context).pop();
@@ -178,48 +169,11 @@ class _ProductoGeneralFormState extends State<ProductoGeneralForm> {
                     descuentoProducto: _discountController.text,
                   )
                 : pageController == 3
-                    ? SelectCategories(
+                    ? CategorySelectionInterface(
                         url: MisRutas.rutaCategorias2,
                       )
-                    : SizedBox.shrink(),
+                    : const SizedBox.shrink(),
       ),
-    );
-  }
-}
-
-class SelectCategories extends ConsumerStatefulWidget {
-  const SelectCategories({
-    super.key,
-    required this.url,
-  });
-
-  final String url;
-
-  @override
-  SelectCategoriesState createState() => SelectCategoriesState();
-}
-
-class SelectCategoriesState extends ConsumerState<SelectCategories> {
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final allCategories = ref.watch(getAllCategoriasProvider(widget.url));
-
-    return Column(
-      children: [
-        const SectionTitle(title: "Categorias seleccionadas"),
-        allCategories.when(
-          data: (categoriasDisponibles) => ButtonSeleccionarCategorias(
-            categoriasDisponibles: categoriasDisponibles,
-          ),
-          error: (_, __) => const Text('No se pudieron cargar las categorias'),
-          loading: () => const CircularProgressIndicator(),
-        )
-      ],
     );
   }
 }
@@ -375,247 +329,6 @@ class _ProductDetailState extends State<ProductDetail> {
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
       ],
-    );
-  }
-}
-
-class SelectImages extends StatefulWidget {
-  const SelectImages({
-    super.key,
-    required this.myImageList,
-    this.principalImage,
-    this.urlPrincipalImage,
-    this.principalImageBytes,
-    required this.onUpdatedImages,
-    required this.onSelectedImageList,
-    this.idProducto,
-    required this.nombreProducto,
-    required this.precioProducto,
-    this.descuentoProducto,
-  });
-
-  final ImageList myImageList;
-  final Asset? principalImage;
-  final String? urlPrincipalImage;
-  final Uint8List? principalImageBytes;
-  final Function(
-      {Asset? newPrincipalImage,
-      String? newUrlPrincipalImage,
-      Uint8List? newPrincipalImageBytes}) onUpdatedImages;
-  final Function(List<ProServicioImageToUpload>) onSelectedImageList;
-  final int? idProducto;
-  final String nombreProducto;
-  final double precioProducto;
-  final String? descuentoProducto;
-
-  @override
-  State<SelectImages> createState() => _SelectImagesState();
-}
-
-class _SelectImagesState extends State<SelectImages> {
-  // @override
-  // void initState() {
-  //   super.initState();
-
-  //   checkIfImagesExist();
-  // }
-
-  // void checkIfImagesExist() async {
-  //   if (widget.myImageList.items.isEmpty) {
-  //     selectImages();
-  //   }
-  // }
-
-  void selectImages() async {
-    List<ProServicioImageToUpload> selectedImagesAux =
-        await CrudImages.agregarImagenes();
-    widget.onSelectedImageList(selectedImagesAux);
-    if (widget.idProducto == null && selectedImagesAux.isNotEmpty) {
-      if (widget.principalImage == null) {
-        widget.onUpdatedImages(
-          newPrincipalImage: selectedImagesAux[0].newImage,
-        );
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    Asset? principalImage = widget.principalImage;
-    String? urlPrincipalImage = widget.urlPrincipalImage;
-    Uint8List? principalImageBytes = widget.principalImageBytes;
-    double horizontalPadding = 18.0;
-    double verticalPadding = 20.0;
-    ImageList myImageList = widget.myImageList;
-
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          SectionTitle(
-            padding: EdgeInsets.only(
-              right: horizontalPadding,
-              top: verticalPadding / 2,
-            ),
-            title: "Selección de imagenes",
-          ),
-          myImageList.items.isNotEmpty
-              ? MyImageList(
-                  imageList: myImageList,
-                  padding: const EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
-                  maxHeight: 260,
-                  principalImage: principalImage,
-                  urlPrincipalImage: urlPrincipalImage,
-                  onImageSelected: (selectedImage) {
-                    if (principalImageBytes != null) {
-                      widget.onUpdatedImages(newPrincipalImageBytes: null);
-                    }
-                    if (selectedImage is Asset) {
-                      widget.onUpdatedImages(
-                        newPrincipalImage: selectedImage,
-                        newUrlPrincipalImage: null,
-                      );
-                    } else if (selectedImage is String) {
-                      widget.onUpdatedImages(
-                        newUrlPrincipalImage: selectedImage,
-                        newPrincipalImage: null,
-                      );
-                    }
-                  },
-                )
-              : const SizedBox.shrink(),
-          ArrowTextButton(
-            textButton: myImageList.items.isEmpty
-                ? 'Agregar imagenes'
-                : 'Agregar mas imagenes',
-            horizontalPaggin: horizontalPadding,
-            paddingTop: verticalPadding * 1.5,
-            paddingBottom: verticalPadding / 4,
-            onTap: () => selectImages(),
-          ),
-          if (principalImage != null || principalImageBytes != null)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const GlobalDivider(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20.0, 25.0, 0.0, 10.0),
-                  child: Text(
-                    'La fotografia principal de tu producto lucira asi:',
-                    style: TextStyle(
-                      fontSize: 17.3,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ),
-                // ShowSampleAnyImage(
-                //   urlImage: urlPrincipalImage,
-                //   imageBytes: principalImageBytes,
-                //   imageAsset: principalImage,
-                // ),
-                Padding(
-                  padding: EdgeInsets.only(left: horizontalPadding * 2),
-                  child: IndividualProduct(
-                    urlImage: urlPrincipalImage,
-                    imageAsset: principalImage,
-                    imageBytes: principalImageBytes,
-                    precio: widget.precioProducto,
-                    oferta: 0,
-                    descuento: 0,
-                    nombre: widget.nombreProducto,
-                  ),
-                ),
-                ArrowTextButton(
-                  onTap: () async {
-                    File tempFile = await FileTemporal.convertToTempFile(
-                        urlImage: urlPrincipalImage, image: principalImage);
-                    Uint8List? croppedBytes =
-                        await EditarImagen.editImage(tempFile, 2.3, 2);
-                    if (croppedBytes != null) {
-                      print("Entro");
-                      widget.onUpdatedImages(
-                        newPrincipalImageBytes:
-                            Uint8List.fromList(croppedBytes),
-                      );
-                    }
-                  },
-                  textButton: "Recortar",
-                  horizontalPaggin: horizontalPadding,
-                ),
-                ArrowTextButton(
-                  onTap: () async {
-                    Asset? imagesAsset = await getImageAsset();
-
-                    if (imagesAsset != null) {
-                      widget.onUpdatedImages(
-                        newPrincipalImage: imagesAsset,
-                        newUrlPrincipalImage: null,
-                      );
-                    }
-                  },
-                  textButton: "Seleccionar otra imagen",
-                  horizontalPaggin: horizontalPadding,
-                ),
-                const SizedBox(
-                  height: 80.0,
-                )
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class ArrowTextButton extends StatelessWidget {
-  const ArrowTextButton({
-    super.key,
-    required this.textButton,
-    required this.onTap,
-    this.fontSizeTextButton,
-    this.fontWeightTextButton,
-    this.horizontalPaggin,
-    this.paddingTop,
-    this.paddingBottom,
-    this.color,
-  });
-
-  final String textButton;
-  final VoidCallback onTap;
-  final double? fontSizeTextButton;
-  final FontWeight? fontWeightTextButton;
-  final double? horizontalPaggin;
-  final double? paddingTop;
-  final double? paddingBottom;
-  final Color? color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        horizontalPaggin ?? 0.0,
-        paddingTop ?? 0.0,
-        horizontalPaggin ?? 0.0,
-        paddingBottom ?? 0.0,
-      ),
-      child: GestureDetector(
-        onTap: onTap,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            GlobalTextButton(
-              textButton: textButton,
-              fontSizeTextButton: fontSizeTextButton ?? 18,
-              fontWeightTextButton: fontWeightTextButton ?? FontWeight.w500,
-              color: color ?? Colors.grey.shade800,
-            ),
-            const Icon(
-              CupertinoIcons.chevron_forward,
-              size: 30,
-            )
-          ],
-        ),
-      ),
     );
   }
 }

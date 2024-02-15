@@ -27,9 +27,5 @@ final generarSeleccionados = StateProvider<List<bool>>((ref) {
     return subCategoriesSelected.contains(elemento);
   }).toList();
 
-
-  print("bools 2 $subCategoriesSelected");
-  print("bools 3 $subCategoriesByIndice");
-
   return isSelected;
 });

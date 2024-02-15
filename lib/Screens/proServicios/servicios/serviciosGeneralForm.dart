@@ -16,23 +16,18 @@ import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/Providers/loginProvider.dart';
-import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
 import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
-import 'package:etfi_point/Components/Utils/categoriesList.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
-import 'package:etfi_point/Screens/proServicios/buttonSeleccionarCategorias.dart';
 import 'package:etfi_point/Screens/proServicios/sectionTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:provider/provider.dart';
 
 class ServiciosGeneralForm extends ConsumerStatefulWidget {
   const ServiciosGeneralForm({
@@ -217,13 +212,13 @@ class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
 
     ServicioTb? servicio = assingValuesToInputs();
 
-    CategoriaDb.obtenerCategorias(context, MisRutas.rutaCategoriasServicios);
+    // CategoriaDb.obtenerCategorias(context, MisRutas.rutaCategoriasServicios);
 
-    if (widget.servicio != null) {
-      context
-          .read<SubCategoriaSeleccionadaProvider>()
-          .obtenerSubCategoriasSeleccionadas(servicio!.idServicio, ServicioTb);
-    }
+    // if (widget.servicio != null) {
+    //   context
+    //       .read<SubCategoriaSeleccionadaProvider>()
+    //       .obtenerSubCategoriasSeleccionadas(servicio!.idServicio, ServicioTb);
+    // }
 
     _precioController.addListener(() {
       newPrice();
@@ -304,7 +299,7 @@ class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
 
   @override
   Widget build(BuildContext context) {
-    bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
+    //bool isUserSignedIn = context.watch<LoginProvider>().isUserSignedIn;
     //int? idUsuario = Provider.of<UsuarioProvider>(context).idUsuarioActual;
     final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
 
@@ -334,10 +329,10 @@ class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
               GlobalTextButton(
                 onPressed: () {
                   print("PRESS");
-                  if (idUsuarioActual != null && isUserSignedIn) {
-                    print("Entra");
-                    guardar(idUsuarioActual);
-                  }
+                  // if (idUsuarioActual != null && isUserSignedIn) {
+                  //   print("Entra");
+                  //   guardar(idUsuarioActual);
+                  // }
                 },
                 textButton: 'Guardar',
                 fontSizeTextButton: 19,
@@ -532,18 +527,18 @@ class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
                         title: "Categorias",
                         padding: EdgeInsets.fromLTRB(0.0, 12.0, 25.0, 0.0),
                       ),
-                      Padding(
-                          padding:
-                              const EdgeInsets.fromLTRB(35.0, 20.0, 20.0, 25.0),
-                          child: CategoriesList(
-                            onlyShow: false,
-                            elementos: categoriasSeleccionadas,
-                            marginContainer: const EdgeInsets.all(5.0),
-                            paddingContainer: const EdgeInsets.all(12.0),
-                          )),
-                      ButtonSeleccionarCategoriasProServicios(
-                        categoriasDisponibles: categoriasDisponibles,
-                      ),
+                      // Padding(
+                      //     padding:
+                      //         const EdgeInsets.fromLTRB(35.0, 20.0, 20.0, 25.0),
+                      //     child: CategoriesList(
+                      //       onlyShow: false,
+                      //       elementos: categoriasSeleccionadas,
+                      //       marginContainer: const EdgeInsets.all(5.0),
+                      //       paddingContainer: const EdgeInsets.all(12.0),
+                      //     )),
+                      // ButtonSeleccionarCategoriasProServicios(
+                      //   categoriasDisponibles: categoriasDisponibles,
+                      // ),
                     ],
                   ),
                 ),

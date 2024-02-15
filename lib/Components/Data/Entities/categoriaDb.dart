@@ -1,8 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
-import 'package:etfi_point/Components/Utils/Providers/subCategoriaSeleccionadaProvider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 // Test here
 class CategoriaDb {
@@ -29,12 +26,12 @@ class CategoriaDb {
     }
   }
 
-  static void obtenerCategorias(
-    BuildContext context,
-    String url,
-  ) async {
-    await context
-        .read<SubCategoriaSeleccionadaProvider>()
-        .obtenerAllSubCategorias(url);
-  }
+  // static void obtenerCategorias(
+  //   BuildContext context,
+  //   String url,
+  // ) async {
+  //   await context
+  //       .read<SubCategoriaSeleccionadaProvider>()
+  //       .obtenerAllSubCategorias(url);
+  // }
 }
