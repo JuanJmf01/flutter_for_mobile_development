@@ -1,7 +1,5 @@
 import 'dart:typed_data';
-
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
-import 'package:etfi_point/Components/Utils/Services/DataTime.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class ImagesStorage {
@@ -43,7 +41,8 @@ class ImagesStorage {
     String rutaSave = definePath(image);
 
     if (rutaSave != '' && bytes.isNotEmpty) {
-      final Reference ref = storage.ref().child(rutaSave).child(imageName);
+      final Reference ref =
+          FirebaseStorage.instance.ref().child(rutaSave).child(imageName);
       final UploadTask uploadTask = ref.putData(bytes);
 
       try {
@@ -181,5 +180,4 @@ class ImagesStorage {
       return false;
     }
   }
-
 }

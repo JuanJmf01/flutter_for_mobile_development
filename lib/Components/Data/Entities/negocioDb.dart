@@ -96,11 +96,17 @@ class NegocioDb {
     }
   }
 
-
-    static Future<int> crearNegocioSiNoExiste(idUsuario) async {
+  /// The function `createBusiness` creates a new business in the database if it doesn't exist for the
+  /// given user, otherwise it returns the existing business ID.
+  ///
+  /// Args:
+  ///   idUsuario: The parameter `idUsuario` represents the user ID. It is used to retrieve the business
+  /// information associated with the user and create a new business if it doesn't exist.
+  ///
+  /// Returns:
+  ///   an integer value, specifically the `idNegocio` variable.
+  static Future<int> createBusiness(idUsuario) async {
     int idNegocio = 0;
-    //-- Se crea un negocio en caso de que no exista. Si existe, se asigna el valor idNegocio en _producto a ser creado
-    // En caso de que no exista 'idNegocioIfExists' sera igual a null por lo tanto se creara un nuevo negocio con 'idUsuario';
     NegocioTb? negocio = await NegocioDb.getNegocio(idUsuario);
     if (negocio?.idNegocio == null) {
       NegocioCreacionTb negocio = NegocioCreacionTb(

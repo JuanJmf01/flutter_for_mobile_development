@@ -9,7 +9,7 @@ import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlaces/enlaceProServicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlaces/enlaceProServicioImagesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
-import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
+import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -26,7 +26,8 @@ class CargarMediaDeEnlaces {
       ImagesStorageTb image = ImagesStorageTb(
         idUsuario: idUsuario,
         idFile: idEnlaceProServicio,
-        newImageBytes: await assetToUint8List(imageToUpload.newImage),
+        newImageBytes:
+            await RandomServices.assetToUint8List(imageToUpload.newImage),
         fileName: fileName,
         imageName: imageToUpload.nombreImage,
       );

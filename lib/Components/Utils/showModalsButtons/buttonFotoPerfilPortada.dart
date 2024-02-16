@@ -8,7 +8,7 @@ import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImag
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
-import 'package:etfi_point/Components/Utils/Services/assingName.dart';
+import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/smallButtonTopTab.dart';
@@ -67,7 +67,7 @@ class ButtonFotoPerfilPortada extends ConsumerWidget {
           idUsuario: idUsuarioActual,
           newImageBytes: finalImage,
           fileName: fileName,
-          imageName: assingName(imageAsset.name!),
+          imageName: RandomServices.assingName(imageAsset.name!),
         );
 
         String urlImage = isUrlPhotoAvailable

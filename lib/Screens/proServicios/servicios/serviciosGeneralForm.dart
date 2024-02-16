@@ -5,19 +5,16 @@ import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Data/Entities/categoriaDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
-import 'package:etfi_point/Components/Data/Routes/rutas.dart';
-import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
+import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/elevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
@@ -83,14 +80,14 @@ class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
     try {
       idServicio =
           await ServicioDb.insertServicio(servicio, categoriasSeleccionadas);
-      String finalNameImage = assingName(principalImage!.name!);
+      String finalNameImage = RandomServices.assingName(principalImage!.name!);
 
       if (principalImageBytes != null || principalImage != null) {
         ImagesStorageTb image = ImagesStorageTb(
           idUsuario: idUsuario,
           idFile: idServicio,
-          newImageBytes:
-              principalImageBytes ?? await assetToUint8List(principalImage!),
+          newImageBytes: principalImageBytes ??
+              await RandomServices.assetToUint8List(principalImage!),
           fileName: 'servicios',
           imageName: finalNameImage,
         );
@@ -110,9 +107,11 @@ class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
 
       if (myImageList.items.isNotEmpty) {
         for (var imagen in myImageList.items) {
-          String finalNameImage = assingName(principalImage!.name!);
+          String finalNameImage =
+              RandomServices.assingName(principalImage!.name!);
           if (imagen is ProServicioImageToUpload) {
-            Uint8List imageBytes = await assetToUint8List(imagen.newImage);
+            Uint8List imageBytes =
+                await RandomServices.assetToUint8List(imagen.newImage);
 
             ImagesStorageTb image = ImagesStorageTb(
               idUsuario: idUsuario,
@@ -244,8 +243,8 @@ class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
       ImagesStorageTb image = ImagesStorageTb(
         idUsuario: idUsuario,
         idFile: idServicio,
-        newImageBytes:
-            principalImageBytes ?? await assetToUint8List(principalImage!),
+        newImageBytes: principalImageBytes ??
+            await RandomServices.assetToUint8List(principalImage!),
         fileName: 'servicios',
         imageName: servicio.nombreImage,
       );
@@ -267,7 +266,7 @@ class ServiciosGeneralFormState extends ConsumerState<ServiciosGeneralForm> {
     final descripcion = _descripcionController.text;
 
     ServicioCreacionTb servicioCreacion;
-    int idNegocio = await NegocioDb.crearNegocioSiNoExiste(idUsuario);
+    int idNegocio = await NegocioDb.createBusiness(idUsuario);
     int descuento = int.tryParse(_descuentoController.text) ?? 0;
 
     if (_servicio?.idServicio == null) {

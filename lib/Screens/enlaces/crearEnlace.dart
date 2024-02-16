@@ -8,8 +8,8 @@ import 'package:etfi_point/Components/Data/Entities/PublicacionImagesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/publicacionesDb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
-import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
+import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/pageViewImagesScroll.dart';
@@ -96,7 +96,8 @@ class CrearEnlaceState extends ConsumerState<CrearEnlace> {
           ImagesStorageTb image = ImagesStorageTb(
             idUsuario: idUsuario,
             idFile: idPublicacion,
-            newImageBytes: await assetToUint8List(imageToUpload.newImage),
+            newImageBytes:
+                await RandomServices.assetToUint8List(imageToUpload.newImage),
             fileName: 'publicaciones',
             imageName: imageToUpload.nombreImage,
           );

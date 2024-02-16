@@ -12,12 +12,11 @@ import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
-import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/Icons/switch.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/Components/Utils/Services/assingName.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
+import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
@@ -349,8 +348,10 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
     if (imagesToUpload.isNotEmpty) {
       List<ProservicioImagesTb> productImagesAux = [];
       for (var imageToUpload in imagesToUpload) {
-        Uint8List imageBytes = await assetToUint8List(imageToUpload.newImage);
-        String fileName = assingName(imageToUpload.newImage.name!);
+        Uint8List imageBytes =
+            await RandomServices.assetToUint8List(imageToUpload.newImage);
+        String fileName =
+            RandomServices.assingName(imageToUpload.newImage.name!);
 
         ImagesStorageTb image = ImagesStorageTb(
           idUsuario: idUsuario,
@@ -414,7 +415,7 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
         ImagesStorageTb image = ImagesStorageTb(
             idUsuario: idUsuario,
             idFile: widget.idProServicio,
-            newImageBytes: await assetToUint8List(imageToUpdate),
+            newImageBytes: await RandomServices.assetToUint8List(imageToUpdate),
             fileName: fileName,
             imageName: nombreImage);
 
@@ -471,7 +472,7 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
     if (imagesAsset.isNotEmpty) {
       for (var image in imagesAsset) {
         ProServicioImageToUpload newImage = ProServicioImageToUpload(
-          nombreImage: assingName(image!.name!),
+          nombreImage: RandomServices.assingName(image!.name!),
           newImage: image,
           width: image.originalWidth!.toDouble(),
           height: image.originalHeight!.toDouble(),
@@ -526,7 +527,7 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
           int indiceToUpload = imagesToUpload.indexWhere(
               (element) => element.nombreImage == image.nombreImage);
           ProServicioImageToUpload newImage = ProServicioImageToUpload(
-            nombreImage: assingName(asset.name!),
+            nombreImage: RandomServices.assingName(asset.name!),
             newImage: asset,
             width: asset.originalWidth!.toDouble(),
             height: asset.originalHeight!.toDouble(),

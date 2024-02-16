@@ -1,33 +1,33 @@
-import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
-import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
+import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
+import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/providers/categoriasProvider.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioGeneralForm.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
-class ProductoGeneralForm extends ConsumerStatefulWidget {
-  const ProductoGeneralForm({super.key, this.producto});
+class ServiceGeneralForm extends ConsumerStatefulWidget {
+  const ServiceGeneralForm({super.key, this.service});
 
-  final ProductoTb? producto;
+  final ServicioTb? service;
 
   @override
-  ProductoGeneralFormState createState() => ProductoGeneralFormState();
+  ServiceGeneralFormState createState() => ServiceGeneralFormState();
 }
 
-class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
+class ServiceGeneralFormState extends ConsumerState<ServiceGeneralForm> {
+  final FocusScopeNode _focusScopeNode = FocusScopeNode();
+  int pageController = 1;
+
   // variables for first page
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -41,146 +41,120 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
   String? urlPrincipalImage;
   Uint8List? principalImageBytes;
 
-  Future<void> selectImages() async {
-    List<ProServicioImageToUpload> selectedImagesAux =
-        await CrudImages.agregarImagenes();
-
-    setState(() {
-      myImageList.items.addAll(selectedImagesAux);
-    });
-    if (widget.producto?.idProducto == null && selectedImagesAux.isNotEmpty) {
-      if (principalImage == null) {
-        setState(() {
-          principalImage = selectedImagesAux[0].newImage;
-        });
-      }
-    }
-  }
-
-  Future<void> crearProducto(ProductoCreacionTb producto, int idUsuario) async {
-    int idProducto;
+  Future<void> crearServicio(ServicioCreacionTb servicio, int idUsuario) async {
+    int idServicio;
     final categoriasSeleccionadas = ref.read(subCategoriasSelectedProvider);
-
     try {
-      idProducto =
-          await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
+      idServicio =
+          await ServicioDb.insertServicio(servicio, categoriasSeleccionadas);
+      String finalNameImage = RandomServices.assingName(principalImage!.name!);
 
-      // Save principal image
-      if ((principalImageBytes != null || principalImage != null)) {
+      if (principalImageBytes != null || principalImage != null) {
         ImagesStorageTb image = ImagesStorageTb(
           idUsuario: idUsuario,
-          idFile: idProducto,
+          idFile: idServicio,
           newImageBytes: principalImageBytes ??
               await RandomServices.assetToUint8List(principalImage!),
-          imageName: principalImage!.name!,
-          fileName: 'productos',
+          fileName: 'servicios',
+          imageName: finalNameImage,
         );
-
-        // Save principal image in firebase and retrieve  its url
         String url = await ImagesStorage.cargarImage(image);
 
         ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
-          idProServicio: idProducto,
-          nombreImage: principalImage!.name!,
+          idProServicio: idServicio,
+          nombreImage: finalNameImage,
           urlImage: url,
           width: principalImage!.originalWidth!.toDouble(),
           height: principalImage!.originalHeight!.toDouble(),
           isPrincipalImage: 1,
         );
 
-        await ProductImageDb.insertProductImages(productImage);
+        await ServiceImageDb.insertServiceImage(productImage);
       }
 
-      // Save secondary images
       if (myImageList.items.isNotEmpty) {
         for (var imagen in myImageList.items) {
+          String finalNameImage =
+              RandomServices.assingName(principalImage!.name!);
           if (imagen is ProServicioImageToUpload) {
+            Uint8List imageBytes =
+                await RandomServices.assetToUint8List(imagen.newImage);
+
             ImagesStorageTb image = ImagesStorageTb(
               idUsuario: idUsuario,
-              idFile: idProducto,
-              newImageBytes:
-                  await RandomServices.assetToUint8List(imagen.newImage),
-              imageName: imagen.nombreImage,
-              fileName: 'productos',
+              idFile: idServicio,
+              newImageBytes: imageBytes,
+              imageName: finalNameImage,
+              fileName: 'servicios',
             );
 
             String url = await ImagesStorage.cargarImage(image);
 
-            ProServicioImageCreacionTb productImage =
+            ProServicioImageCreacionTb serviceImage =
                 ProServicioImageCreacionTb(
-              idProServicio: idProducto,
-              nombreImage: principalImage!.name!,
+              idProServicio: idServicio,
+              nombreImage: finalNameImage,
               urlImage: url,
               width: principalImage!.originalWidth!.toDouble(),
               height: principalImage!.originalHeight!.toDouble(),
               isPrincipalImage: 0,
             );
-
-            await ProductImageDb.insertProductImages(productImage);
+            await ServiceImageDb.insertServiceImage(serviceImage);
           }
         }
       }
-      // mostrarCuadroExito(idProducto);
     } catch (error) {
-      print('Problemas al insertar el producto $error');
+      print('Problemas al insertar el servicio $error');
     }
   }
 
-  void guardar(int idUsuarioActual) async {
-    //--- Se asigna cada String de los campos de texto a una variable ---//
-    final String nombreProducto = _nameController.text;
+  void guardar(int idUsuario) async {
+    final String nombreServicio = _nameController.text;
     final double precio = RandomServices.textToDouble(_priceController.text);
     final String descripcion = _descriptionController.text;
     final int descuento = int.tryParse(_discountController.text) ?? 0;
 
-    ProductoCreacionTb productoCreacion;
+    ServicioCreacionTb servicioCreacion;
+    int idNegocio = await NegocioDb.createBusiness(idUsuario);
 
-    //Create business if not exist
-    int idNegocio = await NegocioDb.createBusiness(idUsuarioActual);
-
-    if (widget.producto?.idProducto == null) {
-      //-- Creamos el producto --//
-      productoCreacion = ProductoCreacionTb(
+    if (widget.service?.idServicio == null) {
+      servicioCreacion = ServicioCreacionTb(
         idNegocio: idNegocio,
-        nombreProducto: nombreProducto,
-        precio: precio,
+        nombre: nombreServicio,
         descripcion: descripcion,
-        cantidadDisponible: 0,
+        precio: precio,
         oferta: isOffert ? 1 : 0,
         descuento: descuento,
       );
 
-      myImageList.items.isNotEmpty
-          ? crearProducto(productoCreacion, idUsuarioActual)
-          : print('imagenToUpload es null o idUsuario es null');
+      crearServicio(servicioCreacion, idUsuario);
     } else {
-      //-- Actualizamos el producto --//
-      // _producto = ProductoTb(
-      //   idProducto: _producto!.idProducto,
-      //   idNegocio: _producto!.idNegocio,
-      //   nombre: nombreProducto,
+      // _servicio = ServicioTb(
+      //   idServicio: _servicio!.idServicio,
+      //   idNegocio: _servicio!.idNegocio,
+      //   nombre: nombreServicio,
       //   precio: precio,
-      //   descripcion: descripcion,
-      //   cantidadDisponible: cantidadDisponible,
       //   oferta: enOferta,
-      //   urlImage: _producto!.urlImage,
-      //   nombreImage: _producto!.nombreImage,
+      //   urlImage: _servicio!.urlImage,
+      //   nombreImage: _servicio!.nombreImage,
       // );
 
-      // actualizarProducto(_producto!, idUsuario);
+      // print("PRIMER PARTE ${_servicio!.nombre}");
+      // actualizarServicio(_servicio!, idUsuario);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
+
     return ProServicioGeneralStructure(
       nameController: _nameController,
       priceController: _priceController,
       discountController: _discountController,
       descriptionController: _descriptionController,
       isOffert: isOffert,
-      nameProServicio: "producto",
+      nameProServicio: "servicio",
       myImageList: myImageList,
       principalImage: principalImage,
       urlPrincipalImage: urlPrincipalImage,

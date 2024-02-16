@@ -9,13 +9,13 @@ import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
-import 'package:etfi_point/Components/Utils/AssetToUint8List.dart';
 import 'package:etfi_point/Components/Utils/ElevatedGlobalButton.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
+import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/divider.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
@@ -157,8 +157,8 @@ class ProductosGeneralFormState extends ConsumerState<ProductosGeneralForm> {
         ImagesStorageTb image = ImagesStorageTb(
           idUsuario: idUsuario,
           idFile: idProducto,
-          newImageBytes:
-              principalImageBytes ?? await assetToUint8List(principalImage!),
+          newImageBytes: principalImageBytes ??
+              await RandomServices.assetToUint8List(principalImage!),
           imageName: principalImage!.name!,
           fileName: 'productos',
         );
@@ -179,7 +179,8 @@ class ProductosGeneralFormState extends ConsumerState<ProductosGeneralForm> {
       if (myImageList.items.isNotEmpty) {
         for (var imagen in myImageList.items) {
           if (imagen is ProServicioImageToUpload) {
-            Uint8List imageBytes = await assetToUint8List(imagen.newImage);
+            Uint8List imageBytes =
+                await RandomServices.assetToUint8List(imagen.newImage);
 
             ImagesStorageTb image = ImagesStorageTb(
               idUsuario: idUsuario,
@@ -227,8 +228,8 @@ class ProductosGeneralFormState extends ConsumerState<ProductosGeneralForm> {
       ImagesStorageTb image = ImagesStorageTb(
         idUsuario: idUsuario,
         idFile: idProducto,
-        newImageBytes:
-            principalImageBytes ?? await assetToUint8List(principalImage!),
+        newImageBytes: principalImageBytes ??
+            await RandomServices.assetToUint8List(principalImage!),
         fileName: 'productos',
         imageName: producto.nombreImage,
       );
@@ -310,7 +311,7 @@ class ProductosGeneralFormState extends ConsumerState<ProductosGeneralForm> {
     int descuento = int.tryParse(_descuentoController.text) ?? 0;
 
     ProductoCreacionTb productoCreacion;
-    int idNegocio = await NegocioDb.crearNegocioSiNoExiste(idUsuario);
+    int idNegocio = await NegocioDb.createBusiness(idUsuario);
 
     if (_producto?.idProducto == null) {
       //-- Creamos el producto --//

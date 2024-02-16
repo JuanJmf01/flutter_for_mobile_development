@@ -9,7 +9,7 @@ import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlaces/enlace
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/publicacionesDb.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
-import 'package:etfi_point/Components/Utils/Services/assingName.dart';
+import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/cargarMediaDeEnlaces.dart';
@@ -52,7 +52,7 @@ class CrearReelState extends ConsumerState<CrearReel> {
 
     if (reel != null) {
       String nombreReel = reel!.name;
-      String finalNameVideo = assingName(nombreReel);
+      String finalNameVideo = RandomServices.assingName(nombreReel);
 
       VideoStorageCreacionTb video = VideoStorageCreacionTb(
         idUsuario: widget.idUsuario,

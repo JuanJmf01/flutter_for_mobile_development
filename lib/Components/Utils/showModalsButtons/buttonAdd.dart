@@ -5,7 +5,7 @@ import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/enlaces/crearEnlace.dart';
 import 'package:etfi_point/Screens/crearReel.dart';
 import 'package:etfi_point/Screens/proServicios/productos/productoGeneralForm.dart';
-import 'package:etfi_point/Screens/proServicios/servicios/serviciosGeneralForm.dart';
+import 'package:etfi_point/Screens/proServicios/servicios/serviceGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,10 +79,7 @@ class ButtonAdd extends ConsumerWidget {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const ServiciosGeneralForm(
-                              titulo: "Agregar servicio",
-                              nameSaveButton: "Agregasr",
-                            )));
+                        builder: (context) => const ServiceGeneralForm()));
               } else {
                 print("Manage logueo");
               }
