@@ -1,9 +1,11 @@
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/globalButtonBase.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/smallButtonTopTab.dart';
 import 'package:etfi_point/Components/Utils/showModalsButtons/itemForModalButons.dart';
+import 'package:etfi_point/Components/providers/categoriasProvider.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/enlaces/crearEnlace.dart';
-import 'package:etfi_point/Screens/crearReel.dart';
+import 'package:etfi_point/Screens/enlaces/crearReel.dart';
 import 'package:etfi_point/Screens/proServicios/productos/productoGeneralForm.dart';
 import 'package:etfi_point/Screens/proServicios/servicios/serviceGeneralForm.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,30 +17,6 @@ class ButtonAdd extends ConsumerWidget {
 
   final EdgeInsets padding = const EdgeInsets.symmetric(horizontal: 10.0);
   final Color colorIcons = Colors.black54;
-
-  void irANuevoVinculo(int idUsuario, BuildContext context) {
-    // context
-    //     .read<ProServiciosProvider>()
-    //     .obtenerProServiciosByNegocio(idUsuario);
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => CrearEnlace(
-                  idUsuario: idUsuario,
-                )));
-  }
-
-  void irANuevoReel(int idUsuario, BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CrearReel(
-          idUsuario: idUsuario,
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,16 +32,11 @@ class ButtonAdd extends ConsumerWidget {
           ItemForModalButtons(
             onPress: () {
               if (idUsuarioActual != null) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            // const ProductoGeneralForm(
-                            //   titulo: 'Agregar producto',
-                            //   nameSavebutton: 'Crear',
-                            //   exitoMessage: 'Producto creado exitosamente',
-                            // ),
-                            const ProductoGeneralForm()));
+                ref
+                    .read(subCategoriasSelectedProvider.notifier)
+                    .update((state) => []);
+
+                NavigatorPush.navigate(context, const ProductoGeneralForm());
               } else {
                 print("Manage logueo");
               }
@@ -76,10 +49,10 @@ class ButtonAdd extends ConsumerWidget {
           ItemForModalButtons(
             onPress: () {
               if (idUsuarioActual != null) {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ServiceGeneralForm()));
+                ref
+                    .read(subCategoriasSelectedProvider.notifier)
+                    .update((state) => []);
+                NavigatorPush.navigate(context, const ServiceGeneralForm());
               } else {
                 print("Manage logueo");
               }
@@ -92,7 +65,8 @@ class ButtonAdd extends ConsumerWidget {
           ItemForModalButtons(
             onPress: () {
               idUsuarioActual != null
-                  ? irANuevoVinculo(idUsuarioActual, context)
+                  ? NavigatorPush.navigate(
+                      context, CrearEnlace(idUsuario: idUsuarioActual))
                   : print("Manage logueo");
             },
             padding: padding,
@@ -103,7 +77,10 @@ class ButtonAdd extends ConsumerWidget {
           ItemForModalButtons(
             onPress: () {
               idUsuarioActual != null
-                  ? irANuevoReel(idUsuarioActual, context)
+                  ? NavigatorPush.navigate(
+                      context,
+                      CrearReel(idUsuario: idUsuarioActual),
+                    )
                   : print("Manage logueo");
             },
             padding: padding,

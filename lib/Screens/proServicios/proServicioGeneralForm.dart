@@ -1,12 +1,17 @@
 import 'dart:io';
 
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
+import 'package:etfi_point/Components/Data/Entities/subCategoriasDb.dart';
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/myImageList.dart';
 import 'package:etfi_point/Components/Utils/Services/MediaPicker.dart';
 import 'package:etfi_point/Components/Utils/Services/editarImagen.dart';
+import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/arrowTextButton.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
@@ -29,7 +34,8 @@ class ProServicioGeneralStructure extends ConsumerStatefulWidget {
     required this.discountController,
     required this.descriptionController,
     required this.isOffert,
-    required this.nameProServicio,
+    required this.proServiceObjectType,
+    this.urlSubCategories,
     //
     required this.myImageList,
     this.principalImage,
@@ -48,7 +54,8 @@ class ProServicioGeneralStructure extends ConsumerStatefulWidget {
   final TextEditingController discountController;
   final TextEditingController descriptionController;
   final bool isOffert;
-  final String nameProServicio;
+  final Type proServiceObjectType;
+  final String? urlSubCategories;
   //
   final ImageList myImageList;
   final Asset? principalImage;
@@ -74,25 +81,19 @@ class ProServicioGeneralStructureState
     extends ConsumerState<ProServicioGeneralStructure> {
   final FocusScopeNode _focusScopeNode = FocusScopeNode();
   int pageController = 1;
+  bool handleSubCategoryUpdates = false;
 
   @override
   void initState() {
     super.initState();
-
-   
   }
 
-  double textToDouble() {
-    try {
-      String text = widget.priceController.text;
-      double price = double.parse(text);
-      return price;
-    } catch (e) {
-      print('Error: $e');
-      return 0.0;
-    }
+  String definePrincipalName(bool isCamelCase) {
+    Type objectType = widget.proServiceObjectType;
+    return (isCamelCase ? objectType == ProductoTb : objectType == ServicioTb)
+        ? (isCamelCase ? 'Producto' : 'producto')
+        : (isCamelCase ? 'Servicio' : 'servicio');
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +118,7 @@ class ProServicioGeneralStructureState
           title: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Nuevo ${widget.nameProServicio}"),
+              Text("Nuevo ${definePrincipalName(true)}"),
               GlobalTextButton(
                 textButton: pageController != 3 ? "Siguiente" : "Guardar",
                 fontSizeTextButton: 17,
@@ -140,6 +141,20 @@ class ProServicioGeneralStructureState
                     //     Navigator.of(context).pop();
                     //   }
                     // });
+                  } else if (pageController == 2 &&
+                      widget.urlSubCategories != null &&
+                      !handleSubCategoryUpdates) {
+                    List<SubCategoriaTb> selectedSubCategorias =
+                        await SubCategoriasDb.getSubCategoriasByProducto(
+                            widget.urlSubCategories!);
+
+                    ref
+                        .read(subCategoriasSelectedProvider.notifier)
+                        .update((state) => selectedSubCategorias);
+
+                    setState(() {
+                      handleSubCategoryUpdates = true;
+                    });
                   } else if (pageController == 3) {
                     // guardar(idUsuarioActual);
                     widget.callbackGuardar();
@@ -158,16 +173,17 @@ class ProServicioGeneralStructureState
         body: pageController == 1
             ? SingleChildScrollView(
                 child: ProductDetail(
-                    nameController: widget.nameController,
-                    precioController: widget.priceController,
-                    discountController: widget.discountController,
-                    descripcionController: widget.descriptionController,
-                    focusScopeNode: _focusScopeNode,
-                    isOffert: widget.isOffert,
-                    nameProServicio: widget.nameProServicio,
-                    onUpdatedOffert: (bool newIsOffert) {
-                      widget.onUpDateOffert(newIsOffert);
-                    }),
+                  nameController: widget.nameController,
+                  precioController: widget.priceController,
+                  discountController: widget.discountController,
+                  descripcionController: widget.descriptionController,
+                  focusScopeNode: _focusScopeNode,
+                  isOffert: widget.isOffert,
+                  onUpdatedOffert: (bool newIsOffert) {
+                    widget.onUpDateOffert(newIsOffert);
+                  },
+                  proServiceObjectType: widget.proServiceObjectType,
+                ),
               )
             : pageController == 2
                 ? SelectImages(
@@ -191,13 +207,16 @@ class ProServicioGeneralStructureState
                       widget.onSelectedImageList(newImageList);
                     },
                     nombreProducto: widget.nameController.text,
-                    precioProducto: textToDouble(),
-                    descuentoProducto: widget.discountController.text,
-                    nameProServicio: widget.nameProServicio,
+                    precioProducto: RandomServices.textToDouble(
+                        widget.priceController.text),
+                    isOffert: widget.isOffert,
+                    discount: widget.discountController.text,
+                    nameProServicio: definePrincipalName(false),
                   )
                 : pageController == 3
                     ? CategorySelectionInterface(
-                        url: MisRutas.rutaCategorias2,
+                        urlCategorias: MisRutas.rutaCategorias2,
+                        //urlSubCategories: widget.urlSubCategories,
                       )
                     : const SizedBox.shrink(),
       ),
@@ -214,8 +233,8 @@ class ProductDetail extends StatefulWidget {
     required this.descripcionController,
     required this.focusScopeNode,
     required this.isOffert,
-    required this.nameProServicio,
     required this.onUpdatedOffert,
+    required this.proServiceObjectType,
   });
 
   final TextEditingController nameController;
@@ -224,7 +243,7 @@ class ProductDetail extends StatefulWidget {
   final TextEditingController descripcionController;
   final FocusScopeNode focusScopeNode;
   final bool isOffert;
-  final String nameProServicio;
+  final Type proServiceObjectType;
 
   final Function(bool) onUpdatedOffert;
 
@@ -233,6 +252,29 @@ class ProductDetail extends StatefulWidget {
 }
 
 class _ProductDetailState extends State<ProductDetail> {
+  final TextEditingController _precioAhoraController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _precioAhoraController.text = widget.precioController.text;
+  }
+
+  void priceWithDiscount(double precioValue, int discountValue) {
+    final precioAhora = precioValue * (1 - (discountValue / 100));
+    _precioAhoraController.text = precioAhora.toString();
+  }
+
+  String definePrincipalName(bool isCamelCase) {
+    Type objectType = widget.proServiceObjectType;
+
+    return (objectType == ProductoTb)
+        ? (isCamelCase ? 'Producto' : 'producto')
+        : objectType == ServicioTb
+            ? (isCamelCase ? 'Servicio' : 'servicio')
+            : 'Pro-Servicio';
+  }
+
   @override
   Widget build(BuildContext context) {
     double horizontalPaddgin = 18.0;
@@ -250,7 +292,7 @@ class _ProductDetailState extends State<ProductDetail> {
             SectionTitle(
                 padding: EdgeInsets.fromLTRB(
                     0.0, verticalPaddgin / 2, 0.0, verticalPaddgin * 1.5),
-                title: "Detalle de ${widget.nameProServicio}"),
+                title: "Detalle de ${definePrincipalName(false)}"),
             Padding(
               padding: EdgeInsets.only(bottom: verticalPaddgin * 1.5),
               child: Row(
@@ -259,7 +301,7 @@ class _ProductDetailState extends State<ProductDetail> {
                   Padding(
                     padding: EdgeInsets.only(left: horizontalPaddgin),
                     child: Text(
-                      "¿${widget.nameProServicio} en oferta?",
+                      "¿${definePrincipalName(true)} en oferta?",
                       style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w500,
@@ -289,14 +331,14 @@ class _ProductDetailState extends State<ProductDetail> {
                 children: [
                   isOffert
                       ? Expanded(
-                          child: discountInput(
+                          child: priceInput(
                             borderInput,
                             EdgeInsets.only(right: mediumPadding),
                           ),
                         )
                       : SizedBox(
                           width: MediaQuery.of(context).size.width / 2,
-                          child: discountInput(
+                          child: priceInput(
                             borderInput,
                             EdgeInsets.only(right: mediumPadding * 4),
                           ),
@@ -310,6 +352,14 @@ class _ProductDetailState extends State<ProductDetail> {
                             labelText: '0% - 100%',
                             keyboardType: TextInputType.number,
                             padding: EdgeInsets.only(left: mediumPadding),
+                            onChanged: (descuento) {
+                              final priceValue = RandomServices.textToDouble(
+                                  widget.precioController.text);
+                              final discountValue =
+                                  int.tryParse(descuento ?? '0') ?? 0;
+
+                              priceWithDiscount(priceValue, discountValue);
+                            },
                           ),
                         )
                       : const SizedBox.shrink(),
@@ -322,6 +372,7 @@ class _ProductDetailState extends State<ProductDetail> {
                       SizedBox(
                         width: MediaQuery.of(context).size.width / 2,
                         child: GeneralInputs(
+                          controller: _precioAhoraController,
                           textLabelOutside: 'Precio ahora',
                           borderInput: borderInput,
                           color: Colors.grey.shade200,
@@ -349,7 +400,7 @@ class _ProductDetailState extends State<ProductDetail> {
     );
   }
 
-  Widget discountInput(BoxBorder borderInput, EdgeInsets padding) {
+  Widget priceInput(BoxBorder borderInput, EdgeInsets padding) {
     return GeneralInputs(
       controller: widget.precioController,
       textLabelOutside: 'Precio',
@@ -357,6 +408,11 @@ class _ProductDetailState extends State<ProductDetail> {
       keyboardType: TextInputType.number,
       borderInput: borderInput,
       padding: padding,
+      onChanged: (precio) {
+        final precioValue = RandomServices.textToDouble(precio ?? '0.0');
+        final discountValue = int.tryParse(widget.discountController.text) ?? 0;
+        priceWithDiscount(precioValue, discountValue);
+      },
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
       ],
@@ -376,7 +432,8 @@ class SelectImages extends StatelessWidget {
     this.idProducto,
     required this.nombreProducto,
     required this.precioProducto,
-    this.descuentoProducto,
+    required this.isOffert,
+    this.discount,
     required this.nameProServicio,
   });
 
@@ -392,7 +449,8 @@ class SelectImages extends StatelessWidget {
   final int? idProducto;
   final String nombreProducto;
   final double precioProducto;
-  final String? descuentoProducto;
+  final bool isOffert;
+  final String? discount;
   final String nameProServicio;
 
   // @override
@@ -484,8 +542,8 @@ class SelectImages extends StatelessWidget {
                     imageAsset: principalImage,
                     imageBytes: principalImageBytes,
                     precio: precioProducto,
-                    oferta: 0,
-                    descuento: 0,
+                    oferta: isOffert ? 1 : 0,
+                    descuento: RandomServices.textToInt(discount ?? '0'),
                     nombre: nombreProducto,
                   ),
                 ),
@@ -534,23 +592,28 @@ class SelectImages extends StatelessWidget {
 class CategorySelectionInterface extends ConsumerWidget {
   const CategorySelectionInterface({
     super.key,
-    required this.url,
+    required this.urlCategorias,
+    //this.urlSubCategories,
+    this.idProduct,
   });
 
-  final String url;
+  final String urlCategorias;
+  //final String? urlSubCategories;
+  final int? idProduct;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final allCategories = ref.watch(getAllCategoriasProvider(url));
+    final allCategories = ref.watch(getAllCategoriasProvider(urlCategorias));
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: allCategories.when(
         data: (categoriasDisponibles) => SelectCategories(
           categoriasDisponibles: categoriasDisponibles,
+          //urlSubCategories: urlSubCategories,
         ),
         error: (_, __) => const Text('No se pudieron cargar las categorias'),
-        loading: () => const CircularProgressIndicator(),
+        loading: () => const Center(child: CircularProgressIndicator()),
       ),
     );
   }

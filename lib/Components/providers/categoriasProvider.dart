@@ -19,13 +19,20 @@ final subCategoriesByIndiceProvider =
 });
 
 final generarSeleccionados = StateProvider<List<bool>>((ref) {
-  final subCategoriesSelected = ref.watch(subCategoriasSelectedProvider);
+  final List<SubCategoriaTb> subCategoriesSelected =
+      ref.watch(subCategoriasSelectedProvider);
 
-  final subCategoriesByIndice = ref.watch(subCategoriesByIndiceProvider);
+  final List<SubCategoriaTb> subCategoriesByIndice =
+      ref.watch(subCategoriesByIndiceProvider);
 
-  List<bool> isSelected = subCategoriesByIndice.map((elemento) {
-    return subCategoriesSelected.contains(elemento);
-  }).toList();
+  List<bool> isSelected = List.filled(subCategoriesByIndice.length, false);
+
+  for (int i = 0; i < subCategoriesByIndice.length; i++) {
+    SubCategoriaTb subCategoria = subCategoriesByIndice[i];
+    isSelected[i] = subCategoriesSelected.any((selected) =>
+        selected.idCategoria == subCategoria.idCategoria &&
+        selected.nombre == subCategoria.nombre);
+  }
 
   return isSelected;
 });

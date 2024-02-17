@@ -13,6 +13,7 @@ import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/cargarMediaDeEnlaces.dart';
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
 import 'package:etfi_point/Components/providers/proServiciosProvider.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/enlaces/selectEnlace.dart';
@@ -130,14 +131,12 @@ class CrearReelState extends ConsumerState<CrearReel> {
     servicios = await serviciosFuture;
 
     if (mounted) {
-      Navigator.push(
+      NavigatorPush.navigate(
         context,
-        MaterialPageRoute(
-          builder: (context) => SelectEnlace(
-            callback: updateSelectedProServicio,
-            productos: productos,
-            servicios: servicios,
-          ),
+        SelectEnlace(
+          callback: updateSelectedProServicio,
+          productos: productos,
+          servicios: servicios,
         ),
       );
     }

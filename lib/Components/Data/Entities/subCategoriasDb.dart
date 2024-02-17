@@ -1,22 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Data/Entities/proServiceSubCategoriasDb.dart';
 
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 
 class SubCategoriasDb {
-  static Future<SubCategoriaTb> getSubCategoria(
-      int idSubCategoria, Type objectType) async {
+  static Future<List<SubCategoriaTb>> getSubCategoriasByProducto(
+      String url) async {
     Dio dio = Dio();
-    String url = '';
-    if (objectType == ProductoTb) {
-      url = '${MisRutas.rutaSubCategorias}/$idSubCategoria';
-    } else if (objectType == ServicioTb) {
-      print("id subcategorias_: $idSubCategoria");
-      url = '${MisRutas.rutaSubCategoriaServicios}/$idSubCategoria';
-    }
 
     try {
       Response response = await dio.get(url,
@@ -25,9 +15,12 @@ class SubCategoriasDb {
           ));
 
       if (response.statusCode == 200) {
-        SubCategoriaTb subCategoria = SubCategoriaTb.fromJson(response.data);
+        List<dynamic> jsonList = response.data;
+        List<SubCategoriaTb> subCategorias = jsonList.map((json) {
+          return SubCategoriaTb.fromJson(json);
+        }).toList();
 
-        return subCategoria;
+        return subCategorias;
       } else {
         throw Exception('Error en la solicitud ${response.statusCode}');
       }
@@ -57,31 +50,6 @@ class SubCategoriasDb {
       }
     } catch (error) {
       throw Exception('Error: $error');
-    }
-  }
-
-  static Future<List<SubCategoriaTb>> getSubCategoriasByProducto(
-      int idProServicio, Type objectType) async {
-    try {
-      List<int> idSubCategoriesByProduct =
-          await ProServiceSubCategoriasDb.getProServiceSelectedSubCategoies(
-              idProServicio, objectType);
-
-      print("subcategorias: $idSubCategoriesByProduct");
-
-      List<SubCategoriaTb> subCategorias = [];
-
-      for (int idSubCategoria in idSubCategoriesByProduct) {
-        SubCategoriaTb subCategoria =
-            await getSubCategoria(idSubCategoria, objectType);
-        subCategorias.add(subCategoria);
-      }
-
-      return subCategorias;
-    } catch (error) {
-      print('No hay subCategorias que mostrar');
-      return [];
-      // throw Exception('Error en la solicitud: $error');
     }
   }
 }

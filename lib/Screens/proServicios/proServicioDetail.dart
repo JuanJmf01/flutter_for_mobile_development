@@ -10,10 +10,12 @@ import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImag
 import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Data/Routes/rutasFirebase.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
+import 'package:etfi_point/Components/providers/categoriasProvider.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioGeneralDetail.dart';
-import 'package:etfi_point/Screens/proServicios/servicios/serviciosGeneralForm.dart';
-import 'package:etfi_point/Screens/proServicios/productos/productosGeneralForm.dart';
+import 'package:etfi_point/Screens/proServicios/productos/productoGeneralForm.dart';
+import 'package:etfi_point/Screens/proServicios/servicios/serviceGeneralForm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -30,7 +32,7 @@ class ProServicioDetail extends ConsumerStatefulWidget {
 
 class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
   int? idProServicio;
-  String fileName = "";
+  String fileName = '';
   String urlImage = '';
   ImageList proServiceSecondaryImagesList = ImageList([]);
   List<ProservicioImagesTb> proServiceSecondaryImages = [];
@@ -169,24 +171,22 @@ class ProServicioDetailState extends ConsumerState<ProServicioDetail> {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
-            onPressed: () async {
-              await Navigator.push<int>(
+            onPressed: () {
+              ref
+                  .read(subCategoriasSelectedProvider.notifier)
+                  .update((state) => []);
+
+              NavigatorPush.navigate(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => objectType == ServicioTb
-                      ? ServiciosGeneralForm(
-                          titulo: "Editar Servicio",
-                          nameSaveButton: "Actualizar",
-                          servicio: widget.proServicio,
-                        )
-                      : objectType == ProductoTb
-                          ? ProductosGeneralForm(
-                              producto: widget.proServicio,
-                              titulo: "EditarProducto",
-                              nameSavebutton: "Actualizar ",
-                              exitoMessage: "Actualizado correctamente")
-                          : const SizedBox.shrink(),
-                ),
+                objectType == ServicioTb
+                    ? ServiceGeneralForm(
+                        service: widget.proServicio,
+                      )
+                    : objectType == ProductoTb
+                        ? ProductoGeneralForm(
+                            product: widget.proServicio,
+                          )
+                        : const SizedBox.shrink(),
               );
             },
           ),

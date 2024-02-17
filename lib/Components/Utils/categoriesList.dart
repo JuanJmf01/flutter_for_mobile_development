@@ -55,7 +55,7 @@ class CategoriesList extends ConsumerWidget {
                 margin: const EdgeInsets.all(5.0),
                 padding: const EdgeInsets.all(10.0),
                 decoration: BoxDecoration(
-                  color: !deleteOption && isBlue.isNotEmpty
+                  color: !deleteOption && isBlue.isNotEmpty && index < isBlue.length 
                       ? isBlue[index]
                           ? Colors.blue
                           : Colors.white
@@ -102,3 +102,4 @@ class CategoriesList extends ConsumerWidget {
     );
   }
 }
+

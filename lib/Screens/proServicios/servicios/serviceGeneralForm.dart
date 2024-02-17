@@ -7,6 +7,7 @@ import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImag
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/serviceImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/providers/categoriasProvider.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
@@ -25,9 +26,6 @@ class ServiceGeneralForm extends ConsumerStatefulWidget {
 }
 
 class ServiceGeneralFormState extends ConsumerState<ServiceGeneralForm> {
-  final FocusScopeNode _focusScopeNode = FocusScopeNode();
-  int pageController = 1;
-
   // variables for first page
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _priceController = TextEditingController();
@@ -40,6 +38,16 @@ class ServiceGeneralFormState extends ConsumerState<ServiceGeneralForm> {
   Asset? principalImage;
   String? urlPrincipalImage;
   Uint8List? principalImageBytes;
+
+  // variables for third page
+  String? urlSubCategories;
+
+  @override
+  void initState() {
+    super.initState();
+
+    defineUrlToUpdateService();
+  }
 
   Future<void> crearServicio(ServicioCreacionTb servicio, int idUsuario) async {
     int idServicio;
@@ -144,6 +152,14 @@ class ServiceGeneralFormState extends ConsumerState<ServiceGeneralForm> {
     }
   }
 
+  void defineUrlToUpdateService() {
+    Type objectType = widget.service.runtimeType;
+    if (widget.service != null && objectType == ServicioTb) {
+      urlSubCategories =
+          '${MisRutas.rutaSubCategorias}/${widget.service!.idServicio}';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final int? idUsuarioActual = ref.watch(getCurrentUserProvider).value;
@@ -154,7 +170,7 @@ class ServiceGeneralFormState extends ConsumerState<ServiceGeneralForm> {
       discountController: _discountController,
       descriptionController: _descriptionController,
       isOffert: isOffert,
-      nameProServicio: "servicio",
+      proServiceObjectType: widget.service.runtimeType,
       myImageList: myImageList,
       principalImage: principalImage,
       urlPrincipalImage: urlPrincipalImage,
@@ -173,13 +189,11 @@ class ServiceGeneralFormState extends ConsumerState<ServiceGeneralForm> {
           principalImage = newPrincipalImage;
           urlPrincipalImage = newUrlPrincipalImage;
           principalImageBytes = newPrincipalImageBytes;
-          print("principal af: $principalImage");
         });
       },
       onSelectedImageList: (List<ProServicioImageToUpload> newImageList) {
         setState(() {
           myImageList.items.addAll(newImageList);
-          print("NEW IMAGE LSIT : $newImageList");
         });
       },
       callbackGuardar: () {

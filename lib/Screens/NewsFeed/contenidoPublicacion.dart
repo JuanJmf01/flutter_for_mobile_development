@@ -6,6 +6,7 @@ import 'package:etfi_point/Components/Data/Entities/Publicaciones/no%20enlaces/r
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
 import 'package:etfi_point/Components/Data/Entities/servicioDb.dart';
 import 'package:etfi_point/Components/Utils/Icons/icons.dart';
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:etfi_point/main.dart';
@@ -90,13 +91,11 @@ class _FilaIconosState extends State<FilaIconos> {
 
   void navigateToServiceDetail(int idServicio) {
     ServicioDb.getServicio(idServicio).then((servicio) {
-      Navigator.push(
+      NavigatorPush.navigate(
         context,
-        MaterialPageRoute(
-          builder: (context) => ProServicioDetail(
-            proServicio: servicio,
-            nameContexto: "servicio",
-          ),
+        ProServicioDetail(
+          proServicio: servicio,
+          nameContexto: "servicio",
         ),
       );
     });
@@ -104,13 +103,11 @@ class _FilaIconosState extends State<FilaIconos> {
 
   void navigateToProductDetail(int idProducto) {
     ProductoDb.getProducto(idProducto).then((producto) {
-      Navigator.push(
+      NavigatorPush.navigate(
         context,
-        MaterialPageRoute(
-          builder: (context) => ProServicioDetail(
-            proServicio: producto,
-            nameContexto: "producto",
-          ),
+        ProServicioDetail(
+          proServicio: producto,
+          nameContexto: "producto",
         ),
       );
     });
@@ -201,13 +198,11 @@ class ContenidoParteSuperior extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        Navigator.pushReplacement(
+        NavigatorPush.navigateReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => Menu(
-              currentIndex: 1,
-              idUsuario: idUsuario,
-            ),
+          Menu(
+            currentIndex: 1,
+            idUsuario: idUsuario,
           ),
         );
       },

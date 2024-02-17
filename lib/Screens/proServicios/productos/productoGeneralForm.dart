@@ -1,13 +1,17 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:etfi_point/Components/Data/EntitiModels/proServicioImagesTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productImagesStorageTb.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
+import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
 import 'package:etfi_point/Components/Data/Entities/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/Components/Data/Entities/negocioDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productImageDb.dart';
 import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
+import 'package:etfi_point/Components/Data/Routes/rutas.dart';
 import 'package:etfi_point/Components/Utils/ImagesUtils/crudImages.dart';
+import 'package:etfi_point/Components/Utils/ImagesUtils/fileTemporal.dart';
 import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/providers/categoriasProvider.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
@@ -19,9 +23,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProductoGeneralForm extends ConsumerStatefulWidget {
-  const ProductoGeneralForm({super.key, this.producto});
+  const ProductoGeneralForm({super.key, this.product});
 
-  final ProductoTb? producto;
+  final ProductoTb? product;
 
   @override
   ProductoGeneralFormState createState() => ProductoGeneralFormState();
@@ -41,6 +45,32 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
   String? urlPrincipalImage;
   Uint8List? principalImageBytes;
 
+  // variables for second page
+  List<SubCategoriaTb> selectedSubCategories = [];
+  String? urlSubCategories;
+
+  @override
+  void initState() {
+    super.initState();
+
+    initializeVariables();
+    defineUrlToUpdateProduct();
+  }
+
+  void initializeVariables() {
+    if (widget.product != null) {
+      print("Si entree");
+      ProductoTb product = widget.product!;
+
+      _nameController.text = product.nombre;
+      _priceController.text = product.precio.toStringAsFixed(2);
+      _discountController.text = product.descuento.toString();
+      _descriptionController.text = product.descripcion ?? '';
+    }else{
+      print("No entree");
+    }
+  }
+
   Future<void> selectImages() async {
     List<ProServicioImageToUpload> selectedImagesAux =
         await CrudImages.agregarImagenes();
@@ -48,7 +78,7 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
     setState(() {
       myImageList.items.addAll(selectedImagesAux);
     });
-    if (widget.producto?.idProducto == null && selectedImagesAux.isNotEmpty) {
+    if (widget.product?.idProducto == null && selectedImagesAux.isNotEmpty) {
       if (principalImage == null) {
         setState(() {
           principalImage = selectedImagesAux[0].newImage;
@@ -126,11 +156,46 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
     }
   }
 
+  void actualizarProducto(ProductoTb producto, int idUsuario) async {
+    int idProducto = producto.idProducto;
+
+    if (urlPrincipalImage != null) {
+      File urlImageInFile = await FileTemporal.convertToTempFile(
+          urlImage: urlPrincipalImage, image: principalImage);
+      Uint8List principalImageBytesAux = await urlImageInFile.readAsBytes();
+      setState(() {
+        principalImageBytes = principalImageBytesAux;
+      });
+    }
+
+    if (principalImageBytes != null || principalImage != null) {
+      ImagesStorageTb image = ImagesStorageTb(
+        idUsuario: idUsuario,
+        idFile: idProducto,
+        newImageBytes: principalImageBytes ??
+            await RandomServices.assetToUint8List(principalImage!),
+        fileName: 'productos',
+        imageName: producto.nombreImage,
+      );
+
+      await ImagesStorage.updateImage(image);
+    } else {
+      print('Imagen a actualizar es null');
+    }
+
+    try {
+      await ProductoDb.updateProducto(producto, selectedSubCategories);
+      //mostrarCuadroExito(idProducto);
+    } catch (error) {
+      print('Problemas al actualizar el producto $error');
+    }
+  }
+
   void guardar(int idUsuarioActual) async {
     //--- Se asigna cada String de los campos de texto a una variable ---//
     final String nombreProducto = _nameController.text;
-    final double precio = RandomServices.textToDouble(_priceController.text);
-    final String descripcion = _descriptionController.text;
+    final double price = RandomServices.textToDouble(_priceController.text);
+    final String description = _descriptionController.text;
     final int descuento = int.tryParse(_discountController.text) ?? 0;
 
     ProductoCreacionTb productoCreacion;
@@ -138,13 +203,13 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
     //Create business if not exist
     int idNegocio = await NegocioDb.createBusiness(idUsuarioActual);
 
-    if (widget.producto?.idProducto == null) {
+    if (widget.product?.idProducto == null) {
       //-- Creamos el producto --//
       productoCreacion = ProductoCreacionTb(
         idNegocio: idNegocio,
         nombreProducto: nombreProducto,
-        precio: precio,
-        descripcion: descripcion,
+        precio: price,
+        descripcion: description,
         cantidadDisponible: 0,
         oferta: isOffert ? 1 : 0,
         descuento: descuento,
@@ -154,20 +219,30 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
           ? crearProducto(productoCreacion, idUsuarioActual)
           : print('imagenToUpload es null o idUsuario es null');
     } else {
-      //-- Actualizamos el producto --//
-      // _producto = ProductoTb(
-      //   idProducto: _producto!.idProducto,
-      //   idNegocio: _producto!.idNegocio,
-      //   nombre: nombreProducto,
-      //   precio: precio,
-      //   descripcion: descripcion,
-      //   cantidadDisponible: cantidadDisponible,
-      //   oferta: enOferta,
-      //   urlImage: _producto!.urlImage,
-      //   nombreImage: _producto!.nombreImage,
-      // );
+      // -- Actualir el producto --//
+      ProductoTb producto = widget.product!;
 
-      // actualizarProducto(_producto!, idUsuario);
+      producto = ProductoTb(
+        idProducto: producto.idProducto,
+        idNegocio: producto.idNegocio,
+        nombre: nombreProducto,
+        precio: price,
+        descripcion: description,
+        cantidadDisponible: 0,
+        oferta: isOffert ? 1 : 0,
+        urlImage: producto.urlImage,
+        nombreImage: producto.nombreImage,
+      );
+
+      actualizarProducto(producto, idUsuarioActual);
+    }
+  }
+
+  void defineUrlToUpdateProduct() {
+    Type objectType = widget.product.runtimeType;
+    if (widget.product != null && objectType == ProductoTb) {
+      urlSubCategories =
+          '${MisRutas.rutaSubCategorias}/${widget.product!.idProducto}';
     }
   }
 
@@ -180,7 +255,8 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
       discountController: _discountController,
       descriptionController: _descriptionController,
       isOffert: isOffert,
-      nameProServicio: "producto",
+      proServiceObjectType: ProductoTb,
+      urlSubCategories: urlSubCategories,
       myImageList: myImageList,
       principalImage: principalImage,
       urlPrincipalImage: urlPrincipalImage,
@@ -199,17 +275,17 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
           principalImage = newPrincipalImage;
           urlPrincipalImage = newUrlPrincipalImage;
           principalImageBytes = newPrincipalImageBytes;
-          print("principal af: $principalImage");
         });
       },
       onSelectedImageList: (List<ProServicioImageToUpload> newImageList) {
         setState(() {
           myImageList.items.addAll(newImageList);
-          print("NEW IMAGE LSIT : $newImageList");
         });
       },
       callbackGuardar: () {
         if (idUsuarioActual != null) {
+          selectedSubCategories = ref.watch(subCategoriasSelectedProvider);
+
           guardar(idUsuarioActual);
         } else {
           print("Manage logueo");

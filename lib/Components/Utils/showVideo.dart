@@ -1,5 +1,6 @@
 import 'package:chewie/chewie.dart';
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -71,18 +72,14 @@ class _ShowVideoState extends State<ShowVideo> {
                 if (widget.items != null) {
                   _savedPosition =
                       await _controller.position; // Guarda la posición actual
-
+                  print("ee");
                   if (mounted) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            // PageViewNewsFeed(newsFeedItems: widget.items)
-
-                            ShowVideoFullScreen(
-                          urlReel: widget.urlReel,
-                          savedPosition: _savedPosition,
-                          items: widget.items!,
-                        ),
+                    NavigatorPush.navigate(
+                      context,
+                      ShowVideoFullScreen(
+                        urlReel: widget.urlReel,
+                        savedPosition: _savedPosition,
+                        items: widget.items!,
                       ),
                     );
                   }

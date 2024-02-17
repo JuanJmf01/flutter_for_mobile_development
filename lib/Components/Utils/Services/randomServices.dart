@@ -47,13 +47,23 @@ class RandomServices {
     return finalTextoAleatorio;
   }
 
-  static double textToDouble(String priceText) {
+  static double textToDouble(String stringValue) {
     try {
-      double price = double.parse(priceText);
-      return price;
+      double doubleValue = double.parse(stringValue);
+      return doubleValue;
     } catch (e) {
       print('Error: $e');
       return 0.0;
+    }
+  }
+
+  static int textToInt(String stringValue) {
+    try {
+      int intValue = int.parse(stringValue);
+      return intValue;
+    } catch (e) {
+      print('Error: $e');
+      return 0;
     }
   }
 

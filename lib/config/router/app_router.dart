@@ -1,3 +1,4 @@
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
 import 'package:etfi_point/Components/providers/stateProviders.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:flutter/material.dart';
@@ -35,11 +36,7 @@ class Home2 extends ConsumerWidget {
                 } else {
                   print("No logueado");
                 }
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const PerfilPrincipal2()),
-                );
+                NavigatorPush.navigate(context, const PerfilPrincipal2());
               },
               child: const Text("Go to perfil"),
             )

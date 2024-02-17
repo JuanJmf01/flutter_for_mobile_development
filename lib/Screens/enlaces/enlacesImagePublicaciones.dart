@@ -1,6 +1,7 @@
 import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
 import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicacionesDb.dart';
 import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
 import 'package:etfi_point/Components/Utils/pageViewNewsFeed.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Screens/NewsFeed/recoverfieldsUtility.dart';
@@ -29,13 +30,8 @@ class EnlacesImagePublicaciones extends StatelessWidget {
       future: () => enlacesPublicaciones(idUsuario),
       bodyItemBuilder: (int index, Object item) => GestureDetector(
         onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) =>
-                  PageViewNewsFeed(newsFeedItems: enlacesPublicacion),
-            ),
-          );
+          NavigatorPush.navigate(
+              context, PageViewNewsFeed(newsFeedItems: enlacesPublicacion));
         },
         child: IndividualEnlace(enlacePublicacion: item),
       ),

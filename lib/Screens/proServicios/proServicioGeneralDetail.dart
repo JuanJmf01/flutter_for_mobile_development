@@ -20,6 +20,7 @@ import 'package:etfi_point/Components/Utils/Services/randomServices.dart';
 import 'package:etfi_point/Components/Utils/confirmationDialog.dart';
 import 'package:etfi_point/Components/Utils/generalInputs.dart';
 import 'package:etfi_point/Components/Utils/globalTextButton.dart';
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Components/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/reviewsAndOpinions.dart';
@@ -173,7 +174,7 @@ class _FastDescriptionState extends State<FastDescription> {
       obtenerRatingsAndOther();
     }
 
-    print('existe :  ${widget.ifExistOrNotUserRatingByProServicio}');
+    print('existe rating:  ${widget.ifExistOrNotUserRatingByProServicio}');
   }
 
   @override
@@ -254,13 +255,11 @@ class _FastDescriptionState extends State<FastDescription> {
                           child: TextButton(
                             onPressed: () {
                               if (idProServicio != null) {
-                                Navigator.push(
+                                NavigatorPush.navigate(
                                   context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ReviewsAndOpinions(
-                                      idProServicio: idProServicio!,
-                                      objectType: widget.objectType,
-                                    ),
+                                  ReviewsAndOpinions(
+                                    idProServicio: idProServicio!,
+                                    objectType: widget.objectType,
                                   ),
                                 );
                               }
@@ -826,13 +825,11 @@ class SummaryReviews extends StatelessWidget {
   final Type objectType;
 
   void navigateToReviewsAndOpinions(BuildContext context) {
-    Navigator.push(
+    NavigatorPush.navigate(
       context,
-      MaterialPageRoute(
-        builder: (context) => ReviewsAndOpinions(
-          idProServicio: idProServicio,
-          objectType: objectType,
-        ),
+      ReviewsAndOpinions(
+        idProServicio: idProServicio,
+        objectType: objectType,
       ),
     );
   }

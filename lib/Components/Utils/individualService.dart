@@ -1,4 +1,5 @@
 import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
+import 'package:etfi_point/Components/Utils/navigatorPush.dart';
 import 'package:etfi_point/Components/Utils/showImage.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
@@ -9,19 +10,6 @@ class IndividulService extends StatelessWidget {
 
   final ServicioTb servicio;
   final int index;
-
-  Future<void> _navigateToServiceDetail(
-      int idService, BuildContext context) async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ProServicioDetail(
-          proServicio: servicio,
-          nameContexto: "servicio",
-        ),
-      ),
-    );
-  }
 
   String priceWithDesc(double price, int descuento) {
     double newPrice;
@@ -68,7 +56,13 @@ class IndividulService extends StatelessWidget {
       ServicioTb servicio, double borderCircular, BuildContext context) {
     return InkWell(
       onTap: () {
-        _navigateToServiceDetail(servicio.idServicio, context);
+        NavigatorPush.navigate(
+          context,
+          ProServicioDetail(
+            proServicio: servicio,
+            nameContexto: "servicio",
+          ),
+        );
       },
       child: ShowImage(
         height: double.infinity,

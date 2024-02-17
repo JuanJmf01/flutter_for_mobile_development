@@ -16,6 +16,7 @@ class GeneralInputs extends StatelessWidget {
     this.padding,
     this.enable,
     this.borderInput,
+    this.onChanged,
   });
 
   final TextEditingController? controller;
@@ -30,6 +31,7 @@ class GeneralInputs extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool? enable;
   final BoxBorder? borderInput;
+  final void Function(String?)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -65,6 +67,7 @@ class GeneralInputs extends StatelessWidget {
               borderInput: borderInput,
               keyboardType: keyboardType,
               inputFormatters: inputFormatters,
+              onChanged: onChanged,
             ),
           ),
         ],
@@ -84,6 +87,7 @@ class TextGlobalFiled extends StatelessWidget {
     this.borderInput,
     this.keyboardType,
     this.inputFormatters,
+    this.onChanged,
   });
 
   final TextEditingController? controller;
@@ -94,6 +98,7 @@ class TextGlobalFiled extends StatelessWidget {
   final BoxBorder? borderInput;
   final TextInputType? keyboardType;
   final List<TextInputFormatter>? inputFormatters;
+  final void Function(String?)? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +107,7 @@ class TextGlobalFiled extends StatelessWidget {
       controller: controller,
       minLines: minLines ?? 1,
       maxLines: maxLines,
+      onChanged: onChanged,
       decoration: InputDecoration(
         labelText: labelText,
         border: borderInput != null
