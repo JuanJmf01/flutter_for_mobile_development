@@ -1,9 +1,9 @@
-import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Data/Entities/Publicaciones/enlacePublicacionesDb.dart';
-import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
-import 'package:etfi_point/Components/Utils/navigatorPush.dart';
-import 'package:etfi_point/Components/Utils/pageViewNewsFeed.dart';
-import 'package:etfi_point/Components/Utils/showImage.dart';
+import 'package:etfi_point/Data/models/newsFeedTb.dart';
+import 'package:etfi_point/Data/services/api/Publicaciones/enlacePublicacionesDb.dart';
+import 'package:etfi_point/components/widgets/futureGridViewProfile.dart';
+import 'package:etfi_point/components/widgets/navigatorPush.dart';
+import 'package:etfi_point/components/widgets/pageViewNewsFeed.dart';
+import 'package:etfi_point/components/widgets/showImage.dart';
 import 'package:etfi_point/Screens/NewsFeed/recoverfieldsUtility.dart';
 import 'package:flutter/material.dart';
 

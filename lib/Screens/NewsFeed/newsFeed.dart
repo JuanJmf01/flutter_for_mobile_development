@@ -1,7 +1,7 @@
-import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
-import 'package:etfi_point/Components/Data/Entities/newsFeedDb.dart';
-import 'package:etfi_point/Components/Utils/showModalsButtons/ButtonMenu.dart';
-import 'package:etfi_point/Components/providers/userStateProvider.dart';
+import 'package:etfi_point/Data/models/newsFeedTb.dart';
+import 'package:etfi_point/Data/services/api/newsFeedDb.dart';
+import 'package:etfi_point/components/widgets/showModalsButtons/ButtonMenu.dart';
+import 'package:etfi_point/Data/services/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/NewsFeed/imagePostContent.dart';
 import 'package:etfi_point/Screens/NewsFeed/contenidoReels.dart';
 import 'package:flutter/material.dart';

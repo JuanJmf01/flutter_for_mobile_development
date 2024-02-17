@@ -1,6 +1,6 @@
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/servicioTb.dart';
-import 'package:etfi_point/Components/Utils/showImage.dart';
+import 'package:etfi_point/Data/models/productoTb.dart';
+import 'package:etfi_point/Data/models/servicioTb.dart';
+import 'package:etfi_point/components/widgets/showImage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

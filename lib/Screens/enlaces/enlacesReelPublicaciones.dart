@@ -1,4 +1,4 @@
-import 'package:etfi_point/Components/Utils/showVideo.dart';
+import 'package:etfi_point/components/widgets/showVideo.dart';
 import 'package:flutter/material.dart';
 
 class EnlacesReelPublicaciones extends StatelessWidget {

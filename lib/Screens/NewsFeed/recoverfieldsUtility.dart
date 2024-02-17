@@ -1,4 +1,4 @@
-import 'package:etfi_point/Components/Data/EntitiModels/newsFeedTb.dart';
+import 'package:etfi_point/Data/models/newsFeedTb.dart';
 
 class RecoverFieldsUtiliti {
   static int? getIdUsuario(dynamic newItem) {

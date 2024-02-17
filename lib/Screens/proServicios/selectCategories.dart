@@ -1,7 +1,7 @@
-import 'package:etfi_point/Components/Data/EntitiModels/categoriaTb.dart';
-import 'package:etfi_point/Components/Data/EntitiModels/subCategoriaTb.dart';
-import 'package:etfi_point/Components/Utils/categoriesList.dart';
-import 'package:etfi_point/Components/providers/categoriasProvider.dart';
+import 'package:etfi_point/Data/models/categoriaTb.dart';
+import 'package:etfi_point/Data/models/subCategoriaTb.dart';
+import 'package:etfi_point/components/widgets/categoriesList.dart';
+import 'package:etfi_point/Data/services/providers/categoriasProvider.dart';
 import 'package:etfi_point/Screens/proServicios/sectionTitle.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

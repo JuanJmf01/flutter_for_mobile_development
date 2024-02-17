@@ -1,6 +1,6 @@
-import 'package:etfi_point/Components/Utils/showModalsButtons/buttonAdd.dart';
-import 'package:etfi_point/Components/providers/stateProviders.dart';
-import 'package:etfi_point/Components/providers/userStateProvider.dart';
+import 'package:etfi_point/components/widgets/showModalsButtons/buttonAdd.dart';
+import 'package:etfi_point/Data/services/providers/stateProviders.dart';
+import 'package:etfi_point/Data/services/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/NewsFeed/newsFeed.dart';
 import 'package:etfi_point/Screens/perfilPrincipal.dart';
 import 'package:etfi_point/config/theme/appTheme.dart';

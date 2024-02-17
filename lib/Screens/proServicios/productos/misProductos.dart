@@ -1,10 +1,10 @@
-import 'package:etfi_point/Components/Data/EntitiModels/productoTb.dart';
-import 'package:etfi_point/Components/Data/Entities/productosDb.dart';
-import 'package:etfi_point/Components/Utils/constants/productos.dart';
-import 'package:etfi_point/Components/Utils/futureGridViewProfile.dart';
-import 'package:etfi_point/Components/Utils/individualProduct.dart';
-import 'package:etfi_point/Components/providers/proServiciosProvider.dart';
-import 'package:etfi_point/Components/providers/userStateProvider.dart';
+import 'package:etfi_point/Data/models/productoTb.dart';
+import 'package:etfi_point/Data/services/api/productosDb.dart';
+import 'package:etfi_point/constants/productos.dart';
+import 'package:etfi_point/components/widgets/futureGridViewProfile.dart';
+import 'package:etfi_point/components/widgets/individualProduct.dart';
+import 'package:etfi_point/Data/services/providers/proServiciosProvider.dart';
+import 'package:etfi_point/Data/services/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioDetail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

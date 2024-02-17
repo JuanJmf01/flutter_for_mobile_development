@@ -1,6 +1,6 @@
-import 'package:etfi_point/Components/Utils/navigatorPush.dart';
-import 'package:etfi_point/Components/providers/stateProviders.dart';
-import 'package:etfi_point/Components/providers/userStateProvider.dart';
+import 'package:etfi_point/components/widgets/navigatorPush.dart';
+import 'package:etfi_point/Data/services/providers/stateProviders.dart';
+import 'package:etfi_point/Data/services/providers/userStateProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

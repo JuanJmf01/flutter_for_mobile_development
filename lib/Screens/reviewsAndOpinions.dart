@@ -1,6 +1,6 @@
 import 'dart:math';
-import 'package:etfi_point/Components/Data/Entities/ratingsDb.dart';
-import 'package:etfi_point/Components/Utils/stars.dart';
+import 'package:etfi_point/Data/services/api/ratingsDb.dart';
+import 'package:etfi_point/components/widgets/stars.dart';
 import 'package:flutter/material.dart';
 
 class ReviewsAndOpinions extends StatefulWidget {
