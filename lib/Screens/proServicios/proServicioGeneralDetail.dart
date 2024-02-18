@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:etfi_point/components/widgets/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/components/widgets/elevatedGlobalButton.dart';
 import 'package:etfi_point/Data/models/productImagesStorageTb.dart';
 import 'package:etfi_point/Data/models/proServicioImagesTb.dart';
@@ -15,8 +16,8 @@ import 'package:etfi_point/config/Routes/rutasFirebase.dart';
 import 'package:etfi_point/config/routes/routes.dart';
 import 'package:etfi_point/constants/Icons/switch.dart';
 import 'package:etfi_point/components/widgets/ImagesUtils/myImageList.dart';
-import 'package:etfi_point/components/widgets/Services/MediaPicker.dart';
-import 'package:etfi_point/components/widgets/Services/randomServices.dart';
+import 'package:etfi_point/components/utils/MediaPicker.dart';
+import 'package:etfi_point/components/utils/randomServices.dart';
 import 'package:etfi_point/components/widgets/confirmationDialog.dart';
 import 'package:etfi_point/components/widgets/generalInputs.dart';
 import 'package:etfi_point/components/widgets/globalTextButton.dart';
@@ -465,20 +466,8 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
   }
 
   void agregarImagenes() async {
-    List<Asset?> imagesAsset = await getImagesAsset();
-    List<ProServicioImageToUpload> allProductImagesAux = [];
-
-    if (imagesAsset.isNotEmpty) {
-      for (var image in imagesAsset) {
-        ProServicioImageToUpload newImage = ProServicioImageToUpload(
-          nombreImage: RandomServices.assingName(image!.name!),
-          newImage: image,
-          width: image.originalWidth!.toDouble(),
-          height: image.originalHeight!.toDouble(),
-        );
-        allProductImagesAux.add(newImage);
-      }
-    }
+    List<ProServicioImageToUpload> allProductImagesAux =
+        await CrudImages.agregarImagenes();
 
     setState(() {
       allProductImages.items.addAll(allProductImagesAux);

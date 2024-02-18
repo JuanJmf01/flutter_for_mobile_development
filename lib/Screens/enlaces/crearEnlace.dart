@@ -9,7 +9,7 @@ import 'package:etfi_point/Data/services/api/negocioDb.dart';
 import 'package:etfi_point/Data/services/api/Publicaciones/no%20enlaces/publicacionesDb.dart';
 import 'package:etfi_point/Data/services/api/FirebaseStorage/firebaseImagesStorage.dart';
 import 'package:etfi_point/components/widgets/ImagesUtils/crudImages.dart';
-import 'package:etfi_point/components/widgets/Services/randomServices.dart';
+import 'package:etfi_point/components/utils/randomServices.dart';
 import 'package:etfi_point/components/widgets/generalInputs.dart';
 import 'package:etfi_point/components/widgets/globalTextButton.dart';
 import 'package:etfi_point/components/widgets/navigatorPush.dart';

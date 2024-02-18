@@ -7,7 +7,7 @@ import 'package:etfi_point/Data/services/api/FirebaseStorage/firebaseImagesStora
 import 'package:etfi_point/Data/services/api/negocioDb.dart';
 import 'package:etfi_point/Data/services/api/serviceImageDb.dart';
 import 'package:etfi_point/Data/services/api/servicioDb.dart';
-import 'package:etfi_point/components/widgets/Services/randomServices.dart';
+import 'package:etfi_point/components/utils/randomServices.dart';
 import 'package:etfi_point/Data/services/providers/categoriasProvider.dart';
 import 'package:etfi_point/Data/services/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioGeneralForm.dart';

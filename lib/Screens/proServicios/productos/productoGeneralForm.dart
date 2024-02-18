@@ -11,7 +11,7 @@ import 'package:etfi_point/Data/services/api/productImageDb.dart';
 import 'package:etfi_point/Data/services/api/productosDb.dart';
 import 'package:etfi_point/components/widgets/ImagesUtils/crudImages.dart';
 import 'package:etfi_point/components/widgets/ImagesUtils/fileTemporal.dart';
-import 'package:etfi_point/components/widgets/Services/randomServices.dart';
+import 'package:etfi_point/components/utils/randomServices.dart';
 import 'package:etfi_point/Data/services/providers/categoriasProvider.dart';
 import 'package:etfi_point/Data/services/providers/userStateProvider.dart';
 import 'package:etfi_point/Screens/proServicios/proServicioGeneralForm.dart';
@@ -68,22 +68,6 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
       _descriptionController.text = product.descripcion ?? '';
     }else{
       print("No entree");
-    }
-  }
-
-  Future<void> selectImages() async {
-    List<ProServicioImageToUpload> selectedImagesAux =
-        await CrudImages.agregarImagenes();
-
-    setState(() {
-      myImageList.items.addAll(selectedImagesAux);
-    });
-    if (widget.product?.idProducto == null && selectedImagesAux.isNotEmpty) {
-      if (principalImage == null) {
-        setState(() {
-          principalImage = selectedImagesAux[0].newImage;
-        });
-      }
     }
   }
 

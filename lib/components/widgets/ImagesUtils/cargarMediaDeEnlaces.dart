@@ -9,7 +9,7 @@ import 'package:etfi_point/Data/models/servicioTb.dart';
 import 'package:etfi_point/Data/services/api/Publicaciones/enlaces/enlaceProServicioDb.dart';
 import 'package:etfi_point/Data/services/api/Publicaciones/enlaces/enlaceProServicioImagesDb.dart';
 import 'package:etfi_point/Data/services/api/FirebaseStorage/firebaseImagesStorage.dart';
-import 'package:etfi_point/components/widgets/Services/randomServices.dart';
+import 'package:etfi_point/components/utils/randomServices.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
