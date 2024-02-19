@@ -14,39 +14,39 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 class CargarMediaDeEnlaces {
-  static void subirImagenes(
-      int idEnlaceProServicio,
-      bool isProduct,
-      Type objectTypeEnlaceProducto,
-      int idUsuario,
-      List<ProServicioImageToUpload> imagesToUpload) async {
-    String fileName = isProduct ? 'enlaceProductos' : 'enlaceServicios';
+  // static void subirImagenes(
+  //     int idEnlaceProServicio,
+  //     bool isProduct,
+  //     Type objectTypeEnlaceProducto,
+  //     int idUsuario,
+  //     List<ProServicioImageToUpload> imagesToUpload) async {
+  //   String fileName = isProduct ? 'enlaceProductos' : 'enlaceServicios';
 
-    for (var imageToUpload in imagesToUpload) {
-      ImagesStorageTb image = ImagesStorageTb(
-        idUsuario: idUsuario,
-        idFile: idEnlaceProServicio,
-        newImageBytes:
-            await RandomServices.assetToUint8List(imageToUpload.newImage),
-        fileName: fileName,
-        imageName: imageToUpload.nombreImage,
-      );
+  //   for (var imageToUpload in imagesToUpload) {
+  //     ImagesStorageTb image = ImagesStorageTb(
+  //       idUsuario: idUsuario,
+  //       idFile: idEnlaceProServicio,
+  //       newImageBytes:
+  //           await RandomServices.assetToUint8List(imageToUpload.newImage),
+  //       fileName: fileName,
+  //       imageName: imageToUpload.nombreImage,
+  //     );
 
-      String urlImage = await ImagesStorage.cargarImage(image);
+  //     String urlImage = await ImagesStorage.cargarImage(image);
 
-      EnlaceProServicioImagesCreacionTb enlaceProServicioImage =
-          EnlaceProServicioImagesCreacionTb(
-        idEnlaceProServicio: idEnlaceProServicio,
-        nombreImage: imageToUpload.nombreImage,
-        urlImage: urlImage,
-        width: imageToUpload.width,
-        height: imageToUpload.height,
-      );
+  //     EnlaceProServicioImagesCreacionTb enlaceProServicioImage =
+  //         EnlaceProServicioImagesCreacionTb(
+  //       idEnlaceProServicio: idEnlaceProServicio,
+  //       nombreImage: imageToUpload.nombreImage,
+  //       urlImage: urlImage,
+  //       width: imageToUpload.width,
+  //       height: imageToUpload.height,
+  //     );
 
-      EnlaceProServicioImagesDb.insertEnlaceProServicioImage(
-          enlaceProServicioImage, objectTypeEnlaceProducto);
-    }
-  }
+  //     EnlaceProServicioImagesDb.insertEnlaceProServicioImage(
+  //         enlaceProServicioImage, objectTypeEnlaceProducto);
+  //   }
+  // }
 
   static void guardarEnlace(
     TextEditingController descripcionController,
@@ -86,15 +86,15 @@ class CargarMediaDeEnlaces {
             await EnlaceProServicioDb.insertEnlaceProServicio(enlaceServicio);
       }
 
-      idEnlaceProServicio != -1
-          ? subirImagenes(
-              idEnlaceProServicio,
-              isProduct,
-              objectTypeEnlaceProducto,
-              idUsuario,
-              imagesToUpload,
-            )
-          : null;
+      // idEnlaceProServicio != -1
+      //     ? subirImagenes(
+      //         idEnlaceProServicio,
+      //         isProduct,
+      //         objectTypeEnlaceProducto,
+      //         idUsuario,
+      //         imagesToUpload,
+      //       )
+      //     : null;
     } else {
       print("Error al asignar el idProServicio en enlaceProducto");
     }

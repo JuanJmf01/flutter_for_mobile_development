@@ -2,13 +2,13 @@ import 'dart:typed_data';
 import 'package:etfi_point/constants/productos.dart';
 import 'package:etfi_point/components/widgets/showImage.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
 
 class IndividualProduct extends StatelessWidget {
   const IndividualProduct({
     super.key,
     this.urlImage,
-    this.imageAsset,
+    // this.imageAsset,
     this.imageBytes,
     this.onTap,
     required this.precio,
@@ -18,7 +18,7 @@ class IndividualProduct extends StatelessWidget {
   });
 
   final String? urlImage;
-  final Asset? imageAsset;
+  // final Asset? imageAsset;
   final Uint8List? imageBytes;
   final VoidCallback? onTap;
   final double precio;
@@ -62,7 +62,7 @@ class IndividualProduct extends StatelessWidget {
               width: double.infinity,
               fit: BoxFit.cover,
               networkImage: urlImage,
-              imageAsset: imageAsset,
+              // imageAsset: imageAsset,
               imageBytes: imageBytes,
             ),
           ),

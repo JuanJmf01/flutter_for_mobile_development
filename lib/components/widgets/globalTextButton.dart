@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 
 class GlobalTextButton extends StatelessWidget {
-  const GlobalTextButton({
-    super.key,
-    this.padding,
-    this.onPressed,
-    required this.textButton,
-    this.color,
-    this.fontSizeTextButton,
-    this.fontWeightTextButton,
-    this.letterSpacing
-  });
+  const GlobalTextButton(
+      {super.key,
+      this.padding,
+      this.onPressed,
+      required this.textButton,
+      this.color,
+      this.fontSizeTextButton,
+      this.fontWeightTextButton,
+      this.letterSpacing});
 
   final EdgeInsets? padding;
   final VoidCallback? onPressed;
@@ -25,6 +24,9 @@ class GlobalTextButton extends StatelessWidget {
     return Padding(
       padding: padding ?? const EdgeInsets.all(0.0),
       child: TextButton(
+        style: ButtonStyle(
+          padding: MaterialStateProperty.all(EdgeInsets.zero),
+        ),
         onPressed: onPressed,
         child: Text(
           textButton,
@@ -32,8 +34,7 @@ class GlobalTextButton extends StatelessWidget {
               color: color,
               fontSize: fontSizeTextButton,
               fontWeight: fontWeightTextButton,
-              letterSpacing: letterSpacing
-              ),
+              letterSpacing: letterSpacing),
         ),
       ),
     );

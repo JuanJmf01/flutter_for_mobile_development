@@ -1,4 +1,4 @@
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProservicioImagesTb extends ImageListItem {
   final int idProServicioImage;
@@ -137,36 +137,36 @@ class ProServicioImageCreacionTb {
 
 class ProServicioImageToUpdate extends ImageListItem {
   final String nombreImage;
-  final Asset newImage;
+  // final Asset newImage;
 
   ProServicioImageToUpdate({
     required this.nombreImage,
-    required this.newImage,
+    // required this.newImage,
   });
 
-  @override
-  String toString() {
-    return 'ProServicioImageToUpdate{nombreImage: $nombreImage, newImage: $newImage}';
-  }
+  // @override
+  // String toString() {
+  //   return 'ProServicioImageToUpdate{nombreImage: $nombreImage, newImage: $newImage}';
+  // }
 }
 
 class ProServicioImageToUpload extends ImageListItem {
   final String nombreImage;
-  final Asset newImage;
+  // final Asset newImage;
   final double width;
   final double height;
 
   ProServicioImageToUpload({
     required this.nombreImage,
-    required this.newImage,
+    // required this.newImage,
     required this.width,
     required this.height,
   });
 
-  @override
-  String toString() {
-    return 'ProductImageToUpload{nombreImage: $nombreImage, newImage: $newImage}';
-  }
+  // @override
+  // String toString() {
+  //   return 'ProductImageToUpload{nombreImage: $nombreImage, newImage: $newImage}';
+  // }
 }
 
 class ImageList {

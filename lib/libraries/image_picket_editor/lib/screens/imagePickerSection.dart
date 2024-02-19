@@ -1,10 +1,11 @@
 import 'dart:async';
 
+import 'package:etfi_point/components/widgets/dynamicPopupMenu.dart';
 import 'package:etfi_point/components/widgets/globalTextButton.dart';
 import 'package:etfi_point/libraries/image_picket_editor/lib/utils/pickerImage.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:photo_manager_image_provider/photo_manager_image_provider.dart';
 
 class ImagePickerSection extends StatefulWidget {
   const ImagePickerSection({
@@ -31,6 +32,7 @@ class ImagePickerSection extends StatefulWidget {
 class _ImagePickerSectionState extends State<ImagePickerSection> {
   late StreamController<List<AssetEntity>> allImagesStreamController;
   late Stream<List<AssetEntity>> _stream;
+  List<String> optionsPopupMenu = [];
 
   @override
   void initState() {
@@ -47,6 +49,25 @@ class _ImagePickerSectionState extends State<ImagePickerSection> {
     } catch (e) {
       print("Error fetching images: $e");
     }
+
+    try {
+      List<String> optionsPopupMenuAux = await PickerImage.fetchAlbums();
+      setState(() {
+        optionsPopupMenu = optionsPopupMenuAux;
+      });
+      print("AllAlbums $optionsPopupMenuAux ");
+    } catch (e) {
+      print("Error fetching images: $e");
+    }
+  }
+
+  void onSelectedPopup(int index, String result) async {
+    List<AssetEntity> allImagesAux =
+        await PickerImage.fetchImages(albumName: result);
+
+    setState(() {
+      allImagesStreamController.add(allImagesAux);
+    });
   }
 
   void ifAnImageIsPress(AssetEntity assetEntity, bool isSelected) {
@@ -61,19 +82,23 @@ class _ImagePickerSectionState extends State<ImagePickerSection> {
     }
   }
 
+  String handleCountImages(AssetEntity assetEntity) {
+    return (widget.selectedImages.indexOf(assetEntity) + 1).toString();
+  }
+
   @override
   Widget build(BuildContext context) {
-    int crossAxisCount = 3;
+    int crossAxisCount = 4;
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('${widget.countSelectedImages}/${widget.maxSelectableImages}'),
+            const Text('Seleccionar imagenes'),
             GlobalTextButton(
               textButton: "Siguiente",
-              fontSizeTextButton: 19,
+              fontSizeTextButton: 17,
               onPressed: () {
                 widget.onUpdateCurrentPage(1);
               },
@@ -85,61 +110,14 @@ class _ImagePickerSectionState extends State<ImagePickerSection> {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                const GlobalTextButton(
-                  textButton: "Selección de imagenes",
-                  fontSizeTextButton: 19,
-                  padding: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 10.0),
-                  color: Colors.black,
-                ),
-                PopupMenuButton<String>(
-                  offset: const Offset(0, 50),
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    side: const BorderSide(color: Colors.grey),
-                  ),
-                  onSelected: (String result) {
-                    print('Opción seleccionada: $result');
+                DynamicPopupMenu(
+                  options: optionsPopupMenu,
+                  onSelected: (int index, String result) {
+                    onSelectedPopup(index, result);
                   },
-                  itemBuilder: (BuildContext context) =>
-                      <PopupMenuEntry<String>>[
-                    PopupMenuItem<String>(
-                      value: 'opcion1',
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          border:
-                              Border(bottom: BorderSide(color: Colors.grey)),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: const Text('Opción 1'),
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'opcion2',
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          border:
-                              Border(bottom: BorderSide(color: Colors.grey)),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: const Text('Opción 2'),
-                      ),
-                    ),
-                    PopupMenuItem<String>(
-                      value: 'opcion3',
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          border:
-                              Border(bottom: BorderSide(color: Colors.grey)),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        child: const Text('Opción 3'),
-                      ),
-                    ),
-                  ],
-                ),
+                )
               ],
             ),
             StreamBuilder<List<AssetEntity>>(
@@ -164,6 +142,11 @@ class _ImagePickerSectionState extends State<ImagePickerSection> {
                       AssetEntity assetEntity = images[index];
                       bool isSelected =
                           widget.selectedImages.contains(assetEntity);
+                      Color backgroundIsSelected =
+                          isSelected ? Colors.blue : Colors.white38;
+                      Color borderIsSelected =
+                          isSelected ? Colors.black54 : Colors.grey.shade300;
+
                       return GestureDetector(
                         onTap: () => ifAnImageIsPress(assetEntity, isSelected),
                         child: Stack(
@@ -174,14 +157,30 @@ class _ImagePickerSectionState extends State<ImagePickerSection> {
                               height: screenWidth / crossAxisCount,
                               width: screenWidth / crossAxisCount,
                             ),
-                            if (isSelected)
-                              Positioned.fill(
+                            if (widget.selectedImages.isNotEmpty)
+                              Positioned(
+                                top: 5,
+                                right: 5,
                                 child: Container(
-                                  color: Colors.black26,
-                                  child: const Icon(
-                                    Icons.check,
-                                    color: Colors.white,
+                                  width: 28,
+                                  height: 28,
+                                  decoration: BoxDecoration(
+                                    color: backgroundIsSelected,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: borderIsSelected,
+                                      width: 1.5,
+                                    ),
                                   ),
+                                  child: Center(
+                                      child: isSelected
+                                          ? Text(
+                                              handleCountImages(assetEntity),
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w500),
+                                            )
+                                          : const SizedBox.shrink()),
                                 ),
                               ),
                           ],

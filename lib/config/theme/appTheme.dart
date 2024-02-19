@@ -8,7 +8,7 @@ class AppTheme {
   AppTheme({this.isDarkmode});
 
   ThemeData getTheme() => ThemeData(
-        //useMaterial3: true,
+        useMaterial3: false,
 
         brightness: isDarkmode != null
             ? isDarkmode == true

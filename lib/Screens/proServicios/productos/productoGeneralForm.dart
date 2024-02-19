@@ -20,7 +20,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProductoGeneralForm extends ConsumerStatefulWidget {
   const ProductoGeneralForm({super.key, this.product});
@@ -41,7 +41,7 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
 
   // variables for second page
   ImageList myImageList = ImageList([]);
-  Asset? principalImage;
+  // Asset? principalImage;
   String? urlPrincipalImage;
   Uint8List? principalImageBytes;
 
@@ -71,156 +71,156 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
     }
   }
 
-  Future<void> crearProducto(ProductoCreacionTb producto, int idUsuario) async {
-    int idProducto;
-    final categoriasSeleccionadas = ref.read(subCategoriasSelectedProvider);
+  // Future<void> crearProducto(ProductoCreacionTb producto, int idUsuario) async {
+  //   int idProducto;
+  //   final categoriasSeleccionadas = ref.read(subCategoriasSelectedProvider);
 
-    try {
-      idProducto =
-          await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
+  //   try {
+  //     idProducto =
+  //         await ProductoDb.insertProducto(producto, categoriasSeleccionadas);
 
-      // Save principal image
-      if ((principalImageBytes != null || principalImage != null)) {
-        ImagesStorageTb image = ImagesStorageTb(
-          idUsuario: idUsuario,
-          idFile: idProducto,
-          newImageBytes: principalImageBytes ??
-              await RandomServices.assetToUint8List(principalImage!),
-          imageName: principalImage!.name!,
-          fileName: 'productos',
-        );
+  //     // Save principal image
+  //     if ((principalImageBytes != null || principalImage != null)) {
+  //       ImagesStorageTb image = ImagesStorageTb(
+  //         idUsuario: idUsuario,
+  //         idFile: idProducto,
+  //         newImageBytes: principalImageBytes ??
+  //             await RandomServices.assetToUint8List(principalImage!),
+  //         imageName: principalImage!.name!,
+  //         fileName: 'productos',
+  //       );
 
-        // Save principal image in firebase and retrieve  its url
-        String url = await ImagesStorage.cargarImage(image);
+  //       // Save principal image in firebase and retrieve  its url
+  //       String url = await ImagesStorage.cargarImage(image);
 
-        ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
-          idProServicio: idProducto,
-          nombreImage: principalImage!.name!,
-          urlImage: url,
-          width: principalImage!.originalWidth!.toDouble(),
-          height: principalImage!.originalHeight!.toDouble(),
-          isPrincipalImage: 1,
-        );
+  //       ProServicioImageCreacionTb productImage = ProServicioImageCreacionTb(
+  //         idProServicio: idProducto,
+  //         nombreImage: principalImage!.name!,
+  //         urlImage: url,
+  //         width: principalImage!.originalWidth!.toDouble(),
+  //         height: principalImage!.originalHeight!.toDouble(),
+  //         isPrincipalImage: 1,
+  //       );
 
-        await ProductImageDb.insertProductImages(productImage);
-      }
+  //       await ProductImageDb.insertProductImages(productImage);
+  //     }
 
-      // Save secondary images
-      if (myImageList.items.isNotEmpty) {
-        for (var imagen in myImageList.items) {
-          if (imagen is ProServicioImageToUpload) {
-            ImagesStorageTb image = ImagesStorageTb(
-              idUsuario: idUsuario,
-              idFile: idProducto,
-              newImageBytes:
-                  await RandomServices.assetToUint8List(imagen.newImage),
-              imageName: imagen.nombreImage,
-              fileName: 'productos',
-            );
+  //     // Save secondary images
+  //     if (myImageList.items.isNotEmpty) {
+  //       for (var imagen in myImageList.items) {
+  //         if (imagen is ProServicioImageToUpload) {
+  //           ImagesStorageTb image = ImagesStorageTb(
+  //             idUsuario: idUsuario,
+  //             idFile: idProducto,
+  //             newImageBytes:
+  //                 await RandomServices.assetToUint8List(imagen.newImage),
+  //             imageName: imagen.nombreImage,
+  //             fileName: 'productos',
+  //           );
 
-            String url = await ImagesStorage.cargarImage(image);
+  //           String url = await ImagesStorage.cargarImage(image);
 
-            ProServicioImageCreacionTb productImage =
-                ProServicioImageCreacionTb(
-              idProServicio: idProducto,
-              nombreImage: principalImage!.name!,
-              urlImage: url,
-              width: principalImage!.originalWidth!.toDouble(),
-              height: principalImage!.originalHeight!.toDouble(),
-              isPrincipalImage: 0,
-            );
+  //           ProServicioImageCreacionTb productImage =
+  //               ProServicioImageCreacionTb(
+  //             idProServicio: idProducto,
+  //             nombreImage: principalImage!.name!,
+  //             urlImage: url,
+  //             width: principalImage!.originalWidth!.toDouble(),
+  //             height: principalImage!.originalHeight!.toDouble(),
+  //             isPrincipalImage: 0,
+  //           );
 
-            await ProductImageDb.insertProductImages(productImage);
-          }
-        }
-      }
-      // mostrarCuadroExito(idProducto);
-    } catch (error) {
-      print('Problemas al insertar el producto $error');
-    }
-  }
+  //           await ProductImageDb.insertProductImages(productImage);
+  //         }
+  //       }
+  //     }
+  //     // mostrarCuadroExito(idProducto);
+  //   } catch (error) {
+  //     print('Problemas al insertar el producto $error');
+  //   }
+  // }
 
-  void actualizarProducto(ProductoTb producto, int idUsuario) async {
-    int idProducto = producto.idProducto;
+  // void actualizarProducto(ProductoTb producto, int idUsuario) async {
+  //   int idProducto = producto.idProducto;
 
-    if (urlPrincipalImage != null) {
-      File urlImageInFile = await FileTemporal.convertToTempFile(
-          urlImage: urlPrincipalImage, image: principalImage);
-      Uint8List principalImageBytesAux = await urlImageInFile.readAsBytes();
-      setState(() {
-        principalImageBytes = principalImageBytesAux;
-      });
-    }
+  //   if (urlPrincipalImage != null) {
+  //     File urlImageInFile = await FileTemporal.convertToTempFile(
+  //         urlImage: urlPrincipalImage, image: principalImage);
+  //     Uint8List principalImageBytesAux = await urlImageInFile.readAsBytes();
+  //     setState(() {
+  //       principalImageBytes = principalImageBytesAux;
+  //     });
+  //   }
 
-    if (principalImageBytes != null || principalImage != null) {
-      ImagesStorageTb image = ImagesStorageTb(
-        idUsuario: idUsuario,
-        idFile: idProducto,
-        newImageBytes: principalImageBytes ??
-            await RandomServices.assetToUint8List(principalImage!),
-        fileName: 'productos',
-        imageName: producto.nombreImage,
-      );
+  //   if (principalImageBytes != null || principalImage != null) {
+  //     ImagesStorageTb image = ImagesStorageTb(
+  //       idUsuario: idUsuario,
+  //       idFile: idProducto,
+  //       newImageBytes: principalImageBytes ??
+  //           await RandomServices.assetToUint8List(principalImage!),
+  //       fileName: 'productos',
+  //       imageName: producto.nombreImage,
+  //     );
 
-      await ImagesStorage.updateImage(image);
-    } else {
-      print('Imagen a actualizar es null');
-    }
+  //     await ImagesStorage.updateImage(image);
+  //   } else {
+  //     print('Imagen a actualizar es null');
+  //   }
 
-    try {
-      await ProductoDb.updateProducto(producto, selectedSubCategories);
-      //mostrarCuadroExito(idProducto);
-    } catch (error) {
-      print('Problemas al actualizar el producto $error');
-    }
-  }
+  //   try {
+  //     await ProductoDb.updateProducto(producto, selectedSubCategories);
+  //     //mostrarCuadroExito(idProducto);
+  //   } catch (error) {
+  //     print('Problemas al actualizar el producto $error');
+  //   }
+  // }
 
-  void guardar(int idUsuarioActual) async {
-    //--- Se asigna cada String de los campos de texto a una variable ---//
-    final String nombreProducto = _nameController.text;
-    final double price = RandomServices.textToDouble(_priceController.text);
-    final String description = _descriptionController.text;
-    final int descuento = int.tryParse(_discountController.text) ?? 0;
+  // void guardar(int idUsuarioActual) async {
+  //   //--- Se asigna cada String de los campos de texto a una variable ---//
+  //   final String nombreProducto = _nameController.text;
+  //   final double price = RandomServices.textToDouble(_priceController.text);
+  //   final String description = _descriptionController.text;
+  //   final int descuento = int.tryParse(_discountController.text) ?? 0;
 
-    ProductoCreacionTb productoCreacion;
+  //   ProductoCreacionTb productoCreacion;
 
-    //Create business if not exist
-    int idNegocio = await NegocioDb.createBusiness(idUsuarioActual);
+  //   //Create business if not exist
+  //   int idNegocio = await NegocioDb.createBusiness(idUsuarioActual);
 
-    if (widget.product?.idProducto == null) {
-      //-- Creamos el producto --//
-      productoCreacion = ProductoCreacionTb(
-        idNegocio: idNegocio,
-        nombreProducto: nombreProducto,
-        precio: price,
-        descripcion: description,
-        cantidadDisponible: 0,
-        oferta: isOffert ? 1 : 0,
-        descuento: descuento,
-      );
+  //   if (widget.product?.idProducto == null) {
+  //     //-- Creamos el producto --//
+  //     productoCreacion = ProductoCreacionTb(
+  //       idNegocio: idNegocio,
+  //       nombreProducto: nombreProducto,
+  //       precio: price,
+  //       descripcion: description,
+  //       cantidadDisponible: 0,
+  //       oferta: isOffert ? 1 : 0,
+  //       descuento: descuento,
+  //     );
 
-      myImageList.items.isNotEmpty
-          ? crearProducto(productoCreacion, idUsuarioActual)
-          : print('imagenToUpload es null o idUsuario es null');
-    } else {
-      // -- Actualir el producto --//
-      ProductoTb producto = widget.product!;
+  //     myImageList.items.isNotEmpty
+  //         ? crearProducto(productoCreacion, idUsuarioActual)
+  //         : print('imagenToUpload es null o idUsuario es null');
+  //   } else {
+  //     // -- Actualir el producto --//
+  //     ProductoTb producto = widget.product!;
 
-      producto = ProductoTb(
-        idProducto: producto.idProducto,
-        idNegocio: producto.idNegocio,
-        nombre: nombreProducto,
-        precio: price,
-        descripcion: description,
-        cantidadDisponible: 0,
-        oferta: isOffert ? 1 : 0,
-        urlImage: producto.urlImage,
-        nombreImage: producto.nombreImage,
-      );
+  //     producto = ProductoTb(
+  //       idProducto: producto.idProducto,
+  //       idNegocio: producto.idNegocio,
+  //       nombre: nombreProducto,
+  //       precio: price,
+  //       descripcion: description,
+  //       cantidadDisponible: 0,
+  //       oferta: isOffert ? 1 : 0,
+  //       urlImage: producto.urlImage,
+  //       nombreImage: producto.nombreImage,
+  //     );
 
-      actualizarProducto(producto, idUsuarioActual);
-    }
-  }
+  //     actualizarProducto(producto, idUsuarioActual);
+  //   }
+  // }
 
   void defineUrlToUpdateProduct() {
     Type objectType = widget.product.runtimeType;
@@ -242,7 +242,7 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
       proServiceObjectType: ProductoTb,
       urlSubCategories: urlSubCategories,
       myImageList: myImageList,
-      principalImage: principalImage,
+      // principalImage: principalImage,
       urlPrincipalImage: urlPrincipalImage,
       principalImageBytes: principalImageBytes,
       onUpDateOffert: (bool newIsOffert) {
@@ -251,12 +251,12 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
         });
       },
       onUpdatedImages: ({
-        Asset? newPrincipalImage,
+        // Asset? newPrincipalImage,
         String? newUrlPrincipalImage,
         Uint8List? newPrincipalImageBytes,
       }) {
         setState(() {
-          principalImage = newPrincipalImage;
+          // principalImage = newPrincipalImage;
           urlPrincipalImage = newUrlPrincipalImage;
           principalImageBytes = newPrincipalImageBytes;
         });
@@ -270,7 +270,7 @@ class ProductoGeneralFormState extends ConsumerState<ProductoGeneralForm> {
         if (idUsuarioActual != null) {
           selectedSubCategories = ref.watch(subCategoriasSelectedProvider);
 
-          guardar(idUsuarioActual);
+          // guardar(idUsuarioActual);
         } else {
           print("Manage logueo");
         }

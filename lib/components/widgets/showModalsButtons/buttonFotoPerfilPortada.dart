@@ -15,7 +15,7 @@ import 'package:etfi_point/components/widgets/showModalsButtons/smallButtonTopTa
 import 'package:etfi_point/Data/services/providers/userStateProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ButtonFotoPerfilPortada extends ConsumerWidget {
   const ButtonFotoPerfilPortada({
@@ -51,37 +51,37 @@ class ButtonFotoPerfilPortada extends ConsumerWidget {
     return updatedUser;
   }
 
-  void insertProfileOrPerfilImage(int idUsuarioActual) async {
-    Asset? imageAsset = await getImageAsset();
+  // void insertProfileOrPerfilImage(int idUsuarioActual) async {
+  //   Asset? imageAsset = await getImageAsset();
 
-    if (imageAsset != null) {
-      File tempFile = await FileTemporal.convertToTempFile(image: imageAsset);
+  //   if (imageAsset != null) {
+  //     File tempFile = await FileTemporal.convertToTempFile(image: imageAsset);
 
-      Uint8List? finalImage = isProfilePicture
-          ? await EditarImagen.editCircularImage(tempFile)
-          : await EditarImagen.editImage(tempFile, 2.5, 2);
+  //     Uint8List? finalImage = isProfilePicture
+  //         ? await EditarImagen.editCircularImage(tempFile)
+  //         : await EditarImagen.editImage(tempFile, 2.5, 2);
 
-      String fileName = isProfilePicture ? "fotoPerfil" : "fotoPortada";
-      if (fileName != '' && finalImage != null) {
-        ImageStorageTb image = ImageStorageTb(
-          idUsuario: idUsuarioActual,
-          newImageBytes: finalImage,
-          fileName: fileName,
-          imageName: RandomServices.assingName(imageAsset.name!),
-        );
+  //     String fileName = isProfilePicture ? "fotoPerfil" : "fotoPortada";
+  //     if (fileName != '' && finalImage != null) {
+  //       ImageStorageTb image = ImageStorageTb(
+  //         idUsuario: idUsuarioActual,
+  //         newImageBytes: finalImage,
+  //         fileName: fileName,
+  //         imageName: RandomServices.assingName(imageAsset.name!),
+  //       );
 
-        String urlImage = isUrlPhotoAvailable
-            ? await ImagesStorage.updateImageByPosition(image, 0)
-            : await ImagesStorage.cargarImage(image);
+  //       String urlImage = isUrlPhotoAvailable
+  //           ? await ImagesStorage.updateImageByPosition(image, 0)
+  //           : await ImagesStorage.cargarImage(image);
 
-        print("URL IMAGE: $urlImage");
+  //       print("URL IMAGE: $urlImage");
 
-        if (urlImage != '' || urlImage != null) {
-          updateUser(urlImage, idUsuarioActual, isProfilePicture);
-        }
-      }
-    }
-  }
+  //       if (urlImage != '' || urlImage != null) {
+  //         updateUser(urlImage, idUsuarioActual, isProfilePicture);
+  //       }
+  //     }
+  //   }
+  // }
 
   void deleteProfileOrPerfilImage(int idUsuarioActual) async {
     String fileName = isProfilePicture ? "fotoPerfil" : "fotoPortada";
@@ -118,7 +118,7 @@ class ButtonFotoPerfilPortada extends ConsumerWidget {
           ItemForModalButtons(
             onPress: () {
               if (idUsuarioActual != null) {
-                insertProfileOrPerfilImage(idUsuarioActual);
+                // insertProfileOrPerfilImage(idUsuarioActual);
                 Navigator.pop(context);
               }
             },

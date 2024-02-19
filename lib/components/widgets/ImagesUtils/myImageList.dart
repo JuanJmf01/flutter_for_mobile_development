@@ -1,7 +1,7 @@
 import 'package:etfi_point/Data/models/proServicioImagesTb.dart';
 import 'package:etfi_point/components/widgets/showImage.dart';
 import 'package:flutter/material.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
 
 typedef ImageSelectedCallback = void Function(dynamic selectedImage);
 
@@ -11,7 +11,7 @@ class MyImageList extends StatelessWidget {
     required this.imageList,
     this.padding,
     this.maxHeight,
-    this.principalImage,
+    // this.principalImage,
     this.urlPrincipalImage,
     this.fit,
     required this.onImageSelected,
@@ -20,7 +20,7 @@ class MyImageList extends StatelessWidget {
   final ImageList imageList;
   final EdgeInsets? padding;
   final double? maxHeight;
-  final Asset? principalImage;
+  // final Asset? principalImage;
   final String? urlPrincipalImage;
   final BoxFit? fit;
   final ImageSelectedCallback onImageSelected; // Nueva línea
@@ -52,7 +52,7 @@ class MyImageList extends StatelessWidget {
               desiredWidth = 600.0;
               desiredHeight = desiredWidth * (originalHeight / originalWidth);
 
-              isSelected = principalImage == image.newImage;
+              // isSelected = principalImage == image.newImage;
             } else if (image is ProservicioImagesTb && isSelected == false) {
               isSelected = urlPrincipalImage == image.urlImage;
             }
@@ -65,7 +65,7 @@ class MyImageList extends StatelessWidget {
                   child: GestureDetector(
                     onTap: () {
                       if (image is ProServicioImageToUpload) {
-                        onImageSelected(image.newImage);
+                        // onImageSelected(image.newImage);
                       } else if (image is ProservicioImagesTb) {
                         onImageSelected(image.urlImage);
                       }
@@ -78,22 +78,22 @@ class MyImageList extends StatelessWidget {
                               : null),
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(16.0),
-                          child: image is ProServicioImageToUpload
-                              ? AssetThumb(
-                                  asset: image.newImage,
-                                  width: desiredWidth.toInt(),
-                                  height: desiredHeight!.toInt(),
+                          // child: image is ProServicioImageToUpload
+                          // ? AssetThumb(
+                          //     asset: image.newImage,
+                          //     width: desiredWidth.toInt(),
+                          //     height: desiredHeight!.toInt(),
+                          //   ) :
+                          child: image is ProservicioImagesTb
+                              ? ShowImage(
+                                  networkImage: image.urlImage,
+                                  fit: fit ?? BoxFit.contain,
                                 )
-                              : image is ProservicioImagesTb
-                                  ? ShowImage(
-                                      networkImage: image.urlImage,
-                                      fit: fit ?? BoxFit.contain,
-                                    )
-                                  // ? Image.network(
-                                  //     image.urlImage,
-                                  //     fit: widget.fit ?? BoxFit.contain,
-                                  //   )
-                                  : const SizedBox.shrink()),
+                              // ? Image.network(
+                              //     image.urlImage,
+                              //     fit: widget.fit ?? BoxFit.contain,
+                              //   )
+                              : const SizedBox.shrink()),
                     ),
                   ),
                 )),

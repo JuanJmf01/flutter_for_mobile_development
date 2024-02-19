@@ -28,7 +28,7 @@ import 'package:etfi_point/Screens/reviewsAndOpinions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
 
 class SliverAppBarDetail extends StatelessWidget {
   const SliverAppBarDetail({
@@ -344,109 +344,109 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
   String? descripcionDetalladaAux;
   String fileName = '';
 
-  void insertProServicioImage(int idUsuario) async {
-    if (imagesToUpload.isNotEmpty) {
-      List<ProservicioImagesTb> productImagesAux = [];
-      for (var imageToUpload in imagesToUpload) {
-        Uint8List imageBytes =
-            await RandomServices.assetToUint8List(imageToUpload.newImage);
-        String fileName =
-            RandomServices.assingName(imageToUpload.newImage.name!);
+  // void insertProServicioImage(int idUsuario) async {
+  //   if (imagesToUpload.isNotEmpty) {
+  //     List<ProservicioImagesTb> productImagesAux = [];
+  //     for (var imageToUpload in imagesToUpload) {
+  //       Uint8List imageBytes =
+  //           await RandomServices.assetToUint8List(imageToUpload.newImage);
+  //       String fileName =
+  //           RandomServices.assingName(imageToUpload.newImage.name!);
 
-        ImagesStorageTb image = ImagesStorageTb(
-          idUsuario: idUsuario,
-          idFile: widget.idProServicio,
-          newImageBytes: imageBytes,
-          fileName: fileName,
-          imageName: fileName,
-        );
+  //       ImagesStorageTb image = ImagesStorageTb(
+  //         idUsuario: idUsuario,
+  //         idFile: widget.idProServicio,
+  //         newImageBytes: imageBytes,
+  //         fileName: fileName,
+  //         imageName: fileName,
+  //       );
 
-        String url = await ImagesStorage.cargarImage(image);
+  //       String url = await ImagesStorage.cargarImage(image);
 
-        ProServicioImageCreacionTb proServicioCreacionImage =
-            ProServicioImageCreacionTb(
-          idProServicio: widget.idProServicio,
-          nombreImage: fileName,
-          urlImage: url,
-          width: imageToUpload.width,
-          height: imageToUpload.height,
-          isPrincipalImage: 0,
-        );
+  //       ProServicioImageCreacionTb proServicioCreacionImage =
+  //           ProServicioImageCreacionTb(
+  //         idProServicio: widget.idProServicio,
+  //         nombreImage: fileName,
+  //         urlImage: url,
+  //         width: imageToUpload.width,
+  //         height: imageToUpload.height,
+  //         isPrincipalImage: 0,
+  //       );
 
-        if (fileName == MisRutasFirebase.forProducts) {
-          ProservicioImagesTb proServicioImage =
-              await ProductImageDb.insertProductImages(
-                  proServicioCreacionImage);
-          productImagesAux.add(proServicioImage);
-        } else if (fileName == MisRutasFirebase.forServicios) {
-          ProservicioImagesTb proservicioImage =
-              await ServiceImageDb.insertServiceImage(proServicioCreacionImage);
-          productImagesAux.add(proservicioImage);
-        }
-      }
+  //       if (fileName == MisRutasFirebase.forProducts) {
+  //         ProservicioImagesTb proServicioImage =
+  //             await ProductImageDb.insertProductImages(
+  //                 proServicioCreacionImage);
+  //         productImagesAux.add(proServicioImage);
+  //       } else if (fileName == MisRutasFirebase.forServicios) {
+  //         ProservicioImagesTb proservicioImage =
+  //             await ServiceImageDb.insertServiceImage(proServicioCreacionImage);
+  //         productImagesAux.add(proservicioImage);
+  //       }
+  //     }
 
-      setState(() {
-        if (allProductImages.items.isNotEmpty) {
-          allProductImages.items.clear();
-        }
-        productSecondaryImages = [
-          ...productSecondaryImages,
-          ...productImagesAux
-        ];
-        if (allProductImages.items.isEmpty) {
-          allProductImages = ImageList(productSecondaryImages);
-        } else {
-          allProductImages.items.addAll(productSecondaryImages);
-        }
+  //     setState(() {
+  //       if (allProductImages.items.isNotEmpty) {
+  //         allProductImages.items.clear();
+  //       }
+  //       productSecondaryImages = [
+  //         ...productSecondaryImages,
+  //         ...productImagesAux
+  //       ];
+  //       if (allProductImages.items.isEmpty) {
+  //         allProductImages = ImageList(productSecondaryImages);
+  //       } else {
+  //         allProductImages.items.addAll(productSecondaryImages);
+  //       }
 
-        imagesToUpload.clear();
-      });
-    }
-  }
+  //       imagesToUpload.clear();
+  //     });
+  //   }
+  // }
 
-  void updateSecondaryImage(int idUsuario) async {
-    if (imagesToUpdate.isNotEmpty) {
-      await Future.forEach(imagesToUpdate, (newImage) async {
-        String nombreImage = newImage.nombreImage;
-        Asset imageToUpdate = newImage.newImage;
+  // void updateSecondaryImage(int idUsuario) async {
+  //   if (imagesToUpdate.isNotEmpty) {
+  //     await Future.forEach(imagesToUpdate, (newImage) async {
+  //       String nombreImage = newImage.nombreImage;
+  //       Asset imageToUpdate = newImage.newImage;
 
-        print("LONG IMAGE_: ${imageToUpdate.originalHeight!.toDouble()}");
+  //       print("LONG IMAGE_: ${imageToUpdate.originalHeight!.toDouble()}");
 
-        ImagesStorageTb image = ImagesStorageTb(
-            idUsuario: idUsuario,
-            idFile: widget.idProServicio,
-            newImageBytes: await RandomServices.assetToUint8List(imageToUpdate),
-            fileName: fileName,
-            imageName: nombreImage);
+  //       ImagesStorageTb image = ImagesStorageTb(
+  //           idUsuario: idUsuario,
+  //           idFile: widget.idProServicio,
+  //           newImageBytes: await RandomServices.assetToUint8List(imageToUpdate),
+  //           fileName: fileName,
+  //           imageName: nombreImage);
 
-        String url = await ImagesStorage.updateImage(image);
-        print('URL image_: $url');
-        for (int i = 0; i < productSecondaryImages.length; i++) {
-          //Solo entra al if en una ocacion por lo que no hay problema con el setState dentro del ciclo for
-          if (productSecondaryImages[i].nombreImage == nombreImage) {
-            setState(() {
-              productSecondaryImages[i] =
-                  productSecondaryImages[i].copyWith(urlImage: url);
+  //       String url = await ImagesStorage.updateImage(image);
+  //       print('URL image_: $url');
+  //       for (int i = 0; i < productSecondaryImages.length; i++) {
+  //         //Solo entra al if en una ocacion por lo que no hay problema con el setState dentro del ciclo for
+  //         if (productSecondaryImages[i].nombreImage == nombreImage) {
+  //           setState(() {
+  //             productSecondaryImages[i] =
+  //                 productSecondaryImages[i].copyWith(urlImage: url);
 
-              if (allProductImages.items.isNotEmpty) {
-                allProductImages.items.clear();
-              }
-              allProductImages.items.addAll(productSecondaryImages);
-            });
-            break;
-          } else {
-            print('No encontrado en updateSecondaryImage');
-          }
-        }
-      });
+  //             if (allProductImages.items.isNotEmpty) {
+  //               allProductImages.items.clear();
+  //             }
+  //             allProductImages.items.addAll(productSecondaryImages);
+  //           });
+  //           break;
+  //         } else {
+  //           print('No encontrado en updateSecondaryImage');
+  //         }
+  //       }
+  //     });
 
-      setState(() {
-        imagesToUpdate.clear();
-      });
-    } else {
-      print('Imagen a actualizar es null');
-    }
-  }
+  //     setState(() {
+  //       imagesToUpdate.clear();
+  //     });
+  //   } else {
+  //     print('Imagen a actualizar es null');
+  //   }
+  // }
 
   //Actualizar descripcion detallada
   void updateDescripcionDetallada() async {
@@ -465,70 +465,70 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
     }
   }
 
-  void agregarImagenes() async {
-    List<ProServicioImageToUpload> allProductImagesAux =
-        await CrudImages.agregarImagenes();
+  // void agregarImagenes() async {
+  //   List<ProServicioImageToUpload> allProductImagesAux =
+  //       await CrudImages.agregarImagenes();
 
-    setState(() {
-      allProductImages.items.addAll(allProductImagesAux);
+  //   setState(() {
+  //     allProductImages.items.addAll(allProductImagesAux);
 
-      imagesToUpload = [...imagesToUpload, ...allProductImagesAux];
-    });
-  }
+  //     imagesToUpload = [...imagesToUpload, ...allProductImagesAux];
+  //   });
+  // }
 
   /// The function `editarImagenes` is used to edit images by replacing them with new images in a list.
   ///
   /// Args:
   ///   image: The parameter `image` is of type `dynamic` and represents an image object.
-  void editarImagenes(final image) async {
-    Asset? asset = await getImageAsset();
-    if (asset != null) {
-      int imageIndex = allProductImages.items.indexOf(image);
+  // void editarImagenes(final image) async {
+  //   Asset? asset = await getImageAsset();
+  //   if (asset != null) {
+  //     int imageIndex = allProductImages.items.indexOf(image);
 
-      int indice = imagesToUpdate
-          .indexWhere((element) => element.nombreImage == image.nombreImage);
+  //     int indice = imagesToUpdate
+  //         .indexWhere((element) => element.nombreImage == image.nombreImage);
 
-      /** Si 'indice' != de -1  es por que ya ha sido cambiada previamente
-      * En este caso el objeto ya se encuentra dentro de 'imagesToUpdate' por lo tanto 
-       * solo es necesario actualizar "imageToUpdate" respecto a su posicion 'indice' y dejar 
-       * "nombreImage" igual ya que este nombre se utiliza para completar la ruta en firebase Storage y actualizar */
-      if (indice != -1 || image is ProServicioImageToUpdate) {
-        ProServicioImageToUpdate newImage = ProServicioImageToUpdate(
-          nombreImage: imagesToUpdate[indice].nombreImage,
-          newImage: asset,
-        );
-        setState(() {
-          allProductImages.items[imageIndex] = newImage;
-          imagesToUpdate[indice] = newImage;
-        });
-      } else {
-        if (image is ProservicioImagesTb) {
-          ProServicioImageToUpdate newImage = ProServicioImageToUpdate(
-            nombreImage: image.nombreImage,
-            newImage: asset,
-          );
-          setState(() {
-            imagesToUpdate.add(newImage);
-            allProductImages.items[imageIndex] = newImage;
-          });
-        } else if (image is ProServicioImageToUpload) {
-          int indiceToUpload = imagesToUpload.indexWhere(
-              (element) => element.nombreImage == image.nombreImage);
-          ProServicioImageToUpload newImage = ProServicioImageToUpload(
-            nombreImage: RandomServices.assingName(asset.name!),
-            newImage: asset,
-            width: asset.originalWidth!.toDouble(),
-            height: asset.originalHeight!.toDouble(),
-          );
+  //     /** Si 'indice' != de -1  es por que ya ha sido cambiada previamente
+  //     * En este caso el objeto ya se encuentra dentro de 'imagesToUpdate' por lo tanto 
+  //      * solo es necesario actualizar "imageToUpdate" respecto a su posicion 'indice' y dejar 
+  //      * "nombreImage" igual ya que este nombre se utiliza para completar la ruta en firebase Storage y actualizar */
+  //     if (indice != -1 || image is ProServicioImageToUpdate) {
+  //       ProServicioImageToUpdate newImage = ProServicioImageToUpdate(
+  //         nombreImage: imagesToUpdate[indice].nombreImage,
+  //         newImage: asset,
+  //       );
+  //       setState(() {
+  //         allProductImages.items[imageIndex] = newImage;
+  //         imagesToUpdate[indice] = newImage;
+  //       });
+  //     } else {
+  //       if (image is ProservicioImagesTb) {
+  //         ProServicioImageToUpdate newImage = ProServicioImageToUpdate(
+  //           nombreImage: image.nombreImage,
+  //           newImage: asset,
+  //         );
+  //         setState(() {
+  //           imagesToUpdate.add(newImage);
+  //           allProductImages.items[imageIndex] = newImage;
+  //         });
+  //       } else if (image is ProServicioImageToUpload) {
+  //         int indiceToUpload = imagesToUpload.indexWhere(
+  //             (element) => element.nombreImage == image.nombreImage);
+  //         ProServicioImageToUpload newImage = ProServicioImageToUpload(
+  //           nombreImage: RandomServices.assingName(asset.name!),
+  //           newImage: asset,
+  //           width: asset.originalWidth!.toDouble(),
+  //           height: asset.originalHeight!.toDouble(),
+  //         );
 
-          setState(() {
-            allProductImages.items[imageIndex] = newImage;
-            imagesToUpload[indiceToUpload] = newImage;
-          });
-        }
-      }
-    }
-  }
+  //         setState(() {
+  //           allProductImages.items[imageIndex] = newImage;
+  //           imagesToUpload[indiceToUpload] = newImage;
+  //         });
+  //       }
+  //     }
+  //   }
+  // }
 
   void eliminarImagen(final image, int idUsuario) {
     showDialog(
@@ -693,27 +693,27 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
                     for (var image in allProductImages.items)
                       Column(
                         children: [
-                          Container(
-                              child: image is ProservicioImagesTb
-                                  ? ShowImage(
-                                      networkImage: image.urlImage,
-                                      //height: 200,
-                                      width: double.infinity,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : image is ProServicioImageToUpload ||
-                                          image is ProServicioImageToUpdate
-                                      // Si image is ProServicioImageToUpload entt image.newImage, de lo contrario si image is ProServicioImageToUpdate entt image.newImage
-                                      ? ShowImage(
-                                          imageAsset: image
-                                                  is ProServicioImageToUpload
-                                              ? image.newImage
-                                              : image is ProServicioImageToUpdate
-                                                  ? image.newImage
-                                                  : null,
-                                          widthImage: double.infinity,
-                                        )
-                                      : const SizedBox.shrink()),
+                          // Container(
+                          //     child: image is ProservicioImagesTb
+                          //         ? ShowImage(
+                          //             networkImage: image.urlImage,
+                          //             //height: 200,
+                          //             width: double.infinity,
+                          //             fit: BoxFit.cover,
+                          //           )
+                          //         : image is ProServicioImageToUpload ||
+                          //                 image is ProServicioImageToUpdate
+                          //             // Si image is ProServicioImageToUpload entt image.newImage, de lo contrario si image is ProServicioImageToUpdate entt image.newImage
+                          //             ? ShowImage(
+                          //                 imageAsset: image
+                          //                         is ProServicioImageToUpload
+                          //                     ? image.newImage
+                          //                     : image is ProServicioImageToUpdate
+                          //                         ? image.newImage
+                          //                         : null,
+                          //                 widthImage: double.infinity,
+                          //               )
+                          //             : const SizedBox.shrink()),
                           isChecked
                               ? Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -735,7 +735,7 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
                                     createCustomButton(
                                       //onPress
                                       () {
-                                        editarImagenes(image);
+                                        // editarImagenes(image);
                                       },
                                       'Editar',
                                     ),
@@ -754,7 +754,7 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
               padding: const EdgeInsets.all(8.0),
               child: IconButton(
                 onPressed: () async {
-                  agregarImagenes();
+                  // agregarImagenes();
                 },
                 icon: Icon(CupertinoIcons.add_circled,
                     size: 40, color: Colors.grey.shade600),
@@ -773,10 +773,10 @@ class AdvancedDescriptionState extends ConsumerState<AdvancedDescription> {
               widthSizeBox: double.infinity,
               onPress: () {
                 if (idUsuarioActual != null) {
-                  insertProServicioImage(idUsuarioActual);
+                  // insertProServicioImage(idUsuarioActual);
                 }
                 if (idUsuarioActual != null) {
-                  updateSecondaryImage(idUsuarioActual);
+                  // updateSecondaryImage(idUsuarioActual);
                 }
                 updateDescripcionDetallada();
               }),

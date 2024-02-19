@@ -2,7 +2,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
 
 class RandomServices {
   static String obtenerFechaHoraActual() {
@@ -67,10 +67,10 @@ class RandomServices {
     }
   }
 
-  static Future<Uint8List> assetToUint8List(Asset image) async {
-    final ByteData byteData = await image.getByteData();
-    final Uint8List bytes = byteData.buffer.asUint8List();
+  // static Future<Uint8List> assetToUint8List(Asset image) async {
+  //   final ByteData byteData = await image.getByteData();
+  //   final Uint8List bytes = byteData.buffer.asUint8List();
 
-    return bytes;
-  }
+  //   return bytes;
+  // }
 }

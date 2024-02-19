@@ -40,7 +40,7 @@ class _PageViewImagesScrollState extends State<PageViewImagesScroll> {
               final image = widget.images[index];
               return image is ProServicioImageToUpload
                   ? ShowImage(
-                      imageAsset: image.newImage,
+                      // imageAsset: image.newImage,
                       borderRadius: BorderRadius.circular(20.0),
                       heightImage: 340,
                       widthImage: 360,

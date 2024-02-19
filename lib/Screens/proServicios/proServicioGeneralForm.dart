@@ -24,7 +24,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
+// import 'package:multi_image_picker/multi_image_picker.dart';
 
 class ProServicioGeneralStructure extends ConsumerStatefulWidget {
   const ProServicioGeneralStructure({
@@ -38,7 +38,7 @@ class ProServicioGeneralStructure extends ConsumerStatefulWidget {
     this.urlSubCategories,
     //
     required this.myImageList,
-    this.principalImage,
+    // this.principalImage,
     this.urlPrincipalImage,
     this.principalImageBytes,
     //
@@ -58,7 +58,7 @@ class ProServicioGeneralStructure extends ConsumerStatefulWidget {
   final String? urlSubCategories;
   //
   final ImageList myImageList;
-  final Asset? principalImage;
+  // final Asset? principalImage;
   final String? urlPrincipalImage;
   final Uint8List? principalImageBytes;
 
@@ -66,7 +66,8 @@ class ProServicioGeneralStructure extends ConsumerStatefulWidget {
 
   final Function(bool) onUpDateOffert;
   final Function(
-      {Asset? newPrincipalImage,
+      {
+      // Asset? newPrincipalImage,
       String? newUrlPrincipalImage,
       Uint8List? newPrincipalImageBytes}) onUpdatedImages;
   final Function(List<ProServicioImageToUpload>) onSelectedImageList;
@@ -188,16 +189,16 @@ class ProServicioGeneralStructureState
             : pageController == 2
                 ? SelectImages(
                     myImageList: widget.myImageList,
-                    principalImage: widget.principalImage,
+                    // principalImage: widget.principalImage,
                     urlPrincipalImage: widget.urlPrincipalImage,
                     principalImageBytes: widget.principalImageBytes,
                     onUpdatedImages: ({
-                      Asset? newPrincipalImage,
+                      // Asset? newPrincipalImage,
                       String? newUrlPrincipalImage,
                       Uint8List? newPrincipalImageBytes,
                     }) {
                       widget.onUpdatedImages(
-                        newPrincipalImage: newPrincipalImage,
+                        // newPrincipalImage: newPrincipalImage,
                         newUrlPrincipalImage: newUrlPrincipalImage,
                         newPrincipalImageBytes: newPrincipalImageBytes,
                       );
@@ -424,7 +425,7 @@ class SelectImages extends StatelessWidget {
   const SelectImages({
     super.key,
     required this.myImageList,
-    this.principalImage,
+    // this.principalImage,
     this.urlPrincipalImage,
     this.principalImageBytes,
     required this.onUpdatedImages,
@@ -438,11 +439,12 @@ class SelectImages extends StatelessWidget {
   });
 
   final ImageList myImageList;
-  final Asset? principalImage;
+  // final Asset? principalImage;
   final String? urlPrincipalImage;
   final Uint8List? principalImageBytes;
   final Function(
-      {Asset? newPrincipalImage,
+      {
+      // Asset? newPrincipalImage,
       String? newUrlPrincipalImage,
       Uint8List? newPrincipalImageBytes}) onUpdatedImages;
   final Function(List<ProServicioImageToUpload>) onSelectedImageList;
@@ -454,21 +456,21 @@ class SelectImages extends StatelessWidget {
   final String nameProServicio;
 
   // @override
-  void selectImages() async {
-    List<ProServicioImageToUpload> selectedImagesAux =
-        await CrudImages.agregarImagenes();
-    onSelectedImageList(selectedImagesAux);
-    if (idProducto == null && selectedImagesAux.isNotEmpty) {
-      if (principalImage == null) {
-        print("pricipal null");
-        onUpdatedImages(
-          newPrincipalImage: selectedImagesAux[0].newImage,
-        );
-      } else {
-        print("pricipal no null");
-      }
-    }
-  }
+  // void selectImages() async {
+  //   List<ProServicioImageToUpload> selectedImagesAux =
+  //       await CrudImages.agregarImagenes();
+  //   onSelectedImageList(selectedImagesAux);
+  //   if (idProducto == null && selectedImagesAux.isNotEmpty) {
+  //     if (principalImage == null) {
+  //       print("pricipal null");
+  //       onUpdatedImages(
+  //         newPrincipalImage: selectedImagesAux[0].newImage,
+  //       );
+  //     } else {
+  //       print("pricipal no null");
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -490,99 +492,99 @@ class SelectImages extends StatelessWidget {
                   imageList: myImageList,
                   padding: const EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
                   maxHeight: 260,
-                  principalImage: principalImage,
+                  // principalImage: principalImage,
                   urlPrincipalImage: urlPrincipalImage,
                   onImageSelected: (selectedImage) {
                     if (principalImageBytes != null) {
                       onUpdatedImages(newPrincipalImageBytes: null);
                     }
-                    if (selectedImage is Asset) {
-                      onUpdatedImages(
-                        newPrincipalImage: selectedImage,
-                        newUrlPrincipalImage: null,
-                      );
-                    } else if (selectedImage is String) {
-                      onUpdatedImages(
-                        newUrlPrincipalImage: selectedImage,
-                        newPrincipalImage: null,
-                      );
-                    }
+                    // if (selectedImage is Asset) {
+                    //   onUpdatedImages(
+                    //     newPrincipalImage: selectedImage,
+                    //     newUrlPrincipalImage: null,
+                    //   );
+                    // } else if (selectedImage is String) {
+                    //   onUpdatedImages(
+                    //     newUrlPrincipalImage: selectedImage,
+                    //     newPrincipalImage: null,
+                    //   );
+                    // }
                   },
                 )
               : const SizedBox.shrink(),
           ArrowTextButton(
-            textButton: myImageList.items.isEmpty
-                ? 'Agregar imagenes'
-                : 'Agregar mas imagenes',
-            horizontalPaggin: horizontalPadding,
-            paddingTop: verticalPadding * 1.5,
-            paddingBottom: verticalPadding / 4,
-            onTap: () => selectImages(),
-          ),
-          if (principalImage != null || principalImageBytes != null)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const GlobalDivider(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20.0, 25.0, 0.0, 10.0),
-                  child: Text(
-                    'La fotografia principal de tu $nameProServicio lucira asi:',
-                    style: TextStyle(
-                      fontSize: 17.3,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: horizontalPadding * 2),
-                  child: IndividualProduct(
-                    urlImage: urlPrincipalImage,
-                    imageAsset: principalImage,
-                    imageBytes: principalImageBytes,
-                    precio: precioProducto,
-                    oferta: isOffert ? 1 : 0,
-                    descuento: RandomServices.textToInt(discount ?? '0'),
-                    nombre: nombreProducto,
-                  ),
-                ),
-                ArrowTextButton(
-                  onTap: () async {
-                    File tempFile = await FileTemporal.convertToTempFile(
-                        urlImage: urlPrincipalImage, image: principalImage);
-                    Uint8List? croppedBytes =
-                        await EditarImagen.editImage(tempFile, 2.3, 2);
-                    if (croppedBytes != null) {
-                      print("Entro");
-                      onUpdatedImages(
-                        newPrincipalImageBytes:
-                            Uint8List.fromList(croppedBytes),
-                      );
-                    }
-                  },
-                  textButton: "Recortar",
-                  horizontalPaggin: horizontalPadding,
-                ),
-                ArrowTextButton(
-                  onTap: () async {
-                    Asset? imagesAsset = await getImageAsset();
+              textButton: myImageList.items.isEmpty
+                  ? 'Agregar imagenes'
+                  : 'Agregar mas imagenes',
+              horizontalPaggin: horizontalPadding,
+              paddingTop: verticalPadding * 1.5,
+              paddingBottom: verticalPadding / 4,
+              onTap: () {} //() => selectImages(),
+              ),
+          // if (principalImage != null || principalImageBytes != null)
+          //   Column(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: [
+          //       const GlobalDivider(),
+          //       Padding(
+          //         padding: const EdgeInsets.fromLTRB(20.0, 25.0, 0.0, 10.0),
+          //         child: Text(
+          //           'La fotografia principal de tu $nameProServicio lucira asi:',
+          //           style: TextStyle(
+          //             fontSize: 17.3,
+          //             fontWeight: FontWeight.w500,
+          //             color: Colors.grey.shade600,
+          //           ),
+          //         ),
+          //       ),
+          //       Padding(
+          //         padding: EdgeInsets.only(left: horizontalPadding * 2),
+          //         child: IndividualProduct(
+          //           urlImage: urlPrincipalImage,
+          //           imageAsset: principalImage,
+          //           imageBytes: principalImageBytes,
+          //           precio: precioProducto,
+          //           oferta: isOffert ? 1 : 0,
+          //           descuento: RandomServices.textToInt(discount ?? '0'),
+          //           nombre: nombreProducto,
+          //         ),
+          //       ),
+          //       ArrowTextButton(
+          //         onTap: () async {
+          //           File tempFile = await FileTemporal.convertToTempFile(
+          //               urlImage: urlPrincipalImage, image: principalImage);
+          //           Uint8List? croppedBytes =
+          //               await EditarImagen.editImage(tempFile, 2.3, 2);
+          //           if (croppedBytes != null) {
+          //             print("Entro");
+          //             onUpdatedImages(
+          //               newPrincipalImageBytes:
+          //                   Uint8List.fromList(croppedBytes),
+          //             );
+          //           }
+          //         },
+          //         textButton: "Recortar",
+          //         horizontalPaggin: horizontalPadding,
+          //       ),
+          //       ArrowTextButton(
+          //         onTap: () async {
+          //           Asset? imagesAsset = await getImageAsset();
 
-                    if (imagesAsset != null) {
-                      onUpdatedImages(
-                        newPrincipalImage: imagesAsset,
-                        newUrlPrincipalImage: null,
-                      );
-                    }
-                  },
-                  textButton: "Seleccionar otra imagen",
-                  horizontalPaggin: horizontalPadding,
-                ),
-                const SizedBox(
-                  height: 80.0,
-                )
-              ],
-            ),
+          //           if (imagesAsset != null) {
+          //             onUpdatedImages(
+          //               newPrincipalImage: imagesAsset,
+          //               newUrlPrincipalImage: null,
+          //             );
+          //           }
+          //         },
+          //         textButton: "Seleccionar otra imagen",
+          //         horizontalPaggin: horizontalPadding,
+          //       ),
+          //       const SizedBox(
+          //         height: 80.0,
+          //       )
+          //     ],
+          //   ),
         ],
       ),
     );

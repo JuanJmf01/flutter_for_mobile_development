@@ -79,43 +79,43 @@ class CrearEnlaceState extends ConsumerState<CrearEnlace> {
     double fontSize = 19.0;
     double letterSpacing = 0.3;
 
-    void guardarPublicacion(int idUsuario) async {
-      int? idNegocio = await NegocioDb.checkBusinessExists(idUsuario);
+    // void guardarPublicacion(int idUsuario) async {
+    //   int? idNegocio = await NegocioDb.checkBusinessExists(idUsuario);
 
-      if (idNegocio != null) {
-        PublicacionesCreacionTb publicacion = PublicacionesCreacionTb(
-          idNegocio: idNegocio,
-          descripcion: _descripcionController.text,
-        );
+    //   if (idNegocio != null) {
+    //     PublicacionesCreacionTb publicacion = PublicacionesCreacionTb(
+    //       idNegocio: idNegocio,
+    //       descripcion: _descripcionController.text,
+    //     );
 
-        int idPublicacion =
-            await PublicacionesDb.insertFotoPublicacion(publicacion);
+    //     int idPublicacion =
+    //         await PublicacionesDb.insertFotoPublicacion(publicacion);
 
-        for (var imageToUpload in imagesToUpload) {
-          ImagesStorageTb image = ImagesStorageTb(
-            idUsuario: idUsuario,
-            idFile: idPublicacion,
-            newImageBytes:
-                await RandomServices.assetToUint8List(imageToUpload.newImage),
-            fileName: 'publicaciones',
-            imageName: imageToUpload.nombreImage,
-          );
+    //     for (var imageToUpload in imagesToUpload) {
+    //       ImagesStorageTb image = ImagesStorageTb(
+    //         idUsuario: idUsuario,
+    //         idFile: idPublicacion,
+    //         newImageBytes:
+    //             // await RandomServices.assetToUint8List(imageToUpload.newImage),
+    //         fileName: 'publicaciones',
+    //         imageName: imageToUpload.nombreImage,
+    //       );
 
-          String urlImage = await ImagesStorage.cargarImage(image);
+    //       String urlImage = await ImagesStorage.cargarImage(image);
 
-          PublicacionImagesCreacionTb publicacionImage =
-              PublicacionImagesCreacionTb(
-            idFotoPublicacion: idPublicacion,
-            nombreImage: imageToUpload.nombreImage,
-            urlImage: urlImage,
-            width: imageToUpload.width,
-            height: imageToUpload.height,
-          );
+    //       PublicacionImagesCreacionTb publicacionImage =
+    //           PublicacionImagesCreacionTb(
+    //         idFotoPublicacion: idPublicacion,
+    //         nombreImage: imageToUpload.nombreImage,
+    //         urlImage: urlImage,
+    //         width: imageToUpload.width,
+    //         height: imageToUpload.height,
+    //       );
 
-          PublicacionImagesDb.insertPublicacionImage(publicacionImage);
-        }
-      }
-    }
+    //       PublicacionImagesDb.insertPublicacionImage(publicacionImage);
+    //     }
+    //   }
+    // }
 
     return GestureDetector(
       onTap: () {
@@ -137,7 +137,7 @@ class CrearEnlaceState extends ConsumerState<CrearEnlace> {
                       imagesToUpload,
                     );
                   } else if (selectedProServicio == null) {
-                    guardarPublicacion(widget.idUsuario);
+                    // guardarPublicacion(widget.idUsuario);
                   }
                 },
                 textButton: 'Guardar',
@@ -196,10 +196,10 @@ class CrearEnlaceState extends ConsumerState<CrearEnlace> {
             child: GestureDetector(
               onTap: () async {
                 if (imagesToUpload.isEmpty) {
-                  List<ProServicioImageToUpload> selectedImagesAux =
-                      await CrudImages.agregarImagenes();
+                  // List<ProServicioImageToUpload> selectedImagesAux =
+                  //     await CrudImages.agregarImagenes();
                   setState(() {
-                    imagesToUpload.addAll(selectedImagesAux);
+                    // imagesToUpload.addAll(selectedImagesAux);
                   });
                 }
               },

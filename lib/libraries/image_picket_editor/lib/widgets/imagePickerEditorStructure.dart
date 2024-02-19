@@ -21,7 +21,7 @@ class _ImagePickerEditorStructureState
     return currentPage == 1
         ? ImagePickerSection(
             selectedImages: selectedImages,
-            maxSelectableImages: 2,
+            maxSelectableImages: 5,
             countSelectedImages: countSelectedImages,
             onUpdateCurrentPage: (int newCurrentPage) {
               setState(() {
