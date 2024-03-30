@@ -1,0 +1,33 @@
+Licencia de Acceso Restringido para Bondweave
+
+Versión 1.0 - 25 de marzo de 2024
+
+Copyright (c) 2024, Bondweave
+
+Esta licencia se aplica exclusivamente al uso del código fuente y cualquier otro material relacionado con el proyecto en el repositorio de GitHub Bondweave.
+
+
+Términos y Condiciones:
+
+1. Acceso y Modificación:
+   a. Las personas autorizadas por el propietario pueden acceder y modificar el proyecto en GitHub únicamente si el propietario les ha otorgado explícitamente acceso a través de las herramientas de colaboración proporcionadas por GitHub.
+   b. Las personas autorizadas pueden realizar modificaciones en el código fuente siempre y cuando se realicen dentro del contexto y los objetivos del proyecto.
+   c. El propietario se reserva el derecho de revocar el acceso en cualquier momento y por cualquier motivo, sin previo aviso.
+   d. Ninguna persona autorizada por el propietario tiene permiso para realizar modificaciones en la licencia del proyecto.
+   
+
+3. Distribución y Uso:
+   a. Queda estrictamente prohibido distribuir, mostrar, vender o de cualquier otra manera disponer del código fuente o cualquier otro material relacionado con el proyecto fuera del entorno del repositorio de GitHub.
+   b. Las personas autorizadas, no tienen permiso para utilizar el código fuente o cualquier otro material relacionado con el proyecto para otros proyectos, ya sea de manera comercial o no comercial.
+   c. Las personas autorizadas no tienen permiso para divulgar el código fuente, así como cualquier otro material relacionado con el proyecto, a individuos o empresas que no formen parte del proyecto en el repositorio de GitHub sin la autorización expresa del propietario del proyecto.
+
+
+
+Renuncia de Garantías:
+El propietario del proyecto no proporciona garantías de ningún tipo con respecto al código fuente y otros materiales relacionados con el proyecto. El uso del código fuente se realiza bajo la responsabilidad y el riesgo exclusivos del usuario.
+
+Limitación de Responsabilidad:
+El propietario del proyecto no será responsable de ningún daño directo, indirecto, incidental, especial, consecuencial o ejemplar que surja del uso del código fuente o cualquier otro material relacionado con el proyecto.
+
+Aceptación de la Licencia:
+Al acceder y/o utilizar el código fuente o cualquier otro material relacionado con el proyecto, las personas autorizadas aceptan los términos y condiciones de esta licencia.
